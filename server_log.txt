@@ -1,0 +1,361 @@
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[23:46:20] filterscripts = ""  (string)
+[23:46:20] 
+[23:46:20] Server Plugins
+[23:46:20] --------------
+[23:46:20]  Loaded 0 plugins.
+
+[23:46:20] 
+[23:46:20] Filterscripts
+[23:46:20] ---------------
+[23:46:20]   Loaded 0 filterscripts.
+
+[23:46:20] Number of vehicle models: 0
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[00:01:00] filterscripts = ""  (string)
+[00:01:00] 
+[00:01:00] Server Plugins
+[00:01:00] --------------
+[00:01:00]  Loaded 0 plugins.
+
+[00:01:01] 
+[00:01:01] Filterscripts
+[00:01:01] ---------------
+[00:01:01]   Loaded 0 filterscripts.
+
+[00:01:01] [LOG] Function: main -- Called!
+[00:01:01] Number of vehicle models: 0
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[00:02:02] filterscripts = ""  (string)
+[00:02:02] 
+[00:02:02] Server Plugins
+[00:02:02] --------------
+[00:02:02]  Loaded 0 plugins.
+
+[00:02:03] 
+[00:02:03] Filterscripts
+[00:02:03] ---------------
+[00:02:03]   Loaded 0 filterscripts.
+
+[00:02:03] [LOG] Callback: OnGameModeInit -- Called!
+[00:02:03] [LOG] Function: main -- Called!
+[00:02:03] Number of vehicle models: 0
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[00:10:05] filterscripts = ""  (string)
+[00:10:05] 
+[00:10:05] Server Plugins
+[00:10:05] --------------
+[00:10:05]  Loaded 0 plugins.
+
+[00:10:05] 
+[00:10:05] Filterscripts
+[00:10:05] ---------------
+[00:10:05]   Loaded 0 filterscripts.
+
+[00:10:05] [LOG] Callback: OnGameModeInit -- Called!
+[00:10:05] [LOG] Function: main -- Called! (1861 s).
+[00:10:05] Number of vehicle models: 0
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[00:10:22] filterscripts = ""  (string)
+[00:10:22] 
+[00:10:22] Server Plugins
+[00:10:22] --------------
+[00:10:22]  Loaded 0 plugins.
+
+[00:10:22] 
+[00:10:22] Filterscripts
+[00:10:22] ---------------
+[00:10:22]   Loaded 0 filterscripts.
+
+[00:10:22] [LOG] Callback: OnGameModeInit -- Called!
+[00:10:22] [LOG] Function: main -- Called! (1878626 s).
+[00:10:22] Number of vehicle models: 0
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[00:11:35] filterscripts = ""  (string)
+[00:11:35] 
+[00:11:35] Server Plugins
+[00:11:35] --------------
+[00:11:35]  Loaded 0 plugins.
+
+[00:11:35] 
+[00:11:35] Filterscripts
+[00:11:35] ---------------
+[00:11:35]   Loaded 0 filterscripts.
+
+[00:11:35] [LOG] Callback: OnGameModeInit -- Called!
+[00:11:35] [LOG] Function: main -- Called! (0 s).
+[00:11:35] Number of vehicle models: 0
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[00:12:06] filterscripts = ""  (string)
+[00:12:06] 
+[00:12:06] Server Plugins
+[00:12:06] --------------
+[00:12:06]  Loaded 0 plugins.
+
+[00:12:06] 
+[00:12:06] Filterscripts
+[00:12:06] ---------------
+[00:12:06]   Loaded 0 filterscripts.
+
+[00:12:06] [LOG] Callback: OnGameModeInit -- Called!
+[00:12:06] [LOG] Function: main -- Called! (0 s).
+[00:12:06] Number of vehicle models: 0
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[00:12:58] filterscripts = ""  (string)
+[00:12:58] 
+[00:12:58] Server Plugins
+[00:12:58] --------------
+[00:12:58]  Loaded 0 plugins.
+
+[00:12:58] 
+[00:12:58] Filterscripts
+[00:12:58] ---------------
+[00:12:58]   Loaded 0 filterscripts.
+
+[00:12:58] [LOG] Callback: OnGameModeInit -- Called! (0 s).
+[00:12:58] [LOG] Function: main -- Called! (0 s).
+[00:12:58] Number of vehicle models: 0
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[00:14:39] filterscripts = ""  (string)
+[00:14:39] 
+[00:14:39] Server Plugins
+[00:14:39] --------------
+[00:14:39]  Loaded 0 plugins.
+
+[00:14:39] 
+[00:14:39] Filterscripts
+[00:14:39] ---------------
+[00:14:39]   Loaded 0 filterscripts.
+
+[00:14:39] [LOG] Callback: OnGameModeInit -- Called! (0 s).
+[00:14:39] [LOG] Function: main -- Called! (0 s).
+[00:14:39] Number of vehicle models: 0
+Console input: gmx
+[00:14:43] [LOG] Callback: OnGameModeExit -- Called! (0 s).
+[00:14:55] [LOG] Callback: OnGameModeInit -- Called! (0 s).
+[00:14:55] [LOG] Function: main -- Called! (0 s).
+[00:14:55] Number of vehicle models: 0
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[00:15:43] filterscripts = ""  (string)
+[00:15:43] 
+[00:15:43] Server Plugins
+[00:15:43] --------------
+[00:15:43]  Loaded 0 plugins.
+
+[00:15:43] 
+[00:15:43] Filterscripts
+[00:15:43] ---------------
+[00:15:43]   Loaded 0 filterscripts.
+
+[00:15:43] [LOG] Callback: OnGameModeInit -- Called! (0 s).
+[00:15:43] [LOG] Function: main -- Called! (0 s).
+[00:15:43] Number of vehicle models: 0
+[00:16:32] [connection] 127.0.0.1:52867 requests connection cookie.
+[00:16:34] [connection] incoming connection: 127.0.0.1:52867 id: 0
+[00:16:34] [join] steeZ has joined the server (0:127.0.0.1)
+[00:16:34] [LOG] Callback: OnPlayerConnect -- Called! (0 s).
+[00:16:34] [LOG] Callback: OnPlayerRequestClass -- Called! (0 s).
+[00:16:38] [LOG] Callback: OnPlayerRequestSpawn -- Called! (0 s).
+[00:16:38] [LOG] Callback: OnPlayerSpawn -- Called! (0 s).
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[00:18:30] filterscripts = ""  (string)
+[00:18:30] 
+[00:18:30] Server Plugins
+[00:18:30] --------------
+[00:18:30]  Loaded 0 plugins.
+
+[00:18:30] 
+[00:18:30] Filterscripts
+[00:18:30] ---------------
+[00:18:30]   Loaded 0 filterscripts.
+
+[00:18:30] [LOG] Callback: OnGameModeInit -- Called! (0 ms).
+[00:18:30] [LOG] Function: main -- Called! (0 ms).
+[00:18:30] Number of vehicle models: 0
+[00:18:32] [connection] 127.0.0.1:58618 requests connection cookie.
+[00:18:33] [connection] incoming connection: 127.0.0.1:58618 id: 0
+[00:18:34] [join] steeZ has joined the server (0:127.0.0.1)
+[00:18:34] [LOG] Callback: OnPlayerConnect -- Called! (0 ms).
+[00:18:34] [LOG] Callback: OnPlayerRequestClass -- Called! (0 ms).
+[00:18:35] [LOG] Callback: OnPlayerRequestSpawn -- Called! (0 ms).
+[00:18:35] [LOG] Callback: OnPlayerSpawn -- Called! (0 ms).
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[00:45:20] filterscripts = ""  (string)
+[00:45:20] 
+[00:45:20] Server Plugins
+[00:45:20] --------------
+[00:45:20]  Loaded 0 plugins.
+
+[00:45:20] 
+[00:45:20] Filterscripts
+[00:45:20] ---------------
+[00:45:20]   Loaded 0 filterscripts.
+
+[00:45:20] [LOG] Callback: OnGameModeInit -- Called! (0 ms).
+[00:45:20] [LOG] Function: main -- Called! (0 ms).
+[00:45:20] Number of vehicle models: 0
+[00:45:47] [connection] 127.0.0.1:61065 requests connection cookie.
+[00:45:48] [connection] incoming connection: 127.0.0.1:61065 id: 0
+[00:45:49] [join] steeZ has joined the server (0:127.0.0.1)
+[00:45:49] [LOG] Callback: OnPlayerConnect -- Called! (0 ms).
+[00:45:49] [LOG] Callback: OnPlayerRequestClass -- Called! (0 ms).
+[00:45:53] [LOG] Callback: OnPlayerRequestSpawn -- Called! (0 ms).
+[00:45:53] [LOG] Callback: OnPlayerSpawn -- Called! (0 ms).
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[00:52:04] filterscripts = ""  (string)
+[00:52:04] 
+[00:52:04] Server Plugins
+[00:52:04] --------------
+[00:52:04]  Loaded 0 plugins.
+
+[00:52:04] 
+[00:52:04] Filterscripts
+[00:52:04] ---------------
+[00:52:04]   Loaded 0 filterscripts.
+
+[00:52:04] [LOG] Callback: OnGameModeInit -- Called! (0 ms).
+[00:52:04] [LOG] Function: main -- Called! (0 ms).
+[00:52:04] Number of vehicle models: 0
+[00:52:06] [connection] 127.0.0.1:55391 requests connection cookie.
+[00:52:07] [connection] incoming connection: 127.0.0.1:55391 id: 0
+[00:52:07] [join] steeZ has joined the server (0:127.0.0.1)
+[00:52:07] [LOG] Callback: OnPlayerConnect -- Called! (0 ms).
+[00:52:08] [LOG] Callback: OnPlayerRequestClass -- Called! (0 ms).
+[00:52:09] [LOG] Callback: OnPlayerRequestSpawn -- Called! (0 ms).
+[00:52:09] [LOG] Callback: OnPlayerSpawn -- Called! (0 ms).
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[00:53:21] filterscripts = ""  (string)
+[00:53:21] 
+[00:53:21] Server Plugins
+[00:53:21] --------------
+[00:53:21]  Loaded 0 plugins.
+
+[00:53:22] 
+[00:53:22] Filterscripts
+[00:53:22] ---------------
+[00:53:22]   Loaded 0 filterscripts.
+
+[00:53:22] [LOG] Callback: OnGameModeInit -- Called! (0 ms).
+[00:53:22] [LOG] Function: main -- Called! (0 ms).
+[00:53:22] Number of vehicle models: 0
+[00:53:39] [connection] 127.0.0.1:54048 requests connection cookie.
+[00:53:40] [connection] incoming connection: 127.0.0.1:54048 id: 0
+[00:53:40] [join] steeZ has joined the server (0:127.0.0.1)
+[00:53:40] [LOG] Callback: OnPlayerConnect -- Called! (0 ms).
+[00:53:41] [LOG] Callback: OnPlayerRequestClass -- Called! (0 ms).
+[00:53:42] [LOG] Callback: OnPlayerRequestSpawn -- Called! (0 ms).
+[00:53:42] [LOG] Callback: OnPlayerSpawn -- Called! (0 ms).
+[00:54:49] [LOG] Callback: OnPlayerDisconnect -- Called! (0 ms).
+[00:54:49] [part] steeZ has left the server (0:1)
