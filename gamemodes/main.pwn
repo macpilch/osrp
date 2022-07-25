@@ -7,12 +7,17 @@
 */
 
 #include <a_samp>
+#include <Pawn.CMD>
+#include <mysql>
 
 #include "src\macros\defines"
+#include "src\macros\dialogs"
 #include "src\enums\player"
+#include "src\core\vars"
 #include "src\core\arrays"
 #include "src\core\main_publics"
 #include "src\core\player_publics"
+#include "src\core\player_functions"
 
 main() {
 	new str[64];

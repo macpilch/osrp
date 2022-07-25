@@ -14,6 +14,15 @@ sampCallback:OnGameModeInit() {
 	DisableInteriorEnterExits();
 	SetGameModeText("aaa");
 	
+	hMySQL = mysql_init(LOG_ALL, 1);
+	mySQLConnect = mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB, hMySQL, 1);
+	
+	if(mySQLConnect) {
+		printf("[LOG]: MYSQL DB Enabled!");
+	} else {
+		printf("[LOG]: MYSQL DB has not been connected !");
+		return 0;
+	}
 	
 	new str[64];
 	new callSec = GetTickCount();

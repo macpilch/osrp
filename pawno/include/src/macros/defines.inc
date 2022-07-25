@@ -19,6 +19,13 @@
 #define Callback:%0(%1) \
 		forward %0(%1); public %0(%1)
 
+#define MYSQL_HOST "localhost"
+#define MYSQL_USER "root"
+#define MYSQL_PASS "1234"
+#define MYSQL_DB "samp"
+
+#define MAX_NUM_CHARS 3
+
 #define DEFAULT_POS_X 837.8678
 #define DEFAULT_POS_Y -1344.6394
 #define DEFAULT_POS_Z 7.1719

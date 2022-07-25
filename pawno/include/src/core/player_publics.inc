@@ -10,9 +10,7 @@
 #define _PLAYER_PUBLICS_
 
 sampCallback:OnPlayerConnect(playerid) {
-	pVars[playerid][pX] = DEFAULT_POS_X;
-	pVars[playerid][pY] = DEFAULT_POS_Y;
-	pVars[playerid][pZ] = DEFAULT_POS_Z;
+	loadPlayerDefaultValues(playerid);
 	
 	new str[64];
 	new callSec = GetTickCount();
@@ -41,8 +39,8 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 }
 
 sampCallback:OnPlayerSpawn(playerid) {
-	if(pVars[playerid][pX] != DEFAULT_POS_X && pVars[playerid][pY] != DEFAULT_POS_Y && pVars[playerid][pZ] != DEFAULT_POS_Z) {
-		SetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+	if(pVars[playerid][0][pX] != DEFAULT_POS_X && pVars[playerid][0][pY] != DEFAULT_POS_Y && pVars[playerid][0][pZ] != DEFAULT_POS_Z) {
+		SetPlayerPos(playerid, pVars[playerid][0][pX], pVars[playerid][0][pY], pVars[playerid][0][pZ]);
 	} else {
 		SetPlayerPos(playerid, DEFAULT_POS_X, DEFAULT_POS_Y, DEFAULT_POS_Z);
 	}
@@ -61,6 +59,11 @@ sampCallback:OnPlayerDeath(playerid, killerid, reason) {
 	
 	format(str, sizeof(str), "[LOG] Callback: OnPlayerDeath -- Called! (%d ms).", (GetTickCount() - callSec));
 	print(str);
+	return 1;
+}
+
+sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
+	
 	return 1;
 }
 
