@@ -9,6 +9,16 @@
 #if !defined _PLAYER_
 #define _PLAYER_
 
+enum CharName {
+	chName[24],
+	bool:chUsed
+};
+
+enum CharSurName {
+	chSurName[24],
+	bool:chSurUsed
+};
+
 enum PlayerData {
 	pUid,
 	pGuid,

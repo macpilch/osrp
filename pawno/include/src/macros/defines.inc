@@ -24,6 +24,8 @@
 #define MYSQL_PASS "1234"
 #define MYSQL_DB "samp"
 
+#define NULL "\0"
+
 #define MAX_NUM_CHARS 3
 
 #define DEFAULT_POS_X 837.8678
