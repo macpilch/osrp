@@ -10,7 +10,24 @@
 #define _PLAYER_PUBLICS_
 
 sampCallback:OnPlayerConnect(playerid) {
+	TogglePlayerSpectating(playerid, 1);
+	GetPlayerName(playerid, pName[playerid], 24);
 	loadPlayerDefaultValues(playerid);
+	
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "SELECT `AccName` FROM `Players` WHERE `AccName` = '%s'", pName[playerid]);
+	mysql_query(queryStr);
+	mysql_store_result();
+	
+	if(mysql_num_rows() < 1) {
+		mainStr[0] = EOS;
+		format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serverem RolePlay!\n\nNie mamy postaci o nicku: %s.", pName[playerid]);
+		ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_MSGBOX, "Nowa postaæ?", mainStr, "STWÓRZ" , "Inna postaæ");
+	} else {
+		
+	}
+	
+	mysql_free_result();
 	
 	new str[64];
 	new callSec = GetTickCount();
@@ -30,6 +47,8 @@ sampCallback:OnPlayerDisconnect(playerid, reason) {
 }
 
 sampCallback:OnPlayerRequestClass(playerid, classid) {
+	SpawnPlayer(playerid);
+	
 	new str[64];
 	new callSec = GetTickCount();
 	
@@ -63,7 +82,82 @@ sampCallback:OnPlayerDeath(playerid, killerid, reason) {
 }
 
 sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
-	
+	switch(dialogid) {
+		case DIALOG_REGISTER: {
+			if(!response) {
+				return 1;
+			}
+			
+			mainStr[0] = EOS;
+			for(new i = 0; i < 10; i++) {
+				format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charSur[i][chSurName]);
+			}
+			ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");
+		}
+		case DIALOG_REGISTER_SURNAME: {
+			if(!response) {
+				format(pVars[playerid][0][pCharName], 24, "%s", inputtext);
+				format(tmpName, sizeof(tmpName), "%s", inputtext);
+			
+				pVars[playerid][0][pSex] = 1;
+				
+				mainStr[0] = EOS;
+				for(new i = 0; i < 10; i++) {
+					format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charWomName[i][chName]);
+				}
+				ShowPlayerDialog(playerid, DIALOG_REGISTER_NAME, DIALOG_STYLE_LIST, "Krok 2/3: imiê (losowe ¿eñskie imiona)", mainStr, "Dalej", "Od nowa");
+			} else {
+				format(pVars[playerid][0][pCharName], 24, "%s", inputtext);
+				format(tmpName, sizeof(tmpName), "%s", inputtext);
+				
+				pVars[playerid][0][pSex] = 0;
+				
+				mainStr[0] = EOS;
+				for(new i = 0; i < 10; i++) {
+					format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charManName[i][chName]);
+				}
+				ShowPlayerDialog(playerid, DIALOG_REGISTER_NAME, DIALOG_STYLE_LIST, "Krok 2/3: imiê (losowe mêskie imiona)", mainStr, "Dalej", "Od nowa");
+			}
+		}
+		case DIALOG_REGISTER_NAME: {
+			if(!response) {
+				pVars[playerid][0][pSex] = 0;
+				
+				mainStr[0] = EOS;
+				for(new i = 0; i < 10; i++) {
+					format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charSur[i][chSurName]);
+				}
+				return ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");				
+			}
+			
+			format(pVars[playerid][0][pCharName], 24, "%s %s", inputtext, pVars[playerid][0][pCharName]);
+			format(tmpName, sizeof(tmpName), "%s_%s", inputtext, tmpName);
+			
+			ShowPlayerDialog(playerid, DIALOG_REGISTER_PASS, DIALOG_STYLE_INPUT, "Krok 3/3: has³o", "Podaj proszê has³o, za pomoc¹ którego bêdziesz siê logowaæ.", "Zapisz", "Od nowa");
+		}
+		case DIALOG_REGISTER_PASS: {
+			if(!response) {
+				pVars[playerid][0][pSex] = 0;
+				
+				mainStr[0] = EOS;
+				for(new i = 0; i < 10; i++) {
+					format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charSur[i][chSurName]);
+				}
+				return ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");			
+			}
+			
+			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "INSERT INTO `Players` (`AccName`, `CharName`, `Pass`, `Sex`) VALUES ('%s', '%s', '%s', '%d')", pName[playerid], pVars[playerid][0][pCharName], inputtext, pVars[playerid][0][pSex]);
+			mysql_query(queryStr);
+			
+			mainStr[0] = EOS;
+			format(mainStr, sizeof(mainStr), "> Postaæ utworzona. Przed kolejnym wejœciem na serwer ustaw nick SA-MP na %s. Pamiêtaj has³o!", tmpName);
+			SendClientMessage(playerid, -1, mainStr);
+			
+			format(mainStr, sizeof(mainStr), "Witaj, %s (UID %d, ID %d). Mi³ej gry, za³ó¿ profil gracza na naszym forum!", pVars[playerid][0][pCharName], pVars[playerid][0][pUid], playerid);
+			SendClientMessage(playerid, -1, mainStr);
+		}
+	}
 	return 1;
 }
 

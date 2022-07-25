@@ -3,8 +3,7 @@
 
 stock loadPlayerDefaultValues(playerid) {
 	for(new i = 0; i < MAX_NUM_CHARS; i++) {
-		pVars[playerid][i][pCharName] = NULL;
-		pVars[playerid][i][pIp] = NULL;
+		pVars[playerid][i][pSex] = 0;
 		pVars[playerid][i][pUid] = 0;
 		pVars[playerid][i][pGuid] = 0;
 		pVars[playerid][i][pHours] = 0;

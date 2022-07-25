@@ -22,8 +22,11 @@ enum CharSurName {
 enum PlayerData {
 	pUid,
 	pGuid,
+	pAccName[24],
 	pCharName[24],
+	pPass[32],
 	pIp[24],
+	pSex,
 	pHours,
 	pMinutes,
 	pSeconds,
