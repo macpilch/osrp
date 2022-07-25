@@ -12,6 +12,7 @@
 sampCallback:OnGameModeInit() {
 	EnableStuntBonusForAll(0);
 	DisableInteriorEnterExits();
+	AddPlayerClass(0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0);
 	SetGameModeText("aaa");
 	
 	hMySQL = mysql_init(LOG_ALL, 1);

@@ -3,7 +3,7 @@
 	Autor: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 24.07.2022
+	Modified: 25.07.2022
 */
 
 #if !defined _DEFINES_
@@ -27,6 +27,9 @@
 #define NULL "\0"
 
 #define MAX_NUM_CHARS 3
+#define MAX_CHARS_NAMES 10
+#define MAN_SEX 0
+#define WOMAN_SEX 1
 
 #define DEFAULT_POS_X 837.8678
 #define DEFAULT_POS_Y -1344.6394

@@ -9,6 +9,7 @@
 #include <a_samp>
 #include <Pawn.CMD>
 #include <mysql>
+#include <sscanf2>
 
 #include "src\macros\defines"
 #include "src\macros\dialogs"
