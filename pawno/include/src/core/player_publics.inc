@@ -3,7 +3,7 @@
 	Autor: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 25.07.2022
+	Modified: 26.07.2022
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -11,11 +11,13 @@
 
 sampCallback:OnPlayerConnect(playerid) {
 	TogglePlayerSpectating(playerid, 1);
-	GetPlayerName(playerid, pName[playerid], 24);
 	setPlayerDefaultValues(playerid);
 	
+	GetPlayerName(playerid, pVars[playerid][0][pAccName], 24);
+	GetPlayerIp(playerid, pVars[playerid][0][pIp], 24);
+	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `AccName` FROM `Players` WHERE `AccName` = '%s'", pName[playerid]);
+	format(queryStr, sizeof(queryStr), "SELECT `AccName` FROM `Players` WHERE `AccName` = '%s'", pVars[playerid][0][pAccName]);
 	mysql_query(queryStr);
 	mysql_store_result();
 	
@@ -23,19 +25,20 @@ sampCallback:OnPlayerConnect(playerid) {
 		mysql_free_result();
 		
 		mainStr[0] = EOS;
-		format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nNie mamy postaci o nicku: %s.", pName[playerid]);
+		format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nNie mamy postaci o nicku: %s.\nChcesz za³o¿yæ now¹ postaæ?\nTo tylko kilka sekund!", pVars[playerid][0][pAccName]);
 		ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_MSGBOX, "Nowa postaæ?", mainStr, "STWÓRZ" , "Inna postaæ");
 	} else {
 		mysql_free_result();
 		
 		new charsCount;
 		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "SELECT `UID`, `CharName` FROM `Players` WHERE `AccName` = '%s'", pName[playerid]);
+		format(queryStr, sizeof(queryStr), "SELECT `UID`, `CharName` FROM `Players` WHERE `AccName` = '%s'", pVars[playerid][0][pAccName]);
 		mysql_query(queryStr);
 		mysql_store_result();
 		charsCount = mysql_num_rows();
 		mysql_fetch_row(queryStr, "|");
 		
+		mainStr[0] = EOS;
 		for(new i = 0; i < charsCount; i++) {
 			sscanf(queryStr, "p<|>is[24]", pVars[playerid][i][pUid], pVars[playerid][i][pCharName]);
 			format(mainStr, sizeof(mainStr), "%s\n%d %s", mainStr, pVars[playerid][i][pUid], pVars[playerid][i][pCharName]);
@@ -43,7 +46,7 @@ sampCallback:OnPlayerConnect(playerid) {
 		
 		mysql_free_result();
 		
-		format(mainStr, sizeof(mainStr), "%s\n\n-\nNie znaleŸliœmy postaci %s, ale\npowy¿sze postacie moga byæ Twoje.\nWybierz tê, któr¹ chcesz graæ, lub kliknij\nInna postaæ aby zagraæ inn¹.", mainStr, pName[playerid]);
+		format(mainStr, sizeof(mainStr), "%s\n\n-\nNie znaleŸliœmy postaci %s, ale\npowy¿sze postacie moga byæ Twoje.\nWybierz tê, któr¹ chcesz graæ, lub kliknij\nInna postaæ aby zagraæ inn¹.", mainStr, pVars[playerid][0][pAccName]);
 		ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_LIST, "Czy któraœ z tych postaci jest Twoja?", mainStr, "Zaloguj", "Inna postaæ");
 	}
 	
@@ -56,6 +59,7 @@ sampCallback:OnPlayerConnect(playerid) {
 }
 
 sampCallback:OnPlayerDisconnect(playerid, reason) {
+	GetPlayerPos(playerid, pVars[playerid][0][pX], pVars[playerid][0][pY], pVars[playerid][0][pZ]);
 	savePlayerValues(playerid);
 	
 	new str[64];
@@ -78,6 +82,10 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 }
 
 sampCallback:OnPlayerSpawn(playerid) {
+	SetPlayerHealth(playerid, pVars[playerid][0][pHp]);
+	SetPlayerArmour(playerid, pVars[playerid][0][pAp]);
+	GivePlayerMoney(playerid, pVars[playerid][0][pMoney]);
+	
 	if(pVars[playerid][0][pX] != DEFAULT_POS_X && pVars[playerid][0][pY] != DEFAULT_POS_Y && pVars[playerid][0][pZ] != DEFAULT_POS_Z) {
 		SetPlayerPos(playerid, pVars[playerid][0][pX], pVars[playerid][0][pY], pVars[playerid][0][pZ]);
 	} else {
@@ -109,7 +117,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			}
 			
 			mainStr[0] = EOS;
-			for(new i = 0; i < 10; i++) {
+			for(new i = 0; i < MAX_CHARS_NAMES; i++) {
 				format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charSur[i][chSurName]);
 			}
 			ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");
@@ -119,7 +127,8 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return 1;
 			}
 			
-			format(queryStr, sizeof(queryStr), "SELECT `Pass` FROM `Players` WHERE `AccName` = '%s' AND `UID` = '%d'", pName[playerid], pVars[playerid][0][pUid]);
+			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "SELECT `Pass` FROM `Players` WHERE `AccName` = '%s' AND `UID` = '%d'", pVars[playerid][0][pAccName], pVars[playerid][0][pUid]);
 			mysql_query(queryStr);
 			mysql_store_result();
 			
@@ -127,6 +136,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			format(pVars[playerid][0][pPass], 32, "%s", queryStr);
 			mysql_free_result();
 			
+			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nPostaæ o nicku %s ju¿ istnieje.", pVars[playerid][0][pCharName]);
 			ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_INPUT, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");
 		}
@@ -134,6 +144,8 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			if(!response) {
 				return 1;
 			}
+			
+			mainStr[0] = EOS;
 			
 			if(strlen(inputtext) < 2 || strlen(inputtext) > 32) {
 				format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nPostaæ o nicku %s ju¿ istnieje.", pVars[playerid][0][pCharName]);
@@ -144,7 +156,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				TogglePlayerSpectating(playerid, 0);
 				loadPlayerValues(playerid);
 				
-				SendClientMessage(playerid, -1, "Poprawne has³o!");
 				format(mainStr, sizeof(mainStr), "Witaj, %s (UID %d, ID %d). Mi³ej gry!", pVars[playerid][0][pCharName], pVars[playerid][0][pUid], playerid);
 				SendClientMessage(playerid, -1, mainStr);
 			} else {
@@ -153,39 +164,36 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			}
 		}
 		case DIALOG_REGISTER_SURNAME: {
-			if(!response) {
-				format(pVars[playerid][0][pCharName], 24, "%s", inputtext);
-				format(tmpName, sizeof(tmpName), "%s", inputtext);
+			format(pVars[playerid][0][pCharName], 24, "%s", inputtext);
+			format(tmpName, sizeof(tmpName), "%s", inputtext);
 			
-				pVars[playerid][0][pSex] = 1;
+			if(!response) {			
+				pVars[playerid][0][pSex] = WOMAN_SEX;
 				
 				mainStr[0] = EOS;
-				for(new i = 0; i < 10; i++) {
+				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
 					format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charWomName[i][chName]);
 				}
-				ShowPlayerDialog(playerid, DIALOG_REGISTER_NAME, DIALOG_STYLE_LIST, "Krok 2/3: imiê (losowe ¿eñskie imiona)", mainStr, "Dalej", "Od nowa");
-			} else {
-				format(pVars[playerid][0][pCharName], 24, "%s", inputtext);
-				format(tmpName, sizeof(tmpName), "%s", inputtext);
-				
-				pVars[playerid][0][pSex] = 0;
-				
-				mainStr[0] = EOS;
-				for(new i = 0; i < 10; i++) {
-					format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charManName[i][chName]);
-				}
-				ShowPlayerDialog(playerid, DIALOG_REGISTER_NAME, DIALOG_STYLE_LIST, "Krok 2/3: imiê (losowe mêskie imiona)", mainStr, "Dalej", "Od nowa");
+				return ShowPlayerDialog(playerid, DIALOG_REGISTER_NAME, DIALOG_STYLE_LIST, "Krok 2/3: imiê (losowe ¿eñskie imiona)", mainStr, "Dalej", "Od nowa");
 			}
+			
+			pVars[playerid][0][pSex] = MAN_SEX;
+				
+			mainStr[0] = EOS;
+			for(new i = 0; i < MAX_CHARS_NAMES; i++) {
+				format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charManName[i][chName]);
+			}
+			ShowPlayerDialog(playerid, DIALOG_REGISTER_NAME, DIALOG_STYLE_LIST, "Krok 2/3: imiê (losowe mêskie imiona)", mainStr, "Dalej", "Od nowa");
 		}
 		case DIALOG_REGISTER_NAME: {
 			if(!response) {
-				pVars[playerid][0][pSex] = 0;
+				pVars[playerid][0][pSex] = MAN_SEX;
 				
 				mainStr[0] = EOS;
-				for(new i = 0; i < 10; i++) {
+				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
 					format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charSur[i][chSurName]);
 				}
-				return ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");				
+				return ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");		
 			}
 			
 			format(pVars[playerid][0][pCharName], 24, "%s %s", inputtext, pVars[playerid][0][pCharName]);
@@ -195,17 +203,18 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 		}
 		case DIALOG_REGISTER_PASS: {
 			if(!response) {
-				pVars[playerid][0][pSex] = 0;
+				pVars[playerid][0][pSex] = MAN_SEX;
 				
 				mainStr[0] = EOS;
-				for(new i = 0; i < 10; i++) {
+				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
 					format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charSur[i][chSurName]);
 				}
 				return ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");			
 			}
 			
+			TogglePlayerSpectating(playerid, 0);
 			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "INSERT INTO `Players` (`AccName`, `CharName`, `Pass`, `Sex`) VALUES ('%s', '%s', '%s', '%d')", pName[playerid], pVars[playerid][0][pCharName], inputtext, pVars[playerid][0][pSex]);
+			format(queryStr, sizeof(queryStr), "INSERT INTO `Players` (`AccName`, `IP`, `CharName`, `Pass`, `Sex`) VALUES ('%s', '%s', '%s', '%s', '%d')", pVars[playerid][0][pAccName], pVars[playerid][0][pIp], pVars[playerid][0][pCharName], inputtext, pVars[playerid][0][pSex]);
 			mysql_query(queryStr);
 			
 			mainStr[0] = EOS;

@@ -3,7 +3,7 @@
 	Autor: steeZ (macpilch)
 	File: main_publics.inc
 	Date: 24.07.2022
-	Modified: 25.07.2022
+	Modified: 26.07.2022
 */
 
 #if !defined _MAIN_PUBLICS_

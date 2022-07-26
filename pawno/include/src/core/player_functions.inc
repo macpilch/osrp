@@ -1,3 +1,11 @@
+/*
+	Project: Olk0hol RP
+	Autor: steeZ (macpilch)
+	File: player_functions.inc
+	Date: 24.07.2022
+	Modified: 26.07.2022
+*/
+
 #if !defined PLAYER_FUNCTIONS
 #define PLAYER_FUNCTIONS
 
@@ -12,34 +20,32 @@ stock loadPlayerValues(playerid) {
 	pVars[playerid][0][pGuid], pVars[playerid][0][pIp], pVars[playerid][0][pSex], pVars[playerid][0][pHours], pVars[playerid][0][pMinutes], pVars[playerid][0][pSeconds], pVars[playerid][0][pHp], pVars[playerid][0][pAp], pVars[playerid][0][pMoney],
 	pVars[playerid][0][pBank], pVars[playerid][0][pBw], pVars[playerid][0][pAj], pVars[playerid][0][pX], pVars[playerid][0][pY], pVars[playerid][0][pZ]);
 	
-	SetPlayerHealth(playerid, pVars[playerid][0][pHp]);
-	SetPlayerArmour(playerid, pVars[playerid][0][pAp]);
-	GivePlayerMoney(playerid, pVars[playerid][0][pMoney]);
-	
 	mysql_free_result();
 	return 1;
 }
 
 stock setPlayerDefaultValues(playerid) {
-	pVars[playerid][0][pSex] = 0;
-	pVars[playerid][0][pUid] = 0;
-	pVars[playerid][0][pGuid] = 0;
+	pVars[playerid][0][pUid] = 1;
+	pVars[playerid][0][pGuid] = 1;
+	
+	format(pVars[playerid][0][pAccName], 24, "%s", NULL);
+	format(pVars[playerid][0][pCharName], 24, "%s", NULL);
+	format(pVars[playerid][0][pPass], 32, "%s", NULL);
+	format(pVars[playerid][0][pIp], 24, "%s", NULL);
+	
+	pVars[playerid][0][pSex] = MAN_SEX;
 	pVars[playerid][0][pHours] = 0;
 	pVars[playerid][0][pMinutes] = 0;
 	pVars[playerid][0][pSeconds] = 0;
 	pVars[playerid][0][pHp] = 100.0;
 	pVars[playerid][0][pAp] = 0.0;
-	pVars[playerid][0][pMoney] = 100;
+	pVars[playerid][0][pMoney] = 50;
 	pVars[playerid][0][pBank] = 0;
 	pVars[playerid][0][pBw] = 0;
 	pVars[playerid][0][pAj] = 0;
 	pVars[playerid][0][pX] = DEFAULT_POS_X;
 	pVars[playerid][0][pY] = DEFAULT_POS_Y;
-	pVars[playerid][0][pZ] = DEFAULT_POS_Z;
-		
-	SetPlayerHealth(playerid, pVars[playerid][0][pHp]);
-	SetPlayerArmour(playerid, pVars[playerid][0][pAp]);
-	GivePlayerMoney(playerid, pVars[playerid][0][pMoney]);	
+	pVars[playerid][0][pZ] = DEFAULT_POS_Z;	
 	return 1;
 }
 

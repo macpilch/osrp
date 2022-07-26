@@ -3,7 +3,7 @@
 	Autor: steeZ (macpilch)
 	File: main.pwn
 	Date: 24.07.2022
-	Modified: 25.07.2022
+	Modified: 26.07.2022
 */
 
 #include <a_samp>

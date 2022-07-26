@@ -1,7 +1,14 @@
+/*
+	Project: Olk0hol RP
+	Autor: steeZ (macpilch)
+	File: arrays.inc
+	Date: 25.07.2022
+	Modified: 26.07.2022
+*/
+
 #if !defined _ARRAYS_
 #define _ARRAYS_
 
-new pName[MAX_PLAYERS][24];
 new tmpName[24];
 new mainStr[1024];
 new queryStr[512];
