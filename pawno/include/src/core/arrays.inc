@@ -13,7 +13,7 @@ new tmpName[24];
 new mainStr[1024];
 new queryStr[512];
 
-new pVars[MAX_PLAYERS][MAX_NUM_CHARS][PlayerData];
+new pVars[MAX_PLAYERS][PlayerData];
 new charManName[10][CharName] = {
 	{"Marcin", false},
 	{"Tomasz", false},

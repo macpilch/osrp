@@ -32,6 +32,7 @@ enum PlayerData {
 	pSeconds,
 	Float:pHp,
 	Float:pAp,
+	pSkin,
 	pMoney,
 	pBank,
 	pBw,

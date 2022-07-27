@@ -11,49 +11,78 @@
 
 stock loadPlayerValues(playerid) {
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `IP`, `Sex`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `Money`, `Bank`, `Bw`, `Aj`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][0][pCharName]);
+	
+	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `IP`, `Sex`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	mysql_store_result();
 	
 	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>is[24]iiiiffiiiifff", 
-	pVars[playerid][0][pGuid], pVars[playerid][0][pIp], pVars[playerid][0][pSex], pVars[playerid][0][pHours], pVars[playerid][0][pMinutes], pVars[playerid][0][pSeconds], pVars[playerid][0][pHp], pVars[playerid][0][pAp], pVars[playerid][0][pMoney],
-	pVars[playerid][0][pBank], pVars[playerid][0][pBw], pVars[playerid][0][pAj], pVars[playerid][0][pX], pVars[playerid][0][pY], pVars[playerid][0][pZ]);
+	sscanf(queryStr, "p<|>is[24]iiiiffiiiiifff", 
+	pVars[playerid][pGuid], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney],
+	pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	
 	mysql_free_result();
 	return 1;
 }
 
 stock setPlayerDefaultValues(playerid) {
-	pVars[playerid][0][pUid] = 1;
-	pVars[playerid][0][pGuid] = 1;
+	pVars[playerid][pUid] = 0;
+	pVars[playerid][pGuid] = 0;
 	
-	format(pVars[playerid][0][pAccName], 24, "%s", NULL);
-	format(pVars[playerid][0][pCharName], 24, "%s", NULL);
-	format(pVars[playerid][0][pPass], 32, "%s", NULL);
-	format(pVars[playerid][0][pIp], 24, "%s", NULL);
+	format(pVars[playerid][pAccName], 24, "%s", NULL);
+	format(pVars[playerid][pCharName], 24, "%s", NULL);
+	format(pVars[playerid][pPass], 32, "%s", NULL);
+	format(pVars[playerid][pIp], 24, "%s", NULL);
 	
-	pVars[playerid][0][pSex] = MAN_SEX;
-	pVars[playerid][0][pHours] = 0;
-	pVars[playerid][0][pMinutes] = 0;
-	pVars[playerid][0][pSeconds] = 0;
-	pVars[playerid][0][pHp] = 100.0;
-	pVars[playerid][0][pAp] = 0.0;
-	pVars[playerid][0][pMoney] = 50;
-	pVars[playerid][0][pBank] = 0;
-	pVars[playerid][0][pBw] = 0;
-	pVars[playerid][0][pAj] = 0;
-	pVars[playerid][0][pX] = DEFAULT_POS_X;
-	pVars[playerid][0][pY] = DEFAULT_POS_Y;
-	pVars[playerid][0][pZ] = DEFAULT_POS_Z;	
+	pVars[playerid][pSex] = MAN_SEX;
+	pVars[playerid][pHours] = 0;
+	pVars[playerid][pMinutes] = 0;
+	pVars[playerid][pSeconds] = 0;
+	pVars[playerid][pHp] = 100.0;
+	pVars[playerid][pAp] = 0.0;
+	pVars[playerid][pSkin] = 0;
+	pVars[playerid][pMoney] = 50;
+	pVars[playerid][pBank] = 0;
+	pVars[playerid][pBw] = 0;
+	pVars[playerid][pAj] = 0;
+	pVars[playerid][pX] = DEFAULT_POS_X;
+	pVars[playerid][pY] = DEFAULT_POS_Y;
+	pVars[playerid][pZ] = DEFAULT_POS_Z;	
+	return 1;
+}
+
+stock resetPlayerValues(playerid) {
+	pVars[playerid][pUid] = 0;
+	pVars[playerid][pGuid] = 0;
+	
+	format(pVars[playerid][pAccName], 24, "%s", NULL);
+	format(pVars[playerid][pCharName], 24, "%s", NULL);
+	format(pVars[playerid][pPass], 32, "%s", NULL);
+	format(pVars[playerid][pIp], 24, "%s", NULL);
+
+	pVars[playerid][pSex] = 0;
+	pVars[playerid][pHours] = 0;
+	pVars[playerid][pMinutes] = 0;
+	pVars[playerid][pSeconds] = 0;
+	pVars[playerid][pHp] = 0.0;
+	pVars[playerid][pAp] = 0.0;
+	pVars[playerid][pSkin] = 0;
+	pVars[playerid][pMoney] = 0;
+	pVars[playerid][pBank] = 0;
+	pVars[playerid][pBw] = 0;
+	pVars[playerid][pAj] = 0;
+	pVars[playerid][pX] = 0.0;
+	pVars[playerid][pY] = 0.0;
+	pVars[playerid][pZ] = 0.0;	
 	return 1;
 }
 
 stock savePlayerValues(playerid) {
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `Hp` = '%f', `Ap` = '%f', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'", 
-	pVars[playerid][0][pHours], pVars[playerid][0][pMinutes], pVars[playerid][0][pSeconds], pVars[playerid][0][pHp], pVars[playerid][0][pAp], pVars[playerid][0][pMoney], pVars[playerid][0][pBank], pVars[playerid][0][pBw], pVars[playerid][0][pAj], 
-	pVars[playerid][0][pX], pVars[playerid][0][pY], pVars[playerid][0][pZ], pVars[playerid][0][pCharName]);
+	
+	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `Hp` = '%f', `Ap` = '%f', `Skin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'", 
+	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pX], pVars[playerid][pY], 
+	pVars[playerid][pZ], pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	return 1;
 }
