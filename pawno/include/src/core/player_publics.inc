@@ -1,6 +1,6 @@
 /*
 	Project: Olk0hol RP
-	Autor: steeZ (macpilch)
+	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
 	Modified: 28.07.2022
@@ -267,9 +267,20 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			}
 			
 			setPlayerDefaultValues(playerid);
-			format(pVars[playerid][pCharName], 24, "%s", inputtext);
 			
 			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "SELECT `CharName` FROM `Players` WHERE `CharName` = '%s'", inputtext);
+			mysql_query(queryStr);
+			mysql_store_result();
+			
+			if(mysql_num_rows() < 1) {
+				mainStr[0] = EOS;
+				format(mainStr, sizeof(mainStr), "1.\tChcesz now¹ postaæ? Kliknij STWÓRZ.\n2.\tMasz ju¿ postaæ? Wpisz jej nick poni¿ej.");
+				return ShowPlayerDialog(playerid, DIALOG_LOGIN_CHANGE_CHAR, DIALOG_STYLE_INPUT, "Zmiana postaci", mainStr, "Zmieñ", "STWÓRZ");				
+			} else {
+				format(pVars[playerid][pCharName], 24, "%s", inputtext);
+			}
+			
 			format(queryStr, sizeof(queryStr), "SELECT `UID`, `Pass` FROM `Players` WHERE `AccName` = '%s' AND `CharName` = '%s'", pVars[playerid][pAccName], pVars[playerid][pCharName]);
 			mysql_query(queryStr);
 			mysql_store_result();

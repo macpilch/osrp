@@ -1,6 +1,6 @@
 /*
 	Project: Olk0hol RP
-	Autor: steeZ (macpilch)
+	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
 	Modified: 28.07.2022

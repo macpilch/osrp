@@ -1,6 +1,6 @@
 /*
 	Project: Olk0hol RP
-	Autor: steeZ (macpilch)
+	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
 	Modified: 26.07.2022
