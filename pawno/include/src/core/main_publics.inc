@@ -25,6 +25,8 @@ sampCallback:OnGameModeInit() {
 		return 0;
 	}
 	
+	initServerValues();
+	
 	new str[64];
 	new callSec = GetTickCount();
 	

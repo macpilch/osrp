@@ -3,7 +3,7 @@
 	Autor: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 26.07.2022
+	Modified: 28.07.2022
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -13,9 +13,6 @@ sampCallback:OnPlayerConnect(playerid) {
 	TogglePlayerSpectating(playerid, 1);
 	setPlayerDefaultValues(playerid);
 	
-	GetPlayerName(playerid, pVars[playerid][pAccName], 24);
-	GetPlayerIp(playerid, pVars[playerid][pIp], 24);
-	
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "SELECT `AccName` FROM `Players` WHERE `AccName` = '%s'", pVars[playerid][pAccName]);
 	mysql_query(queryStr);
@@ -24,29 +21,29 @@ sampCallback:OnPlayerConnect(playerid) {
 	if(mysql_num_rows() < 1) {
 		mysql_free_result();
 		
+		allAccounts++;
+		
 		mainStr[0] = EOS;
 		format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nNie mamy postaci o nicku: %s.\nChcesz za³o¿yæ now¹ postaæ?\nTo tylko kilka sekund!", pVars[playerid][pAccName]);
 		ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_MSGBOX, "Nowa postaæ?", mainStr, "STWÓRZ" , "Inna postaæ");
 	} else {
 		mysql_free_result();
 		
-		new charsCount;
 		queryStr[0] = EOS;
+		mainStr[0] = EOS;
+		
 		format(queryStr, sizeof(queryStr), "SELECT `UID`, `CharName` FROM `Players` WHERE `AccName` = '%s'", pVars[playerid][pAccName]);
 		mysql_query(queryStr);
 		mysql_store_result();
-		charsCount = mysql_num_rows();
-		mysql_fetch_row(queryStr, "|");
 		
-		mainStr[0] = EOS;
-		for(new i = 0; i < charsCount; i++) {
+		while(mysql_fetch_row(queryStr, "|")) {
 			sscanf(queryStr, "p<|>is[24]", pVars[playerid][pUid], pVars[playerid][pCharName]);
 			format(mainStr, sizeof(mainStr), "%s\n%d %s", mainStr, pVars[playerid][pUid], pVars[playerid][pCharName]);
 		}
 		
 		mysql_free_result();
 		
-		format(mainStr, sizeof(mainStr), "%s\n-\nNie znaleŸliœmy postaci %s, ale\npowy¿sze postacie moga byæ Twoje.\nWybierz tê, któr¹ chcesz graæ, lub kliknij\nInna postaæ aby zagraæ inn¹.", mainStr, pVars[playerid][pAccName]);
+		format(mainStr, sizeof(mainStr), "%s\n-\nNie znaleŸliœmy postaci %s, ale\npowy¿sze postacie mog¹ byæ Twoje.\nWybierz tê, któr¹ chcesz graæ, lub kliknij\nInna postaæ aby zagraæ inn¹.", mainStr, pVars[playerid][pAccName]);
 		ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_LIST, "Czy krótaœ z tych postaci jest Twoja?", mainStr, "Zaloguj", "Inna postaæ");
 	}
 	
@@ -63,6 +60,7 @@ sampCallback:OnPlayerDisconnect(playerid, reason) {
 	
 	savePlayerValues(playerid);
 	resetPlayerValues(playerid); // dla dobra pamieci
+	saveServerValues(); // narazie tak chujowo
 	
 	new str[64];
 	new callSec = GetTickCount();
@@ -149,7 +147,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 		}
 		case DIALOG_REGISTER_NAME: {
 			if(!response) {
-				pVars[playerid][pSex] = MAN_SEX;
+				setPlayerDefaultValues(playerid);
 				
 				mainStr[0] = EOS;
 				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
@@ -165,7 +163,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 		}
 		case DIALOG_REGISTER_PASS: {
 			if(!response) {
-				pVars[playerid][pSex] = MAN_SEX;
+				setPlayerDefaultValues(playerid);
 				
 				mainStr[0] = EOS;
 				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
@@ -184,11 +182,12 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			mysql_free_result();
 			
 			if(!charsCount) {
-				pVars[playerid][pUid] = pVars[playerid][pGuid] = 1;
-			} else {
+				pVars[playerid][pUid] = 1;
+			} else {			
 				pVars[playerid][pUid] = charsCount + 1;
-				pVars[playerid][pGuid] = pVars[playerid][pUid] % MAX_NUM_CHARS;
 			}
+			
+			pVars[playerid][pGuid] = allAccounts;
 			
 			queryStr[0] = EOS;
 			format(queryStr, sizeof(queryStr), "INSERT INTO `Players` (`GUID`, `UID`, `AccName`, `IP`, `CharName`, `Pass`, `Sex`) VALUES ('%d', '%d', '%s', '%s', '%s', '%s', '%d')", pVars[playerid][pGuid], pVars[playerid][pUid], pVars[playerid][pAccName], pVars[playerid][pIp], pVars[playerid][pCharName], inputtext, pVars[playerid][pSex]);
@@ -215,28 +214,33 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return 1;
 			}
 			
+			setPlayerDefaultValues(playerid);
+			pVars[playerid][pUid] = strval(inputtext);
+			
 			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "SELECT `Pass` FROM `Players` WHERE `AccName` = '%s' AND `UID` = '%d'", pVars[playerid][pAccName], pVars[playerid][pUid]);
+			format(queryStr, sizeof(queryStr), "SELECT `CharName`, `Pass` FROM `Players` WHERE `AccName` = '%s' AND `UID` = '%d'", pVars[playerid][pAccName], pVars[playerid][pUid]);
 			mysql_query(queryStr);
 			mysql_store_result();
 			
-			mysql_fetch_string(queryStr);
-			format(pVars[playerid][pPass], 32, "%s", queryStr);
+			mysql_fetch_row(queryStr, "|");
+			sscanf(queryStr, "p<|>s[24]s[32]", pVars[playerid][pCharName], pVars[playerid][pPass]);
 			mysql_free_result();
 			
 			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nPostaæ o nicku %s ju¿ istnieje.", pVars[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nPostaæ o nicku %s ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij STWÓRZ!", pVars[playerid][pCharName]);
 			ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");
 		}
 		case DIALOG_LOGIN_PASS: {
 			if(!response) {
-				return 1;
+				mainStr[0] = EOS;
+				format(mainStr, sizeof(mainStr), "1.\tChcesz now¹ postaæ? Kliknij STWÓRZ.\n2.\tMasz ju¿ postaæ? Wpisz jej nick poni¿ej.");
+				return ShowPlayerDialog(playerid, DIALOG_LOGIN_CHANGE_CHAR, DIALOG_STYLE_INPUT, "Zmiana postaci", mainStr, "Zmieñ", "STWÓRZ");
 			}
 			
 			mainStr[0] = EOS;
 			
 			if(strlen(inputtext) < 2 || strlen(inputtext) > 32) {
-				format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nPostaæ o nicku %s ju¿ istnieje.", pVars[playerid][pCharName]);
+				format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nPostaæ o nicku %s ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij STWÓRZ!", pVars[playerid][pCharName]);
 				return ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");				
 			}
 			
@@ -247,9 +251,38 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				format(mainStr, sizeof(mainStr), "Witaj, %s (UID %d, ID %d). Mi³ej gry!", pVars[playerid][pCharName], pVars[playerid][pUid], playerid);
 				SendClientMessage(playerid, -1, mainStr);
 			} else {
-				format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nPostaæ o nicku %s ju¿ istnieje.", pVars[playerid][pCharName]);
+				format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nPostaæ o nicku %s ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij STWÓRZ!", pVars[playerid][pCharName]);
 				return ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");				
 			}
+		}
+		case DIALOG_LOGIN_CHANGE_CHAR: {
+			if(!response) {
+				setPlayerDefaultValues(playerid);
+				
+				mainStr[0] = EOS;
+				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
+					format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charSur[i][chSurName]);
+				}
+				return ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");				
+			}
+			
+			setPlayerDefaultValues(playerid);
+			format(pVars[playerid][pCharName], 24, "%s", inputtext);
+			
+			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "SELECT `UID`, `Pass` FROM `Players` WHERE `AccName` = '%s' AND `CharName` = '%s'", pVars[playerid][pAccName], pVars[playerid][pCharName]);
+			mysql_query(queryStr);
+			mysql_store_result();
+			
+			mysql_fetch_row(queryStr, "|");
+			sscanf(queryStr, "p<|>is[32]", pVars[playerid][pUid], pVars[playerid][pPass]);
+			mysql_free_result();
+			
+			GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~n~~n~~y~Postac zmieniona.", 5000, 3);
+			
+			mainStr[0] = EOS;
+			format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nPostaæ o nicku %s ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij STWÓRZ!", pVars[playerid][pCharName]);
+			ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");
 		}
 	}
 	return 1;

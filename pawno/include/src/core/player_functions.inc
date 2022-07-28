@@ -3,7 +3,7 @@
 	Autor: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
-	Modified: 26.07.2022
+	Modified: 28.07.2022
 */
 
 #if !defined PLAYER_FUNCTIONS
@@ -28,11 +28,15 @@ stock loadPlayerValues(playerid) {
 stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pUid] = 0;
 	pVars[playerid][pGuid] = 0;
+	pVars[playerid][pCharId] = 1;
 	
+	// Czysci i od razu ustawia poprawny nick i IP
 	format(pVars[playerid][pAccName], 24, "%s", NULL);
 	format(pVars[playerid][pCharName], 24, "%s", NULL);
 	format(pVars[playerid][pPass], 32, "%s", NULL);
-	format(pVars[playerid][pIp], 24, "%s", NULL);
+	format(pVars[playerid][pIp], 24, "%s", NULL); 
+	GetPlayerName(playerid, pVars[playerid][pAccName], 24);
+	GetPlayerIp(playerid, pVars[playerid][pIp], 24);
 	
 	pVars[playerid][pSex] = MAN_SEX;
 	pVars[playerid][pHours] = 0;
@@ -54,6 +58,7 @@ stock setPlayerDefaultValues(playerid) {
 stock resetPlayerValues(playerid) {
 	pVars[playerid][pUid] = 0;
 	pVars[playerid][pGuid] = 0;
+	pVars[playerid][pCharId] = 0;
 	
 	format(pVars[playerid][pAccName], 24, "%s", NULL);
 	format(pVars[playerid][pCharName], 24, "%s", NULL);

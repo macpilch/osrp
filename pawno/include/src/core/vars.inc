@@ -10,6 +10,7 @@
 #define _VARS_
 
 new mySQLConnect;
+new allAccounts;
 
 new MySQL:hMySQL;
 
