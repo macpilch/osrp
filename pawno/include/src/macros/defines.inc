@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 26.07.2022
+	Modified: 29.07.2022
 */
 
 #if !defined _DEFINES_
@@ -20,14 +20,13 @@
 		forward %0(%1); public %0(%1)
 
 #define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "root"
-#define MYSQL_PASS "1234"
-#define MYSQL_DB "samp"
+#define MYSQL_USER "server_900"
+#define MYSQL_PASS "pekic42sht"
+#define MYSQL_DB "server_900_srv"
 
 #define NULL "\0"
 
-#define MAX_ALL_CHARS 100
-#define MAX_NUM_CHARS 3
+#define MAX_NUM_CHARS 6
 #define MAX_CHARS_NAMES 20
 #define MAN_SEX 0
 #define WOMAN_SEX 1

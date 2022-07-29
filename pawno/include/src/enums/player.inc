@@ -22,7 +22,7 @@ enum CharSurName {
 enum PlayerData {
 	pUid,
 	pGuid,
-	pCharId,
+	pCharId, // narazie nie u¿ywane
 	pAccName[24],
 	pCharName[24],
 	pCharName2[24],
@@ -41,7 +41,8 @@ enum PlayerData {
 	pAj,
 	Float:pX,
 	Float:pY,
-	Float:pZ
+	Float:pZ,
+	Text3D:p3dInfo
 };
 
 #endif 

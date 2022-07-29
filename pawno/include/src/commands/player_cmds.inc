@@ -2,9 +2,12 @@
 	Project: Olk0hol RP
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
-	Date: 29.07.2022
+	Date: 28.07.2022
 	Modified: 29.07.2022
 */
+
+#if !defined _PLAYER_CMDS_
+#define _PLAYER_CMDS_
 
 CMD:login(playerid, params[]) {
 	TogglePlayerSpectating(playerid, 1);
@@ -13,6 +16,7 @@ CMD:login(playerid, params[]) {
 	
 	savePlayerValues(playerid);
 	setPlayerDefaultValues(playerid);
+	printf("[DEBUG] Haslo: %s", pVars[playerid][pPass]);
 	
 	mainStr[0] = EOS;
 	
@@ -27,8 +31,11 @@ CMD:stats(playerid, params[]) {
 	mainStr[0] = EOS;
 	
 	format(tmpStr, sizeof(tmpStr), "%s (UID %d, ID %d, GUID %d) [%s]", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, pVars[playerid][pGuid], pVars[playerid][pIp]);
-	format(mainStr, sizeof(mainStr), "Czas gry:\t\t\t%dh %dm\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nGotówka:\t\t\t$%d\nBank:\t\t\t\t$%d\nSkin:\t\t\t\t%d", 
-	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAj], pVars[playerid][pBw], pVars[playerid][pHp], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pSkin]);
+	format(mainStr, sizeof(mainStr), "Czas gry:\t\t\t%dh %dm\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nGotówka:\t\t\t$%d\nBank:\t\t\t\t$%d\nSkin:\t\t\t\t%d\nP³eæ:\t\t\t\t%s", 
+	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAj], pVars[playerid][pBw], pVars[playerid][pHp], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pSkin],
+	pVars[playerid][pSex] ? ("K") : ("M"));
 	ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, tmpStr, mainStr, "OK", "Zamknij");
 	return 1;
 }
+
+#endif 

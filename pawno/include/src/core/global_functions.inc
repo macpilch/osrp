@@ -24,6 +24,7 @@ stock initServerValues() {
 
 stock saveServerValues() {
 	queryStr[0] = EOS;
+	
 	format(queryStr, sizeof(queryStr), "UPDATE `Settings` SET `AllAccounts` = '%d'", allAccounts);
 	mysql_query(queryStr);
 	return 1;

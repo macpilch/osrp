@@ -26,26 +26,24 @@ stock loadPlayerValues(playerid) {
 }
 
 stock setPlayerDefaultValues(playerid) {
-	pVars[playerid][pGuid] = 0;
-	pVars[playerid][pCharId] = 1;
-	
 	// Czysci i od razu ustawia poprawny nick i IP
-	format(pVars[playerid][pAccName], 24, "%s", NULL);
 	if(!usedCmdLogin[playerid]) {
-		format(pVars[playerid][pCharName], 24, "%s", NULL);
 		pVars[playerid][pUid] = 0;
-	}
-	format(pVars[playerid][pCharName2], 24, "%s", NULL);
-	format(pVars[playerid][pPass], 32, "%s", NULL);
-	format(pVars[playerid][pIp], 24, "%s", NULL);
+		pVars[playerid][pGuid] = 0;
+		pVars[playerid][pCharId] = 1;
 	
-	GetPlayerName(playerid, pVars[playerid][pAccName], 24);
+		format(pVars[playerid][pAccName], 24, "%s", NULL);
+		format(pVars[playerid][pCharName], 24, "%s", NULL);
+		format(pVars[playerid][pCharName2], 24, "%s", NULL);
+		format(pVars[playerid][pPass], 32, "%s", NULL);
+		format(pVars[playerid][pIp], 24, "%s", NULL);
+		GetPlayerName(playerid, pVars[playerid][pAccName], 24);
+	}
+	
+	SetPlayerName(playerid, pVars[playerid][pAccName]);
 	GetPlayerIp(playerid, pVars[playerid][pIp], 24);
 	ResetPlayerMoney(playerid);
 	ResetPlayerWeapons(playerid);
-	
-	if(usedCmdLogin[playerid])
-		SetPlayerName(playerid, pVars[playerid][pAccName]);
 	
 	pVars[playerid][pSex] = MAN_SEX;
 	pVars[playerid][pHours] = 0;
@@ -94,6 +92,8 @@ stock resetPlayerValues(playerid) {
 }
 
 stock savePlayerValues(playerid) {
+	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+	
 	queryStr[0] = EOS;
 	
 	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `Hp` = '%f', `Ap` = '%f', `Skin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'", 

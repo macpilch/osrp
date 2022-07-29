@@ -14,6 +14,7 @@ new mainStr[512];
 new queryStr[512];
 
 new pVars[MAX_PLAYERS][PlayerData];
+
 new charManName[MAX_CHARS_NAMES][CharName] = {
 	{"Marcin", false},
 	{"Tomasz", false},
@@ -36,6 +37,7 @@ new charManName[MAX_CHARS_NAMES][CharName] = {
 	{"Zdzislaw", false},
 	{"Adam", false}
 };
+
 new charWomName[MAX_CHARS_NAMES][CharName] = {
 	{"Katarzyna", false},
 	{"Malgorzata", false},
@@ -58,6 +60,7 @@ new charWomName[MAX_CHARS_NAMES][CharName] = {
 	{"Dagmara", false},
 	{"Joanna", false}
 };
+
 new charSur[MAX_CHARS_NAMES][CharSurName] = {
 	{"Nowak", false},
 	{"Kowalski", false},

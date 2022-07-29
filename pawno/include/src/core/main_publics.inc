@@ -27,6 +27,10 @@ sampCallback:OnGameModeInit() {
 	
 	initServerValues();
 	
+	for(new i = 0; i < MAX_PLAYERS; i++) {
+		pVars[i][p3dInfo] = CreateDynamic3DTextLabel(NULL, -1, 0.0, 0.0, 0.3, 30.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 30.0, -1, 0);
+	}
+	
 	new str[64];
 	new callSec = GetTickCount();
 	

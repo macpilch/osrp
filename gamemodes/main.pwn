@@ -9,7 +9,10 @@
 #include <a_samp>
 #include <Pawn.CMD>
 #include <mysql>
+#include <streamer>
 #include <sscanf2>
+#include <YSI\y_timers>
+#include <foreach>
 
 #include "src\macros\defines"
 #include "src\macros\dialogs"
@@ -21,6 +24,7 @@
 #include "src\commands\player_cmds"
 #include "src\core\global_functions"
 #include "src\core\player_functions"
+#include "src\systems\timers"
 
 main() {
 	new str[64];
