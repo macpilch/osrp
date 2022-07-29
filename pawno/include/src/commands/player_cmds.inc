@@ -32,3 +32,7 @@ CMD:stats(playerid, params[]) {
 	ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, tmpStr, mainStr, "OK", "Zamknij");
 	return 1;
 }
+CMD:adminduty(playerid, params[])
+{
+	
+}
