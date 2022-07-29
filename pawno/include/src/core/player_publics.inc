@@ -66,14 +66,14 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 			sscanf(queryStr, "p<|>is[24]s[32]", pVars[playerid][pUid], pVars[playerid][pCharName], pVars[playerid][pPass]);
 			mysql_free_result();
 			
-			format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nPostaæ o nicku %s ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij STWÓRZ!", pVars[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", pVars[playerid][pCharName]);
 			ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");
 		} else {
 			mysql_free_result();
 			
 			mainStr[0] = EOS;
 			
-			format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nNie mamy postaci o nicku: %s.\nChcesz za³o¿yæ now¹ postaæ?\nTo tylko kilka sekund!", pVars[playerid][pAccName]);
+			format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nNie mamy postaci o nicku: {FFFFFF}%s.\n{CDC9C9}Chcesz za³o¿yæ now¹ postaæ?\nTo tylko kilka sekund!", pVars[playerid][pAccName]);
 			ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_MSGBOX, "Nowa postaæ?", mainStr, "STWÓRZ" , "Inna postaæ");
 		}
 	} else {
@@ -88,12 +88,12 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 		
 		while(mysql_fetch_row(queryStr, "|")) {
 			sscanf(queryStr, "p<|>is[24]", pVars[playerid][pUid], pVars[playerid][pCharName]);
-			format(mainStr, sizeof(mainStr), "%s\n%d %s", mainStr, pVars[playerid][pUid], pVars[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d %s", mainStr, pVars[playerid][pUid], pVars[playerid][pCharName]);
 		}
 		
 		mysql_free_result();
 		
-		format(mainStr, sizeof(mainStr), "%s\n-\nNie znaleŸliœmy postaci %s, ale\npowy¿sze postacie mog¹ byæ Twoje.\nWybierz tê, któr¹ chcesz graæ, lub kliknij\nInna postaæ aby zagraæ inn¹.", mainStr, pVars[playerid][pAccName]);
+		format(mainStr, sizeof(mainStr), "%s\n-\nNie znaleŸliœmy postaci %s, ale\npowy¿sze postacie mog¹ byæ Twoje.\nWybierz tê, któr¹ chcesz graæ, lub kliknij\n{FFFFFF}Inna postaæ aby zagraæ inn¹.", mainStr, pVars[playerid][pAccName]);
 		ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_LIST, "Czy krótaœ z tych postaci jest Twoja?", mainStr, "Zaloguj", "Inna postaæ");
 	}
 	
@@ -170,7 +170,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			mainStr[0] = EOS;
 			
 			for(new i = 0; i < MAX_CHARS_NAMES; i++) {
-				format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charSur[i][chSurName]);
+				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charSur[i][chSurName]);
 			}
 			
 			ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");
@@ -185,7 +185,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				mainStr[0] = EOS;
 				
 				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
-					format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charWomName[i][chName]);
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charWomName[i][chName]);
 				}
 				
 				return ShowPlayerDialog(playerid, DIALOG_REGISTER_NAME, DIALOG_STYLE_LIST, "Krok 2/3: imiê (losowe ¿eñskie imiona)", mainStr, "Dalej", "Od nowa");
@@ -196,7 +196,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			mainStr[0] = EOS;
 			
 			for(new i = 0; i < MAX_CHARS_NAMES; i++) {
-				format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charManName[i][chName]);
+				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charManName[i][chName]);
 			}
 			
 			ShowPlayerDialog(playerid, DIALOG_REGISTER_NAME, DIALOG_STYLE_LIST, "Krok 2/3: imiê (losowe mêskie imiona)", mainStr, "Dalej", "Od nowa");
@@ -208,7 +208,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				mainStr[0] = EOS;
 				
 				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
-					format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charSur[i][chSurName]);
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charSur[i][chSurName]);
 				}
 				
 				return ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");		
@@ -227,7 +227,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				mainStr[0] = EOS;
 				
 				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
-					format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charSur[i][chSurName]);
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charSur[i][chSurName]);
 				}
 				
 				return ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");			
@@ -278,10 +278,10 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			TogglePlayerSpectating(playerid, 0);
 			
-			format(mainStr, sizeof(mainStr), "> Postaæ utworzona. Przed kolejnym wejœciem na serwer ustaw nick SA-MP na %s. Pamiêtaj has³o!", pVars[playerid][pCharName2]);
+			format(mainStr, sizeof(mainStr), "{66FFCC}> Postaæ utworzona. Przed kolejnym wejœciem na serwer ustaw nick SA-MP na {FFFFFF}%s. {66FFCC}Pamiêtaj has³o!", pVars[playerid][pCharName2]);
 			SendClientMessage(playerid, -1, mainStr);
 			
-			format(mainStr, sizeof(mainStr), "Witaj, %s (UID %d, ID %d). Mi³ej gry, za³ó¿ profil gracza na naszym forum!", pVars[playerid][pCharName], pVars[playerid][pUid], playerid);
+			format(mainStr, sizeof(mainStr), "{A52A2A}Witaj, %s (UID %d, ID %d). Mi³ej gry, za³ó¿ profil na naszym forum!", pVars[playerid][pCharName], pVars[playerid][pUid], playerid);
 			SendClientMessage(playerid, -1, mainStr);
 		}
 		case DIALOG_LOGIN: {
@@ -307,7 +307,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			mainStr[0] = EOS;
 			
-			format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nPostaæ o nicku %s ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij STWÓRZ!", pVars[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", pVars[playerid][pCharName]);
 			ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");
 		}
 		case DIALOG_LOGIN_PASS: {
@@ -321,18 +321,18 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			mainStr[0] = EOS;
 			
 			if(strlen(inputtext) < 2 || strlen(inputtext) > 32) {
-				format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nPostaæ o nicku %s ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij STWÓRZ!", pVars[playerid][pCharName]);
-				return ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");				
+				format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", pVars[playerid][pCharName]);
+				return ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");			
 			}
 			
 			if(!strcmp(pVars[playerid][pPass], inputtext, false)) {
 				TogglePlayerSpectating(playerid, 0);
 				loadPlayerValues(playerid);
 				
-				format(mainStr, sizeof(mainStr), "Witaj, %s (UID %d, ID %d). Mi³ej gry!", pVars[playerid][pCharName], pVars[playerid][pUid], playerid);
+				format(mainStr, sizeof(mainStr), "{A52A2A}Witaj, %s (UID %d, ID %d). Mi³ej gry!", pVars[playerid][pCharName], pVars[playerid][pUid], playerid);
 				SendClientMessage(playerid, -1, mainStr);
 			} else {
-				format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nPostaæ o nicku %s ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij STWÓRZ!", pVars[playerid][pCharName]);
+				format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", pVars[playerid][pCharName]);
 				return ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");				
 			}
 		}
@@ -343,7 +343,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				mainStr[0] = EOS;
 				
 				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
-					format(mainStr, sizeof(mainStr), "%s\n%s", mainStr, charSur[i][chSurName]);
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charSur[i][chSurName]);
 				}
 				
 				return ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");				
@@ -378,7 +378,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			mainStr[0] = EOS;
 			
-			format(mainStr, sizeof(mainStr), "Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nPostaæ o nicku %s ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij STWÓRZ!", pVars[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", pVars[playerid][pCharName]);
 			ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");
 		}
 	}
