@@ -3,18 +3,18 @@
 	Author: steeZ (macpilch)
 	File: arrays.inc
 	Date: 25.07.2022
-	Modified: 26.07.2022
+	Modified: 29.07.2022
 */
 
 #if !defined _ARRAYS_
 #define _ARRAYS_
 
 new tmpName[24];
-new mainStr[1024];
+new mainStr[512];
 new queryStr[512];
 
 new pVars[MAX_PLAYERS][PlayerData];
-new charManName[10][CharName] = {
+new charManName[MAX_CHARS_NAMES][CharName] = {
 	{"Marcin", false},
 	{"Tomasz", false},
 	{"Marian", false},
@@ -24,9 +24,19 @@ new charManName[10][CharName] = {
 	{"Jakub", false},
 	{"Piotr", false},
 	{"Robert", false},
-	{"Franciszek", false}
+	{"Franciszek", false},
+	{"Andrzej", false},
+	{"Tadeusz", false},
+	{"Brajan", false},
+	{"Mateusz", false},
+	{"Damian", false},
+	{"Oskar", false},
+	{"Krzysztof", false},
+	{"Zygfryd", false},
+	{"Zdzislaw", false},
+	{"Adam", false}
 };
-new charWomName[10][CharName] = {
+new charWomName[MAX_CHARS_NAMES][CharName] = {
 	{"Katarzyna", false},
 	{"Malgorzata", false},
 	{"Aleksandra", false},
@@ -36,9 +46,19 @@ new charWomName[10][CharName] = {
 	{"Julia", false},
 	{"Anna", false},
 	{"Agnieszka", false},
-	{"Elwira", false}
+	{"Elwira", false},
+	{"Zuzanna", false},
+	{"Marta", false},
+	{"Justyna", false},
+	{"Marianna", false},
+	{"Maria", false},
+	{"Otylla", false},
+	{"Arletta", false},
+	{"Dzesika", false},
+	{"Dagmara", false},
+	{"Joanna", false}
 };
-new charSur[10][CharSurName] = {
+new charSur[MAX_CHARS_NAMES][CharSurName] = {
 	{"Nowak", false},
 	{"Kowalski", false},
 	{"Zamoyski", false},
@@ -48,7 +68,17 @@ new charSur[10][CharSurName] = {
 	{"Wisniowski", false},
 	{"Dabrowski", false},
 	{"Oracz", false},
-	{"Kopacz", false}
+	{"Kopacz", false},
+	{"Zielinski", false},
+	{"Lewandowski", false},
+	{"Zamorski", false},
+	{"Krol", false},
+	{"Smialy", false},
+	{"Malolepszy", false},
+	{"Kiepski", false},
+	{"Krawczyk", false},
+	{"Domanski", false},
+	{"Nowakowski", false}
 };
 
 #endif 

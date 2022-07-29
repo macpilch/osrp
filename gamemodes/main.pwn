@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: main.pwn
 	Date: 24.07.2022
-	Modified: 28.07.2022
+	Modified: 29.07.2022
 */
 
 #include <a_samp>
@@ -18,6 +18,7 @@
 #include "src\core\arrays"
 #include "src\core\main_publics"
 #include "src\core\player_publics"
+#include "src\commands\player_cmds"
 #include "src\core\global_functions"
 #include "src\core\player_functions"
 

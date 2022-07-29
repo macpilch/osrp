@@ -28,7 +28,7 @@
 
 #define MAX_ALL_CHARS 100
 #define MAX_NUM_CHARS 3
-#define MAX_CHARS_NAMES 10
+#define MAX_CHARS_NAMES 20
 #define MAN_SEX 0
 #define WOMAN_SEX 1
 
