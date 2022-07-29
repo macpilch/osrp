@@ -34,5 +34,21 @@ CMD:stats(playerid, params[]) {
 }
 CMD:adminduty(playerid, params[])
 {
-	
+	if(vVar[playerid][vAccRank] >= SUPPORT_RANK && vVar[playerid][vAccRank] <= HEADADMIN_RANK)
+	{
+		if(vVar[playerid][vIsAdminDuty] == false)
+		{
+			vVar[playerid][vIsAdminDuty] = true;
+			SendClientMessage(playerid, 0xFFFFFF, "{00FF00}[Admin]{00FF00}: Admin Duty w³¹czone!");
+		}
+		else
+		{
+			vVar[playerid][vIsAdminDuty] = false;
+			SendClientMessage(playerid, 0xFFFFFF, "{00FF00}[Admin]{00FF00}: Admin Duty wy³¹czone!");
+		}
+	}
+	else
+	{
+		return 1;
+	}
 }
