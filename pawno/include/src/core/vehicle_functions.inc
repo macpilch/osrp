@@ -2,10 +2,16 @@
 #define _VEHICLE_FUNCTIONS_
 
 //Fuel system
-stock GetVehicleFuel(vehicleid)
+stock getVehicleFuel(vehicleid)
 {
 	
 	return vVar[vehicleid][vFuel];
+}
+
+stock setVehicleFuel(vehicleid, Float: fuel)
+{
+	vVar[vehicleid][vFuel] =+ fuel;
+	return 1;
 }
 
 #endif
