@@ -119,6 +119,8 @@ sampCallback:OnPlayerSpawn(playerid) {
 		ShowPlayerNameTagForPlayer(playerid, i, false);
 	}
 	
+	pVars[playerid][pIsAdminDuty] = false;
+	
 	if(pVars[playerid][pX] != DEFAULT_POS_X && pVars[playerid][pY] != DEFAULT_POS_Y && pVars[playerid][pZ] != DEFAULT_POS_Z) {
 		SetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	} else {

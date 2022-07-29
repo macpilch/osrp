@@ -38,4 +38,42 @@ CMD:stats(playerid, params[]) {
 	return 1;
 }
 
+CMD:adminduty(playerid, params[])
+{
+	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK) {
+		if(!pVars[playerid][pIsAdminDuty]) {
+			pVars[playerid][pIsAdminDuty] = true;
+			
+			SendClientMessage(playerid, 0xFFFFFFFF, "{00FF00}[Admin]{00FF00}: Admin Duty w³¹czone!");
+		} else {
+			pVars[playerid][pIsAdminDuty] = false;
+			
+			SendClientMessage(playerid, 0xFFFFFFFF, "{00FF00}[Admin]{00FF00}: Admin Duty wy³¹czone!");
+		}
+	}
+	return 1;
+}
+
+CMD:givehealth(playerid, params[])
+{
+	if(pVars[playerid][pIsAdminDuty]) {
+		new toPlayerid, hp; // id player to give hp
+		
+		mainStr[0] = EOS;
+		
+		if(sscanf(params, "ii", toPlayerid, hp)) {
+			return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FF0000}: Poprawnie u¿ycie komendy to /givehealth [Id gracza][ilosc zdrowia].");
+		}
+		
+		pVars[toPlayerid][pHp] = hp;
+		SetPlayerHealth(toPlayerid, pVars[toPlayerid][pHp]);
+		
+		format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{00FF00}: Otrzymales zdrowie od admina %s", pVars[playerid][pAccName]);
+		SendClientMessage(toPlayerid, 0xFFFFFF, mainStr);
+		format(mainStr, sizeof(mainStr), "{00FF00}[Admin]:{00FF00}: Dales zdrowie graczowi %s", pVars[toPlayerid][pCharName2]);
+		SendClientMessage(playerid, 0xFFFFFF, mainStr);
+	}
+	return 1;
+}
+
 #endif 
