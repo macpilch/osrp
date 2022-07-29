@@ -36,4 +36,9 @@
 #define DEFAULT_POS_Y -1344.6394
 #define DEFAULT_POS_Z 7.1719
 
+//fuel system
+#define VEHICLE_FUEL_TANK_SMALL 20
+#define VEHICLE_FUEL_TANK_MEDIUM 40
+#define VEHICLE_FUEL_TANK_LARGE 60 
+
 #endif 
