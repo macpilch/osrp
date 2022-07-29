@@ -103,7 +103,7 @@ stock savePlayerValues(playerid) {
 	return 1;
 }
 
-stock GetPlayerNick(playerid)
+stock getPlayerNick(playerid)
 {
 	new mainStr[MAX_PLAYER_NAME];
 	GetPlayerName(playerid, mainStr, sizeof(mainStr));
