@@ -14,4 +14,6 @@ stock setVehicleFuel(vehicleid, Float: fuel)
 	return 1;
 }
 
+
+
 #endif

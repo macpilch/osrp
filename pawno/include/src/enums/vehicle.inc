@@ -7,8 +7,9 @@ enum VehicleData
 	vGuid,
 	vAccName[24],
 	vModelId,
-	vFuel,
-	vFuelTank,
+	Float: vFuel,
+	Float: vFuelTank
+	
 }
 
 #endif

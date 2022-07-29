@@ -36,9 +36,18 @@
 #define DEFAULT_POS_Y -1344.6394
 #define DEFAULT_POS_Z 7.1719
 
-//fuel system
+//admin ranks
+#define HEADADMIN_RANK 5
+#define ADMIN_RANK 4
+#define SUPPORT_RANK 3
+#define FRIEND_RANK 2
+#define PLAYER_RANK 1
+#define BANNED_PLAYER_RANK 0
+
+//fuel tanks
 #define VEHICLE_FUEL_TANK_SMALL 20
 #define VEHICLE_FUEL_TANK_MEDIUM 40
 #define VEHICLE_FUEL_TANK_LARGE 60 
+
 
 #endif 
