@@ -129,3 +129,35 @@ CMD:freezeplayer(playerid, params[]) {
 	}
 	return 1;
 }
+
+CMD:godmode(playerid)
+{
+	if(pVar[playerid][pAccRank] >= SUPPORT_RANK && pVar[playerid][pAccRank] <= HEADADMIN_RANK)
+	{
+		if(pVar[playerid][pIsAdminDuty] == true)
+		{
+			if(!pVar[playerid][pIsGodMode])
+			{
+				pVar[playerid][pIsGodMode] = true;
+				GetPlayerHealth(playerid, pVar[playerid][pHp]);
+				SetPlayerHealth(playerid, 999999);
+				SendClientMessage(playerid, 0xFFFFFF, "{00FF00}[Admin]{FFFFFF}: W³¹czono godmode.");
+				return 1;
+			}
+			else
+			{
+				pVar[playerid][pIsGodMode] = false;
+				SetPlayerHealth(playerid, pVar[playerid][pHp]);
+				SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[Admin]{FFFFFF}: Wy³¹czono godmode.");
+				return 1;
+			}
+		}
+		else
+		{
+			return 1;
+		}
+	
+		return 1;
+	}
+	return 1;
+}
