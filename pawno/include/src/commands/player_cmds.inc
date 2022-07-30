@@ -2,12 +2,9 @@
 	Project: Olk0hol RP
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
-	Date: 28.07.2022
+	Date: 29.07.2022
 	Modified: 29.07.2022
 */
-
-#if !defined _PLAYER_CMDS_
-#define _PLAYER_CMDS_
 
 CMD:login(playerid, params[]) {
 	TogglePlayerSpectating(playerid, 1);
@@ -16,7 +13,6 @@ CMD:login(playerid, params[]) {
 	
 	savePlayerValues(playerid);
 	setPlayerDefaultValues(playerid);
-	printf("[DEBUG] Haslo: %s", pVars[playerid][pPass]);
 	
 	mainStr[0] = EOS;
 	
@@ -31,49 +27,62 @@ CMD:stats(playerid, params[]) {
 	mainStr[0] = EOS;
 	
 	format(tmpStr, sizeof(tmpStr), "%s (UID %d, ID %d, GUID %d) [%s]", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, pVars[playerid][pGuid], pVars[playerid][pIp]);
-	format(mainStr, sizeof(mainStr), "Czas gry:\t\t\t%dh %dm\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nGotówka:\t\t\t$%d\nBank:\t\t\t\t$%d\nSkin:\t\t\t\t%d\nP³eæ:\t\t\t\t%s", 
-	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAj], pVars[playerid][pBw], pVars[playerid][pHp], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pSkin],
-	pVars[playerid][pSex] ? ("K") : ("M"));
+	format(mainStr, sizeof(mainStr), "Czas gry:\t\t\t%dh %dm\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nGotówka:\t\t\t$%d\nBank:\t\t\t\t$%d\nSkin:\t\t\t\t%d", 
+	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAj], pVars[playerid][pBw], pVars[playerid][pHp], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pSkin]);
 	ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, tmpStr, mainStr, "OK", "Zamknij");
 	return 1;
 }
-
+//admin functions
 CMD:adminduty(playerid, params[])
 {
-	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK) {
-		if(!pVars[playerid][pIsAdminDuty]) {
-			pVars[playerid][pIsAdminDuty] = true;
-			
-			SendClientMessage(playerid, 0xFFFFFFFF, "{00FF00}[Admin]{00FF00}: Admin Duty w³¹czone!");
-		} else {
-			pVars[playerid][pIsAdminDuty] = false;
-			
-			SendClientMessage(playerid, 0xFFFFFFFF, "{00FF00}[Admin]{00FF00}: Admin Duty wy³¹czone!");
+	if(vVar[playerid][pAccRank] >= SUPPORT_RANK && vVar[playerid][pAccRank] <= HEADADMIN_RANK)
+	{
+		if(pVar[playerid][pIsAdminDuty] == false)
+		{
+			pVar[playerid][pIsAdminDuty] = true;
+			SendClientMessage(playerid, 0xFFFFFF, "{00FF00}[Admin]{00FF00}: Admin Duty w³¹czone!");
+		}
+		else
+		{
+			pVar[playerid][pIsAdminDuty] = false;
+			SendClientMessage(playerid, 0xFFFFFF, "{00FF00}[Admin]{00FF00}: Admin Duty wy³¹czone!");
 		}
 	}
-	return 1;
-}
+	else
+	{
+		return 1;
+	}
+}d
 
-CMD:givehealth(playerid, params[])
+CMD:giveHealth(playerid, params[])
 {
-	if(pVars[playerid][pIsAdminDuty]) {
-		new toPlayerid, hp; // id player to give hp
+	if(pVar[playerid][pIsAdminDuty] == true)
+	{
+		new mainStr[0], toPlayerid, hp; // id player to give hp
 		
 		mainStr[0] = EOS;
 		
-		if(sscanf(params, "ii", toPlayerid, hp)) {
-			return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FF0000}: Poprawnie u¿ycie komendy to /givehealth [Id gracza][ilosc zdrowia].");
+		if(sscanf(params, "if", toPlayerid, hp))
+		{
+			SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawnie u¿ycie komendy to /givehealth [Id gracza][ilosc zdrowia].");
+			
+			return 1;
 		}
 		
-		pVars[toPlayerid][pHp] = hp;
-		SetPlayerHealth(toPlayerid, pVars[toPlayerid][pHp]);
+		pVar[toPlayerid][pHp]  = hp;
+		SetPlayerHealth(toPlayerid, pVar[toPlayerid][pHp]);
 		
-		format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{00FF00}: Otrzymales zdrowie od admina %s", pVars[playerid][pAccName]);
+		format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{FFFFFF}: Otrzyma³eœ zdrowie od admina %s", getPlayerNick(playerid));
 		SendClientMessage(toPlayerid, 0xFFFFFF, mainStr);
-		format(mainStr, sizeof(mainStr), "{00FF00}[Admin]:{00FF00}: Dales zdrowie graczowi %s", pVars[toPlayerid][pCharName2]);
+		format(mainStr, sizeof(mainStr), "{00FF00}[Admin]:{FFFFFF}: Da³eœ zdrowie graczowi %s", getPlayerNick(toPlayerid));
 		SendClientMessage(playerid, 0xFFFFFF, mainStr);
+		
+		
+		
+	}
+	else
+	{
+		return 1;
 	}
 	return 1;
 }
-
-#endif 
