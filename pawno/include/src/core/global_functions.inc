@@ -1,9 +1,9 @@
 /*
-	Project: Olk0hol RP
+	Project: SAMP-RP
 	Author: steeZ (macpilch)
 	File: global_functions.inc
 	Date: 28.07.2022
-	Modified: 28.07.2022
+	Modified: 30.07.2022
 */
 
 #if !defined _GLOBAL_FUNCTIONS_

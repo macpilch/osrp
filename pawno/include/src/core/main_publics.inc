@@ -1,9 +1,9 @@
 /*
-	Project: Olk0hol RP
+	Project: SAMP-RP
 	Author: steeZ (macpilch)
 	File: main_publics.inc
 	Date: 24.07.2022
-	Modified: 26.07.2022
+	Modified: 30.07.2022
 */
 
 #if !defined _MAIN_PUBLICS_

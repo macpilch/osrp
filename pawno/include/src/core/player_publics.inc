@@ -1,9 +1,9 @@
 /*
-	Project: Olk0hol RP
+	Project: SAMP-RP
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 29.07.2022
+	Modified: 30.07.2022
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -36,6 +36,10 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 	SpawnPlayer(playerid);
 	TogglePlayerSpectating(playerid, 1);
 	setPlayerDefaultValues(playerid);
+	
+	foreach(Player, i) {
+		ShowPlayerNameTagForPlayer(playerid, i, false);
+	}
 	
 	queryStr[0] = EOS;
 	
@@ -115,12 +119,6 @@ sampCallback:OnPlayerSpawn(playerid) {
 	format(mainStr, sizeof(mainStr), "%s (%d)", pVars[playerid][pCharName], playerid);
 	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], -1, mainStr);
 	
-	foreach(Player, i) {
-		ShowPlayerNameTagForPlayer(playerid, i, false);
-	}
-	
-	pVars[playerid][pIsAdminDuty] = false;
-	
 	if(pVars[playerid][pX] != DEFAULT_POS_X && pVars[playerid][pY] != DEFAULT_POS_Y && pVars[playerid][pZ] != DEFAULT_POS_Z) {
 		SetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	} else {
@@ -147,15 +145,15 @@ sampCallback:OnPlayerDeath(playerid, killerid, reason) {
 sampCallback:OnPlayerText(playerid, text[]) {
 	mainStr[0] = EOS;
 	
-	format(mainStr, sizeof(mainStr), "%s mówi: %s.", pVars[playerid][pCharName], text);
-	SendClientMessageToAll(-1, mainStr);
+	format(mainStr, sizeof(mainStr), "%s mówi: %s", pVars[playerid][pCharName], text);
+	sendDistanceMessage(playerid, 20.0, mainStr, -1);
 	return 0;
 }
 
 sampCallback:OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid) {
 	GetPlayerHealth(playerid, pVars[playerid][pHp]);
 	
-	SetTimerEx("healthDamage", 500, false, "i", playerid);
+	SetTimerEx("healthDamage", 100, false, "i", playerid);
 	return 1;
 }
 

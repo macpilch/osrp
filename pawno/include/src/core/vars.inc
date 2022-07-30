@@ -1,9 +1,9 @@
 /*
-	Project: Olk0hol RP
+	Project: SAMP-RP
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 29.07.2022
+	Modified: 30.07.2022
 */
 
 #if !defined _VARS_

@@ -1,24 +1,38 @@
 /*
-	Project: Olk0hol RP
+	Project: SAMP-RP
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
-	Modified: 29.07.2022
+	Modified: 30.07.2022
 */
 
 #if !defined PLAYER_FUNCTIONS
 #define PLAYER_FUNCTIONS
 
+// Wysylanie wiadomosci na dystans
+stock sendDistanceMessage(playerid, Float:range, str[], color) {
+	new Float:x, Float:y, Float:z;
+	
+	GetPlayerPos(playerid, x, y, z);
+	
+	foreach(Player, i) {
+		if(IsPlayerInRangeOfPoint(i, range, x, y, z)) {
+			SendClientMessage(i, color, str);
+		}
+	}
+	return 1;
+}
+
 stock loadPlayerValues(playerid) {
 	queryStr[0] = EOS;
 	
-	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `IP`, `Sex`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `AccRank`, `AdminDuty`, `IP`, `Sex`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	mysql_store_result();
 	
 	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>is[24]iiiiffiiiiifff", 
-	pVars[playerid][pGuid], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney],
+	sscanf(queryStr, "p<|>iiis[24]iiiiffiiiiifff", 
+	pVars[playerid][pGuid], pVars[playerid][pAccRank], pVars[playerid][pIsAdminDuty], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney],
 	pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	
 	mysql_free_result();
@@ -45,6 +59,8 @@ stock setPlayerDefaultValues(playerid) {
 	ResetPlayerMoney(playerid);
 	ResetPlayerWeapons(playerid);
 	
+	pVars[playerid][pAccRank] = 0;
+	pVars[playerid][pIsAdminDuty] = false;
 	pVars[playerid][pSex] = MAN_SEX;
 	pVars[playerid][pHours] = 0;
 	pVars[playerid][pMinutes] = 0;
@@ -73,6 +89,8 @@ stock resetPlayerValues(playerid) {
 	format(pVars[playerid][pPass], 32, "%s", NULL);
 	format(pVars[playerid][pIp], 24, "%s", NULL);
 
+	pVars[playerid][pAccRank] = 0;
+	pVars[playerid][pIsAdminDuty] = false;
 	pVars[playerid][pSex] = 0;
 	pVars[playerid][pHours] = 0;
 	pVars[playerid][pMinutes] = 0;

@@ -1,9 +1,9 @@
 /*
-	Project: Olk0hol RP
+	Project: SAMP-RP
 	Author: steeZ (macpilch)
 	File: main.pwn
 	Date: 24.07.2022
-	Modified: 29.07.2022
+	Modified: 30.07.2022
 */
 
 #include <a_samp>

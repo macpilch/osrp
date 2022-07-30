@@ -1,9 +1,9 @@
 /*
-	Project: Olk0hol RP
+	Project: SAMP-RP
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 24.07.2022
-	Modified: 29.07.2022
+	Modified: 30.07.2022
 */
 
 #if !defined _PLAYER_
@@ -25,7 +25,7 @@ enum PlayerData {
 	pCharId, // narazie nie u¿ywane
 	pAccName[24],
 	pAccRank,          // for ranks
-	bool: pIsAdminDuty,     // false(0) is admin duty off or true(1) is admin duty on only when player have ranks: SUPPORT_RANK, ADMIN_RANK, HEADADMIN_RANK
+	bool:pIsAdminDuty,     // false(0) is admin duty off or true(1) is admin duty on only when player have ranks: SUPPORT_RANK, ADMIN_RANK, HEADADMIN_RANK
 	pCharName[24],
 	pCharName2[24],
 	pPass[32],

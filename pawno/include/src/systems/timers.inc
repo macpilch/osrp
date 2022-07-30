@@ -1,9 +1,9 @@
 /*
-	Project: Olk0hol RP
+	Project: SAMP-RP
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 29.07.2022
+	Modified: 30.07.2022
 */
 
 #if !defined _TIMERS_
@@ -32,6 +32,21 @@ task globalTimer[1000]() {
 
 task settingsTimer[30000]() {
 	saveServerValues();
+}
+
+task townHallBellsTimer[59000]() {
+	new hours, minutes, seconds;
+	
+	gettime(hours, minutes, seconds);
+	
+	foreach(Player, i) {
+		mainStr[0] = EOS;
+		
+		if(minutes == 0 && seconds == 0) {
+			format(mainStr, sizeof(mainStr), "** Dzwony w ratuszu bij¹ %d razy. **", hours);
+			SendClientMessage(i, -1, mainStr);
+		}
+	}
 }
 
 Callback:healthDamage(playerid) {
