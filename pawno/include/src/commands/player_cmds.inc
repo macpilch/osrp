@@ -52,7 +52,7 @@ CMD:adminduty(playerid, params[])
 	{
 		return 1;
 	}
-}d
+}
 
 CMD:giveHealth(playerid, params[])
 {
@@ -64,7 +64,7 @@ CMD:giveHealth(playerid, params[])
 		
 		if(sscanf(params, "if", toPlayerid, hp))
 		{
-			SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawnie u¿ycie komendy to /givehealth [Id gracza][ilosc zdrowia].");
+			SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawnie u¿ycie komendy to /givehealth [Id gracza][iloœæ zdrowia].");
 			
 			return 1;
 		}
@@ -83,6 +83,44 @@ CMD:giveHealth(playerid, params[])
 	else
 	{
 		return 1;
+	}
+	return 1;
+}
+CMD:freezeplayer(playerid, params[])
+{
+	if(pVar[playerid][pAccRank] >= SUPPORT_RANK && pVar[playerid][pAccRank] <= HEADADMIN_RANK)
+	{
+		new mainStr[0], toPlayerid, freezeOnOff;
+		
+		mainStr[0] = EOS;
+		
+		if(sscanf(params, "ii", toPlayerid, freezeOnOff))	//freezeOnOff: 0-uncontrollable/1-controllable
+		{
+			SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /freezeplayer [Id gracza][0/1].");
+			return 1;
+		}
+		
+		switch(freezeOnOff)
+		{
+			case 0:
+			{
+				TogglePlayerControllable(toPlayerid, freezeOnOff);
+				format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{FFFFFF}: Zosta³eœ zamro¿ony przez admina %s.", pVar[playerid][pAccName]);
+				SendClientMessage(toPlayerid, 0xFFFFFF, mainStr);
+				format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{FFFFFF}: Zamro¿i³eœ gracza %s.", pVar[toPlayerid][pAccName]);
+				SendClientMessage(playerid, 0xFFFFFF, mainStr);
+			}
+			
+			case 1:
+			{
+				TogglePlayerControllable(toPlayerid, freezeOnOff);
+				format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{FFFFFF}: Zosta³eœ odmro¿ony przez admina %s.", pVar[playerid][pAccName]);
+				SendClientMessage(toPlayerid, 0xFFFFFF, mainStr);
+				format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{FFFFFF}: Odmro¿i³eœ gracza %s.", pVar[toPlayerid][pAccName]);
+				SendClientMessage(playerid, 0xFFFFFF, mainStr);
+			}
+		}
+		
 	}
 	return 1;
 }
