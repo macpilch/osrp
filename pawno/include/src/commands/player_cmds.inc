@@ -40,7 +40,6 @@ CMD:login(playerid, params[]) {
 	
 	savePlayerValues(playerid);
 	setPlayerDefaultValues(playerid);
-	printf("[DEBUG] Haslo: %s", pVars[playerid][pPass]);
 	
 	mainStr[0] = EOS;
 	
@@ -55,9 +54,8 @@ CMD:stats(playerid, params[]) {
 	mainStr[0] = EOS;
 	
 	format(tmpStr, sizeof(tmpStr), "%s (UID %d, ID %d, GUID %d) [%s]", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, pVars[playerid][pGuid], pVars[playerid][pIp]);
-	format(mainStr, sizeof(mainStr), "Czas gry:\t\t\t%dh %dm\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nGotówka:\t\t\t$%d\nBank:\t\t\t\t$%d\nSkin:\t\t\t\t%d\nP³eæ:\t\t\t\t%s", 
-	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAj], pVars[playerid][pBw], pVars[playerid][pHp], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pSkin],
-	pVars[playerid][pSex] ? ("K") : ("M"));
+	format(mainStr, sizeof(mainStr), "Czas gry:\t\t\t%dh %dm\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nGotówka:\t\t\t$%d\nBank:\t\t\t\t$%d\nSkin:\t\t\t\t%d", 
+	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAj], pVars[playerid][pBw], pVars[playerid][pHp], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pSkin]);
 	ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, tmpStr, mainStr, "OK", "Zamknij");
 	return 1;
 }
@@ -78,16 +76,16 @@ CMD:adminduty(playerid, params[]) {
 }
 
 CMD:givehealth(playerid, params[]) {
-	if(pVars[playerid][pIsAdminDuty]) {
+	if(pVars[playerid][pIsAdminDuty] == true) {
 		new toPlayerid, hp; // id player to give hp
 		
 		mainStr[0] = EOS;
 		
 		if(sscanf(params, "ii", toPlayerid, hp)) {
-			return SendClientMessage(playerid, 0xFFFFFFFF, "{FF0000}[CMD]{FF0000}: Poprawnie u¿ycie komendy to /givehealth [Id gracza][ilosc zdrowia].");
+			return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawnie u¿ycie komendy to /givehealth [Id gracza][iloœæ zdrowia].");
 		}
 		
-		pVars[toPlayerid][pHp] = hp;
+		pVars[toPlayerid][pHp]  = hp;
 		SetPlayerHealth(toPlayerid, pVars[toPlayerid][pHp]);
 		
 		format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{00FF00}: Otrzymales zdrowie od admina %s", pVars[playerid][pAccName]);
@@ -98,4 +96,36 @@ CMD:givehealth(playerid, params[]) {
 	return 1;
 }
 
-#endif 
+CMD:freezeplayer(playerid, params[]) {
+	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
+	{
+		new toPlayerid, freezeOnOff;
+		
+		mainStr[0] = EOS;
+		
+		if(sscanf(params, "ii", toPlayerid, freezeOnOff)) {	//freezeOnOff: 0-uncontrollable/1-controllable
+			return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /freezeplayer [Id gracza][0/1].");
+		}
+		
+		switch(freezeOnOff)
+		{
+			case 0:
+			{
+				TogglePlayerControllable(toPlayerid, freezeOnOff);
+				format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{FFFFFF}: Zosta³eœ zamro¿ony przez admina %s.", pVars[playerid][pAccName]);
+				SendClientMessage(toPlayerid, 0xFFFFFF, mainStr);
+				format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{FFFFFF}: Zamro¿i³eœ gracza %s.", pVars[toPlayerid][pCharName2]);
+				SendClientMessage(playerid, 0xFFFFFF, mainStr);
+			}
+			case 1:
+			{
+				TogglePlayerControllable(toPlayerid, freezeOnOff);
+				format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{FFFFFF}: Zosta³eœ odmro¿ony przez admina %s.", pVars[playerid][pAccName]);
+				SendClientMessage(toPlayerid, 0xFFFFFF, mainStr);
+				format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{FFFFFF}: Odmro¿i³eœ gracza %s.", pVars[toPlayerid][pCharName2]);
+				SendClientMessage(playerid, 0xFFFFFF, mainStr);
+			}
+		}
+	}
+	return 1;
+}
