@@ -72,9 +72,9 @@ CMD:giveHealth(playerid, params[])
 		pVar[toPlayerid][pHp]  = hp;
 		SetPlayerHealth(toPlayerid, pVar[toPlayerid][pHp]);
 		
-		format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{FFFFFF}: Otrzyma³eœ zdrowie od admina %s", getPlayerNick(playerid));
+		format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{FFFFFF}: Otrzyma³eœ zdrowie od admina %s", pVar[playerid][pAccName]);
 		SendClientMessage(toPlayerid, 0xFFFFFF, mainStr);
-		format(mainStr, sizeof(mainStr), "{00FF00}[Admin]:{FFFFFF}: Da³eœ zdrowie graczowi %s", getPlayerNick(toPlayerid));
+		format(mainStr, sizeof(mainStr), "{00FF00}[Admin]:{FFFFFF}: Da³eœ zdrowie graczowi %s", pVar[toPlayerid][pAccName]);
 		SendClientMessage(playerid, 0xFFFFFF, mainStr);
 		
 		
