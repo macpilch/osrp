@@ -151,7 +151,6 @@ CMD:godmode(playerid)
 				GetPlayerHealth(playerid, pVars[playerid][pHp]);
 				SetPlayerHealth(playerid, 999999);
 				SendClientMessage(playerid, 0xFFFFFF, "{00FF00}[Admin]{FFFFFF}: W³¹czono godmode.");
-				return 1;
 			}
 			else
 			{
@@ -180,11 +179,6 @@ CMD:giveweapon(playerid, params[])
 			GivePlayerWeapon(playerid, weaponId, ammo);
 			SendClientMessage(playerid, 0xFFFFFF, "{00FF00}[Admin]{FFFFFF}: Otrzymano broñ.");
 		}
-		else
-		{
-			return 1;
-		}
-		
 	}
 	return 1;
 }
@@ -198,18 +192,13 @@ CMD:spawnvehicle(playerid, params[])
 			new vehicleId, vehicleModelId;
 			if(sscanf(params, "i", vehicleModelId))
 			{
-				
 				return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /spawnvehicle [model pojazdu].");
 			}
 			
 			GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 			
 			vehicleId = CreateVehicle(vehicleModelId, pVars[playerid][pX] + 1.0, pVars[playerid][pY], pVars[playerid][pZ], 0, -1, -1, -1);
-			
-			return 1;
 		}
-		
-		return 1;
 	}
 	return 1;
 }
@@ -226,7 +215,6 @@ CMD:spectateplayer(playerid, params[])
 				return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /spectateplayer [Id gracza].");
 			}
 			
-			
 			if(!pVars[playerid][pIsSpectating])
 			{
 				
@@ -235,30 +223,14 @@ CMD:spectateplayer(playerid, params[])
 				
 				TogglePlayerSpectating(playerid, 1);
 				PlayerSpectatePlayer(playerid, toPlayerId);
-				
-				return 1;
-				
 			}
 			else
 			{
-				
 				pVars[playerid][pIsSpectating] = false;
 				
 				TogglePlayerSpectating(playerid, 0);
-				
-				
-				return 1;
 			}
-			
-			return 1;
 		}
-		else
-		{
-			return 1;
-		}
-		
-		return 1;
 	}
-	
 	return 1;
 }

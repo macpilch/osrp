@@ -165,19 +165,19 @@ sampCallback:OnPlayerText(playerid, text[]) {
 		format(mainStr, sizeof(mainStr), "* %s uœmiecha siê.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE);
 		return 0;
-	} else if(strfind(textStr, ":D", false) != -1 || strfind(textStr, ":d", false) != -1) {
+	} else if(strfind(textStr, ":D", false) != -1 || strfind(textStr, ":d", false) != -1 || strfind(text[0], "xD", false) != -1) {
 		format(mainStr, sizeof(mainStr), "* %s œmieje siê.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE);
 		return 0;
-	} else if(strfind(textStr, ":(", false) != -1 || strfind(textStr, ":<", false) != -1) {
-
-	} 
-	  else if(strfind(text[0], "xD", false) != -1){
-		format(mainStr, sizeof(mainStr), "* %s œmieje siê.", pVars[playerid][pCharName]);
+	} else if(strfind(textStr, ":P", false) != -1 || strfind(textStr, ":p", false) != -1) {
+		format(mainStr, sizeof(mainStr), "* %s wystawia jêzyk.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE);
 		return 0;
-	}
-	  else if(strfind(text[0], ":(", false) != -1 || strfind(text[0], ":<", false) != -1) {
+	} else if(strfind(textStr, ":<", false) != -1) {
+		format(mainStr, sizeof(mainStr), "* %s krzywi siê.", pVars[playerid][pCharName]);
+		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE);
+		return 0;		
+	} else if(strfind(text[0], ":(", false) != -1) {
 		format(mainStr, sizeof(mainStr), "* %s robi smutn¹ minê.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE);
 		return 0;
