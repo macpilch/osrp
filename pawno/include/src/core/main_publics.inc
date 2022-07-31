@@ -23,7 +23,6 @@ sampCallback:OnGameModeInit() {
 		printf("[LOG]: MYSQL DB Enabled!");
 	} else {
 		printf("[LOG]: MYSQL DB has not been connected !");
-		return 1;
 	}
 	
 	initServerValues();
@@ -31,6 +30,17 @@ sampCallback:OnGameModeInit() {
 	for(new i = 0; i < MAX_PLAYERS; i++) {
 		pVars[i][p3dInfo] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 0.15, 30.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 30.0, -1, 0);
 	}
+	
+	website = TextDrawCreate(8.433380, 427.000000, "_");
+	TextDrawLetterSize(website, 0.303351, 1.016664);
+	TextDrawTextSize(website, -189.751068, -105.000007);
+	TextDrawAlignment(website, 1);
+	TextDrawColor(website, -1);
+	TextDrawSetShadow(website, 0);
+	TextDrawSetOutline(website, 1);
+	TextDrawBackgroundColor(website, 51);
+	TextDrawFont(website, 3);
+	TextDrawSetProportional(website, 1);
 	
 	new str[64];
 	new callSec = GetTickCount();

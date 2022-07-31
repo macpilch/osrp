@@ -149,15 +149,8 @@ CMD:godmode(playerid)
 				pVars[playerid][pIsGodMode] = false;
 				SetPlayerHealth(playerid, pVars[playerid][pHp]);
 				SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[Admin]{FFFFFF}: Wy³¹czono godmode.");
-				return 1;
 			}
 		}
-		else
-		{
-			return 1;
-		}
-	
-		return 1;
 	}
 	return 1;
 }
@@ -197,7 +190,7 @@ CMD:spawnvehicle(playerid, params[])
 			if(sscanf(params, "i", vehicleModelId))
 			{
 				
-				return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /spawnvehicle [model pojazdu].";
+				return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /spawnvehicle [model pojazdu].");
 			}
 			
 			GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);

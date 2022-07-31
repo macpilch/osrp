@@ -31,6 +31,41 @@ stock sendDistanceMessage(playerid, Float:range, str[], color) {
 	return 1;
 }
 
+stock createPlayerTextDraws(playerid) {
+	oocWarning[playerid][0] = CreatePlayerTextDraw(playerid, 509.282592, 280.000030, "Niepotrzebnie wstawiasz spacje~n~miedzy kropka a tekstem OOC.~n~Przyklad powitania OOC:~n~~y~.Czesc!");
+	PlayerTextDrawLetterSize(playerid, oocWarning[playerid][0], 0.315534, 1.430833);
+	PlayerTextDrawAlignment(playerid, oocWarning[playerid][0], 2);
+	PlayerTextDrawColor(playerid, oocWarning[playerid][0], -1);
+	PlayerTextDrawSetShadow(playerid, oocWarning[playerid][0], 0);
+	PlayerTextDrawSetOutline(playerid, oocWarning[playerid][0], 1);
+	PlayerTextDrawBackgroundColor(playerid, oocWarning[playerid][0], 51);
+	PlayerTextDrawFont(playerid, oocWarning[playerid][0], 1);
+	PlayerTextDrawSetProportional(playerid, oocWarning[playerid][0], 1);
+
+	oocWarning[playerid][1] = CreatePlayerTextDraw(playerid, 605.923889, 279.750000, "_");
+	PlayerTextDrawLetterSize(playerid, oocWarning[playerid][1], 0.000000, 5.905555);
+	PlayerTextDrawTextSize(playerid, oocWarning[playerid][1], 416.858001, 0.000000);
+	PlayerTextDrawAlignment(playerid, oocWarning[playerid][1], 1);
+	PlayerTextDrawColor(playerid, oocWarning[playerid][1], 0);
+	PlayerTextDrawUseBox(playerid, oocWarning[playerid][1], 1);
+	PlayerTextDrawBoxColor(playerid, oocWarning[playerid][1], 102);
+	PlayerTextDrawSetShadow(playerid, oocWarning[playerid][1], 0);
+	PlayerTextDrawSetOutline(playerid, oocWarning[playerid][1], 0);
+	PlayerTextDrawFont(playerid, oocWarning[playerid][1], 0);
+	
+	damageRedScreen[playerid] = CreatePlayerTextDraw(playerid, 641.531494, 1.500000, "_");
+	PlayerTextDrawLetterSize(playerid, damageRedScreen[playerid], 0.000000, 49.396297);
+	PlayerTextDrawTextSize(playerid, damageRedScreen[playerid], -2.000000, 0.000000);
+	PlayerTextDrawAlignment(playerid, damageRedScreen[playerid], 1);
+	PlayerTextDrawColor(playerid, damageRedScreen[playerid], 0);
+	PlayerTextDrawUseBox(playerid, damageRedScreen[playerid], 1);
+	PlayerTextDrawBoxColor(playerid, damageRedScreen[playerid], 0xFF0000AA);
+	PlayerTextDrawSetShadow(playerid, damageRedScreen[playerid], 0);
+	PlayerTextDrawSetOutline(playerid, damageRedScreen[playerid], 0);
+	PlayerTextDrawFont(playerid, damageRedScreen[playerid], 0);	
+	return 1;
+}
+
 stock loadPlayerValues(playerid) {
 	queryStr[0] = EOS;
 	
