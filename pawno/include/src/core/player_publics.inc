@@ -10,6 +10,8 @@
 #define _PLAYER_PUBLICS_
 
 sampCallback:OnPlayerConnect(playerid) {
+	createPlayerTextDraws(playerid);
+	
 	new str[64];
 	new callSec = GetTickCount();
 	
@@ -19,6 +21,7 @@ sampCallback:OnPlayerConnect(playerid) {
 }
 
 sampCallback:OnPlayerDisconnect(playerid, reason) {
+	TextDrawHideForPlayer(playerid, website);
 	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_WHITE, NULL);
 	
 	savePlayerValues(playerid);
@@ -110,6 +113,7 @@ sampCallback:OnPlayerSpawn(playerid) {
 	SetPlayerArmour(playerid, pVars[playerid][pAp]);
 	GivePlayerMoney(playerid, pVars[playerid][pMoney]);
 	SetPlayerSkin(playerid, pVars[playerid][pSkin]);
+	TextDrawShowForPlayer(playerid, website);
 	
 	mainStr[0] = EOS;
 	
@@ -145,39 +149,53 @@ sampCallback:OnPlayerDeath(playerid, killerid, reason) {
 }
 
 sampCallback:OnPlayerText(playerid, text[]) {
+	new textStr[256];
 	mainStr[0] = EOS;
 	
-	if(strfind(text, "!!", false) != -1) {
-		format(mainStr, sizeof(mainStr), "%s krzyczy: %s", pVars[playerid][pCharName], text);
+	format(textStr, sizeof(textStr), "%s", text);
+	
+	for(new i = 0; i < strlen(textStr); i++) {
+		printf("[DEBUG] Indeks: %d - %s\n", i, textStr[i]);
+	}
+	
+	if(strfind(textStr, "!!", false) != -1) {
+		format(mainStr, sizeof(mainStr), "%s krzyczy: %s", pVars[playerid][pCharName], textStr);
 		sendDistanceMessage(playerid, 70.0, mainStr, COLOR_GRAY);
 		return 0;
-	} else if(strfind(text[0], ":)", false) != -1) {
+	} else if(strfind(textStr, ":)", false) != -1) {
 		format(mainStr, sizeof(mainStr), "* %s uœmiecha siê.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE);
 		return 0;
-	} else if(strfind(text[0], ":D", false) != -1 || strfind(text[0], ":d", false) != -1) {
+	} else if(strfind(textStr, ":D", false) != -1 || strfind(textStr, ":d", false) != -1) {
 		format(mainStr, sizeof(mainStr), "* %s œmieje siê.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE);
 		return 0;
-	} else if(strfind(text[0], ":(", false) != -1 || strfind(text[0], ":<", false) != -1) {
+	} else if(strfind(textStr, ":(", false) != -1 || strfind(textStr, ":<", false) != -1) {
 		format(mainStr, sizeof(mainStr), "* %s robi smutn¹ minê.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE);
 		return 0;
-	} else if(strfind(text[0], ".", false) != -1) {
-		if(strfind(text[1], " ", false) != -1) {
-			SendClientMessage(playerid, COLOR_WHITE, "Test.");
-		} else {
-			new str2[64];
-		
-			format(mainStr, sizeof(mainStr), "[%d] %s: (( %s ))", playerid, pVars[playerid][pCharName], text);
-			SendClientMessage(playerid, COLOR_WHITE, mainStr);
+	} else if(strfind(textStr[0], ".", false) != -1) {
+		if(strfind(textStr[1], " ", false) != -1) {
+			for(new i = 0; i < 2; i++) {
+				PlayerTextDrawShow(playerid, oocWarning[playerid][i]);
+			}
 			
-			format(str2, sizeof(str2), "(( %s ))", text);
-			SetPlayerChatBubble(playerid, str2, COLOR_WHITE, 30.0, 10000);
+			SetTimerEx("hideOOCWarning", 5000, false, "i", playerid);
 		}
+		
+		new str[128];
+		new str2[64];
+		
+		strmid(str, textStr, 1, strlen(textStr));
+		
+		format(mainStr, sizeof(mainStr), "[%d] %s: (( %s ))", playerid, pVars[playerid][pCharName], str);
+		SendClientMessage(playerid, COLOR_WHITE, mainStr);
+			
+		format(str2, sizeof(str2), "(( %s ))", str);
+		SetPlayerChatBubble(playerid, str2, COLOR_WHITE, 30.0, 10000);
 		return 0;
 	} else {
-		format(mainStr, sizeof(mainStr), "%s mówi: %s", pVars[playerid][pCharName], text);
+		format(mainStr, sizeof(mainStr), "%s mówi: %s", pVars[playerid][pCharName], textStr);
 		sendDistanceMessage(playerid, 20.0, mainStr, COLOR_GRAY);
 	}
 	return 0;
@@ -185,6 +203,8 @@ sampCallback:OnPlayerText(playerid, text[]) {
 
 sampCallback:OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid) {
 	GetPlayerHealth(damagedid, pVars[damagedid][pHp]);
+	
+	GameTextForPlayer(playerid, "~r~Dm. Czekaj!", 1000, 3);
 	return 1;
 }
 
@@ -434,6 +454,11 @@ sampCallback:OnPlayerRequestSpawn(playerid) {
 	format(str, sizeof(str), "[LOG] Callback: OnPlayerRequestSpawn -- Called! (%d ms).", (GetTickCount() - callSec));
 	print(str);
 	return 0;
+}
+
+sampCallback:OnPlayerUpdate(playerid) {
+	playerAFKTime[playerid] = 0;
+	return 1;
 }
 
 #endif 

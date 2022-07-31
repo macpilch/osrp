@@ -41,7 +41,7 @@ enum PlayerData {
 	pBank,
 	pBw,
 	pAj,
-	bool: pIsGodMode,
+	bool:pIsGodMode,
 	Float:pX,
 	Float:pY,
 	Float:pZ,

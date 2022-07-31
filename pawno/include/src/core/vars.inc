@@ -11,9 +11,14 @@
 
 new mySQLConnect;
 new allAccounts;
+new playerAFKTime[MAX_PLAYERS];
 
 new bool:usedCmdLogin[MAX_PLAYERS];
 
 new MySQL:hMySQL;
+
+new Text:website;
+new PlayerText:oocWarning[MAX_PLAYERS][2];
+new PlayerText:damageRedScreen[MAX_PLAYERS];
 
 #endif 
