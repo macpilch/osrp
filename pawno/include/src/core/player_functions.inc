@@ -159,6 +159,9 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pX] = 0.0;
 	pVars[playerid][pY] = 0.0;
 	pVars[playerid][pZ] = 0.0;
+	pVars[playerid][pIsAdminDuty] = false;
+	pVars[playerid][pIsBw] = false;
+	pVars[playerid][pIsGodMode] = false;
 	usedCmdLogin[playerid] = false;
 	return 1;
 }
