@@ -112,7 +112,7 @@ sampCallback:OnPlayerSpawn(playerid) {
 	
 	if(pVars[playerid][pIsBw])
 	{
-		setPlayerBw(playerid, 59000);
+		setPlayerBw(playerid, 60000);
 	}
 	
 	SetPlayerHealth(playerid, pVars[playerid][pHp]);
