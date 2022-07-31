@@ -161,3 +161,28 @@ CMD:godmode(playerid)
 	}
 	return 1;
 }
+
+CMD:giveweapon(playerid, params[])
+{
+	if(pVar[playerid][pAccRank] >= SUPPORT_RANK && pVar[playerid][pAccRank] <= HEADADMIN_RANK)
+	{
+		if(pVar[playerid][pIsAdminDuty])
+		{
+			new weaponId, ammo;
+			if(sscanf(params, "ii", weaponId, ammo))
+			{
+				SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /giveweapon [Id broni][ilosc amunicji].");
+				return 1;
+			}
+			
+			GivePlayerWeapon(playerid, weaponId, ammo);
+			SendClientMessage(playerid, 0xFFFFFF, "{00FF00}[Admin]{FFFFFF}: Otrzymano broñ.");
+		}
+		else
+		{
+			
+		}
+		
+	}
+	return 1;
+}
