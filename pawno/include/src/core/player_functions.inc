@@ -159,6 +159,9 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pX] = 0.0;
 	pVars[playerid][pY] = 0.0;
 	pVars[playerid][pZ] = 0.0;
+	pVars[playerid][pIsAdminDuty] = false;
+	pVars[playerid][pIsBw] = false;
+	pVars[playerid][pIsGodMode] = false;
 	usedCmdLogin[playerid] = false;
 	return 1;
 }
@@ -179,7 +182,8 @@ stock setPlayerBw(playerid, time)
 {
 	TogglePlayerControllable(playerid, 0);
 	PlayerTextDrawShow(playerid, bwText[playerid]);
-	ApplyAnimation(playerid, "BEACH", "Lay_Bac_Loop", 4.1, 1, 1, 1, 1, 1, 1);
+	ClearAnimations(playerid);
+	ApplyAnimation(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
 	SetTimerEx("bwTimer", time, false, "i", playerid);
 	return 1;
 }
