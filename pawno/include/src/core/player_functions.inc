@@ -3,13 +3,16 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
-	Modified: 30.07.2022
+	Modified: 31.07.2022
 */
 
 #if !defined PLAYER_FUNCTIONS
 #define PLAYER_FUNCTIONS
 
-// Wysylanie wiadomosci na dystans
+/*
+	Wysylanie wiadomosci na dystans.
+	Narazie najprostrza wersja do testow.
+*/
 stock sendDistanceMessage(playerid, Float:range, str[], color) {
 	new Float:x, Float:y, Float:z;
 	
@@ -17,6 +20,11 @@ stock sendDistanceMessage(playerid, Float:range, str[], color) {
 	
 	foreach(Player, i) {
 		if(IsPlayerInRangeOfPoint(i, range, x, y, z)) {
+			if(i == playerid) {
+				SendClientMessage(playerid, COLOR_WHITE, str);
+				continue;
+			}
+			
 			SendClientMessage(i, color, str);
 		}
 	}

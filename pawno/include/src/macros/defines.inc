@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 30.07.2022
+	Modified: 31.07.2022
 */
 
 #if !defined _DEFINES_
@@ -20,9 +20,13 @@
 		forward %0(%1); public %0(%1)
 
 #define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "root"
-#define MYSQL_PASS "1234"
-#define MYSQL_DB "samp"
+#define MYSQL_USER "server_900"
+#define MYSQL_PASS "pekic42sht"
+#define MYSQL_DB "server_900_srv"
+
+#define COLOR_WHITE 0xFFFFFFFF
+#define COLOR_GRAY 0xCDC9C9FF
+#define COLOR_PURPLE 0xBA55D3FF
 
 #define NULL "\0"
 

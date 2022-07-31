@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: global_functions.inc
 	Date: 28.07.2022
-	Modified: 30.07.2022
+	Modified: 31.07.2022
 */
 
 #if !defined _GLOBAL_FUNCTIONS_

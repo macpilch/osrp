@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: main_publics.inc
 	Date: 24.07.2022
-	Modified: 30.07.2022
+	Modified: 31.07.2022
 */
 
 #if !defined _MAIN_PUBLICS_
@@ -12,8 +12,9 @@
 sampCallback:OnGameModeInit() {
 	EnableStuntBonusForAll(0);
 	DisableInteriorEnterExits();
+	ShowNameTags(0);
 	AddPlayerClass(0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0);
-	SetGameModeText("aaa");
+	SetGameModeText("SAMP-RP");
 	
 	hMySQL = mysql_init(LOG_ALL, 1);
 	mySQLConnect = mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB, hMySQL, 1);
@@ -22,13 +23,13 @@ sampCallback:OnGameModeInit() {
 		printf("[LOG]: MYSQL DB Enabled!");
 	} else {
 		printf("[LOG]: MYSQL DB has not been connected !");
-		return 0;
+		return 1;
 	}
 	
 	initServerValues();
 	
 	for(new i = 0; i < MAX_PLAYERS; i++) {
-		pVars[i][p3dInfo] = CreateDynamic3DTextLabel(NULL, -1, 0.0, 0.0, 0.2, 30.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 30.0, -1, 0);
+		pVars[i][p3dInfo] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 0.15, 30.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 30.0, -1, 0);
 	}
 	
 	new str[64];

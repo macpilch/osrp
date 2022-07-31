@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 30.07.2022
+	Modified: 31.07.2022
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -19,7 +19,7 @@ sampCallback:OnPlayerConnect(playerid) {
 }
 
 sampCallback:OnPlayerDisconnect(playerid, reason) {
-	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], -1, NULL);
+	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_WHITE, NULL);
 	
 	savePlayerValues(playerid);
 	resetPlayerValues(playerid); // dla dobra pamieci
@@ -36,10 +36,6 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 	SpawnPlayer(playerid);
 	TogglePlayerSpectating(playerid, 1);
 	setPlayerDefaultValues(playerid);
-	
-	foreach(Player, i) {
-		ShowPlayerNameTagForPlayer(playerid, i, false);
-	}
 	
 	queryStr[0] = EOS;
 	
@@ -116,8 +112,14 @@ sampCallback:OnPlayerSpawn(playerid) {
 	SetPlayerSkin(playerid, pVars[playerid][pSkin]);
 	
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "%s (%d)", pVars[playerid][pCharName], playerid);
-	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], -1, mainStr);
+	
+	if(pVars[playerid][pHours] > 20) {
+		format(mainStr, sizeof(mainStr), "%s (%d)", pVars[playerid][pCharName], playerid);
+	} else {
+		format(mainStr, sizeof(mainStr), "%s (%d, %dh)", pVars[playerid][pCharName], playerid, pVars[playerid][pHours]);
+	}
+	
+	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_WHITE, mainStr);
 	
 	if(pVars[playerid][pX] != DEFAULT_POS_X && pVars[playerid][pY] != DEFAULT_POS_Y && pVars[playerid][pZ] != DEFAULT_POS_Z) {
 		SetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
@@ -145,9 +147,45 @@ sampCallback:OnPlayerDeath(playerid, killerid, reason) {
 sampCallback:OnPlayerText(playerid, text[]) {
 	mainStr[0] = EOS;
 	
-	format(mainStr, sizeof(mainStr), "%s mówi: %s", pVars[playerid][pCharName], text);
-	sendDistanceMessage(playerid, 20.0, mainStr, -1);
+	if(strfind(text, "!!", false) != -1) {
+		format(mainStr, sizeof(mainStr), "%s krzyczy: %s", pVars[playerid][pCharName], text);
+		sendDistanceMessage(playerid, 70.0, mainStr, COLOR_GRAY);
+		return 0;
+	} else if(strfind(text[0], ":)", false) != -1) {
+		format(mainStr, sizeof(mainStr), "* %s uœmiecha siê.", pVars[playerid][pCharName]);
+		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE);
+		return 0;
+	} else if(strfind(text[0], ":D", false) != -1 || strfind(text[0], ":d", false) != -1) {
+		format(mainStr, sizeof(mainStr), "* %s œmieje siê.", pVars[playerid][pCharName]);
+		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE);
+		return 0;
+	} else if(strfind(text[0], ":(", false) != -1 || strfind(text[0], ":<", false) != -1) {
+		format(mainStr, sizeof(mainStr), "* %s robi smutn¹ minê.", pVars[playerid][pCharName]);
+		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE);
+		return 0;
+	} else if(strfind(text[0], ".", false) != -1) {
+		if(strfind(text[1], " ", false) != -1) {
+			SendClientMessage(playerid, COLOR_WHITE, "Test.");
+		} else {
+			new str2[64];
+		
+			format(mainStr, sizeof(mainStr), "[%d] %s: (( %s ))", playerid, pVars[playerid][pCharName], text);
+			SendClientMessage(playerid, COLOR_WHITE, mainStr);
+			
+			format(str2, sizeof(str2), "(( %s ))", text);
+			SetPlayerChatBubble(playerid, str2, COLOR_WHITE, 30.0, 10000);
+		}
+		return 0;
+	} else {
+		format(mainStr, sizeof(mainStr), "%s mówi: %s", pVars[playerid][pCharName], text);
+		sendDistanceMessage(playerid, 20.0, mainStr, COLOR_GRAY);
+	}
 	return 0;
+}
+
+sampCallback:OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid) {
+	GetPlayerHealth(damagedid, pVars[damagedid][pHp]);
+	return 1;
 }
 
 sampCallback:OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid) {
@@ -233,6 +271,10 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");			
 			}
 			
+			if(strlen(inputtext) < 2 || strlen(inputtext) > 32) {
+				return ShowPlayerDialog(playerid, DIALOG_REGISTER_PASS, DIALOG_STYLE_INPUT, "Krok 3/3: has³o", "Podaj proszê has³o, za pomoc¹ którego bêdziesz siê logowaæ.", "Zapisz", "Od nowa");
+			}
+			
 			new charsCount;
 			new tmpQuery[64];
 			
@@ -279,10 +321,10 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			TogglePlayerSpectating(playerid, 0);
 			
 			format(mainStr, sizeof(mainStr), "{66FFCC}> Postaæ utworzona. Przed kolejnym wejœciem na serwer ustaw nick SA-MP na {FFFFFF}%s. {66FFCC}Pamiêtaj has³o!", pVars[playerid][pCharName2]);
-			SendClientMessage(playerid, -1, mainStr);
+			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 			
 			format(mainStr, sizeof(mainStr), "{A52A2A}Witaj, %s (UID %d, ID %d). Mi³ej gry, za³ó¿ profil na naszym forum!", pVars[playerid][pCharName], pVars[playerid][pUid], playerid);
-			SendClientMessage(playerid, -1, mainStr);
+			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 		}
 		case DIALOG_LOGIN: {
 			if(!response) {
@@ -330,7 +372,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				loadPlayerValues(playerid);
 				
 				format(mainStr, sizeof(mainStr), "{A52A2A}Witaj, %s (UID %d, ID %d). Mi³ej gry!", pVars[playerid][pCharName], pVars[playerid][pUid], playerid);
-				SendClientMessage(playerid, -1, mainStr);
+				SendClientMessage(playerid, COLOR_WHITE, mainStr);
 			} else {
 				format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", pVars[playerid][pCharName]);
 				return ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");				

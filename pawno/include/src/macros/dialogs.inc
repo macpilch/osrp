@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: dialogs.inc
 	Date: 25.07.2022
-	Modified: 30.07.2022
+	Modified: 31.07.2022
 */
 
 #if !defined _DIALOGS_
