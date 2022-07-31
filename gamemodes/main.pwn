@@ -17,13 +17,16 @@
 #include "src\macros\defines"
 #include "src\macros\dialogs"
 #include "src\enums\player"
+#include "src\enums\vehicle"
 #include "src\core\vars"
 #include "src\core\arrays"
 #include "src\core\main_publics"
 #include "src\core\player_publics"
+#include "src\core\vehicle_publics"
 #include "src\commands\player_cmds"
 #include "src\core\global_functions"
 #include "src\core\player_functions"
+#include "src\core\vehicle_functions"
 #include "src\systems\timers"
 
 main() {

@@ -130,22 +130,77 @@ CMD:freezeplayer(playerid, params[]) {
 	return 1;
 }
 
-CMD:godmode(playerid, params[]) {
-	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK) {
-		if(pVars[playerid][pIsAdminDuty]) {
-			if(!pVars[playerid][pIsGodMode]) {
+CMD:godmode(playerid)
+{
+	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
+	{
+		if(pVars[playerid][pIsAdminDuty] == true)
+		{
+			if(!pVars[playerid][pIsGodMode])
+			{
 				pVars[playerid][pIsGodMode] = true;
-				
 				GetPlayerHealth(playerid, pVars[playerid][pHp]);
 				SetPlayerHealth(playerid, 999999);
 				SendClientMessage(playerid, 0xFFFFFF, "{00FF00}[Admin]{FFFFFF}: W³¹czono godmode.");
-			} else {
+				return 1;
+			}
+			else
+			{
 				pVars[playerid][pIsGodMode] = false;
-				
 				SetPlayerHealth(playerid, pVars[playerid][pHp]);
 				SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[Admin]{FFFFFF}: Wy³¹czono godmode.");
 			}
 		}
+	}
+	return 1;
+}
+
+CMD:giveweapon(playerid, params[])
+{
+	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
+	{
+		if(pVars[playerid][pIsAdminDuty])
+		{
+			new weaponId, ammo;
+			if(sscanf(params, "ii", weaponId, ammo))
+			{
+				SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /giveweapon [Id broni][ilosc amunicji].");
+				return 1;
+			}
+			
+			GivePlayerWeapon(playerid, weaponId, ammo);
+			SendClientMessage(playerid, 0xFFFFFF, "{00FF00}[Admin]{FFFFFF}: Otrzymano broñ.");
+		}
+		else
+		{
+			return 1;
+		}
+		
+	}
+	return 1;
+}
+
+CMD:spawnvehicle(playerid, params[])
+{
+	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
+	{
+		if(pVars[playerid][pIsAdminDuty])
+		{
+			new vehicleId, vehicleModelId;
+			if(sscanf(params, "i", vehicleModelId))
+			{
+				
+				return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /spawnvehicle [model pojazdu].");
+			}
+			
+			GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+			
+			vehicleId = CreateVehicle(vehicleModelId, pVars[playerid][pX] + 1.0, pVars[playerid][pY], pVars[playerid][pZ], 0, -1, -1, -1);
+			
+			return 1;
+		}
+		
+		return 1;
 	}
 	return 1;
 }
