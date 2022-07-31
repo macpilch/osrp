@@ -180,7 +180,7 @@ CMD:giveweapon(playerid, params[])
 		}
 		else
 		{
-			
+			return 1;
 		}
 		
 	}
