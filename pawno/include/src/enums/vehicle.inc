@@ -3,11 +3,13 @@
 
 enum VehicleData
 {
-	vUid,
-	vGuid,
-	vAccName[24],
-	vModelId,
-	Float: vFuel,
+	vDbId, //id from database
+	vId,   // id in game
+	vUid,  // vehicle owner
+	vGuid, // vehicle character owner
+	vAccName[24], // vehicle owner name
+	vModelId, // vehicle modelid
+	Float: vFuel, 
 	Float: vFuelTank
 	
 }

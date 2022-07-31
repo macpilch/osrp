@@ -14,7 +14,7 @@ new mainStr[512];
 new queryStr[512];
 
 new pVars[MAX_PLAYERS][PlayerData];
-//new vVars[MAX_VEHICLES][VehicleData];
+new vVars[20][VehicleData];
 
 new charManName[MAX_CHARS_NAMES][CharName] = {
 	{"Marcin", false},

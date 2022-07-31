@@ -132,22 +132,22 @@ CMD:freezeplayer(playerid, params[]) {
 
 CMD:godmode(playerid)
 {
-	if(pVar[playerid][pAccRank] >= SUPPORT_RANK && pVar[playerid][pAccRank] <= HEADADMIN_RANK)
+	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
 	{
-		if(pVar[playerid][pIsAdminDuty] == true)
+		if(pVars[playerid][pIsAdminDuty] == true)
 		{
-			if(!pVar[playerid][pIsGodMode])
+			if(!pVars[playerid][pIsGodMode])
 			{
-				pVar[playerid][pIsGodMode] = true;
-				GetPlayerHealth(playerid, pVar[playerid][pHp]);
+				pVars[playerid][pIsGodMode] = true;
+				GetPlayerHealth(playerid, pVars[playerid][pHp]);
 				SetPlayerHealth(playerid, 999999);
 				SendClientMessage(playerid, 0xFFFFFF, "{00FF00}[Admin]{FFFFFF}: W³¹czono godmode.");
 				return 1;
 			}
 			else
 			{
-				pVar[playerid][pIsGodMode] = false;
-				SetPlayerHealth(playerid, pVar[playerid][pHp]);
+				pVars[playerid][pIsGodMode] = false;
+				SetPlayerHealth(playerid, pVars[playerid][pHp]);
 				SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[Admin]{FFFFFF}: Wy³¹czono godmode.");
 				return 1;
 			}
@@ -164,9 +164,9 @@ CMD:godmode(playerid)
 
 CMD:giveweapon(playerid, params[])
 {
-	if(pVar[playerid][pAccRank] >= SUPPORT_RANK && pVar[playerid][pAccRank] <= HEADADMIN_RANK)
+	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
 	{
-		if(pVar[playerid][pIsAdminDuty])
+		if(pVars[playerid][pIsAdminDuty])
 		{
 			new weaponId, ammo;
 			if(sscanf(params, "ii", weaponId, ammo))
@@ -183,6 +183,31 @@ CMD:giveweapon(playerid, params[])
 			return 1;
 		}
 		
+	}
+	return 1;
+}
+
+CMD:spawnvehicle(playerid, params[])
+{
+	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
+	{
+		if(pVars[playerid][pIsAdminDuty])
+		{
+			new vehicleId, vehicleModelId;
+			if(sscanf(params, "i", vehicleModelId))
+			{
+				
+				return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /spawnvehicle [model pojazdu].";
+			}
+			
+			GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+			
+			vehicleId = CreateVehicle(vehicleModelId, pVars[playerid][pX] + 1.0, pVars[playerid][pY], pVars[playerid][pZ], 0, -1, -1, -1);
+			
+			return 1;
+		}
+		
+		return 1;
 	}
 	return 1;
 }
