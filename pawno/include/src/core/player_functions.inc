@@ -179,7 +179,7 @@ stock setPlayerBw(playerid, time)
 {
 	TogglePlayerControllable(playerid, 0);
 	PlayerTextDrawShow(playerid, bwText[playerid]);
-	ApplyAnimation(playerid, "BEACH", "Lay_Bac_Loop", 4.1, 1, 1, 1, 1, 1, 1);
+	ApplyAnimation(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
 	SetTimerEx("bwTimer", time, false, "i", playerid);
 	return 1;
 }
