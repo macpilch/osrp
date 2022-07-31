@@ -63,6 +63,17 @@ stock createPlayerTextDraws(playerid) {
 	PlayerTextDrawSetShadow(playerid, damageRedScreen[playerid], 0);
 	PlayerTextDrawSetOutline(playerid, damageRedScreen[playerid], 0);
 	PlayerTextDrawFont(playerid, damageRedScreen[playerid], 0);	
+	
+	bwText[playerid] = CreatePlayerTextDraw(playerid, 509.282592, 280.000030, "BW");
+	PlayerTextDrawLetterSize(playerid, bwText[playerid], 0.315534, 1.430833);
+	PlayerTextDrawAlignment(playerid, bwText[playerid], 2);
+	PlayerTextDrawColor(playerid, bwText[playerid], -1);
+	PlayerTextDrawSetShadow(playerid, bwText[playerid], 0);
+	PlayerTextDrawSetOutline(playerid, bwText[playerid], 1);
+	PlayerTextDrawBackgroundColor(playerid, bwText[playerid], 51);
+	PlayerTextDrawFont(playerid, bwText[playerid], 1);
+	PlayerTextDrawSetProportional(playerid, bwText[playerid], 1);
+	
 	return 1;
 }
 
@@ -161,6 +172,14 @@ stock savePlayerValues(playerid) {
 	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pX], pVars[playerid][pY], 
 	pVars[playerid][pZ], pVars[playerid][pCharName]);
 	mysql_query(queryStr);
+	return 1;
+}
+
+stock setPlayerBw(playerid, time)
+{
+	TogglePlayerControllable(playerid, 0);
+	PlayerTextDrawShow(playerid, bwText[playerid]);
+	SetTimerEx("bwtimer", time, false, "i", playerid);
 	return 1;
 }
 

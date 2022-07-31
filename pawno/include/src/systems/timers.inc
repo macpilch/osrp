@@ -98,4 +98,11 @@ Callback:hideOOCWarning(playerid) {
 	return 1;
 }
 
+Callback:bwTimer(playerid)
+{
+	TogglePlayerControllable(playerid, 1);
+	PlayerTextDrawHide(playerid, bwText[playerid]);
+	return 1;
+}
+
 #endif 
