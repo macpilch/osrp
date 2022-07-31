@@ -213,3 +213,52 @@ CMD:spawnvehicle(playerid, params[])
 	}
 	return 1;
 }
+
+CMD:spectateplayer(playerid, params[])
+{
+	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
+	{
+		if(pVars[playerid][pIsAdminDuty])
+		{
+			new toPlayerId;
+			if(sscanf(params, "i", toPlayerId))
+			{
+				return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /spectateplayer [Id gracza].");
+			}
+			
+			
+			if(!pVars[playerid][pIsSpectating])
+			{
+				
+				pVars[playerid][pIsSpectating] = true;
+				GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+				
+				TogglePlayerSpectating(playerid, 1);
+				PlayerSpectatePlayer(playerid, toPlayerId);
+				
+				return 1;
+				
+			}
+			else
+			{
+				
+				pVars[playerid][pIsSpectating] = false;
+				
+				TogglePlayerSpectating(playerid, 0);
+				
+				
+				return 1;
+			}
+			
+			return 1;
+		}
+		else
+		{
+			return 1;
+		}
+		
+		return 1;
+	}
+	
+	return 1;
+}

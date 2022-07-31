@@ -145,6 +145,9 @@ sampCallback:OnPlayerDeath(playerid, killerid, reason) {
 	
 	format(str, sizeof(str), "[LOG] Callback: OnPlayerDeath -- Called! (%d ms).", (GetTickCount() - callSec));
 	print(str);
+	
+	setPlayerBw(playerid, 59000);
+	
 	return 1;
 }
 
