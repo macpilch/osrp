@@ -41,12 +41,10 @@ enum PlayerData {
 	pBank,
 	pBw,
 	pAj,
-<<<<<<< HEAD
 	bool: pIsGodMode,
 	bool: pIsSpectating,
-=======
 	bool:pIsGodMode,
->>>>>>> 79b9319e65f0788e89400a757e77135624680985
+	bool:pIsBw,
 	Float:pX,
 	Float:pY,
 	Float:pZ,

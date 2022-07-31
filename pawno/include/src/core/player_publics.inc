@@ -109,11 +109,19 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 }
 
 sampCallback:OnPlayerSpawn(playerid) {
+	
+	if(pVars[playerid][pIsBw])
+	{
+		setPlayerBw(playerid, 59000);
+	}
+	
 	SetPlayerHealth(playerid, pVars[playerid][pHp]);
 	SetPlayerArmour(playerid, pVars[playerid][pAp]);
 	GivePlayerMoney(playerid, pVars[playerid][pMoney]);
 	SetPlayerSkin(playerid, pVars[playerid][pSkin]);
 	TextDrawShowForPlayer(playerid, website);
+	
+	
 	
 	mainStr[0] = EOS;
 	
@@ -146,7 +154,7 @@ sampCallback:OnPlayerDeath(playerid, killerid, reason) {
 	format(str, sizeof(str), "[LOG] Callback: OnPlayerDeath -- Called! (%d ms).", (GetTickCount() - callSec));
 	print(str);
 	
-	setPlayerBw(playerid, 59000);
+	pVars[playerid][pIsBw] = true;
 	
 	return 1;
 }
