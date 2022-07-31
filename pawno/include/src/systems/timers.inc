@@ -102,6 +102,8 @@ Callback:hideOOCWarning(playerid) {
 Callback:bwTimer(playerid)
 {
 	pVars[playerid][pIsBw] = false;
+	pVars[playerid][pHp] = 20.0;
+	SetPlayerHealth(playerid, pVars[playerid][pHp]);
 	TogglePlayerControllable(playerid, 1);
 	PlayerTextDrawHide(playerid, bwText[playerid]);
 	ClearAnimations(playerid);
