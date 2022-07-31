@@ -9,6 +9,15 @@
 #if !defined _PLAYER_CMDS_
 #define _PLAYER_CMDS_
 
+CMD:help(playerid, params[]) {
+	mainStr[0] = EOS;
+	
+	strcat(mainStr, "{FFFFFF}0\tJak zacz¹æ?\n0\tPodstawowe komendy\n");
+	strcat(mainStr, "0\tBW\n0\tAnimacje\n0\tPojazdy");
+	ShowPlayerDialog(playerid, DIALOG_HELP, DIALOG_STYLE_LIST, "Pomoc > Wybór kategorii pomocy", mainStr, "Wybierz", "Anuluj");
+	return 1;
+}
+
 CMD:me(playerid, params[]) {
 	new str[512];
 	
@@ -54,8 +63,8 @@ CMD:stats(playerid, params[]) {
 	mainStr[0] = EOS;
 	
 	format(tmpStr, sizeof(tmpStr), "%s (UID %d, ID %d, GUID %d) [%s]", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, pVars[playerid][pGuid], pVars[playerid][pIp]);
-	format(mainStr, sizeof(mainStr), "Czas gry:\t\t\t%dh %dm\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nDolary:\t\t\t\t$%d\nBank:\t\t\t\t$%d\nSkin:\t\t\t\t%d", 
-	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAj], pVars[playerid][pBw], pVars[playerid][pHp], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pSkin]);
+	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nP³eæ:\t\t\t\t%s\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nSkin:\t\t\t\t%d\nOstatni skin:\t\t\t%d", 
+	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAj], pVars[playerid][pBw], pVars[playerid][pHp], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pSkin], pVars[playerid][pSkin]);
 	ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, tmpStr, mainStr, "OK", "Zamknij");
 	return 1;
 }

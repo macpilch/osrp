@@ -16,6 +16,7 @@
 #define DIALOG_REGISTER_PASS 5
 #define DIALOG_LOGIN_PASS 6
 #define DIALOG_LOGIN_CHANGE_CHAR 7
-#define DIALOG_STATS 8
+#define DIALOG_HELP 8
+#define DIALOG_STATS 9
 
 #endif 

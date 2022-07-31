@@ -19,10 +19,10 @@ task globalTimer[1000]() {
 	foreach(Player, i) {
 		playerAFKTime[i]++;
 		
-		if(playerAFKTime[i]) {
-			new h, mins, secs;
+		if(playerAFKTime[i] != 1) {
+			static h, mins, secs;
 			
-			if(playerAFKTime[i] == 2) {
+			if(playerAFKTime[i] == 3) {
 				gettime(h, mins, secs);
 			}
 			
@@ -31,18 +31,19 @@ task globalTimer[1000]() {
 			} else {
 				format(mainStr, sizeof(mainStr), "%s (%d, %dh)\n(AFK od %02d:%02d)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
 			}
-		}
-		
-		if(pVars[i][pHours] > 20) {
-			format(mainStr, sizeof(mainStr), "%s (%d)", pVars[i][pCharName], i);
 		} else {
-			format(mainStr, sizeof(mainStr), "%s (%d, %dh)", pVars[i][pCharName], i, pVars[i][pHours]);
+			if(pVars[i][pHours] > 20) {
+				format(mainStr, sizeof(mainStr), "%s (%d)", pVars[i][pCharName], i);
+			} else {
+				format(mainStr, sizeof(mainStr), "%s (%d, %dh)", pVars[i][pCharName], i, pVars[i][pHours]);
+			}
 		}
 		
 		PlayerTextDrawHide(i, damageRedScreen[i]);
 		UpdateDynamic3DTextLabelText(pVars[i][p3dInfo], COLOR_WHITE, mainStr);
-	
-		if(!playerAFKTime[i]) {
+		
+		// Narazie niech bedzie na 1
+		if(playerAFKTime[i] == 1) {
 			pVars[i][pSeconds]++;
 			
 			if(pVars[i][pSeconds] == 60) {

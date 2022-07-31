@@ -165,10 +165,6 @@ sampCallback:OnPlayerText(playerid, text[]) {
 	
 	format(textStr, sizeof(textStr), "%s", text);
 	
-	for(new i = 0; i < strlen(textStr); i++) {
-		printf("[DEBUG] Indeks: %d - %s\n", i, textStr[i]);
-	}
-	
 	if(strfind(textStr, "!!", false) != -1) {
 		format(mainStr, sizeof(mainStr), "%s krzyczy: %s", pVars[playerid][pCharName], textStr);
 		sendDistanceMessage(playerid, 70.0, mainStr, COLOR_GRAY);
