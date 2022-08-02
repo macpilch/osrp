@@ -63,7 +63,13 @@ task globalTimer[1000]() {
 		
 		if(pVars[i][pHp] < 1 || pVars[i][pHp] == 1)
 		{
-			setPlayerBw(i);
+			isBW[i] = true;
+			
+		}
+		
+		if(isBw[i])
+		{
+			setPlayerBW(i);
 		}
 	}
 }
