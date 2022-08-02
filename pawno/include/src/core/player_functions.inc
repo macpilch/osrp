@@ -180,6 +180,8 @@ stock savePlayerValues(playerid) {
 
 stock setPlayerBw(playerid, time)
 {
+	pVars[playerid][pHp] =  999999;
+	SetPlayerHealth(playerid, player[playerid][pHp]);
 	TogglePlayerControllable(playerid, 0);
 	PlayerTextDrawShow(playerid, bwText[playerid]);
 	ClearAnimations(playerid);
