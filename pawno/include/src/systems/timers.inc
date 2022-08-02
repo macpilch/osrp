@@ -18,6 +18,7 @@ task globalTimer[1000]() {
 	
 	foreach(Player, i) {
 		playerAFKTime[i]++;
+		GetPlayerHealth(i, pVars[i][pHp]);
 		
 		if(playerAFKTime[i] != 1) {
 			static h, mins, secs;
@@ -37,6 +38,20 @@ task globalTimer[1000]() {
 			} else {
 				format(mainStr, sizeof(mainStr), "%s (%d, %dh)", pVars[i][pCharName], i, pVars[i][pHours]);
 			}
+		}
+		
+		
+		
+		if(pVars[i][pHp] < 1 || pVars[i][pHp] == 1)
+		{
+			isBW[i] = true;
+			
+		}
+		
+		if(isBw[i])
+		{
+			setPlayerBW(i);
+			format(mainStr, sizeof(mainStr), "%s (%d)\nnieprzytomny", pVars[i][pCharName], i);
 		}
 		
 		PlayerTextDrawHide(i, damageRedScreen[i]);
@@ -59,18 +74,7 @@ task globalTimer[1000]() {
 			}
 		}
 		
-		GetPlayerHealth(i, pVars[i][pHp]);
 		
-		if(pVars[i][pHp] < 1 || pVars[i][pHp] == 1)
-		{
-			isBW[i] = true;
-			
-		}
-		
-		if(isBw[i])
-		{
-			setPlayerBW(i);
-		}
 	}
 }
 
@@ -114,11 +118,17 @@ Callback:hideOOCWarning(playerid) {
 
 Callback:bwTimer(playerid) 
 {
+	new mainStr[0];
+	mainStr[0] = EOS;
 	isBW[playerid] = false;
 	pVars[playerid][pHp] = 20.0;
+	format(mainStr, sizeof(mainStr), "%s (%d)", pVars[playerid][pCharName], playerid);
+	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_WHITE, mainStr);
+	PlayerTextDrawHide(playerid, bwText[playerid]);
 	SetPlayerHealth(playerid, pVars[playerid][pHp]);
 	TogglePlayerControllable(playerid, 1);
 	ClearAnimations(playerid);
+	
 	
 	return 1;
 }
