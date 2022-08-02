@@ -11,21 +11,26 @@
 
 /*
 	Wysylanie wiadomosci na dystans.
+	Im dalej inni s¹ od gracza, który wys³a³ wiadomoœæ 
+	tym jest bardziej ciemniejsza.
 	Narazie najprostrza wersja do testow.
 */
-stock sendDistanceMessage(playerid, Float:range, str[], color) {
+stock sendDistanceMessage(playerid, Float:range, str[], color, color2, color3, color4) {
 	new Float:x, Float:y, Float:z;
 	
 	GetPlayerPos(playerid, x, y, z);
 	
 	foreach(Player, i) {
 		if(IsPlayerInRangeOfPoint(i, range, x, y, z)) {
-			if(i == playerid) {
-				SendClientMessage(playerid, COLOR_WHITE, str);
-				continue;
+			if(range <= (range / 4)) {
+				SendClientMessage(i, color, str);
+			} else if(range <= (range / 3)) {
+				SendClientMessage(i, color2, str);
+			} else if(range <= (range / 2)) {
+				SendClientMessage(i, color3, str);
+			} else {
+				SendClientMessage(i, color4, str);
 			}
-			
-			SendClientMessage(i, color, str);
 		}
 	}
 	return 1;
@@ -79,13 +84,13 @@ stock createPlayerTextDraws(playerid) {
 stock loadPlayerValues(playerid) {
 	queryStr[0] = EOS;
 	
-	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `AccRank`, `IP`, `Sex`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `AccRank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	mysql_store_result();
 	
 	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>iis[24]iiiiffiiiiifff", 
-	pVars[playerid][pGuid], pVars[playerid][pAccRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney],
+	sscanf(queryStr, "p<|>iis[24]iiiiiffiiiiifff", 
+	pVars[playerid][pGuid], pVars[playerid][pAccRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney],
 	pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	
 	mysql_free_result();
@@ -109,11 +114,13 @@ stock setPlayerDefaultValues(playerid) {
 	
 	SetPlayerName(playerid, pVars[playerid][pAccName]);
 	GetPlayerIp(playerid, pVars[playerid][pIp], 24);
+	SetCameraBehindPlayer(playerid);
 	ResetPlayerMoney(playerid);
 	ResetPlayerWeapons(playerid);
 	
 	pVars[playerid][pAccRank] = 0;
 	pVars[playerid][pSex] = MAN_SEX;
+	pVars[playerid][pStrength] = 3000;
 	pVars[playerid][pHours] = 0;
 	pVars[playerid][pMinutes] = 0;
 	pVars[playerid][pSeconds] = 0;
@@ -148,6 +155,7 @@ stock resetPlayerValues(playerid) {
 
 	pVars[playerid][pAccRank] = 0;
 	pVars[playerid][pSex] = 0;
+	pVars[playerid][pStrength] = 0;
 	pVars[playerid][pHours] = 0;
 	pVars[playerid][pMinutes] = 0;
 	pVars[playerid][pSeconds] = 0;
@@ -174,20 +182,34 @@ stock savePlayerValues(playerid) {
 	
 	queryStr[0] = EOS;
 	
-	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `Hp` = '%f', `Ap` = '%f', `Skin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'", 
-	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pX], pVars[playerid][pY], 
+	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `Hp` = '%f', `Ap` = '%f', `Skin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'", 
+	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pX], pVars[playerid][pY], 
 	pVars[playerid][pZ], pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	return 1;
 }
 
-stock setPlayerBW(playerid, time) {
-	TogglePlayerControllable(playerid, 0);
-	PlayerTextDrawShow(playerid, bwText[playerid]);
-	ClearAnimations(playerid);
-	ApplyAnimation(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
-	SetTimerEx("bwTimer", time, false, "i", playerid);
+stock setPlayerBW(playerid) {
+	
 	return 1;
+}
+
+stock getPlayerStrengthPower(playerid) {
+	switch(pVars[playerid][pStrength]) {
+		case 3000 .. 3200: {
+			return 5;
+		}
+		case 3201 .. 3500: {
+			return 8;
+		}
+		case 3501 .. 3800: {
+			return 13;
+		}
+		case 3801 .. 4400: {
+			return 15;
+		}
+	}
+	return 0;
 }
 
 #endif 

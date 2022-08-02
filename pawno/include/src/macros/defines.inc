@@ -20,9 +20,9 @@
 		forward %0(%1); public %0(%1)
 
 #define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "server_900"
-#define MYSQL_PASS "pekic42sht"
-#define MYSQL_DB "server_900_srv"
+#define MYSQL_USER "server_904"
+#define MYSQL_PASS "rtpbkoxnje"
+#define MYSQL_DB "server_904_srv"
 
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_GRAY 0xCDC9C9FF

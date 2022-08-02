@@ -30,6 +30,7 @@ enum PlayerData {
 	pPass[32],
 	pIp[24],
 	pSex,
+	pStrength,
 	pHours,
 	pMinutes,
 	pSeconds,

@@ -18,6 +18,42 @@ CMD:help(playerid, params[]) {
 	return 1;
 }
 
+CMD:w(playerid, params[]) {
+	new id, pmStr[256];
+	
+	if(sscanf(params, "is[256]", id, pmStr)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /w [ID] [Wiadomoœæ]");
+	}
+	
+	if(id == playerid) {
+		return GameTextForPlayer(playerid, "~y~Nie mozesz wyslac wiadomosci do siebie.", 5000, 3);
+	}
+	
+	if(!IsPlayerConnected(id)) {
+		return GameTextForPlayer(playerid, "~r~Taki gracz nie istnieje.", 5000, 3);
+	}
+	
+	format(mainStr, sizeof(mainStr), "(( > %s (%d): %s ))", pVars[id][pCharName], id, pmStr);
+	SendClientMessage(playerid, COLOR_WHITE, mainStr);
+	
+	format(mainStr, sizeof(mainStr), "(( %s (%d): %s ))", pVars[playerid][pCharName], playerid, pmStr);
+	SendClientMessage(id, COLOR_WHITE, mainStr);
+	return 1;
+}
+
+CMD:c(playerid, params[]) {
+	new str[256];
+	
+	if(sscanf(params, "s[256]", str)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /c [Tekst]");
+	}
+	
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "%s szepcze: %s", pVars[playerid][pCharName], str);
+	sendDistanceMessage(playerid, 10.0, mainStr, COLOR_WHITE, COLOR_GRAY, COLOR_GRAY, COLOR_GRAY);
+	return 1;
+}
+
 CMD:a(playerid, params[]) {
 	mainStr[0] = EOS;
 	
@@ -26,10 +62,10 @@ CMD:a(playerid, params[]) {
 			if(isAdminDuty[i]) {
 				format(mainStr, sizeof(mainStr), "%sADM %d\t\t\t%s\n", mainStr, pVars[i][pAccRank], pVars[i][pAccName]);
 			} else {
-				GameTextForPlayer(playerid, "", 5000, 3);
+				GameTextForPlayer(playerid, "~r~Nie znaleziono ~w~graczy~n~~r~Spelniajacych kryteria.", 5000, 3);
 			}
 		} else {
-			GameTextForPlayer(playerid, "", 5000, 3);
+			GameTextForPlayer(playerid, "~r~Nie znaleziono ~w~graczy~n~~r~Spelniajacych kryteria.", 5000, 3);
 		}
 	}
 	
@@ -44,8 +80,8 @@ CMD:me(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /me [Akcja]");
 	}
 	
-	format(str, sizeof(str), "{BA55D3}** %s %s", pVars[playerid][pCharName], str);
-	sendDistanceMessage(playerid, 30.0, str, COLOR_WHITE);
+	format(str, sizeof(str), "{8D8098}** %s %s", pVars[playerid][pCharName], str);
+	sendDistanceMessage(playerid, 30.0, str, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE);
 	return 1;
 }
 
@@ -56,8 +92,8 @@ CMD:do(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /do [Akcja]");
 	}
 	
-	format(str, sizeof(str), "{9370DB}** %s (( %s ))", str, pVars[playerid][pCharName]);
-	sendDistanceMessage(playerid, 30.0, str, COLOR_WHITE);
+	format(str, sizeof(str), "{666287}** %s (( %s ))", str, pVars[playerid][pCharName]);
+	sendDistanceMessage(playerid, 30.0, str, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE);
 	return 1;
 }
 
@@ -82,8 +118,8 @@ CMD:stats(playerid, params[]) {
 	mainStr[0] = EOS;
 	
 	format(tmpStr, sizeof(tmpStr), "%s (UID %d, ID %d, Globalne %d) [%s]", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, pVars[playerid][pGuid], pVars[playerid][pIp]);
-	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nP³eæ:\t\t\t\t%s\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nSkin:\t\t\t\t%d\nOstatni skin:\t\t\t%d", 
-	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAj], pVars[playerid][pBw], pVars[playerid][pHp], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pSkin], pVars[playerid][pSkin]);
+	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nSi³a:\t\t\t\t%d\nP³eæ:\t\t\t\t%s\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nSkin:\t\t\t\t%d\nOstatni skin:\t\t\t%d", 
+	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAj], pVars[playerid][pBw], pVars[playerid][pHp], pVars[playerid][pStrength], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pSkin], pVars[playerid][pSkin]);
 	ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, tmpStr, mainStr, "OK", "Zamknij");
 	return 1;
 }

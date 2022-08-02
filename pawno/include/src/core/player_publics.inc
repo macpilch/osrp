@@ -114,10 +114,6 @@ sampCallback:OnPlayerSpawn(playerid) {
 	SetPlayerSkin(playerid, pVars[playerid][pSkin]);
 	TextDrawShowForPlayer(playerid, website);
 	
-	if(isBW[playerid]) {
-		setPlayerBW(playerid, 60000);
-	}
-	
 	mainStr[0] = EOS;
 	
 	if(pVars[playerid][pHours] > 20) {
@@ -132,6 +128,10 @@ sampCallback:OnPlayerSpawn(playerid) {
 		SetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	} else {
 		SetPlayerPos(playerid, DEFAULT_POS_X, DEFAULT_POS_Y, DEFAULT_POS_Z);
+	}
+	
+	if(isBW[playerid]) {
+		setPlayerBW(playerid);
 	}
 	
 	new str[64];
@@ -162,27 +162,27 @@ sampCallback:OnPlayerText(playerid, text[]) {
 	
 	if(strfind(textStr, "!!", false) != -1) {
 		format(mainStr, sizeof(mainStr), "%s krzyczy: %s", pVars[playerid][pCharName], textStr);
-		sendDistanceMessage(playerid, 70.0, mainStr, COLOR_GRAY);
+		sendDistanceMessage(playerid, 70.0, mainStr, COLOR_GRAY, COLOR_GRAY, COLOR_GRAY, COLOR_GRAY);
 		return 0;
 	} else if(strfind(textStr, ":)", false) != -1) {
 		format(mainStr, sizeof(mainStr), "* %s uœmiecha siê.", pVars[playerid][pCharName]);
-		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE);
+		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		return 0;
 	} else if(strfind(textStr, ":D", false) != -1 || strfind(textStr, ":d", false) != -1 || strfind(text[0], "xD", false) != -1) {
 		format(mainStr, sizeof(mainStr), "* %s œmieje siê.", pVars[playerid][pCharName]);
-		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE);
+		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		return 0;
 	} else if(strfind(textStr, ":P", false) != -1 || strfind(textStr, ":p", false) != -1) {
 		format(mainStr, sizeof(mainStr), "* %s wystawia jêzyk.", pVars[playerid][pCharName]);
-		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE);
+		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		return 0;
 	} else if(strfind(textStr, ":<", false) != -1) {
 		format(mainStr, sizeof(mainStr), "* %s krzywi siê.", pVars[playerid][pCharName]);
-		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE);
+		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		return 0;		
 	} else if(strfind(text[0], ":(", false) != -1) {
 		format(mainStr, sizeof(mainStr), "* %s robi smutn¹ minê.", pVars[playerid][pCharName]);
-		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE);
+		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		return 0;
 	} else if(strfind(textStr[0], ".", false) != -1) {
 		if(strfind(textStr[1], " ", false) != -1) {
@@ -206,7 +206,7 @@ sampCallback:OnPlayerText(playerid, text[]) {
 		return 0;
 	} else {
 		format(mainStr, sizeof(mainStr), "%s mówi: %s", pVars[playerid][pCharName], textStr);
-		sendDistanceMessage(playerid, 20.0, mainStr, COLOR_GRAY);
+		sendDistanceMessage(playerid, 20.0, mainStr, COLOR_GRAY, COLOR_GRAY, COLOR_GRAY, COLOR_GRAY);
 	}
 	return 0;
 }
@@ -218,7 +218,10 @@ sampCallback:OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid) {
 }
 
 sampCallback:OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid) {
+	//new power = getPlayerStrengthPower(issuerid);
+	
 	GetPlayerHealth(playerid, pVars[playerid][pHp]);
+	//SetPlayerHealth(playerid, pVars[playerid][pHp] - power);
 	SetTimerEx("healthDamage", 100, false, "i", playerid);
 	return 1;
 }
