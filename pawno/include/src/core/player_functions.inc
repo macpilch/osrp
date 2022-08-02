@@ -189,20 +189,16 @@ stock savePlayerValues(playerid) {
 	return 1;
 }
 
-<<<<<<< HEAD
-stock setPlayerBw(playerid, time)
+
+stock setPlayerBW(playerid) 
 {
-	pVars[playerid][pHp] =  999999;
-	SetPlayerHealth(playerid, player[playerid][pHp]);
+	pVars[playerid][pHp] = 999999;
 	TogglePlayerControllable(playerid, 0);
-	PlayerTextDrawShow(playerid, bwText[playerid]);
 	ClearAnimations(playerid);
 	ApplyAnimation(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
-	SetTimerEx("bwTimer", time, false, "i", playerid);
-=======
-stock setPlayerBW(playerid) {
+	SetPlayerHealth(playerid, pVars[playerid][pHp]);
+	SetTimerEx("bwTimer", 60000, "false", "i", playerid);
 	
->>>>>>> 5e2dd4e81bd41dc2c5bfe018d950ba6c1695b3e5
 	return 1;
 }
 

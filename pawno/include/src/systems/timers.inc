@@ -58,6 +58,13 @@ task globalTimer[1000]() {
 				pVars[i][pMinutes] = 0;
 			}
 		}
+		
+		GetPlayerHealth(i, pVars[i][pHp]);
+		
+		if(pVars[i][pHp] < 1 || pVars[i][pHp] == 1)
+		{
+			setPlayerBw(i);
+		}
 	}
 }
 
@@ -99,7 +106,13 @@ Callback:hideOOCWarning(playerid) {
 	return 1;
 }
 
-Callback:bwTimer(playerid) {
+Callback:bwTimer(playerid) 
+{
+	isBW[playerid] = false;
+	pVars[playerid][pHp] = 20.0;
+	SetPlayerHealth(playerid, pVars[playerid][pHp]);
+	TogglePlayerControllable(playerid, 1);
+	ClearAnimations(playerid);
 	
 	return 1;
 }
