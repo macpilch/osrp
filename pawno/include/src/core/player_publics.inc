@@ -212,16 +212,14 @@ sampCallback:OnPlayerText(playerid, text[]) {
 }
 
 sampCallback:OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid) {
-	GetPlayerHealth(damagedid, pVars[damagedid][pHp]);
 	GameTextForPlayer(playerid, "~r~Dm. Czekaj!", 1000, 3);
 	return 1;
 }
 
 sampCallback:OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid) {
-	//new power = getPlayerStrengthPower(issuerid);
+	new power = getPlayerStrengthPower(issuerid);
 	
-	GetPlayerHealth(playerid, pVars[playerid][pHp]);
-	//SetPlayerHealth(playerid, pVars[playerid][pHp] - power);
+	SetPlayerHealth(playerid, pVars[playerid][pHp] - power);
 	SetTimerEx("healthDamage", 100, false, "i", playerid);
 	return 1;
 }

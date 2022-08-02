@@ -61,9 +61,9 @@ task globalTimer[1000]() {
 		
 		GetPlayerHealth(i, pVars[i][pHp]);
 		
-		if(pVars[i][pHp] < 1 || pVars[i][pHp] == 1)
+		if(pVars[i][pHp] <= 1)
 		{
-			setPlayerBw(i);
+			setPlayerBW(i);
 		}
 	}
 }

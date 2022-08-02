@@ -197,7 +197,7 @@ stock setPlayerBW(playerid)
 	ClearAnimations(playerid);
 	ApplyAnimation(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
 	SetPlayerHealth(playerid, pVars[playerid][pHp]);
-	SetTimerEx("bwTimer", 60000, "false", "i", playerid);
+	SetTimerEx("bwTimer", 60000, false, "i", playerid);
 	
 	return 1;
 }

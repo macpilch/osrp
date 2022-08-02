@@ -64,8 +64,6 @@ CMD:a(playerid, params[]) {
 			} else {
 				GameTextForPlayer(playerid, "~r~Nie znaleziono ~w~graczy~n~~r~Spelniajacych kryteria.", 5000, 3);
 			}
-		} else {
-			GameTextForPlayer(playerid, "~r~Nie znaleziono ~w~graczy~n~~r~Spelniajacych kryteria.", 5000, 3);
 		}
 	}
 	
