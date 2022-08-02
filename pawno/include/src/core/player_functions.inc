@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
-	Modified: 31.07.2022
+	Modified: 02.08.2022
 */
 
 #if !defined PLAYER_FUNCTIONS
@@ -59,7 +59,7 @@ stock createPlayerTextDraws(playerid) {
 	PlayerTextDrawAlignment(playerid, damageRedScreen[playerid], 1);
 	PlayerTextDrawColor(playerid, damageRedScreen[playerid], 0);
 	PlayerTextDrawUseBox(playerid, damageRedScreen[playerid], 1);
-	PlayerTextDrawBoxColor(playerid, damageRedScreen[playerid], 0xFF0000AA);
+	PlayerTextDrawBoxColor(playerid, damageRedScreen[playerid], 0xFF0000EE);
 	PlayerTextDrawSetShadow(playerid, damageRedScreen[playerid], 0);
 	PlayerTextDrawSetOutline(playerid, damageRedScreen[playerid], 0);
 	PlayerTextDrawFont(playerid, damageRedScreen[playerid], 0);	
@@ -73,20 +73,19 @@ stock createPlayerTextDraws(playerid) {
 	PlayerTextDrawBackgroundColor(playerid, bwText[playerid], 51);
 	PlayerTextDrawFont(playerid, bwText[playerid], 1);
 	PlayerTextDrawSetProportional(playerid, bwText[playerid], 1);
-	
 	return 1;
 }
 
 stock loadPlayerValues(playerid) {
 	queryStr[0] = EOS;
 	
-	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `AccRank`, `AdminDuty`, `IP`, `Sex`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `AccRank`, `IP`, `Sex`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	mysql_store_result();
 	
 	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>iiis[24]iiiiffiiiiifff", 
-	pVars[playerid][pGuid], pVars[playerid][pAccRank], pVars[playerid][pIsAdminDuty], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney],
+	sscanf(queryStr, "p<|>iis[24]iiiiffiiiiifff", 
+	pVars[playerid][pGuid], pVars[playerid][pAccRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney],
 	pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	
 	mysql_free_result();
@@ -114,7 +113,6 @@ stock setPlayerDefaultValues(playerid) {
 	ResetPlayerWeapons(playerid);
 	
 	pVars[playerid][pAccRank] = 0;
-	pVars[playerid][pIsAdminDuty] = false;
 	pVars[playerid][pSex] = MAN_SEX;
 	pVars[playerid][pHours] = 0;
 	pVars[playerid][pMinutes] = 0;
@@ -129,6 +127,11 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pX] = 0.0;
 	pVars[playerid][pY] = 0.0;
 	pVars[playerid][pZ] = 0.0;
+	isAdminDuty[playerid] = false;
+	isSpectating[playerid] = false;
+	isGodMode[playerid] = false;
+	isBW[playerid] = false;
+	usedCmdLogin[playerid] = false;
 	return 1;
 }
 
@@ -144,7 +147,6 @@ stock resetPlayerValues(playerid) {
 	format(pVars[playerid][pIp], 24, "%s", NULL);
 
 	pVars[playerid][pAccRank] = 0;
-	pVars[playerid][pIsAdminDuty] = false;
 	pVars[playerid][pSex] = 0;
 	pVars[playerid][pHours] = 0;
 	pVars[playerid][pMinutes] = 0;
@@ -159,9 +161,10 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pX] = 0.0;
 	pVars[playerid][pY] = 0.0;
 	pVars[playerid][pZ] = 0.0;
-	pVars[playerid][pIsAdminDuty] = false;
-	pVars[playerid][pIsBw] = false;
-	pVars[playerid][pIsGodMode] = false;
+	isAdminDuty[playerid] = false;
+	isSpectating[playerid] = false;
+	isGodMode[playerid] = false;
+	isBW[playerid] = false;
 	usedCmdLogin[playerid] = false;
 	return 1;
 }
@@ -178,8 +181,7 @@ stock savePlayerValues(playerid) {
 	return 1;
 }
 
-stock setPlayerBw(playerid, time)
-{
+stock setPlayerBW(playerid, time) {
 	TogglePlayerControllable(playerid, 0);
 	PlayerTextDrawShow(playerid, bwText[playerid]);
 	ClearAnimations(playerid);

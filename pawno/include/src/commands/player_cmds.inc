@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 31.07.2022
+	Modified: 02.08.2022
 */
 
 #if !defined _PLAYER_CMDS_
@@ -15,6 +15,25 @@ CMD:help(playerid, params[]) {
 	strcat(mainStr, "{FFFFFF}0\tJak zacz¹æ?\n0\tPodstawowe komendy\n");
 	strcat(mainStr, "0\tBW\n0\tAnimacje\n0\tPojazdy");
 	ShowPlayerDialog(playerid, DIALOG_HELP, DIALOG_STYLE_LIST, "Pomoc > Wybór kategorii pomocy", mainStr, "Wybierz", "Anuluj");
+	return 1;
+}
+
+CMD:a(playerid, params[]) {
+	mainStr[0] = EOS;
+	
+	foreach(Player, i) {
+		if(pVars[i][pAccRank] >= SUPPORT_RANK && pVars[i][pAccRank] <= HEADADMIN_RANK) {
+			if(isAdminDuty[i]) {
+				format(mainStr, sizeof(mainStr), "%sADM %d\t\t\t%s\n", mainStr, pVars[i][pAccRank], pVars[i][pAccName]);
+			} else {
+				GameTextForPlayer(playerid, "", 5000, 3);
+			}
+		} else {
+			GameTextForPlayer(playerid, "", 5000, 3);
+		}
+	}
+	
+	ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_LIST, "Lista graczy", mainStr, "OK", "Zamknij");
 	return 1;
 }
 
@@ -62,7 +81,7 @@ CMD:stats(playerid, params[]) {
 	
 	mainStr[0] = EOS;
 	
-	format(tmpStr, sizeof(tmpStr), "%s (UID %d, ID %d, GUID %d) [%s]", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, pVars[playerid][pGuid], pVars[playerid][pIp]);
+	format(tmpStr, sizeof(tmpStr), "%s (UID %d, ID %d, Globalne %d) [%s]", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, pVars[playerid][pGuid], pVars[playerid][pIp]);
 	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nP³eæ:\t\t\t\t%s\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nSkin:\t\t\t\t%d\nOstatni skin:\t\t\t%d", 
 	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAj], pVars[playerid][pBw], pVars[playerid][pHp], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pSkin], pVars[playerid][pSkin]);
 	ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, tmpStr, mainStr, "OK", "Zamknij");
@@ -74,12 +93,12 @@ CMD:adminduty(playerid, params[]) {
 		return 1;
 	}
 	
-	if(!pVars[playerid][pIsAdminDuty]) {
-		pVars[playerid][pIsAdminDuty] = true;
+	if(!isAdminDuty[playerid]) {
+		isAdminDuty[playerid] = true;
 			
 		SendClientMessage(playerid, COLOR_WHITE, "{00FF00}[Admin]{00FF00}: Admin Duty w³¹czone!");
 	} else {
-		pVars[playerid][pIsAdminDuty] = false;
+		isAdminDuty[playerid] = false;
 			
 		SendClientMessage(playerid, COLOR_WHITE, "{00FF00}[Admin]{00FF00}: Admin Duty wy³¹czone!");
 	}
@@ -87,7 +106,7 @@ CMD:adminduty(playerid, params[]) {
 }
 
 CMD:givehealth(playerid, params[]) {
-	if(pVars[playerid][pIsAdminDuty]) {
+	if(isAdminDuty[playerid]) {
 		new toPlayerid, hp; // id player to give hp
 		
 		mainStr[0] = EOS;
@@ -143,18 +162,18 @@ CMD:godmode(playerid)
 {
 	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
 	{
-		if(pVars[playerid][pIsAdminDuty] == true)
+		if(isAdminDuty[playerid] == true)
 		{
-			if(!pVars[playerid][pIsGodMode])
+			if(!isGodMode[playerid])
 			{
-				pVars[playerid][pIsGodMode] = true;
+				isGodMode[playerid] = true;
 				GetPlayerHealth(playerid, pVars[playerid][pHp]);
 				SetPlayerHealth(playerid, 999999);
 				SendClientMessage(playerid, 0xFFFFFF, "{00FF00}[Admin]{FFFFFF}: W³¹czono godmode.");
 			}
 			else
 			{
-				pVars[playerid][pIsGodMode] = false;
+				isGodMode[playerid] = false;
 				SetPlayerHealth(playerid, pVars[playerid][pHp]);
 				SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[Admin]{FFFFFF}: Wy³¹czono godmode.");
 			}
@@ -167,7 +186,7 @@ CMD:giveweapon(playerid, params[])
 {
 	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
 	{
-		if(pVars[playerid][pIsAdminDuty])
+		if(isAdminDuty[playerid])
 		{
 			new weaponId, ammo;
 			if(sscanf(params, "ii", weaponId, ammo))
@@ -187,7 +206,7 @@ CMD:spawnvehicle(playerid, params[])
 {
 	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
 	{
-		if(pVars[playerid][pIsAdminDuty])
+		if(isAdminDuty[playerid])
 		{
 			new vehicleId, vehicleModelId;
 			if(sscanf(params, "i", vehicleModelId))
@@ -207,7 +226,7 @@ CMD:spectateplayer(playerid, params[])
 {
 	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
 	{
-		if(pVars[playerid][pIsAdminDuty])
+		if(isAdminDuty[playerid])
 		{
 			new toPlayerId;
 			if(sscanf(params, "i", toPlayerId))
@@ -215,10 +234,10 @@ CMD:spectateplayer(playerid, params[])
 				return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /spectateplayer [Id gracza].");
 			}
 			
-			if(!pVars[playerid][pIsSpectating])
+			if(!isSpectating[playerid])
 			{
 				
-				pVars[playerid][pIsSpectating] = true;
+				isSpectating[playerid] = true;
 				GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 				
 				TogglePlayerSpectating(playerid, 1);
@@ -226,7 +245,7 @@ CMD:spectateplayer(playerid, params[])
 			}
 			else
 			{
-				pVars[playerid][pIsSpectating] = false;
+				isSpectating[playerid] = false;
 				
 				TogglePlayerSpectating(playerid, 0);
 			}

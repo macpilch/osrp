@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 31.07.2022
+	Modified: 02.08.2022
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -23,7 +23,6 @@ sampCallback:OnPlayerConnect(playerid) {
 sampCallback:OnPlayerDisconnect(playerid, reason) {
 	TextDrawHideForPlayer(playerid, website);
 	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_WHITE, NULL);
-	
 	savePlayerValues(playerid);
 	resetPlayerValues(playerid); // dla dobra pamieci
 	
@@ -108,20 +107,16 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 	return 1;
 }
 
-sampCallback:OnPlayerSpawn(playerid) {
-	
-	if(pVars[playerid][pIsBw])
-	{
-		setPlayerBw(playerid, 60000);
-	}
-	
+sampCallback:OnPlayerSpawn(playerid) {	
 	SetPlayerHealth(playerid, pVars[playerid][pHp]);
 	SetPlayerArmour(playerid, pVars[playerid][pAp]);
 	GivePlayerMoney(playerid, pVars[playerid][pMoney]);
 	SetPlayerSkin(playerid, pVars[playerid][pSkin]);
 	TextDrawShowForPlayer(playerid, website);
 	
-	
+	if(isBW[playerid]) {
+		setPlayerBW(playerid, 60000);
+	}
 	
 	mainStr[0] = EOS;
 	
@@ -154,13 +149,13 @@ sampCallback:OnPlayerDeath(playerid, killerid, reason) {
 	format(str, sizeof(str), "[LOG] Callback: OnPlayerDeath -- Called! (%d ms).", (GetTickCount() - callSec));
 	print(str);
 	
-	pVars[playerid][pIsBw] = true;
-	
+	isBW[playerid] = true;
 	return 1;
 }
 
 sampCallback:OnPlayerText(playerid, text[]) {
 	new textStr[256];
+	
 	mainStr[0] = EOS;
 	
 	format(textStr, sizeof(textStr), "%s", text);
@@ -218,14 +213,12 @@ sampCallback:OnPlayerText(playerid, text[]) {
 
 sampCallback:OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid) {
 	GetPlayerHealth(damagedid, pVars[damagedid][pHp]);
-	
 	GameTextForPlayer(playerid, "~r~Dm. Czekaj!", 1000, 3);
 	return 1;
 }
 
 sampCallback:OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid) {
 	GetPlayerHealth(playerid, pVars[playerid][pHp]);
-	
 	SetTimerEx("healthDamage", 100, false, "i", playerid);
 	return 1;
 }
@@ -260,7 +253,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
 					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charWomName[i][chName]);
 				}
-				
 				return ShowPlayerDialog(playerid, DIALOG_REGISTER_NAME, DIALOG_STYLE_LIST, "Krok 2/3: imiê (losowe ¿eñskie imiona)", mainStr, "Dalej", "Od nowa");
 			}
 			
@@ -283,7 +275,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
 					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charSur[i][chSurName]);
 				}
-				
 				return ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");		
 			}
 			
@@ -302,7 +293,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
 					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charSur[i][chSurName]);
 				}
-				
 				return ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");			
 			}
 			
@@ -316,11 +306,15 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			format(tmpQuery, sizeof(tmpQuery), "SELECT `AccName` FROM `Players` WHERE `AccName` = '%s'", pVars[playerid][pAccName]);
 			mysql_query(tmpQuery);
 			mysql_store_result();
-			if(!mysql_num_rows())
+			
+			if(!mysql_num_rows()) {
 				allAccounts++;
+			}
+				
 			mysql_free_result();
 			
 			queryStr[0] = EOS;
+			
 			format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `Players`");
 			mysql_query(queryStr);
 			mysql_store_result();
@@ -422,7 +416,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
 					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charSur[i][chSurName]);
 				}
-				
 				return ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");				
 			}
 			
