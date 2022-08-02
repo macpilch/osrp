@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 31.07.2022
+	Modified: 02.08.2022
 */
 
 #if !defined _TIMERS_
@@ -99,14 +99,8 @@ Callback:hideOOCWarning(playerid) {
 	return 1;
 }
 
-Callback:bwTimer(playerid)
-{
-	pVars[playerid][pIsBw] = false;
-	pVars[playerid][pHp] = 20.0;
-	SetPlayerHealth(playerid, pVars[playerid][pHp]);
-	TogglePlayerControllable(playerid, 1);
-	PlayerTextDrawHide(playerid, bwText[playerid]);
-	ClearAnimations(playerid);
+Callback:bwTimer(playerid) {
+	
 	return 1;
 }
 

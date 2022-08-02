@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 24.07.2022
-	Modified: 31.07.2022
+	Modified: 02.08.2022
 */
 
 #if !defined _PLAYER_
@@ -24,13 +24,13 @@ enum PlayerData {
 	pGuid,
 	pCharId, // narazie nie u¿ywane
 	pAccName[24],
-	pAccRank,          // for ranks
-	bool:pIsAdminDuty,     // false(0) is admin duty off or true(1) is admin duty on only when player have ranks: SUPPORT_RANK, ADMIN_RANK, HEADADMIN_RANK
+	pAccRank, // for ranks
 	pCharName[24],
 	pCharName2[24],
 	pPass[32],
 	pIp[24],
 	pSex,
+	pStrength,
 	pHours,
 	pMinutes,
 	pSeconds,
@@ -41,10 +41,6 @@ enum PlayerData {
 	pBank,
 	pBw,
 	pAj,
-	bool: pIsGodMode,
-	bool: pIsSpectating,
-	bool:pIsGodMode,
-	bool:pIsBw,
 	Float:pX,
 	Float:pY,
 	Float:pZ,

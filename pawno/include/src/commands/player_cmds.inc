@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 31.07.2022
+	Modified: 02.08.2022
 */
 
 #if !defined _PLAYER_CMDS_
@@ -18,6 +18,61 @@ CMD:help(playerid, params[]) {
 	return 1;
 }
 
+CMD:w(playerid, params[]) {
+	new id, pmStr[256];
+	
+	if(sscanf(params, "is[256]", id, pmStr)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /w [ID] [Wiadomoœæ]");
+	}
+	
+	if(id == playerid) {
+		return GameTextForPlayer(playerid, "~y~Nie mozesz wyslac wiadomosci do siebie.", 5000, 3);
+	}
+	
+	if(!IsPlayerConnected(id)) {
+		return GameTextForPlayer(playerid, "~r~Taki gracz nie istnieje.", 5000, 3);
+	}
+	
+	format(mainStr, sizeof(mainStr), "(( > %s (%d): %s ))", pVars[id][pCharName], id, pmStr);
+	SendClientMessage(playerid, COLOR_WHITE, mainStr);
+	
+	format(mainStr, sizeof(mainStr), "(( %s (%d): %s ))", pVars[playerid][pCharName], playerid, pmStr);
+	SendClientMessage(id, COLOR_WHITE, mainStr);
+	return 1;
+}
+
+CMD:c(playerid, params[]) {
+	new str[256];
+	
+	if(sscanf(params, "s[256]", str)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /c [Tekst]");
+	}
+	
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "%s szepcze: %s", pVars[playerid][pCharName], str);
+	sendDistanceMessage(playerid, 10.0, mainStr, COLOR_WHITE, COLOR_GRAY, COLOR_GRAY, COLOR_GRAY);
+	return 1;
+}
+
+CMD:a(playerid, params[]) {
+	mainStr[0] = EOS;
+	
+	foreach(Player, i) {
+		if(pVars[i][pAccRank] >= SUPPORT_RANK && pVars[i][pAccRank] <= HEADADMIN_RANK) {
+			if(isAdminDuty[i]) {
+				format(mainStr, sizeof(mainStr), "%sADM %d\t\t\t%s\n", mainStr, pVars[i][pAccRank], pVars[i][pAccName]);
+			} else {
+				GameTextForPlayer(playerid, "~r~Nie znaleziono ~w~graczy~n~~r~Spelniajacych kryteria.", 5000, 3);
+			}
+		} else {
+			GameTextForPlayer(playerid, "~r~Nie znaleziono ~w~graczy~n~~r~Spelniajacych kryteria.", 5000, 3);
+		}
+	}
+	
+	ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_LIST, "Lista graczy", mainStr, "OK", "Zamknij");
+	return 1;
+}
+
 CMD:me(playerid, params[]) {
 	new str[512];
 	
@@ -25,8 +80,8 @@ CMD:me(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /me [Akcja]");
 	}
 	
-	format(str, sizeof(str), "{BA55D3}** %s %s", pVars[playerid][pCharName], str);
-	sendDistanceMessage(playerid, 30.0, str, COLOR_WHITE);
+	format(str, sizeof(str), "{8D8098}** %s %s", pVars[playerid][pCharName], str);
+	sendDistanceMessage(playerid, 30.0, str, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE);
 	return 1;
 }
 
@@ -37,8 +92,8 @@ CMD:do(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /do [Akcja]");
 	}
 	
-	format(str, sizeof(str), "{9370DB}** %s (( %s ))", str, pVars[playerid][pCharName]);
-	sendDistanceMessage(playerid, 30.0, str, COLOR_WHITE);
+	format(str, sizeof(str), "{666287}** %s (( %s ))", str, pVars[playerid][pCharName]);
+	sendDistanceMessage(playerid, 30.0, str, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE);
 	return 1;
 }
 
@@ -62,9 +117,9 @@ CMD:stats(playerid, params[]) {
 	
 	mainStr[0] = EOS;
 	
-	format(tmpStr, sizeof(tmpStr), "%s (UID %d, ID %d, GUID %d) [%s]", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, pVars[playerid][pGuid], pVars[playerid][pIp]);
-	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nP³eæ:\t\t\t\t%s\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nSkin:\t\t\t\t%d\nOstatni skin:\t\t\t%d", 
-	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAj], pVars[playerid][pBw], pVars[playerid][pHp], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pSkin], pVars[playerid][pSkin]);
+	format(tmpStr, sizeof(tmpStr), "%s (UID %d, ID %d, Globalne %d) [%s]", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, pVars[playerid][pGuid], pVars[playerid][pIp]);
+	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nSi³a:\t\t\t\t%d\nP³eæ:\t\t\t\t%s\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nSkin:\t\t\t\t%d\nOstatni skin:\t\t\t%d", 
+	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAj], pVars[playerid][pBw], pVars[playerid][pHp], pVars[playerid][pStrength], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pSkin], pVars[playerid][pSkin]);
 	ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, tmpStr, mainStr, "OK", "Zamknij");
 	return 1;
 }
@@ -74,12 +129,12 @@ CMD:adminduty(playerid, params[]) {
 		return 1;
 	}
 	
-	if(!pVars[playerid][pIsAdminDuty]) {
-		pVars[playerid][pIsAdminDuty] = true;
+	if(!isAdminDuty[playerid]) {
+		isAdminDuty[playerid] = true;
 			
 		SendClientMessage(playerid, COLOR_WHITE, "{00FF00}[Admin]{00FF00}: Admin Duty w³¹czone!");
 	} else {
-		pVars[playerid][pIsAdminDuty] = false;
+		isAdminDuty[playerid] = false;
 			
 		SendClientMessage(playerid, COLOR_WHITE, "{00FF00}[Admin]{00FF00}: Admin Duty wy³¹czone!");
 	}
@@ -87,7 +142,7 @@ CMD:adminduty(playerid, params[]) {
 }
 
 CMD:givehealth(playerid, params[]) {
-	if(pVars[playerid][pIsAdminDuty]) {
+	if(isAdminDuty[playerid]) {
 		new toPlayerid, hp; // id player to give hp
 		
 		mainStr[0] = EOS;
@@ -143,19 +198,18 @@ CMD:godmode(playerid)
 {
 	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
 	{
-		if(pVars[playerid][pIsAdminDuty] == true)
+		if(isAdminDuty[playerid] == true)
 		{
-			if(!pVars[playerid][pIsGodMode])
+			if(!isGodMode[playerid])
 			{
-				pVars[playerid][pIsGodMode] = true;
+				isGodMode[playerid] = true;
 				GetPlayerHealth(playerid, pVars[playerid][pHp]);
 				SetPlayerHealth(playerid, 999999);
 				SendClientMessage(playerid, 0xFFFFFF, "{00FF00}[Admin]{FFFFFF}: W³¹czono godmode.");
-				return 1;
 			}
 			else
 			{
-				pVars[playerid][pIsGodMode] = false;
+				isGodMode[playerid] = false;
 				SetPlayerHealth(playerid, pVars[playerid][pHp]);
 				SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[Admin]{FFFFFF}: Wy³¹czono godmode.");
 			}
@@ -168,7 +222,7 @@ CMD:giveweapon(playerid, params[])
 {
 	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
 	{
-		if(pVars[playerid][pIsAdminDuty])
+		if(isAdminDuty[playerid])
 		{
 			new weaponId, ammo;
 			if(sscanf(params, "ii", weaponId, ammo))
@@ -180,11 +234,6 @@ CMD:giveweapon(playerid, params[])
 			GivePlayerWeapon(playerid, weaponId, ammo);
 			SendClientMessage(playerid, 0xFFFFFF, "{00FF00}[Admin]{FFFFFF}: Otrzymano broñ.");
 		}
-		else
-		{
-			return 1;
-		}
-		
 	}
 	return 1;
 }
@@ -193,23 +242,18 @@ CMD:spawnvehicle(playerid, params[])
 {
 	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
 	{
-		if(pVars[playerid][pIsAdminDuty])
+		if(isAdminDuty[playerid])
 		{
 			new vehicleId, vehicleModelId;
 			if(sscanf(params, "i", vehicleModelId))
 			{
-				
 				return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /spawnvehicle [model pojazdu].");
 			}
 			
 			GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 			
 			vehicleId = CreateVehicle(vehicleModelId, pVars[playerid][pX] + 1.0, pVars[playerid][pY], pVars[playerid][pZ], 0, -1, -1, -1);
-			
-			return 1;
 		}
-		
-		return 1;
 	}
 	return 1;
 }
@@ -218,7 +262,7 @@ CMD:spectateplayer(playerid, params[])
 {
 	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
 	{
-		if(pVars[playerid][pIsAdminDuty])
+		if(isAdminDuty[playerid])
 		{
 			new toPlayerId;
 			if(sscanf(params, "i", toPlayerId))
@@ -226,39 +270,22 @@ CMD:spectateplayer(playerid, params[])
 				return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /spectateplayer [Id gracza].");
 			}
 			
-			
-			if(!pVars[playerid][pIsSpectating])
+			if(!isSpectating[playerid])
 			{
 				
-				pVars[playerid][pIsSpectating] = true;
+				isSpectating[playerid] = true;
 				GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 				
 				TogglePlayerSpectating(playerid, 1);
 				PlayerSpectatePlayer(playerid, toPlayerId);
-				
-				return 1;
-				
 			}
 			else
 			{
-				
-				pVars[playerid][pIsSpectating] = false;
+				isSpectating[playerid] = false;
 				
 				TogglePlayerSpectating(playerid, 0);
-				
-				
-				return 1;
 			}
-			
-			return 1;
 		}
-		else
-		{
-			return 1;
-		}
-		
-		return 1;
 	}
-	
 	return 1;
 }
