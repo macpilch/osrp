@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 02.08.2022
+	Modified: 03.08.2022
 */
 
 #if !defined _PLAYER_CMDS_
@@ -17,6 +17,8 @@ CMD:help(playerid, params[]) {
 	ShowPlayerDialog(playerid, DIALOG_HELP, DIALOG_STYLE_LIST, "Pomoc > Wybór kategorii pomocy", mainStr, "Wybierz", "Anuluj");
 	return 1;
 }
+
+//alias:help("pomoc");
 
 CMD:w(playerid, params[]) {
 	new id, pmStr[256];
@@ -55,17 +57,24 @@ CMD:c(playerid, params[]) {
 }
 
 CMD:a(playerid, params[]) {
-	mainStr[0] = EOS;
+	new adminsCount; // debug
 	
+	mainStr[0] = EOS;
 	foreach(Player, i) {
 		if(pVars[i][pAccRank] >= SUPPORT_RANK && pVars[i][pAccRank] <= HEADADMIN_RANK) {
 			if(isAdminDuty[i]) {
-				format(mainStr, sizeof(mainStr), "%sADM %d\t\t\t%s\n", mainStr, pVars[i][pAccRank], pVars[i][pAccName]);
+				adminsCount++;
+				
+				if(adminsCount > 0)
+					format(mainStr, sizeof(mainStr), "%sADM %d\t\t\t%s\n", mainStr, pVars[i][pAccRank], pVars[i][pAccName]);
 			} else {
-				GameTextForPlayer(playerid, "~r~Nie znaleziono ~w~graczy~n~~r~Spelniajacych kryteria.", 5000, 3);
+				adminsCount = 0;
 			}
 		}
 	}
+	
+	if(!adminsCount)
+		return GameTextForPlayer(playerid, "~r~Nie znaleziono ~w~graczy~n~~r~Spelniajacych kryteria.", 5000, 3);
 	
 	ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_LIST, "Lista graczy", mainStr, "OK", "Zamknij");
 	return 1;
@@ -119,6 +128,38 @@ CMD:stats(playerid, params[]) {
 	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nSi³a:\t\t\t\t%d\nP³eæ:\t\t\t\t%s\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nSkin:\t\t\t\t%d\nOstatni skin:\t\t\t%d", 
 	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAj], pVars[playerid][pBw], pVars[playerid][pHp], pVars[playerid][pStrength], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pSkin], pVars[playerid][pSkin]);
 	ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, tmpStr, mainStr, "OK", "Zamknij");
+	return 1;
+}
+
+CMD:v(playerid, params[]) {
+	new opt[32];
+	
+	if(sscanf(params, "s[32]", opt)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v [zaparkuj/z(amknij)/info/namierz/reset]");
+	}
+	
+	if(strfind(opt, "info", true) != -1) {
+		new vehicleid = getVehicleIdForPlayer(playerid);
+		//new bool:showTD;
+		new Float:vHp;
+		
+		GetVehicleHealth(vVars[vehicleid][vId], vHp);
+		
+		//if(!showTD) {
+			//showTD = true;
+			mainStr[0] = EOS;
+			
+			format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~%d:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
+			vVars[vehicleid][vUid], playerid, vVars[vehicleid][vOUid], vVars[vehicleid][vModelId], vVars[vehicleid][vId], vVars[vehicleid][vColor1], vVars[vehicleid][vColor2], vHp);
+			
+			PlayerTextDrawSetString(playerid, vehicleStats[playerid], mainStr);
+			PlayerTextDrawShow(playerid, vehicleStats[playerid]);
+		/*} else {
+			showTD = false;
+			
+			PlayerTextDrawHide(playerid, vehicleStats[playerid]);
+		}*/
+	}
 	return 1;
 }
 
@@ -192,21 +233,15 @@ CMD:freezeplayer(playerid, params[]) {
 	return 1;
 }
 
-CMD:godmode(playerid)
-{
-	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
-	{
-		if(isAdminDuty[playerid] == true)
-		{
-			if(!isGodMode[playerid])
-			{
+CMD:godmode(playerid, params[]) {
+	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK) {
+		if(isAdminDuty[playerid] == true) {
+			if(!isGodMode[playerid]) {
 				isGodMode[playerid] = true;
 				GetPlayerHealth(playerid, pVars[playerid][pHp]);
 				SetPlayerHealth(playerid, 999999);
 				SendClientMessage(playerid, 0xFFFFFF, "{00FF00}[Admin]{FFFFFF}: W³¹czono godmode.");
-			}
-			else
-			{
+			} else {
 				isGodMode[playerid] = false;
 				SetPlayerHealth(playerid, pVars[playerid][pHp]);
 				SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[Admin]{FFFFFF}: Wy³¹czono godmode.");
@@ -216,17 +251,13 @@ CMD:godmode(playerid)
 	return 1;
 }
 
-CMD:giveweapon(playerid, params[])
-{
-	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
-	{
-		if(isAdminDuty[playerid])
-		{
+CMD:giveweapon(playerid, params[]) {
+	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK) {
+		if(isAdminDuty[playerid]) {
 			new weaponId, ammo;
-			if(sscanf(params, "ii", weaponId, ammo))
-			{
-				SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /giveweapon [Id broni][ilosc amunicji].");
-				return 1;
+			
+			if(sscanf(params, "ii", weaponId, ammo)) {
+				return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /giveweapon [Id broni][ilosc amunicji].");
 			}
 			
 			GivePlayerWeapon(playerid, weaponId, ammo);
@@ -236,48 +267,60 @@ CMD:giveweapon(playerid, params[])
 	return 1;
 }
 
-CMD:spawnvehicle(playerid, params[])
-{
-	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
-	{
-		if(isAdminDuty[playerid])
-		{
-			new vehicleId, vehicleModelId;
-			if(sscanf(params, "i", vehicleModelId))
-			{
+CMD:spawnvehicle(playerid, params[]) {
+	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK) {
+		if(isAdminDuty[playerid]) {
+			new vehicleId, vehicleModelId, vehsCount, freeId;
+			new color1 = random(255), color2 = random(255);
+			new Float:x, Float:y, Float:z;
+			
+			if(sscanf(params, "i", vehicleModelId)) {
 				return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /spawnvehicle [model pojazdu].");
 			}
 			
-			GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `Vehicles`");
+			mysql_query(queryStr);
+			mysql_store_result();
+			vehsCount = mysql_fetch_int();
 			
-			vehicleId = CreateVehicle(vehicleModelId, pVars[playerid][pX] + 1.0, pVars[playerid][pY], pVars[playerid][pZ], 0, -1, -1, -1);
+			if(!vehsCount)
+				freeId = 0;
+			else
+				freeId = vehsCount;
+			mysql_free_result();
+			
+			format(vVars[freeId][vCharName], 24, "%s", pVars[playerid][pCharName]);
+			GetPlayerPos(playerid, x, y, z);
+			
+			vVars[freeId][vOUid] = pVars[playerid][pUid];
+			vehicleId = CreateVehicle(vehicleModelId, x + 2, y + 2, z + 2, 0.0, color1, color2, 0);
+			vVars[freeId][vModelId] = GetVehicleModel(vehicleId);
+			
+			format(queryStr, sizeof(queryStr), "INSERT INTO `Vehicles` (`UID`, `ID`, `OUID`, `CharName`, `ModelID`, `Color1`, `Color2`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d', '%d')",
+			freeId + 1, vehicleId, vVars[freeId][vOUid], vVars[freeId][vCharName], vVars[freeId][vModelId], color1, color2);
+			mysql_query(queryStr);
 		}
 	}
 	return 1;
 }
 
-CMD:spectateplayer(playerid, params[])
-{
-	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK)
-	{
-		if(isAdminDuty[playerid])
-		{
+CMD:spectateplayer(playerid, params[]) {
+	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK) {
+		if(isAdminDuty[playerid]) {
 			new toPlayerId;
-			if(sscanf(params, "i", toPlayerId))
-			{
+			
+			if(sscanf(params, "i", toPlayerId)) {
 				return SendClientMessage(playerid, 0xFFFFFF, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /spectateplayer [Id gracza].");
 			}
 			
-			if(!isSpectating[playerid])
-			{
-				
+			if(!isSpectating[playerid]) {	
 				isSpectating[playerid] = true;
 				GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 				
 				TogglePlayerSpectating(playerid, 1);
 				PlayerSpectatePlayer(playerid, toPlayerId);
-			}
-			else
+			} else
 			{
 				isSpectating[playerid] = false;
 				

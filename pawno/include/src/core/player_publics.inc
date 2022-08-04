@@ -211,6 +211,16 @@ sampCallback:OnPlayerText(playerid, text[]) {
 	return 0;
 }
 
+sampCallback:OnPlayerCommandReceived(playerid, cmd[], params[], flags) {
+	
+	return 1;
+}
+
+sampCallback:OnPlayerCommandPerformed(playerid, cmd[], params[], result, flags) {
+	
+	return 1;
+}
+
 sampCallback:OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid) {
 	GameTextForPlayer(playerid, "~r~Dm. Czekaj!", 1000, 3);
 	return 1;
@@ -297,24 +307,27 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");			
 			}
 			
+			new charsCount;
+			new accsNum;
+			new tmpQuery[64];
+			
 			if(strlen(inputtext) < 2 || strlen(inputtext) > 32) {
 				return ShowPlayerDialog(playerid, DIALOG_REGISTER_PASS, DIALOG_STYLE_INPUT, "Krok 3/3: has³o", "Podaj proszê has³o, za pomoc¹ którego bêdziesz siê logowaæ.", "Zapisz", "Od nowa");
 			}
 			
-			new charsCount;
-			new tmpQuery[64];
-			
-			format(tmpQuery, sizeof(tmpQuery), "SELECT `AccName` FROM `Players` WHERE `AccName` = '%s'", pVars[playerid][pAccName]);
+			format(tmpQuery, sizeof(tmpQuery), "SELECT `GUID` FROM `Players` WHERE `AccName` = '%s'", pVars[playerid][pAccName]);
 			mysql_query(tmpQuery);
 			mysql_store_result();
 			
 			if(!mysql_num_rows()) {
 				allAccounts++;
 			}
-				
+			
+			accsNum = mysql_fetch_int();
 			mysql_free_result();
 			
 			queryStr[0] = EOS;
+			mainStr[0] = EOS;
 			
 			format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `Players`");
 			mysql_query(queryStr);
@@ -324,13 +337,11 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			if(!charsCount) {
 				pVars[playerid][pUid] = 1;
+				pVars[playerid][pGuid] = allAccounts;
 			} else {
 				pVars[playerid][pUid] = charsCount + 1;
+				pVars[playerid][pGuid] = accsNum;
 			}
-			
-			pVars[playerid][pGuid] = allAccounts;
-			queryStr[0] = EOS;
-			mainStr[0] = EOS;
 			
 			format(queryStr, sizeof(queryStr), "INSERT INTO `Players` (`GUID`, `UID`, `AccName`, `IP`, `CharName`, `CharName2`, `Pass`, `Sex`) VALUES ('%d', '%d', '%s', '%s', '%s', '%s', '%s', '%d')",
 			pVars[playerid][pGuid], pVars[playerid][pUid], pVars[playerid][pAccName], pVars[playerid][pIp], pVars[playerid][pCharName], pVars[playerid][pCharName2], inputtext, pVars[playerid][pSex]);

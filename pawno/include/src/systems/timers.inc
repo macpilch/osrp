@@ -3,21 +3,16 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 02.08.2022
+	Modified: 03.08.2022
 */
 
 #if !defined _TIMERS_
 #define _TIMERS_
 
-task globalTimer[1000]() {
-	new day, month, year;
-	
-	getdate(year, month, day);
-	format(mainStr, sizeof(mainStr), "samp-rp.com_:_%d.%d.%d", day, month, year);
-	TextDrawSetString(website, mainStr);
-	
+task globalTimer[1000]() {	
 	foreach(Player, i) {
 		playerAFKTime[i]++;
+		GetPlayerHealth(i, pVars[i][pHp]);
 		
 		if(playerAFKTime[i] != 1) {
 			static h, mins, secs;
@@ -31,12 +26,25 @@ task globalTimer[1000]() {
 			} else {
 				format(mainStr, sizeof(mainStr), "%s (%d, %dh)\n(AFK od %02d:%02d)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
 			}
+		} else if(isBW[i]) // by MisterMagik
+		{
+			setPlayerBW(i);
+			
+			if(pVars[i][pHours] > 20) {
+				format(mainStr, sizeof(mainStr), "%s (%d)\n(nieprzytomny)", pVars[i][pCharName], i);
+			} else {
+				format(mainStr, sizeof(mainStr), "%s (%d, %dh)\n(nieprzytomny)", pVars[i][pCharName], i, pVars[i][pHours]);
+			}
 		} else {
 			if(pVars[i][pHours] > 20) {
 				format(mainStr, sizeof(mainStr), "%s (%d)", pVars[i][pCharName], i);
 			} else {
 				format(mainStr, sizeof(mainStr), "%s (%d, %dh)", pVars[i][pCharName], i, pVars[i][pHours]);
 			}
+		}
+		
+		if(pVars[i][pHp] <= 1) {
+			isBW[i] = true;
 		}
 		
 		PlayerTextDrawHide(i, damageRedScreen[i]);
@@ -58,18 +66,20 @@ task globalTimer[1000]() {
 				pVars[i][pMinutes] = 0;
 			}
 		}
-		
-		GetPlayerHealth(i, pVars[i][pHp]);
-		
-		if(pVars[i][pHp] <= 1)
-		{
-			setPlayerBW(i);
-		}
 	}
+}
+
+task updateWebsiteDate[60000]() {
+	new day, month, year;
+	
+	getdate(year, month, day);
+	format(mainStr, sizeof(mainStr), "samp-rp.com_:_%d.%d.%d", day, month, year);
+	TextDrawSetString(website, mainStr);
 }
 
 task settingsTimer[30000]() {
 	saveServerValues();
+	saveVehicleValues();
 }
 
 task townHallBellsTimer[59000]() {
@@ -108,12 +118,14 @@ Callback:hideOOCWarning(playerid) {
 
 Callback:bwTimer(playerid) 
 {
+	mainStr[0] = EOS;
 	isBW[playerid] = false;
 	pVars[playerid][pHp] = 20.0;
+	
+	PlayerTextDrawHide(playerid, bwText[playerid]);
 	SetPlayerHealth(playerid, pVars[playerid][pHp]);
 	TogglePlayerControllable(playerid, 1);
 	ClearAnimations(playerid);
-	
 	return 1;
 }
 

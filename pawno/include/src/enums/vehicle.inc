@@ -2,14 +2,19 @@
 #define _VEHICLE_
 
 enum VehicleData {
-	vDbId, //id from database
+	vUid, //id from database	
 	vId,   // id in game
-	vUid,  // vehicle owner
-	vGuid, // vehicle character owner
-	vAccName[24], // vehicle owner name
+	vOUid,  // vehicle owner
+	vCharName[24], // vehicle owner name
 	vModelId, // vehicle modelid
+	vColor1,
+	vColor2,
+	Float:vX,
+	Float:vY,
+	Float:vZ,
 	Float:vFuel, 
-	Float:vFuelTank
+	Float:vFuelTank,
+	vMileage // Przebieg
 };
 
 #endif 

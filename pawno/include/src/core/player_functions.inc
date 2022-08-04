@@ -37,6 +37,16 @@ stock sendDistanceMessage(playerid, Float:range, str[], color, color2, color3, c
 }
 
 stock createPlayerTextDraws(playerid) {
+	vehicleStats[playerid] = CreatePlayerTextDraw(playerid, 309.692871, 340.083465, "~p~UID~w~: 0___~p~Owner: ~w~0:0__(0) ~p~Model~w~: 0~n~~p~SAMP ID~w~: 0___~p~Kolor~w~: 0:0__~p~HP~w~: 0.0");
+	PlayerTextDrawLetterSize(playerid, vehicleStats[playerid], 0.270087, 1.139165);
+	PlayerTextDrawAlignment(playerid, vehicleStats[playerid], 2);
+	PlayerTextDrawColor(playerid, vehicleStats[playerid], -1);
+	PlayerTextDrawSetShadow(playerid, vehicleStats[playerid], 0);
+	PlayerTextDrawSetOutline(playerid, vehicleStats[playerid], 1);
+	PlayerTextDrawBackgroundColor(playerid, vehicleStats[playerid], 51);
+	PlayerTextDrawFont(playerid, vehicleStats[playerid], 1);
+	PlayerTextDrawSetProportional(playerid, vehicleStats[playerid], 1);
+	
 	oocWarning[playerid][0] = CreatePlayerTextDraw(playerid, 509.282592, 280.000030, "Niepotrzebnie wstawiasz spacje~n~miedzy kropka a tekstem OOC.~n~Przyklad powitania OOC:~n~~y~.Czesc!");
 	PlayerTextDrawLetterSize(playerid, oocWarning[playerid][0], 0.315534, 1.430833);
 	PlayerTextDrawAlignment(playerid, oocWarning[playerid][0], 2);
@@ -198,7 +208,7 @@ stock setPlayerBW(playerid)
 	ApplyAnimation(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
 	SetPlayerHealth(playerid, pVars[playerid][pHp]);
 	SetTimerEx("bwTimer", 60000, false, "i", playerid);
-	
+	TextDrawShowForPlayer(playerid, bwText[playerid]);
 	return 1;
 }
 

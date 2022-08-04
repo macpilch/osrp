@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 02.08.2022
+	Modified: 03.08.2022
 */
 
 #if !defined _VARS_
@@ -22,6 +22,7 @@ new bool:usedCmdLogin[MAX_PLAYERS];
 new MySQL:hMySQL;
 
 new Text:website;
+new PlayerText:vehicleStats[MAX_PLAYERS];
 //new PlayerText:vehicleFuelStatus;
 new PlayerText:oocWarning[MAX_PLAYERS][2];
 new PlayerText:damageRedScreen[MAX_PLAYERS];
