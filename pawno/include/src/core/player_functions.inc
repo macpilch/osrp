@@ -3,11 +3,49 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
-	Modified: 02.08.2022
+	Modified: 05.08.2022
 */
 
 #if !defined PLAYER_FUNCTIONS
 #define PLAYER_FUNCTIONS
+
+Callback:hideHelpInfo(playerid) {
+	for(new i = 0; i < 2; i++) {
+		TextDrawHideForPlayer(playerid, helpInfo[playerid][i]);
+	}
+	return 1;
+}
+
+Callback:healthDamage(playerid) {
+	mainStr[0] = EOS;
+	if(pVars[playerid][pHours] > 20) {
+		format(mainStr, sizeof(mainStr), "{FF0000}%s (%d)", pVars[playerid][pCharName], playerid);
+	} else {
+		format(mainStr, sizeof(mainStr), "{FF0000}%s (%d, %dh)", pVars[playerid][pCharName], playerid, pVars[playerid][pHours]);
+	}
+	
+	TextDrawShowForPlayer(playerid, damageRedScreen[playerid]);
+	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_WHITE, mainStr);
+	return 1;
+}
+
+Callback:hideOOCWarning(playerid) {
+	for(new i = 0; i < 2; i++) {
+		TextDrawHideForPlayer(playerid, oocWarning[playerid][i]);
+	}
+	return 1;
+}
+
+Callback:bwTimer(playerid) {
+	isBW[playerid] = false;
+	pVars[playerid][pHp] = 20.0;
+	
+	TextDrawHideForPlayer(playerid, bwText[playerid]);
+	SetPlayerHealth(playerid, pVars[playerid][pHp]);
+	TogglePlayerControllable(playerid, 1);
+	ClearAnimations(playerid);
+	return 1;
+}
 
 /*
 	Wysylanie wiadomosci na dystans.
@@ -37,57 +75,130 @@ stock sendDistanceMessage(playerid, Float:range, str[], color, color2, color3, c
 }
 
 stock createPlayerTextDraws(playerid) {
-	vehicleStats[playerid] = CreatePlayerTextDraw(playerid, 309.692871, 340.083465, "~p~UID~w~: 0___~p~Owner: ~w~0:0__(0) ~p~Model~w~: 0~n~~p~SAMP ID~w~: 0___~p~Kolor~w~: 0:0__~p~HP~w~: 0.0");
-	PlayerTextDrawLetterSize(playerid, vehicleStats[playerid], 0.270087, 1.139165);
-	PlayerTextDrawAlignment(playerid, vehicleStats[playerid], 2);
-	PlayerTextDrawColor(playerid, vehicleStats[playerid], -1);
-	PlayerTextDrawSetShadow(playerid, vehicleStats[playerid], 0);
-	PlayerTextDrawSetOutline(playerid, vehicleStats[playerid], 1);
-	PlayerTextDrawBackgroundColor(playerid, vehicleStats[playerid], 51);
-	PlayerTextDrawFont(playerid, vehicleStats[playerid], 1);
-	PlayerTextDrawSetProportional(playerid, vehicleStats[playerid], 1);
-	
-	oocWarning[playerid][0] = CreatePlayerTextDraw(playerid, 509.282592, 280.000030, "Niepotrzebnie wstawiasz spacje~n~miedzy kropka a tekstem OOC.~n~Przyklad powitania OOC:~n~~y~.Czesc!");
-	PlayerTextDrawLetterSize(playerid, oocWarning[playerid][0], 0.315534, 1.430833);
-	PlayerTextDrawAlignment(playerid, oocWarning[playerid][0], 2);
-	PlayerTextDrawColor(playerid, oocWarning[playerid][0], -1);
-	PlayerTextDrawSetShadow(playerid, oocWarning[playerid][0], 0);
-	PlayerTextDrawSetOutline(playerid, oocWarning[playerid][0], 1);
-	PlayerTextDrawBackgroundColor(playerid, oocWarning[playerid][0], 51);
-	PlayerTextDrawFont(playerid, oocWarning[playerid][0], 1);
-	PlayerTextDrawSetProportional(playerid, oocWarning[playerid][0], 1);
+	helpInfo[playerid][0] = TextDrawCreate(489.604492, 286.416625, "~w~Nie mozesz skorzystac z takiej~n~komendy. Uzyj ~y~/pomoc~w~, jezeli~n~szukasz pomocy.");
+	TextDrawLetterSize(helpInfo[playerid][0], 0.307100, 1.302500);
+	TextDrawAlignment(helpInfo[playerid][0], 2);
+	TextDrawColor(helpInfo[playerid][0], -1);
+	TextDrawSetShadow(helpInfo[playerid][0], -256);
+	TextDrawSetOutline(helpInfo[playerid][0], 0);
+	TextDrawBackgroundColor(helpInfo[playerid][0], 255);
+	TextDrawFont(helpInfo[playerid][0], 1);
+	TextDrawSetProportional(helpInfo[playerid][0], 1);
 
-	oocWarning[playerid][1] = CreatePlayerTextDraw(playerid, 605.923889, 279.750000, "_");
-	PlayerTextDrawLetterSize(playerid, oocWarning[playerid][1], 0.000000, 5.905555);
-	PlayerTextDrawTextSize(playerid, oocWarning[playerid][1], 416.858001, 0.000000);
-	PlayerTextDrawAlignment(playerid, oocWarning[playerid][1], 1);
-	PlayerTextDrawColor(playerid, oocWarning[playerid][1], 0);
-	PlayerTextDrawUseBox(playerid, oocWarning[playerid][1], 1);
-	PlayerTextDrawBoxColor(playerid, oocWarning[playerid][1], 102);
-	PlayerTextDrawSetShadow(playerid, oocWarning[playerid][1], 0);
-	PlayerTextDrawSetOutline(playerid, oocWarning[playerid][1], 0);
-	PlayerTextDrawFont(playerid, oocWarning[playerid][1], 0);
+	helpInfo[playerid][1] = TextDrawCreate(584.371887, 285.583312, "usebox");
+	TextDrawLetterSize(helpInfo[playerid][1], 0.000000, 4.090743);
+	TextDrawTextSize(helpInfo[playerid][1], 398.585662, 0.000000);
+	TextDrawAlignment(helpInfo[playerid][1], 1);
+	TextDrawColor(helpInfo[playerid][1], 0);
+	TextDrawUseBox(helpInfo[playerid][1], 1);
+	TextDrawBoxColor(helpInfo[playerid][1], 102);
+	TextDrawSetShadow(helpInfo[playerid][1], 0);
+	TextDrawSetOutline(helpInfo[playerid][1], 0);
+	TextDrawFont(helpInfo[playerid][1], 0);
 	
-	damageRedScreen[playerid] = CreatePlayerTextDraw(playerid, 641.531494, 1.500000, "_");
-	PlayerTextDrawLetterSize(playerid, damageRedScreen[playerid], 0.000000, 49.396297);
-	PlayerTextDrawTextSize(playerid, damageRedScreen[playerid], -2.000000, 0.000000);
-	PlayerTextDrawAlignment(playerid, damageRedScreen[playerid], 1);
-	PlayerTextDrawColor(playerid, damageRedScreen[playerid], 0);
-	PlayerTextDrawUseBox(playerid, damageRedScreen[playerid], 1);
-	PlayerTextDrawBoxColor(playerid, damageRedScreen[playerid], 0xFF0000EE);
-	PlayerTextDrawSetShadow(playerid, damageRedScreen[playerid], 0);
-	PlayerTextDrawSetOutline(playerid, damageRedScreen[playerid], 0);
-	PlayerTextDrawFont(playerid, damageRedScreen[playerid], 0);	
+	firstHoursInfo[playerid][0] = TextDrawCreate(489.136047, 285.833221, "~w~Jako nowy gracz, co 10 minut~n~gry otrzymujesz $25 na~n~");
+	TextDrawLetterSize(firstHoursInfo[playerid][0], 0.305226, 1.273333);
+	TextDrawAlignment(firstHoursInfo[playerid][0], 2);
+	TextDrawColor(firstHoursInfo[playerid][0], -1);
+	TextDrawSetShadow(firstHoursInfo[playerid][0], 0);
+	TextDrawSetOutline(firstHoursInfo[playerid][0], 1);
+	TextDrawBackgroundColor(firstHoursInfo[playerid][0], 255);
+	TextDrawFont(firstHoursInfo[playerid][0], 1);
+	TextDrawSetProportional(firstHoursInfo[playerid][0], 1);
+
+	firstHoursInfo[playerid][1] = TextDrawCreate(453.996887, 309.750000, "~w~pierwsze wydatki.");
+	TextDrawLetterSize(firstHoursInfo[playerid][1], 0.304289, 1.232499);
+	TextDrawAlignment(firstHoursInfo[playerid][1], 2);
+	TextDrawColor(firstHoursInfo[playerid][1], -1);
+	TextDrawSetShadow(firstHoursInfo[playerid][1], 0);
+	TextDrawSetOutline(firstHoursInfo[playerid][1], 1);
+	TextDrawBackgroundColor(firstHoursInfo[playerid][1], 255);
+	TextDrawFont(firstHoursInfo[playerid][1], 1);
+	TextDrawSetProportional(firstHoursInfo[playerid][1], 1);
+
+	firstHoursInfo[playerid][2] = TextDrawCreate(581.560852, 285.583374, "_");
+	TextDrawLetterSize(firstHoursInfo[playerid][2], 0.000000, 7.525923);
+	TextDrawTextSize(firstHoursInfo[playerid][2], 399.991180, 0.000000);
+	TextDrawAlignment(firstHoursInfo[playerid][2], 1);
+	TextDrawColor(firstHoursInfo[playerid][2], 0);
+	TextDrawUseBox(firstHoursInfo[playerid][2], 1);
+	TextDrawBoxColor(firstHoursInfo[playerid][2], 102);
+	TextDrawSetShadow(firstHoursInfo[playerid][2], 0);
+	TextDrawSetOutline(firstHoursInfo[playerid][2], 0);
+	TextDrawFont(firstHoursInfo[playerid][2], 0);
 	
-	bwText[playerid] = CreatePlayerTextDraw(playerid, 509.282592, 280.000030, "BW");
-	PlayerTextDrawLetterSize(playerid, bwText[playerid], 0.315534, 1.430833);
-	PlayerTextDrawAlignment(playerid, bwText[playerid], 2);
-	PlayerTextDrawColor(playerid, bwText[playerid], -1);
-	PlayerTextDrawSetShadow(playerid, bwText[playerid], 0);
-	PlayerTextDrawSetOutline(playerid, bwText[playerid], 1);
-	PlayerTextDrawBackgroundColor(playerid, bwText[playerid], 51);
-	PlayerTextDrawFont(playerid, bwText[playerid], 1);
-	PlayerTextDrawSetProportional(playerid, bwText[playerid], 1);
+	vehicleTips[playerid][0] = TextDrawCreate(303.601470, 43.166690, "~w~Nacisnij LCTRL, by odpalic silnik~n~lub LPM, by zapalic swiatla.");
+	TextDrawLetterSize(vehicleTips[playerid][0], 0.313660, 1.115832);
+	TextDrawAlignment(vehicleTips[playerid][0], 1);
+	TextDrawColor(vehicleTips[playerid][0], -1);
+	TextDrawSetShadow(vehicleTips[playerid][0], 0);
+	TextDrawSetOutline(vehicleTips[playerid][0], 0);
+	TextDrawBackgroundColor(vehicleTips[playerid][0], 51);
+	TextDrawFont(vehicleTips[playerid][0], 1);
+	TextDrawSetProportional(vehicleTips[playerid][0], 1);
+	
+	vehicleTips[playerid][1] = TextDrawCreate(483.171295, 44.083335, "_");
+	TextDrawLetterSize(vehicleTips[playerid][1], 0.000000, 2.275926);
+	TextDrawTextSize(vehicleTips[playerid][1], 299.727661, 0.000000);
+	TextDrawAlignment(vehicleTips[playerid][1], 1);
+	TextDrawColor(vehicleTips[playerid][1], 0);
+	TextDrawUseBox(vehicleTips[playerid][1], 1);
+	TextDrawBoxColor(vehicleTips[playerid][1], 102);
+	TextDrawSetShadow(vehicleTips[playerid][1], 0);
+	TextDrawSetOutline(vehicleTips[playerid][1], 0);
+	TextDrawFont(vehicleTips[playerid][1], 0);
+	
+	vehicleStats[playerid] = TextDrawCreate(309.692871, 340.083465, "~p~UID~w~: 0___~p~Owner: ~w~0:0__(0) ~p~Model~w~: 0~n~~p~SAMP ID~w~: 0___~p~Kolor~w~: 0:0__~p~HP~w~: 0.0");
+	TextDrawLetterSize(vehicleStats[playerid], 0.270087, 1.139165);
+	TextDrawAlignment(vehicleStats[playerid], 2);
+	TextDrawColor(vehicleStats[playerid], -1);
+	TextDrawSetShadow(vehicleStats[playerid], 0);
+	TextDrawSetOutline(vehicleStats[playerid], 1);
+	TextDrawBackgroundColor(vehicleStats[playerid], 51);
+	TextDrawFont(vehicleStats[playerid], 1);
+	TextDrawSetProportional(vehicleStats[playerid], 1);
+	
+	oocWarning[playerid][0] = TextDrawCreate(509.282592, 280.000030, "Niepotrzebnie wstawiasz spacje~n~miedzy kropka a tekstem OOC.~n~Przyklad powitania OOC:~n~~y~.Czesc!");
+	TextDrawLetterSize(oocWarning[playerid][0], 0.315534, 1.430833);
+	TextDrawAlignment(oocWarning[playerid][0], 2);
+	TextDrawColor(oocWarning[playerid][0], -1);
+	TextDrawSetShadow(oocWarning[playerid][0], 0);
+	TextDrawSetOutline(oocWarning[playerid][0], 1);
+	TextDrawBackgroundColor(oocWarning[playerid][0], 51);
+	TextDrawFont(oocWarning[playerid][0], 1);
+	TextDrawSetProportional(oocWarning[playerid][0], 1);
+
+	oocWarning[playerid][1] = TextDrawCreate(605.923889, 279.750000, "_");
+	TextDrawLetterSize(oocWarning[playerid][1], 0.000000, 5.905555);
+	TextDrawTextSize(oocWarning[playerid][1], 416.858001, 0.000000);
+	TextDrawAlignment(oocWarning[playerid][1], 1);
+	TextDrawColor(oocWarning[playerid][1], 0);
+	TextDrawUseBox(oocWarning[playerid][1], 1);
+	TextDrawBoxColor(oocWarning[playerid][1], 102);
+	TextDrawSetShadow(oocWarning[playerid][1], 0);
+	TextDrawSetOutline(oocWarning[playerid][1], 0);
+	TextDrawFont(oocWarning[playerid][1], 0);
+	
+	damageRedScreen[playerid] = TextDrawCreate(641.531494, 1.500000, "_");
+	TextDrawLetterSize(damageRedScreen[playerid], 0.000000, 49.396297);
+	TextDrawTextSize(damageRedScreen[playerid], -2.000000, 0.000000);
+	TextDrawAlignment(damageRedScreen[playerid], 1);
+	TextDrawColor(damageRedScreen[playerid], 0);
+	TextDrawUseBox(damageRedScreen[playerid], 1);
+	TextDrawBoxColor(damageRedScreen[playerid], 0xFF0000EE);
+	TextDrawSetShadow(damageRedScreen[playerid], 0);
+	TextDrawSetOutline(damageRedScreen[playerid], 0);
+	TextDrawFont(damageRedScreen[playerid], 0);	
+	
+	bwText[playerid] = TextDrawCreate(509.282592, 280.000030, "BW");
+	TextDrawLetterSize(bwText[playerid], 0.315534, 1.430833);
+	TextDrawAlignment(bwText[playerid], 2);
+	TextDrawColor(bwText[playerid], -1);
+	TextDrawSetShadow(bwText[playerid], 0);
+	TextDrawSetOutline(bwText[playerid], 1);
+	TextDrawBackgroundColor(bwText[playerid], 51);
+	TextDrawFont(bwText[playerid], 1);
+	TextDrawSetProportional(bwText[playerid], 1);
 	return 1;
 }
 
@@ -149,6 +260,7 @@ stock setPlayerDefaultValues(playerid) {
 	isGodMode[playerid] = false;
 	isBW[playerid] = false;
 	usedCmdLogin[playerid] = false;
+	hasBelts[playerid] = false;
 	return 1;
 }
 
@@ -184,6 +296,7 @@ stock resetPlayerValues(playerid) {
 	isGodMode[playerid] = false;
 	isBW[playerid] = false;
 	usedCmdLogin[playerid] = false;
+	hasBelts[playerid] = false;
 	return 1;
 }
 
@@ -199,9 +312,7 @@ stock savePlayerValues(playerid) {
 	return 1;
 }
 
-
-stock setPlayerBW(playerid) 
-{
+stock setPlayerBW(playerid) {
 	pVars[playerid][pHp] = 999999;
 	TogglePlayerControllable(playerid, 0);
 	ClearAnimations(playerid);

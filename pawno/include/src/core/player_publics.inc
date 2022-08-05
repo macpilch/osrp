@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 02.08.2022
+	Modified: 05.08.2022
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -11,6 +11,7 @@
 
 sampCallback:OnPlayerConnect(playerid) {
 	createPlayerTextDraws(playerid);
+	PlayerPlaySound(playerid, 1062, 0.0, 0.0, 0.0);
 	
 	new str[64];
 	new callSec = GetTickCount();
@@ -40,7 +41,6 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 	setPlayerDefaultValues(playerid);
 	
 	queryStr[0] = EOS;
-	
 	format(queryStr, sizeof(queryStr), "SELECT `AccName` FROM `Players` WHERE `AccName` = '%s'", pVars[playerid][pAccName]);
 	mysql_query(queryStr);
 	mysql_store_result();
@@ -49,7 +49,6 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 		format(pVars[playerid][pCharName2], 24, "%s", pVars[playerid][pAccName]);
 	
 		queryStr[0] = EOS;
-		
 		format(queryStr, sizeof(queryStr), "SELECT `AccName` FROM `Players` WHERE `CharName2` = '%s'", pVars[playerid][pCharName2]);
 		mysql_query(queryStr);
 		mysql_store_result();
@@ -74,7 +73,6 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 			mysql_free_result();
 			
 			mainStr[0] = EOS;
-			
 			format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\nNie mamy postaci o nicku: {FFFFFF}%s.\n{CDC9C9}Chcesz za³o¿yæ now¹ postaæ?\nTo tylko kilka sekund!", pVars[playerid][pAccName]);
 			ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_MSGBOX, "Nowa postaæ?", mainStr, "STWÓRZ" , "Inna postaæ");
 		}
@@ -115,7 +113,6 @@ sampCallback:OnPlayerSpawn(playerid) {
 	TextDrawShowForPlayer(playerid, website);
 	
 	mainStr[0] = EOS;
-	
 	if(pVars[playerid][pHours] > 20) {
 		format(mainStr, sizeof(mainStr), "%s (%d)", pVars[playerid][pCharName], playerid);
 	} else {
@@ -130,9 +127,9 @@ sampCallback:OnPlayerSpawn(playerid) {
 		SetPlayerPos(playerid, DEFAULT_POS_X, DEFAULT_POS_Y, DEFAULT_POS_Z);
 	}
 	
-	if(isBW[playerid]) {
+	/*if(isBW[playerid]) {
 		setPlayerBW(playerid);
-	}
+	}*/
 	
 	new str[64];
 	new callSec = GetTickCount();
@@ -149,7 +146,7 @@ sampCallback:OnPlayerDeath(playerid, killerid, reason) {
 	format(str, sizeof(str), "[LOG] Callback: OnPlayerDeath -- Called! (%d ms).", (GetTickCount() - callSec));
 	print(str);
 	
-	isBW[playerid] = true;
+	//isBW[playerid] = true;
 	return 1;
 }
 
@@ -157,7 +154,6 @@ sampCallback:OnPlayerText(playerid, text[]) {
 	new textStr[256];
 	
 	mainStr[0] = EOS;
-	
 	format(textStr, sizeof(textStr), "%s", text);
 	
 	if(strfind(textStr, "!!", false) != -1) {
@@ -187,7 +183,7 @@ sampCallback:OnPlayerText(playerid, text[]) {
 	} else if(strfind(textStr[0], ".", false) != -1) {
 		if(strfind(textStr[1], " ", false) != -1) {
 			for(new i = 0; i < 2; i++) {
-				PlayerTextDrawShow(playerid, oocWarning[playerid][i]);
+				TextDrawShowForPlayer(playerid, oocWarning[playerid][i]);
 			}
 			
 			SetTimerEx("hideOOCWarning", 5000, false, "i", playerid);
@@ -217,7 +213,48 @@ sampCallback:OnPlayerCommandReceived(playerid, cmd[], params[], flags) {
 }
 
 sampCallback:OnPlayerCommandPerformed(playerid, cmd[], params[], result, flags) {
+	if(result == -1) {
+		for(new i = 0; i < 2; i++) {
+			TextDrawShowForPlayer(playerid, helpInfo[playerid][i]);
+		}
+		
+		SetTimerEx("hideHelpInfo", 5000, false, "i", playerid);
+	}
+	return 1;
+}
+
+sampCallback:OnPlayerStateChange(playerid, newstate, oldstate) {
+	new vehicleid = GetPlayerVehicleID(playerid);
+
+	if(newstate == PLAYER_STATE_DRIVER && oldstate == PLAYER_STATE_ONFOOT) {
+		if(!engineOn[vehicleid]) {
+			for(new i = 0; i < 2; i++) {
+				TextDrawShowForPlayer(playerid, vehicleTips[playerid][i]);
+			}
+		}
+	}
 	
+	if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_DRIVER) {
+		if(!engineOn[vehicleid]) {
+			for(new i = 0; i < 2; i++) {
+				TextDrawHideForPlayer(playerid, vehicleTips[playerid][i]);
+			}
+		}
+	}
+	return 1;
+}
+
+sampCallback:OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
+	if(newkeys & KEY_ACTION) {
+		if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
+			new vehicleid = GetPlayerVehicleID(playerid);
+			
+			for(new i = 0; i < 2; i++) {
+				TextDrawHideForPlayer(playerid, vehicleTips[playerid][i]);
+			}
+			vehicleEngineStatus(playerid, vehicleid);
+		}
+	}
 	return 1;
 }
 
@@ -227,9 +264,9 @@ sampCallback:OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid) {
 }
 
 sampCallback:OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid) {
-	new power = getPlayerStrengthPower(issuerid);
+	//new power = getPlayerStrengthPower(issuerid);
 	
-	SetPlayerHealth(playerid, pVars[playerid][pHp] - power);
+	//SetPlayerHealth(playerid, pVars[playerid][pHp] - power);
 	SetTimerEx("healthDamage", 100, false, "i", playerid);
 	return 1;
 }
@@ -239,13 +276,11 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 		case DIALOG_REGISTER: {
 			if(!response) {
 				mainStr[0] = EOS;
-				
 				format(mainStr, sizeof(mainStr), "1.\tChcesz now¹ postaæ? Kliknij STWÓRZ.\n2.\tMasz ju¿ postaæ? Wpisz jej nick poni¿ej.");
 				return ShowPlayerDialog(playerid, DIALOG_LOGIN_CHANGE_CHAR, DIALOG_STYLE_INPUT, "Zmiana postaci", mainStr, "Zmieñ", "STWÓRZ");
 			}
 			
 			mainStr[0] = EOS;
-			
 			for(new i = 0; i < MAX_CHARS_NAMES; i++) {
 				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charSur[i][chSurName]);
 			}
@@ -260,7 +295,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				pVars[playerid][pSex] = WOMAN_SEX;
 				
 				mainStr[0] = EOS;
-				
 				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
 					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charWomName[i][chName]);
 				}
@@ -270,7 +304,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			pVars[playerid][pSex] = MAN_SEX;
 				
 			mainStr[0] = EOS;
-			
 			for(new i = 0; i < MAX_CHARS_NAMES; i++) {
 				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charManName[i][chName]);
 			}
@@ -282,7 +315,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				setPlayerDefaultValues(playerid);
 				
 				mainStr[0] = EOS;
-				
 				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
 					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charSur[i][chSurName]);
 				}
@@ -300,7 +332,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				setPlayerDefaultValues(playerid);
 				
 				mainStr[0] = EOS;
-				
 				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
 					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charSur[i][chSurName]);
 				}
@@ -343,6 +374,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				pVars[playerid][pGuid] = accsNum;
 			}
 			
+			queryStr[0] = EOS;
 			format(queryStr, sizeof(queryStr), "INSERT INTO `Players` (`GUID`, `UID`, `AccName`, `IP`, `CharName`, `CharName2`, `Pass`, `Sex`) VALUES ('%d', '%d', '%s', '%s', '%s', '%s', '%s', '%d')",
 			pVars[playerid][pGuid], pVars[playerid][pUid], pVars[playerid][pAccName], pVars[playerid][pIp], pVars[playerid][pCharName], pVars[playerid][pCharName2], inputtext, pVars[playerid][pSex]);
 			mysql_query(queryStr);
@@ -370,7 +402,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 		case DIALOG_LOGIN: {
 			if(!response) {
 				mainStr[0] = EOS;
-				
 				format(mainStr, sizeof(mainStr), "1.\tChcesz now¹ postaæ? Kliknij STWÓRZ.\n2.\tMasz ju¿ postaæ? Wpisz jej nick poni¿ej.");
 				return ShowPlayerDialog(playerid, DIALOG_LOGIN_CHANGE_CHAR, DIALOG_STYLE_INPUT, "Zmiana postaci", mainStr, "Zmieñ", "STWÓRZ");
 			}
@@ -379,7 +410,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			pVars[playerid][pUid] = strval(inputtext);
 			
 			queryStr[0] = EOS;
-			
 			format(queryStr, sizeof(queryStr), "SELECT `CharName`, `CharName2`, `Pass` FROM `Players` WHERE `AccName` = '%s' AND `UID` = '%d'", pVars[playerid][pAccName], pVars[playerid][pUid]);
 			mysql_query(queryStr);
 			mysql_store_result();
@@ -389,20 +419,17 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			mysql_free_result();
 			
 			mainStr[0] = EOS;
-			
 			format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", pVars[playerid][pCharName]);
 			ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");
 		}
 		case DIALOG_LOGIN_PASS: {
 			if(!response) {
 				mainStr[0] = EOS;
-				
 				format(mainStr, sizeof(mainStr), "1.\tChcesz now¹ postaæ? Kliknij STWÓRZ.\n2.\tMasz ju¿ postaæ? Wpisz jej nick poni¿ej.");
 				return ShowPlayerDialog(playerid, DIALOG_LOGIN_CHANGE_CHAR, DIALOG_STYLE_INPUT, "Zmiana postaci", mainStr, "Zmieñ", "STWÓRZ");
 			}
 			
 			mainStr[0] = EOS;
-			
 			if(strlen(inputtext) < 2 || strlen(inputtext) > 32) {
 				format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", pVars[playerid][pCharName]);
 				return ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");			
@@ -424,7 +451,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				setPlayerDefaultValues(playerid);
 				
 				mainStr[0] = EOS;
-				
 				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
 					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charSur[i][chSurName]);
 				}
@@ -434,8 +460,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			setPlayerDefaultValues(playerid);
 			
 			queryStr[0] = EOS;
-			
-			format(queryStr, sizeof(queryStr), "SELECT `CharName` FROM `Players` WHERE `CharName` = '%s' AND `AccName` = '%s'", inputtext, pVars[playerid][pAccName]);
+			format(queryStr, sizeof(queryStr), "SELECT `CharName` FROM `Players` WHERE `CharName` = '%s'", inputtext);
 			mysql_query(queryStr);
 			mysql_store_result();
 			
@@ -448,7 +473,10 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				format(pVars[playerid][pCharName], 24, "%s", inputtext);
 			}
 			
-			format(queryStr, sizeof(queryStr), "SELECT `UID`, `Pass` FROM `Players` WHERE `AccName` = '%s' AND `CharName` = '%s'", pVars[playerid][pAccName], pVars[playerid][pCharName]);
+			mysql_free_result();
+			
+			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "SELECT `UID`, `Pass` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 			mysql_query(queryStr);
 			mysql_store_result();
 			
@@ -459,7 +487,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~n~~n~~y~Postac zmieniona.", 5000, 3);
 			
 			mainStr[0] = EOS;
-			
 			format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", pVars[playerid][pCharName]);
 			ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");
 		}
@@ -476,8 +503,23 @@ sampCallback:OnPlayerRequestSpawn(playerid) {
 	return 0;
 }
 
+sampCallback:OnEnterExitModShop(playerid, enterexit, interiorid) {
+	
+	return 1;
+}
+
 sampCallback:OnPlayerUpdate(playerid) {
 	playerAFKTime[playerid] = 0;
+	return 1;
+}
+
+sampCallback:OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ) {
+	
+	return 1;
+}
+
+sampCallback:OnPlayerClickPlayer(playerid, clickedplayerid, source) {
+	
 	return 1;
 }
 

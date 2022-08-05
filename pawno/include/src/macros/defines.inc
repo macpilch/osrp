@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 31.07.2022
+	Modified: 04.08.2022
 */
 
 #if !defined _DEFINES_
@@ -11,6 +11,9 @@
 
 #undef MAX_PLAYERS
 #define MAX_PLAYERS 2
+
+#undef MAX_VEHICLES
+#define MAX_VEHICLES 10
 
 // Callbacks
 #define sampCallback:%0(%1) \

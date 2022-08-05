@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: main_publics.inc
 	Date: 24.07.2022
-	Modified: 31.07.2022
+	Modified: 05.08.2022
 */
 
 #if !defined _MAIN_PUBLICS_
@@ -14,7 +14,10 @@ sampCallback:OnGameModeInit() {
 	DisableInteriorEnterExits();
 	ShowNameTags(0);
 	AddPlayerClass(0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0);
-	SetGameModeText("SAMP-RP");
+	SetWeather(10);
+	SetWorldTime(20);
+	SetGravity(0.008);
+	SetGameModeText("samp-rp.com (macpilch)");
 	
 	hMySQL = mysql_init(LOG_ALL, 1);
 	mySQLConnect = mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB, hMySQL, 1);

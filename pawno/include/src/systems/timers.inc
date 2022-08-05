@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 03.08.2022
+	Modified: 05.08.2022
 */
 
 #if !defined _TIMERS_
@@ -12,8 +12,8 @@
 task globalTimer[1000]() {	
 	foreach(Player, i) {
 		playerAFKTime[i]++;
-		GetPlayerHealth(i, pVars[i][pHp]);
 		
+		mainStr[0] = EOS;
 		if(playerAFKTime[i] != 1) {
 			static h, mins, secs;
 			
@@ -28,13 +28,19 @@ task globalTimer[1000]() {
 			}
 		} else if(isBW[i]) // by MisterMagik
 		{
-			setPlayerBW(i);
+			//setPlayerBW(i);
 			
 			if(pVars[i][pHours] > 20) {
 				format(mainStr, sizeof(mainStr), "%s (%d)\n(nieprzytomny)", pVars[i][pCharName], i);
 			} else {
 				format(mainStr, sizeof(mainStr), "%s (%d, %dh)\n(nieprzytomny)", pVars[i][pCharName], i, pVars[i][pHours]);
 			}
+		} else if(hasBelts[i]) {
+			if(pVars[i][pHours] > 20) {
+				format(mainStr, sizeof(mainStr), "%s (%d)\n(pasy)", pVars[i][pCharName], i);
+			} else {
+				format(mainStr, sizeof(mainStr), "%s (%d, %dh)\n(pasy)", pVars[i][pCharName], i, pVars[i][pHours]);
+			}			
 		} else {
 			if(pVars[i][pHours] > 20) {
 				format(mainStr, sizeof(mainStr), "%s (%d)", pVars[i][pCharName], i);
@@ -43,11 +49,11 @@ task globalTimer[1000]() {
 			}
 		}
 		
-		if(pVars[i][pHp] <= 1) {
+		/*if(pVars[i][pHp] <= 1) {
 			isBW[i] = true;
-		}
+		}*/
 		
-		PlayerTextDrawHide(i, damageRedScreen[i]);
+		TextDrawHideForPlayer(i, damageRedScreen[i]);
 		UpdateDynamic3DTextLabelText(pVars[i][p3dInfo], COLOR_WHITE, mainStr);
 		
 		// Narazie niech bedzie na 1
@@ -57,8 +63,6 @@ task globalTimer[1000]() {
 			if(pVars[i][pSeconds] == 60) {
 				pVars[i][pMinutes]++;
 				pVars[i][pSeconds] = 0;
-				
-				savePlayerValues(i);
 			}
 			
 			if(pVars[i][pMinutes] == 60) {
@@ -69,17 +73,18 @@ task globalTimer[1000]() {
 	}
 }
 
-task updateWebsiteDate[60000]() {
+task updateWebsiteDate[20000]() {
 	new day, month, year;
 	
 	getdate(year, month, day);
+	
+	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "samp-rp.com_:_%d.%d.%d", day, month, year);
 	TextDrawSetString(website, mainStr);
 }
 
 task settingsTimer[30000]() {
 	saveServerValues();
-	saveVehicleValues();
 }
 
 task townHallBellsTimer[59000]() {
@@ -95,38 +100,6 @@ task townHallBellsTimer[59000]() {
 			SendClientMessage(i, COLOR_WHITE, mainStr);
 		}
 	}
-}
-
-Callback:healthDamage(playerid) {
-	if(pVars[playerid][pHours] > 20) {
-		format(mainStr, sizeof(mainStr), "{FF0000}%s (%d)", pVars[playerid][pCharName], playerid);
-	} else {
-		format(mainStr, sizeof(mainStr), "{FF0000}%s (%d, %dh)", pVars[playerid][pCharName], playerid, pVars[playerid][pHours]);
-	}
-	
-	PlayerTextDrawShow(playerid, damageRedScreen[playerid]);
-	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_WHITE, mainStr);
-	return 1;
-}
-
-Callback:hideOOCWarning(playerid) {
-	for(new i = 0; i < 2; i++) {
-		PlayerTextDrawHide(playerid, oocWarning[playerid][i]);
-	}
-	return 1;
-}
-
-Callback:bwTimer(playerid) 
-{
-	mainStr[0] = EOS;
-	isBW[playerid] = false;
-	pVars[playerid][pHp] = 20.0;
-	
-	PlayerTextDrawHide(playerid, bwText[playerid]);
-	SetPlayerHealth(playerid, pVars[playerid][pHp]);
-	TogglePlayerControllable(playerid, 1);
-	ClearAnimations(playerid);
-	return 1;
 }
 
 #endif 

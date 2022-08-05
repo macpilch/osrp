@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 24.07.2022
-	Modified: 02.08.2022
+	Modified: 04.08.2022
 */
 
 #if !defined _PLAYER_
@@ -41,6 +41,7 @@ enum PlayerData {
 	pBank,
 	pBw,
 	pAj,
+	pDriverLicense,
 	Float:pX,
 	Float:pY,
 	Float:pZ,
