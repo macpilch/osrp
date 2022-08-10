@@ -3,16 +3,15 @@
 	Author: steeZ (macpilch)
 	File: vehicle_publics.inc
 	Date: 29.07.2022
-	Modified: 05.08.2022
+	Modified: 07.08.2022
 */
 
 #if !defined _VEHICLE_PUBLICS_
 #define _VEHICLE_PUBLICS_
 
 sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
-	if(vehicleid && pVars[playerid][pDriverLicense] < 1) {
+	if(vehicleid && !vehicleNonEngine(vehicleid) && pVars[playerid][pDriverLicense] < 1) {
 		mainStr[0] = EOS;
-		
 		strcat(mainStr, "Musisz najpierw wyrobiæ prawo jazdy.");
 		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 	}

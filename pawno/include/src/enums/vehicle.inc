@@ -14,6 +14,8 @@ enum VehicleData {
 	Float:vZ,
 	Float:vFuel, 
 	Float:vFuelTank,
+	bool:vLock,
+	vEngine,
 	vMileage // Przebieg
 };
 

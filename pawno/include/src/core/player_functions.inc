@@ -3,11 +3,17 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
-	Modified: 05.08.2022
+	Modified: 07.08.2022
 */
 
 #if !defined PLAYER_FUNCTIONS
 #define PLAYER_FUNCTIONS
+
+Callback:hideVehicleStats(playerid) {
+	TextDrawSetString(vehicleStats[playerid], NULL);
+	TextDrawHideForPlayer(playerid, vehicleStats[playerid]);	
+	return 1;
+}
 
 Callback:hideHelpInfo(playerid) {
 	for(new i = 0; i < 2; i++) {
@@ -204,15 +210,14 @@ stock createPlayerTextDraws(playerid) {
 
 stock loadPlayerValues(playerid) {
 	queryStr[0] = EOS;
-	
-	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `AccRank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `AccRank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `DriverLicense`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	mysql_store_result();
 	
 	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>iis[24]iiiiiffiiiiifff", 
-	pVars[playerid][pGuid], pVars[playerid][pAccRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney],
-	pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+	sscanf(queryStr, "p<|>iiis[24]iiiiiffiiiiiifff", 
+	pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pAccRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], 
+	pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	
 	mysql_free_result();
 	return 1;
@@ -220,7 +225,7 @@ stock loadPlayerValues(playerid) {
 
 stock setPlayerDefaultValues(playerid) {
 	// Czysci i od razu ustawia poprawny nick i IP
-	if(!usedCmdLogin[playerid]) {
+	if(!hasLoged[playerid]) {
 		pVars[playerid][pUid] = 0;
 		pVars[playerid][pGuid] = 0;
 		pVars[playerid][pCharId] = 1;
@@ -231,11 +236,9 @@ stock setPlayerDefaultValues(playerid) {
 		format(pVars[playerid][pPass], 32, "%s", NULL);
 		format(pVars[playerid][pIp], 24, "%s", NULL);
 		GetPlayerName(playerid, pVars[playerid][pAccName], 24);
+		GetPlayerIp(playerid, pVars[playerid][pIp], 24);
 	}
 	
-	SetPlayerName(playerid, pVars[playerid][pAccName]);
-	GetPlayerIp(playerid, pVars[playerid][pIp], 24);
-	SetCameraBehindPlayer(playerid);
 	ResetPlayerMoney(playerid);
 	ResetPlayerWeapons(playerid);
 	
@@ -252,9 +255,11 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pBank] = 0;
 	pVars[playerid][pBw] = 0;
 	pVars[playerid][pAj] = 0;
+	pVars[playerid][pDriverLicense] = 0;
 	pVars[playerid][pX] = 0.0;
 	pVars[playerid][pY] = 0.0;
 	pVars[playerid][pZ] = 0.0;
+	hasLoged[playerid] = false;
 	isAdminDuty[playerid] = false;
 	isSpectating[playerid] = false;
 	isGodMode[playerid] = false;
@@ -288,9 +293,11 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pBank] = 0;
 	pVars[playerid][pBw] = 0;
 	pVars[playerid][pAj] = 0;
+	pVars[playerid][pDriverLicense] = 0;
 	pVars[playerid][pX] = 0.0;
 	pVars[playerid][pY] = 0.0;
 	pVars[playerid][pZ] = 0.0;
+	hasLoged[playerid] = false;
 	isAdminDuty[playerid] = false;
 	isSpectating[playerid] = false;
 	isGodMode[playerid] = false;
@@ -304,10 +311,9 @@ stock savePlayerValues(playerid) {
 	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	
 	queryStr[0] = EOS;
-	
-	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `Hp` = '%f', `Ap` = '%f', `Skin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'", 
-	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pX], pVars[playerid][pY], 
-	pVars[playerid][pZ], pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `Hp` = '%f', `Ap` = '%f', `Skin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `DriverLicense` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'", 
+	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pX], 
+	pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	return 1;
 }

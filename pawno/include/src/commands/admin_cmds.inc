@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: admin_cmds.inc
 	Date: 04.08.2022
-	Modified: 05.08.2022
+	Modified: 09.08.2022
 */
 
 #if !defined _ADMIN_CMDS_
@@ -25,7 +25,7 @@ CMD:givehealth(playerid, params[]) {
 		SendClientMessage(toPlayerid, COLOR_WHITE, mainStr);
 		format(mainStr, sizeof(mainStr), "{00FF00}[Admin]:{00FF00}: Dales zdrowie graczowi %s", pVars[toPlayerid][pCharName2]);
 		SendClientMessage(playerid, COLOR_WHITE, mainStr);
-	}
+	} else return 0;
 	return 1;
 }
 
@@ -38,6 +38,7 @@ CMD:freezeplayer(playerid, params[]) {
 		}
 		
 		mainStr[0] = EOS;
+		
 		switch(freezeOnOff) {
 			case 0: {
 				TogglePlayerControllable(toPlayerid, freezeOnOff);
@@ -56,7 +57,7 @@ CMD:freezeplayer(playerid, params[]) {
 				SendClientMessage(playerid, COLOR_WHITE, mainStr);
 			}
 		}
-	}
+	} else return 0;
 	return 1;
 }
 
@@ -74,7 +75,7 @@ CMD:godmode(playerid, params[]) {
 				SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[Admin]{FFFFFF}: Wy³¹czono godmode.");
 			}
 		}
-	}
+	} else return 0;
 	return 1;
 }
 
@@ -90,7 +91,7 @@ CMD:giveweapon(playerid, params[]) {
 			GivePlayerWeapon(playerid, weaponId, ammo);
 			SendClientMessage(playerid, COLOR_WHITE, "{00FF00}[Admin]{FFFFFF}: Otrzymano broñ.");
 		}
-	}
+	} else return 0;
 	return 1;
 }
 
@@ -121,6 +122,7 @@ CMD:spawnvehicle(playerid, params[]) {
 			GetPlayerPos(playerid, x, y, z);
 			vehicleId = CreateVehicle(vehicleModelId, x + 2, y + 2, z + 2, 0.0, color1, color2, 0);
 			SetVehicleParamsEx(vehicleId, 0, 0, 0, 0, 0, 0, 0);
+			setVehicleFuel(freeId, 10);
 			vVars[freeId][vUid] = freeId + 1;
 			vVars[freeId][vId] = vehicleId;
 			vVars[freeId][vOUid] = pVars[playerid][pUid];
@@ -132,12 +134,11 @@ CMD:spawnvehicle(playerid, params[]) {
 			vVars[freeId][vY] = y;
 			vVars[freeId][vZ] = z;
 			
-			queryStr[0] = EOS;
 			format(queryStr, sizeof(queryStr), "INSERT INTO `Vehicles` (`UID`, `ID`, `OUID`, `CharName`, `ModelID`, `Color1`, `Color2`, `X`, `Y`, `Z`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d', '%d', '%f', '%f', '%f')",
 			vVars[freeId][vUid], vVars[freeId][vId], vVars[freeId][vOUid], vVars[freeId][vCharName], vVars[freeId][vModelId], vVars[freeId][vColor1], vVars[freeId][vColor2], vVars[freeId][vX], vVars[freeId][vY], vVars[freeId][vZ]);
 			mysql_query(queryStr);
 		}
-	}
+	} else return 0;
 	return 1;
 }
 
@@ -163,7 +164,7 @@ CMD:spectateplayer(playerid, params[]) {
 				TogglePlayerSpectating(playerid, 0);
 			}
 		}
-	}
+	} else return 0;
 	return 1;
 }
 

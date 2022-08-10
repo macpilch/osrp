@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: global_functions.inc
 	Date: 28.07.2022
-	Modified: 31.07.2022
+	Modified: 06.08.2022
 */
 
 #if !defined _GLOBAL_FUNCTIONS_
@@ -11,7 +11,6 @@
 
 stock initServerValues() {
 	queryStr[0] = EOS;
-	
 	format(queryStr, sizeof(queryStr), "SELECT `AllAccounts` FROM `Settings`");
 	mysql_query(queryStr);
 	mysql_store_result();
@@ -24,7 +23,6 @@ stock initServerValues() {
 
 stock saveServerValues() {
 	queryStr[0] = EOS;
-	
 	format(queryStr, sizeof(queryStr), "UPDATE `Settings` SET `AllAccounts` = '%d'", allAccounts);
 	mysql_query(queryStr);
 	return 1;

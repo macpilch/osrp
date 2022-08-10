@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 05.08.2022
+	Modified: 06.08.2022
 */
 
 #if !defined _PLAYER_CMDS_
@@ -39,7 +39,6 @@ CMD:w(playerid, params[]) {
 	format(mainStr, sizeof(mainStr), "(( > %s (%d): %s ))", pVars[id][pCharName], id, pmStr);
 	SendClientMessage(playerid, COLOR_WHITE, mainStr);
 	
-	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "(( %s (%d): %s ))", pVars[playerid][pCharName], playerid, pmStr);
 	SendClientMessage(id, COLOR_WHITE, mainStr);
 	return 1;
@@ -109,6 +108,7 @@ CMD:do(playerid, params[]) {
 CMD:login(playerid, params[]) {
 	TogglePlayerSpectating(playerid, 1);
 	
+	hasLoged[playerid] = false;
 	usedCmdLogin[playerid] = true;
 	
 	savePlayerValues(playerid);
@@ -132,53 +132,95 @@ CMD:stats(playerid, params[]) {
 }
 
 CMD:v(playerid, params[]) {
-	if(!checkPlayerVehicleId(playerid)) {
-		return GameTextForPlayer(playerid, "~r~Nie posiadasz zadnego pojazdu.", 5000, 3);
-	}
-	
 	new opt[32];
 	
 	if(sscanf(params, "s[32]", opt)) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v [zaparkuj/z(amknij)/info/namierz/reset]");
-	}
-	
-	if(strfind(opt, "zaparkuj", true) != -1) {
-		mainStr[0] = EOS;
-		strcat(mainStr, "Pojazd zosta³ pomyœlnie zaparkowany w nowym miejscu.\n");
-		strcat(mainStr, "Zaleca siê jego respawn, aby zachowaæ zmiany.");
-		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
-		return 1;
-	}
-	
-	if(strfind(opt, "z", true) != -1 || strfind(opt, "zamknij", true) != -1) {
-		GameTextForPlayer(playerid, "~w~Pojazd ~r~zamkniety", 5000, 6);
-		GameTextForPlayer(playerid, "~g~Pojazdy bez silnika nie~n~maja zamkow.", 5000, 6);
-		return 1;
-	}
-	
-	if(strfind(opt, "info", true) != -1) {
-		new vehid = GetPlayerVehicleID(playerid), vehicleid = getVehicleIdForPlayer(vehid);
-		new bool:showTD[MAX_PLAYERS];
-		new Float:vHp;
-		
-		GetVehicleHealth(vVars[vehicleid][vId], vHp);
-		
-		if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
-			if(!showTD[playerid]) {
-				mainStr[0] = EOS;
-				
-				format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~%d:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
-				vVars[vehicleid][vUid], playerid, vVars[vehicleid][vOUid], vVars[vehicleid][vModelId], vVars[vehicleid][vId], vVars[vehicleid][vColor1], vVars[vehicleid][vColor2], vHp);
-				
-				TextDrawSetString(playerid, vehicleStats[playerid], mainStr);
-				TextDrawShowForPlayer(playerid, vehicleStats[playerid]);
-				showTD[playerid] = true;
-			} else {
-				TextDrawHideForPlayer(playerid, vehicleStats[playerid]);
-				showTD[playerid] = false;
-			}
+		if(!checkPlayerVehicleId(playerid)) {
+			mainStr[0] = EOS;
+			
+			strcat(mainStr, "W tym miejscu pojawi siê lista posiadanych przez Ciebie pojazdów.\n\n");
+			strcat(mainStr, "Kup nowy pojazd w salonie samochodowym lub u¿ywany od innego gracza.\n\n");
+			strcat(mainStr, "Pojazdom mo¿na dodawaæ komponenty i zabezpieczenia w warsztatach.");
+			return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 		}
-		return 1;
+		
+		new i;
+		queryStr[0] = EOS;
+		mainStr[0] = EOS;
+		
+		format(queryStr, sizeof(queryStr), "SELECT `UID`, `ModelID` FROM `Vehicles` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+		mysql_query(queryStr);
+		mysql_store_result();
+		
+		while(mysql_fetch_row(queryStr, "|")) {
+			sscanf(queryStr, "p<|>ii", vVars[i][vUid], vVars[i][vModelId]);
+			format(mainStr, sizeof(mainStr), "%s{FFFFFF}%d  %s\n", mainStr, vVars[i][vUid], VehicleNames[vVars[i][vModelId] - 1]);
+			i++;
+		}
+		mysql_free_result();
+		
+		format(mainStr, sizeof(mainStr), "%s", mainStr);
+		return ShowPlayerDialog(playerid, DIALOG_VEHICLE_SELECT, DIALOG_STYLE_LIST, "Wybór pojazdu (* = zespawnowany)", mainStr, "(Un)spawn", "Anuluj");
+	} else {
+		if(strfind(opt, "zaparkuj", true) != -1 || strfind(opt, "parkuj", true) != -1) {
+			new vehicleid = getVehicleIdForPlayer(GetPlayerVehicleID(playerid));
+			new Float:x, Float:y, Float:z;
+			
+			GetVehiclePos(vVars[vehicleid][vId], x, y, z);
+			
+			format(queryStr, sizeof(queryStr), "UPDATE `Vehicles` SET `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `UID` = '%d' AND `CharName` = '%s'", x, y, z, vVars[vehicleid][vUid], pVars[playerid][pCharName]);
+			mysql_query(queryStr);
+			
+			mainStr[0] = EOS;
+			strcat(mainStr, "Pojazd zosta³ pomyœlnie zaparkowany w nowym miejscu.\n");
+			strcat(mainStr, "Zaleca siê jego respawn, aby zachowaæ zmiany.");
+			ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+			return 1;
+		} else if(strfind(opt, "z", true) != -1 || strfind(opt, "zamknij", true) != -1) {
+			new Float:x, Float:y, Float:z;
+			new vehicleid = getVehicleIdForPlayer(GetPlayerVehicleID(playerid));
+			
+			GetVehiclePos(vVars[vehicleid][vId], x, y, z);
+			
+			if(IsPlayerInRangeOfPoint(playerid, 1.0, x, y, z)) {
+				if(vehicleNonEngine(GetPlayerVehicleID(playerid))) {
+					return GameTextForPlayer(playerid, "~g~Pojazdy bez silnika nie~n~maja zamkow.", 5000, 6);
+				} else {
+					if(!vVars[vehicleid][vLock]) {
+						GameTextForPlayer(playerid, "~w~Pojazd ~g~otwarty", 5000, 6);
+						vVars[vehicleid][vLock] = true;
+					} else {
+						GameTextForPlayer(playerid, "~w~Pojazd ~r~zamkniety", 5000, 6);
+						vVars[vehicleid][vLock] = false;
+					}
+				}
+			}
+			return 1;
+		} else if(strfind(opt, "info", true) != -1) {
+			new vehicleid = getVehicleIdForPlayer(GetPlayerVehicleID(playerid));
+			new Float:vHp;
+			
+			GetVehicleHealth(vVars[vehicleid][vId], vHp);
+			
+			if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
+				mainStr[0] = EOS;
+				format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~9:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
+				vVars[vehicleid][vUid], vVars[vehicleid][vOUid], vVars[vehicleid][vModelId], vVars[vehicleid][vId], vVars[vehicleid][vColor1], vVars[vehicleid][vColor2], vHp);
+					
+				TextDrawSetString(vehicleStats[playerid], mainStr);
+				TextDrawShowForPlayer(playerid, vehicleStats[playerid]);
+				SetTimerEx("hideVehicleStats", 15000, false, "i", playerid);
+			}
+			return 1;
+		} else if(strfind(opt, "namierz", true) != -1) {
+			
+			return 1;
+		} else if(strfind(opt, "reset", true) != -1) {
+			
+			return 1;
+		} else {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v [zaparkuj/z(amknij)/info/namierz/reset]");
+		}
 	}
 	return 1;
 }
