@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 06.08.2022
+	Modified: 11.08.2022
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -225,10 +225,10 @@ sampCallback:OnPlayerCommandPerformed(playerid, cmd[], params[], result, flags) 
 }
 
 sampCallback:OnPlayerStateChange(playerid, newstate, oldstate) {
-	new vehicleid = GetPlayerVehicleID(playerid);
+	new vehicleid = getVehicleIdForPlayer(GetPlayerVehicleID(playerid));
 
 	if(newstate == PLAYER_STATE_DRIVER && oldstate == PLAYER_STATE_ONFOOT) {
-		if(!engineOn[vehicleid] && !vehicleNonEngine(vehicleid)) {
+		if(!vVars[vehicleid][vEngine] && !vehicleNonEngine(GetPlayerVehicleID(playerid))) {
 			for(new i = 0; i < 2; i++) {
 				TextDrawShowForPlayer(playerid, vehicleTips[playerid][i]);
 			}
@@ -236,7 +236,7 @@ sampCallback:OnPlayerStateChange(playerid, newstate, oldstate) {
 	}
 	
 	if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_DRIVER) {
-		if(!engineOn[vehicleid] && !vehicleNonEngine(vehicleid)) {
+		if(!vVars[vehicleid][vEngine] && !vehicleNonEngine(GetPlayerVehicleID(playerid))) {
 			for(new i = 0; i < 2; i++) {
 				TextDrawHideForPlayer(playerid, vehicleTips[playerid][i]);
 			}
@@ -488,6 +488,41 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", pVars[playerid][pCharName]);
 			ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");
+		}
+		case DIALOG_VEHICLE_SELECT: {
+			if(!response) {
+				return 1;
+			}
+			
+			new tmpUid;
+			new tmpVehId;
+			
+			tmpUid = strval(inputtext);
+			
+			foreach(vehItter, i) {
+				if(tmpUid == vVars[i][vUid]) {
+					tmpVehId = i;
+					break;
+				}
+			}
+			
+			if(!vVars[tmpVehId][vSpawned]) {
+				vVars[tmpVehId][vId] = CreateVehicle(vVars[tmpVehId][vModelId], vVars[tmpVehId][vX], vVars[tmpVehId][vY], vVars[tmpVehId][vZ], 0.0, vVars[tmpVehId][vColor1], vVars[tmpVehId][vColor2], 0);
+				actualVehicle[playerid] = vVars[tmpVehId][vId];
+				
+				if(!vVars[tmpVehId][vEngine]) {
+					SetVehicleParamsEx(vVars[tmpVehId][vId], 0, 0, 0, 0, 0, 0, 0);
+				}
+				
+				GameTextForPlayer(playerid, "~r~Pojazd~n~~n~~w~Pojazd zostal zespawnowany.", 5000, 3);
+				vVars[tmpVehId][vSpawned] = true;
+			} else {
+				DestroyVehicle(vVars[tmpVehId][vId]);
+				GameTextForPlayer(playerid, "~r~Pojazd~n~~n~~w~Pojazd zostal odspawnowany.", 5000, 3);
+				
+				actualVehicle[playerid] = INVALID_VEHICLE_ID;
+				vVars[tmpVehId][vSpawned] = false;
+			}
 		}
 	}
 	return 1;

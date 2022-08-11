@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 09.08.2022
+	Modified: 11.08.2022
 */
 
 #if !defined _TIMERS_
@@ -75,8 +75,9 @@ task globalTimer[1000]() {
 		}
 		
 		foreach(vehItter, j) {
-			if(engineOn[vVars[j][vId]]) {
+			if(vVars[j][vEngine]) {
 				vVars[j][vFuel] -= 0.02;
+				vVars[j][vMileage] += 0.1;
 				
 				if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
 					if(getVehicleFuel(j) <= 0) {
@@ -86,19 +87,17 @@ task globalTimer[1000]() {
 						SetVehicleParamsEx(vVars[j][vId], 0, lights, alarm, doors, bonnet, boot, objective);
 						
 						vVars[j][vFuel] = 0;
-						engineOn[vVars[j][vId]] = false;
+						vVars[j][vEngine] = false;
 							
 						GameTextForPlayer(i, "~r~Brak paliwa w pojezdzie.", 5000, 3);
 					}
 				}
 			}
-			
-			saveVehicleValues();
 		}
 	}
 }
 
-task updateWebsiteDate[9000]() {
+task updateWebsiteDate[5000]() {
 	new day, month, year;
 	getdate(year, month, day);
 	
@@ -109,6 +108,7 @@ task updateWebsiteDate[9000]() {
 
 task settingsTimer[30000]() {
 	saveServerValues();
+	saveVehicleValues();
 }
 
 task townHallBellsTimer[59000]() {
@@ -118,7 +118,7 @@ task townHallBellsTimer[59000]() {
 	foreach(Player, i) {
 		if(minutes == 0) {
 			timerStr[0] = EOS;
-			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d razy. **", (hours > 12) ? (hours - 12) : hours);
+			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d razy. **", hours);
 			SendClientMessage(i, COLOR_WHITE, timerStr);
 		}
 	}

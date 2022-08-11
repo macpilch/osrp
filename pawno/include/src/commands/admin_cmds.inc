@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: admin_cmds.inc
 	Date: 04.08.2022
-	Modified: 09.08.2022
+	Modified: 11.08.2022
 */
 
 #if !defined _ADMIN_CMDS_
@@ -121,8 +121,12 @@ CMD:spawnvehicle(playerid, params[]) {
 			Iter_Add(vehItter, freeId);
 			GetPlayerPos(playerid, x, y, z);
 			vehicleId = CreateVehicle(vehicleModelId, x + 2, y + 2, z + 2, 0.0, color1, color2, 0);
-			SetVehicleParamsEx(vehicleId, 0, 0, 0, 0, 0, 0, 0);
-			setVehicleFuel(freeId, 10);
+			
+			if(!vehicleNonEngine(vehicleId)) {
+				SetVehicleParamsEx(vehicleId, 0, 0, 0, 0, 0, 0, 0);
+				setVehicleFuel(freeId, 10);
+			}
+			
 			vVars[freeId][vUid] = freeId + 1;
 			vVars[freeId][vId] = vehicleId;
 			vVars[freeId][vOUid] = pVars[playerid][pUid];
@@ -130,13 +134,56 @@ CMD:spawnvehicle(playerid, params[]) {
 			vVars[freeId][vModelId] = GetVehicleModel(vehicleId);
 			vVars[freeId][vColor1] = color1;
 			vVars[freeId][vColor2] = color2;
+			vVars[freeId][vLock] = false;
+			vVars[freeId][vEngine] = false;
+			vVars[freeId][vSpawned] = true;
+			vVars[freeId][vMileage] = 0;
 			vVars[freeId][vX] = x;
 			vVars[freeId][vY] = y;
 			vVars[freeId][vZ] = z;
+			actualVehicle[playerid] = vehicleId;
 			
 			format(queryStr, sizeof(queryStr), "INSERT INTO `Vehicles` (`UID`, `ID`, `OUID`, `CharName`, `ModelID`, `Color1`, `Color2`, `X`, `Y`, `Z`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d', '%d', '%f', '%f', '%f')",
 			vVars[freeId][vUid], vVars[freeId][vId], vVars[freeId][vOUid], vVars[freeId][vCharName], vVars[freeId][vModelId], vVars[freeId][vColor1], vVars[freeId][vColor2], vVars[freeId][vX], vVars[freeId][vY], vVars[freeId][vZ]);
 			mysql_query(queryStr);
+		}
+	} else return 0;
+	return 1;
+}
+
+CMD:deletevehicle(playerid, params[]) {
+	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK) {
+		if(isAdminDuty[playerid]) {
+			new vehUid;
+			
+			if(sscanf(params, "i", vehUid)) {
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /deletevehicle [Uid Pojazdu].");
+			}
+			
+			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "DELETE FROM `Vehicles` WHERE `UID` = '%d'", vehUid);
+			mysql_query(queryStr);
+			
+			DestroyVehicle(vVars[vehUid - 1][vModelId]);
+			Iter_Remove(vehItter, vehUid - 1);
+			
+			vVars[vehUid - 1][vUid] = 0;
+			vVars[vehUid - 1][vId] = 0;
+			vVars[vehUid - 1][vOUid] = 0;
+			vVars[vehUid - 1][vUid] = 0;
+			format(vVars[vehUid - 1][vCharName], 24, "%s", NULL);
+			vVars[vehUid - 1][vModelId] = 0;
+			vVars[vehUid - 1][vColor1] = 0;
+			vVars[vehUid - 1][vColor2] = 0;
+			vVars[vehUid - 1][vX] = 0.0;
+			vVars[vehUid - 1][vY] = 0.0;
+			vVars[vehUid - 1][vZ] = 0.0;
+			vVars[vehUid - 1][vFuel] = 0.0;
+			vVars[vehUid - 1][vFuelTank] = 0.0;
+			vVars[vehUid - 1][vLock] = false;
+			vVars[vehUid - 1][vEngine] = false;
+			vVars[vehUid - 1][vSpawned] = false;
+			vVars[vehUid - 1][vMileage] = 0;
 		}
 	} else return 0;
 	return 1;

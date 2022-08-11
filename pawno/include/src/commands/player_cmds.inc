@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 06.08.2022
+	Modified: 11.08.2022
 */
 
 #if !defined _PLAYER_CMDS_
@@ -144,26 +144,37 @@ CMD:v(playerid, params[]) {
 			return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 		}
 		
-		new i;
 		queryStr[0] = EOS;
-		mainStr[0] = EOS;
-		
 		format(queryStr, sizeof(queryStr), "SELECT `UID`, `ModelID` FROM `Vehicles` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 		mysql_query(queryStr);
 		mysql_store_result();
 		
+		enum {
+			UID = 0,
+			ModelID
+		};
+		
+		new i;
+		new tmpVVars[MAX_VEHICLES][2];
+		
+		mainStr[0] = EOS;
 		while(mysql_fetch_row(queryStr, "|")) {
-			sscanf(queryStr, "p<|>ii", vVars[i][vUid], vVars[i][vModelId]);
-			format(mainStr, sizeof(mainStr), "%s{FFFFFF}%d  %s\n", mainStr, vVars[i][vUid], VehicleNames[vVars[i][vModelId] - 1]);
+			sscanf(queryStr, "p<|>ii", tmpVVars[i][UID], tmpVVars[i][ModelID]);
+			
+			if(vVars[i][vSpawned]) {
+				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d   %s*", mainStr, tmpVVars[i][UID], VehicleNames[tmpVVars[i][ModelID] - 400]);
+			} else {
+				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d   %s", mainStr, tmpVVars[i][UID], VehicleNames[tmpVVars[i][ModelID] - 400]);
+			}
+			
 			i++;
 		}
-		mysql_free_result();
 		
-		format(mainStr, sizeof(mainStr), "%s", mainStr);
-		return ShowPlayerDialog(playerid, DIALOG_VEHICLE_SELECT, DIALOG_STYLE_LIST, "Wybór pojazdu (* = zespawnowany)", mainStr, "(Un)spawn", "Anuluj");
+		mysql_free_result();
+		ShowPlayerDialog(playerid, DIALOG_VEHICLE_SELECT, DIALOG_STYLE_LIST, "Wybór pojazdu (* = zespawnowany)", mainStr, "(Un)spawn", "Anuluj");
 	} else {
 		if(strfind(opt, "zaparkuj", true) != -1 || strfind(opt, "parkuj", true) != -1) {
-			new vehicleid = getVehicleIdForPlayer(GetPlayerVehicleID(playerid));
+			new vehicleid = getVehicleIdForPlayer(actualVehicle[playerid]);
 			new Float:x, Float:y, Float:z;
 			
 			GetVehiclePos(vVars[vehicleid][vId], x, y, z);
@@ -178,7 +189,7 @@ CMD:v(playerid, params[]) {
 			return 1;
 		} else if(strfind(opt, "z", true) != -1 || strfind(opt, "zamknij", true) != -1) {
 			new Float:x, Float:y, Float:z;
-			new vehicleid = getVehicleIdForPlayer(GetPlayerVehicleID(playerid));
+			new vehicleid = getVehicleIdForPlayer(actualVehicle[playerid]);
 			
 			GetVehiclePos(vVars[vehicleid][vId], x, y, z);
 			
@@ -197,23 +208,27 @@ CMD:v(playerid, params[]) {
 			}
 			return 1;
 		} else if(strfind(opt, "info", true) != -1) {
-			new vehicleid = getVehicleIdForPlayer(GetPlayerVehicleID(playerid));
+			new vehicleid = getVehicleIdForPlayer(actualVehicle[playerid]);
 			new Float:vHp;
 			
 			GetVehicleHealth(vVars[vehicleid][vId], vHp);
 			
-			if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
-				mainStr[0] = EOS;
-				format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~9:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
-				vVars[vehicleid][vUid], vVars[vehicleid][vOUid], vVars[vehicleid][vModelId], vVars[vehicleid][vId], vVars[vehicleid][vColor1], vVars[vehicleid][vColor2], vHp);
+			mainStr[0] = EOS;
+			format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~9:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
+			vVars[vehicleid][vUid], vVars[vehicleid][vOUid], vVars[vehicleid][vModelId], vVars[vehicleid][vId], vVars[vehicleid][vColor1], vVars[vehicleid][vColor2], vHp);
 					
-				TextDrawSetString(vehicleStats[playerid], mainStr);
-				TextDrawShowForPlayer(playerid, vehicleStats[playerid]);
-				SetTimerEx("hideVehicleStats", 15000, false, "i", playerid);
-			}
+			TextDrawSetString(vehicleStats[playerid], mainStr);
+			TextDrawShowForPlayer(playerid, vehicleStats[playerid]);
+			SetTimerEx("hideVehicleStats", 15000, false, "i", playerid);
 			return 1;
 		} else if(strfind(opt, "namierz", true) != -1) {
+			new Float:x, Float:y, Float:z;
+			new vehicleid = getVehicleIdForPlayer(actualVehicle[playerid]);
 			
+			GetVehiclePos(vVars[vehicleid][vId], x, y, z);
+			CreateDynamicCP(x, y, z, 1.0, -1, -1, -1, 20, -1, 0);
+			CreateDynamicMapIcon(x, y, z, 55, -1, -1, -1, -1, 20, -1, 0);
+			GameTextForPlayer(playerid, "~y~Pojazd zostal pomyslnie namierzony.", 5000, 3);
 			return 1;
 		} else if(strfind(opt, "reset", true) != -1) {
 			
@@ -243,8 +258,12 @@ CMD:duty(playerid, params[]) {
 CMD:pasy(playerid, params[]) {
 	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
 		if(!hasBelts[playerid]) {
+			GameTextForPlayer(playerid, "~w~Pasy ~g~zapiete", 5000, 6);
+		
 			hasBelts[playerid] = true;
 		} else {
+			GameTextForPlayer(playerid, "~w~Pasy ~r~odpiete", 5000, 6);
+		
 			hasBelts[playerid] = false;
 		}
 	}

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: arrays.inc
 	Date: 25.07.2022
-	Modified: 08.08.2022
+	Modified: 10.08.2022
 */
 
 #if !defined _ARRAYS_

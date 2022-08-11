@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 05.08.2022
+	Modified: 11.08.2022
 */
 
 #if !defined _VARS_
@@ -12,6 +12,7 @@
 new mySQLConnect;
 new allAccounts;
 new playerAFKTime[MAX_PLAYERS];
+new actualVehicle[MAX_PLAYERS];
 
 new bool:hasLoged[MAX_PLAYERS];
 new bool:isAdminDuty[MAX_PLAYERS]; // false(0) is admin duty off or true(1) is admin duty on only when player have ranks: SUPPORT_RANK, ADMIN_RANK, HEADADMIN_RANK
@@ -20,7 +21,6 @@ new	bool:isGodMode[MAX_PLAYERS];
 new	bool:isBW[MAX_PLAYERS];
 new bool:usedCmdLogin[MAX_PLAYERS];
 new bool:hasBelts[MAX_PLAYERS];
-new bool:engineOn[MAX_VEHICLES];
 
 new MySQL:hMySQL;
 

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_publics.inc
 	Date: 29.07.2022
-	Modified: 07.08.2022
+	Modified: 11.08.2022
 */
 
 #if !defined _VEHICLE_PUBLICS_
@@ -24,8 +24,7 @@ sampCallback:OnPlayerExitVehicle(playerid, vehicleid) {
 }
 
 sampCallback:OnVehicleSpawn(vehicleid) {
-	SetVehicleParamsEx(vehicleid, 0, 0, 0, 0, 0, 0, 0);
-	engineOn[vehicleid] = false;
+	
 	return 1;
 }
 
