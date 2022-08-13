@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 11.08.2022
+	Modified: 12.08.2022
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -232,11 +232,23 @@ sampCallback:OnPlayerStateChange(playerid, newstate, oldstate) {
 			for(new i = 0; i < 2; i++) {
 				TextDrawShowForPlayer(playerid, vehicleTips[playerid][i]);
 			}
+		} else {
+			for(new i = 0; i < 3; i++) {
+				TextDrawShowForPlayer(playerid, vehicleFuelStatus[playerid][i]);
+			}
+			
+			for(new i = 0; i < 2; i++) {
+				TextDrawHideForPlayer(playerid, vehicleTips[playerid][i]);
+			}
 		}
 	}
 	
 	if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_DRIVER) {
-		if(!vVars[vehicleid][vEngine] && !vehicleNonEngine(GetPlayerVehicleID(playerid))) {
+		if(!vehicleNonEngine(GetPlayerVehicleID(playerid))) {
+			for(new i = 0; i < 3; i++) {
+				TextDrawHideForPlayer(playerid, vehicleFuelStatus[playerid][i]);
+			}
+			
 			for(new i = 0; i < 2; i++) {
 				TextDrawHideForPlayer(playerid, vehicleTips[playerid][i]);
 			}
@@ -409,7 +421,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return ShowPlayerDialog(playerid, DIALOG_LOGIN_CHANGE_CHAR, DIALOG_STYLE_INPUT, "Zmiana postaci", mainStr, "Zmieñ", "STWÓRZ");
 			}
 			
-			hasLoged[playerid] = true;
 			setPlayerDefaultValues(playerid);
 			pVars[playerid][pUid] = strval(inputtext);
 			
@@ -440,6 +451,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			if(!strcmp(pVars[playerid][pPass], inputtext, false)) {
 				TogglePlayerSpectating(playerid, 0);
 				loadPlayerValues(playerid);
+				hasLoged[playerid] = true;
 				
 				format(mainStr, sizeof(mainStr), "{A52A2A}Witaj, %s (UID %d, ID %d). Mi³ej gry!", pVars[playerid][pCharName], pVars[playerid][pUid], playerid);
 				SendClientMessage(playerid, COLOR_WHITE, mainStr);
@@ -508,16 +520,24 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			if(!vVars[tmpVehId][vSpawned]) {
 				vVars[tmpVehId][vId] = CreateVehicle(vVars[tmpVehId][vModelId], vVars[tmpVehId][vX], vVars[tmpVehId][vY], vVars[tmpVehId][vZ], 0.0, vVars[tmpVehId][vColor1], vVars[tmpVehId][vColor2], 0);
+				vehCP[tmpVehId] = CreateDynamicCP(vVars[tmpVehId][vX], vVars[tmpVehId][vY], vVars[tmpVehId][vZ], 2.0, 0, 0, -1, 100, -1, 0);
+				vehMapIcon[tmpVehId] = CreateDynamicMapIcon(vVars[tmpVehId][vX], vVars[tmpVehId][vY], vVars[tmpVehId][vZ], 55, COLOR_WHITE, 0, 0, -1, 4000, MAPICON_GLOBAL, -1, 0);
 				actualVehicle[playerid] = vVars[tmpVehId][vId];
 				
 				if(!vVars[tmpVehId][vEngine]) {
 					SetVehicleParamsEx(vVars[tmpVehId][vId], 0, 0, 0, 0, 0, 0, 0);
 				}
 				
-				GameTextForPlayer(playerid, "~r~Pojazd~n~~n~~w~Pojazd zostal zespawnowany.", 5000, 3);
+				for(new i = 0; i < sizeof(vehicleSpawn); i++) {
+					TextDrawShowForPlayer(playerid, vehicleSpawn[playerid][i]);
+				}
+				
+				SetTimerEx("hideVehicleSpawn", 7000, false, "i", playerid);
 				vVars[tmpVehId][vSpawned] = true;
 			} else {
 				DestroyVehicle(vVars[tmpVehId][vId]);
+				DestroyDynamicMapIcon(vehMapIcon[tmpVehId]);
+				DestroyDynamicCP(vehCP[tmpVehId]);
 				GameTextForPlayer(playerid, "~r~Pojazd~n~~n~~w~Pojazd zostal odspawnowany.", 5000, 3);
 				
 				actualVehicle[playerid] = INVALID_VEHICLE_ID;

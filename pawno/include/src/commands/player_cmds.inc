@@ -108,7 +108,7 @@ CMD:do(playerid, params[]) {
 CMD:login(playerid, params[]) {
 	TogglePlayerSpectating(playerid, 1);
 	
-	hasLoged[playerid] = false;
+	hasLoged[playerid] = true;
 	usedCmdLogin[playerid] = true;
 	
 	savePlayerValues(playerid);
@@ -187,7 +187,7 @@ CMD:v(playerid, params[]) {
 			strcat(mainStr, "Zaleca siê jego respawn, aby zachowaæ zmiany.");
 			ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 			return 1;
-		} else if(strfind(opt, "z", true) != -1 || strfind(opt, "zamknij", true) != -1) {
+		} else if(strfind(opt, "z", true) == 0 || strfind(opt, "zamknij", true) != -1) {
 			new Float:x, Float:y, Float:z;
 			new vehicleid = getVehicleIdForPlayer(actualVehicle[playerid]);
 			
@@ -198,16 +198,17 @@ CMD:v(playerid, params[]) {
 					return GameTextForPlayer(playerid, "~g~Pojazdy bez silnika nie~n~maja zamkow.", 5000, 6);
 				} else {
 					if(!vVars[vehicleid][vLock]) {
-						GameTextForPlayer(playerid, "~w~Pojazd ~g~otwarty", 5000, 6);
+						GameTextForPlayer(playerid, "~w~Pojazd ~r~zamkniety", 5000, 6);
 						vVars[vehicleid][vLock] = true;
 					} else {
-						GameTextForPlayer(playerid, "~w~Pojazd ~r~zamkniety", 5000, 6);
+						GameTextForPlayer(playerid, "~w~Pojazd ~g~otwarty", 5000, 6);
 						vVars[vehicleid][vLock] = false;
 					}
 				}
 			}
 			return 1;
 		} else if(strfind(opt, "info", true) != -1) {
+			new str[64];
 			new vehicleid = getVehicleIdForPlayer(actualVehicle[playerid]);
 			new Float:vHp;
 			
@@ -216,9 +217,15 @@ CMD:v(playerid, params[]) {
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~9:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
 			vVars[vehicleid][vUid], vVars[vehicleid][vOUid], vVars[vehicleid][vModelId], vVars[vehicleid][vId], vVars[vehicleid][vColor1], vVars[vehicleid][vColor2], vHp);
-					
-			TextDrawSetString(vehicleStats[playerid], mainStr);
-			TextDrawShowForPlayer(playerid, vehicleStats[playerid]);
+			TextDrawSetString(vehicleStats[playerid][0], mainStr);
+			
+			format(str, sizeof(str), "~b~Przebieg~w~: %dkm ~b~Paliwo~w~: %0.1f", vVars[vehicleid][vMileage], vVars[vehicleid][vFuel]);
+			TextDrawSetString(vehicleStats[playerid][1], str);
+			
+			for(new i = 0; i < 2; i++) {
+				TextDrawShowForPlayer(playerid, vehicleStats[playerid][i]);
+			}
+			
 			SetTimerEx("hideVehicleStats", 15000, false, "i", playerid);
 			return 1;
 		} else if(strfind(opt, "namierz", true) != -1) {
@@ -226,12 +233,19 @@ CMD:v(playerid, params[]) {
 			new vehicleid = getVehicleIdForPlayer(actualVehicle[playerid]);
 			
 			GetVehiclePos(vVars[vehicleid][vId], x, y, z);
-			CreateDynamicCP(x, y, z, 1.0, -1, -1, -1, 20, -1, 0);
-			CreateDynamicMapIcon(x, y, z, 55, -1, -1, -1, -1, 20, -1, 0);
+			
+			if(vehCP[vehicleid] == -1 && vehMapIcon[vehicleid] == -1) {
+				vehCP[vehicleid] = CreateDynamicCP(x, y, z, 2.0, 0, 0, -1, 100, -1, 0);
+				vehMapIcon[vehicleid] = CreateDynamicMapIcon(x, y, z, 55, 0, 0, -1, -1, 4000, MAPICON_GLOBAL, -1, 0);
+			}
+			
 			GameTextForPlayer(playerid, "~y~Pojazd zostal pomyslnie namierzony.", 5000, 3);
 			return 1;
 		} else if(strfind(opt, "reset", true) != -1) {
+			new vehicleid = getVehicleIdForPlayer(actualVehicle[playerid]);
 			
+			DestroyDynamicMapIcon(vehMapIcon[vehicleid]);
+			DestroyDynamicCP(vehCP[vehicleid]);	
 			return 1;
 		} else {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v [zaparkuj/z(amknij)/info/namierz/reset]");

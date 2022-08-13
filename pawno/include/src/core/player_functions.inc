@@ -3,15 +3,24 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
-	Modified: 07.08.2022
+	Modified: 12.08.2022
 */
 
 #if !defined PLAYER_FUNCTIONS
 #define PLAYER_FUNCTIONS
 
+Callback:hideVehicleSpawn(playerid) {
+	for(new i = 0; i < sizeof(vehicleSpawn); i++) {
+		TextDrawHideForPlayer(playerid, vehicleSpawn[playerid][i]);
+	}
+	return 1;
+}
+
 Callback:hideVehicleStats(playerid) {
-	TextDrawSetString(vehicleStats[playerid], NULL);
-	TextDrawHideForPlayer(playerid, vehicleStats[playerid]);	
+	for(new i = 0; i < 2; i++) {
+		TextDrawSetString(vehicleStats[playerid][i], NULL);
+		TextDrawHideForPlayer(playerid, vehicleStats[playerid][i]);
+	}
 	return 1;
 }
 
@@ -91,7 +100,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawFont(helpInfo[playerid][0], 1);
 	TextDrawSetProportional(helpInfo[playerid][0], 1);
 
-	helpInfo[playerid][1] = TextDrawCreate(584.371887, 285.583312, "usebox");
+	helpInfo[playerid][1] = TextDrawCreate(584.371887, 285.583312, "_");
 	TextDrawLetterSize(helpInfo[playerid][1], 0.000000, 4.090743);
 	TextDrawTextSize(helpInfo[playerid][1], 398.585662, 0.000000);
 	TextDrawAlignment(helpInfo[playerid][1], 1);
@@ -154,15 +163,60 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawSetOutline(vehicleTips[playerid][1], 0);
 	TextDrawFont(vehicleTips[playerid][1], 0);
 	
-	vehicleStats[playerid] = TextDrawCreate(309.692871, 340.083465, "~p~UID~w~: 0___~p~Owner: ~w~0:0__(0) ~p~Model~w~: 0~n~~p~SAMP ID~w~: 0___~p~Kolor~w~: 0:0__~p~HP~w~: 0.0");
-	TextDrawLetterSize(vehicleStats[playerid], 0.270087, 1.139165);
-	TextDrawAlignment(vehicleStats[playerid], 2);
-	TextDrawColor(vehicleStats[playerid], -1);
-	TextDrawSetShadow(vehicleStats[playerid], 0);
-	TextDrawSetOutline(vehicleStats[playerid], 1);
-	TextDrawBackgroundColor(vehicleStats[playerid], 51);
-	TextDrawFont(vehicleStats[playerid], 1);
-	TextDrawSetProportional(vehicleStats[playerid], 1);
+	vehicleStats[playerid][0] = TextDrawCreate(309.692871, 340.083465, "~p~UID~w~: 0___~p~Owner: ~w~0:0__(0) ~p~Model~w~: 0~n~~p~SAMP ID~w~: 0___~p~Kolor~w~: 0:0__~p~HP~w~: 0.0");
+	TextDrawLetterSize(vehicleStats[playerid][0], 0.270087, 1.139165);
+	TextDrawAlignment(vehicleStats[playerid][0], 2);
+	TextDrawColor(vehicleStats[playerid][0], -1);
+	TextDrawSetShadow(vehicleStats[playerid][0], 0);
+	TextDrawSetOutline(vehicleStats[playerid][0], 1);
+	TextDrawBackgroundColor(vehicleStats[playerid][0], 51);
+	TextDrawFont(vehicleStats[playerid][0], 1);
+	TextDrawSetProportional(vehicleStats[playerid][0], 1);
+	
+	vehicleStats[playerid][1] = TextDrawCreate(307.818756, 361.666503, "~b~Przebieg~w~: 0km ~b~Paliwo~w~: 0.0");
+	TextDrawLetterSize(vehicleStats[playerid][1], 0.261654, 1.133332);
+	TextDrawAlignment(vehicleStats[playerid][1], 2);
+	TextDrawColor(vehicleStats[playerid][1], -1);
+	TextDrawSetShadow(vehicleStats[playerid][1], 0);
+	TextDrawSetOutline(vehicleStats[playerid][1], 1);
+	TextDrawBackgroundColor(vehicleStats[playerid][1], 51);
+	TextDrawFont(vehicleStats[playerid][1], 1);
+	TextDrawSetProportional(vehicleStats[playerid][1], 1);
+	
+	vehicleFuelStatus[playerid][0] = TextDrawCreate(610.140625, 58.083332, "_");
+	TextDrawLetterSize(vehicleFuelStatus[playerid][0], 0.000000, 0.360370);
+	TextDrawTextSize(vehicleFuelStatus[playerid][0], 547.106872, 0.000000);
+	TextDrawAlignment(vehicleFuelStatus[playerid][0], 1);
+	TextDrawColor(vehicleFuelStatus[playerid][0], 0);
+	TextDrawUseBox(vehicleFuelStatus[playerid][0], 1);
+	TextDrawBoxColor(vehicleFuelStatus[playerid][0], 102);
+	TextDrawSetShadow(vehicleFuelStatus[playerid][0], 0);
+	TextDrawSetOutline(vehicleFuelStatus[playerid][0], 0);
+	TextDrawFont(vehicleFuelStatus[playerid][0], 0);
+
+	vehicleFuelStatus[playerid][1] = TextDrawCreate(607.797912, 59.833332, "_");
+	TextDrawLetterSize(vehicleFuelStatus[playerid][1], 0.000000, -0.086296);
+	TextDrawTextSize(vehicleFuelStatus[playerid][1], 548.980834, 0.000000);
+	TextDrawAlignment(vehicleFuelStatus[playerid][1], 1);
+	TextDrawColor(vehicleFuelStatus[playerid][1], 0);
+	TextDrawUseBox(vehicleFuelStatus[playerid][1], 1);
+	TextDrawBoxColor(vehicleFuelStatus[playerid][1], -2139094785);
+	TextDrawSetShadow(vehicleFuelStatus[playerid][1], 0);
+	TextDrawSetOutline(vehicleFuelStatus[playerid][1], 0);
+	TextDrawBackgroundColor(vehicleFuelStatus[playerid][1], -2139094785);
+	TextDrawFont(vehicleFuelStatus[playerid][1], 0);
+
+	vehicleFuelStatus[playerid][2] = TextDrawCreate(596.085083, 59.833312, "_");
+	TextDrawLetterSize(vehicleFuelStatus[playerid][2], 0.000000, -0.115186);
+	TextDrawTextSize(vehicleFuelStatus[playerid][2], 548.981140, 0.000000);
+	TextDrawAlignment(vehicleFuelStatus[playerid][2], 1);
+	TextDrawColor(vehicleFuelStatus[playerid][2], 0);
+	TextDrawUseBox(vehicleFuelStatus[playerid][2], 1);
+	TextDrawBoxColor(vehicleFuelStatus[playerid][2], 16711935);
+	TextDrawSetShadow(vehicleFuelStatus[playerid][2], 0);
+	TextDrawSetOutline(vehicleFuelStatus[playerid][2], 0);
+	TextDrawBackgroundColor(vehicleFuelStatus[playerid][2], 16711935);
+	TextDrawFont(vehicleFuelStatus[playerid][2], 0);
 	
 	oocWarning[playerid][0] = TextDrawCreate(509.282592, 280.000030, "Niepotrzebnie wstawiasz spacje~n~miedzy kropka a tekstem OOC.~n~Przyklad powitania OOC:~n~~y~.Czesc!");
 	TextDrawLetterSize(oocWarning[playerid][0], 0.315534, 1.430833);
@@ -205,6 +259,27 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawBackgroundColor(bwText[playerid], 51);
 	TextDrawFont(bwText[playerid], 1);
 	TextDrawSetProportional(bwText[playerid], 1);
+	
+	vehicleSpawn[playerid][0] = TextDrawCreate(497.569305, 285.250030, "Pojazd zostal zespawnowany.~n~Jezeli nie mozesz go znalesc w~n~miejscu zaznaczonym na radarze,~n~uzyj /v reset.");
+	TextDrawLetterSize(vehicleSpawn[playerid][0], 0.368945, 1.407499);
+	TextDrawAlignment(vehicleSpawn[playerid][0], 2);
+	TextDrawColor(vehicleSpawn[playerid][0], -1);
+	TextDrawSetShadow(vehicleSpawn[playerid][0], 0);
+	TextDrawSetOutline(vehicleSpawn[playerid][0], 1);
+	TextDrawBackgroundColor(vehicleSpawn[playerid][0], 255);
+	TextDrawFont(vehicleSpawn[playerid][0], 1);
+	TextDrawSetProportional(vehicleSpawn[playerid][0], 1);
+
+	vehicleSpawn[playerid][1] = TextDrawCreate(602.644226, 284.416687, "_");
+	TextDrawLetterSize(vehicleSpawn[playerid][1], 0.000000, 5.840735);
+	TextDrawTextSize(vehicleSpawn[playerid][1], 399.991241, 0.000000);
+	TextDrawAlignment(vehicleSpawn[playerid][1], 1);
+	TextDrawColor(vehicleSpawn[playerid][1], 0);
+	TextDrawUseBox(vehicleSpawn[playerid][1], 1);
+	TextDrawBoxColor(vehicleSpawn[playerid][1], 102);
+	TextDrawSetShadow(vehicleSpawn[playerid][1], 0);
+	TextDrawSetOutline(vehicleSpawn[playerid][1], 0);
+	TextDrawFont(vehicleSpawn[playerid][1], 0);
 	return 1;
 }
 
@@ -235,10 +310,10 @@ stock setPlayerDefaultValues(playerid) {
 		format(pVars[playerid][pCharName2], 24, "%s", NULL);
 		format(pVars[playerid][pPass], 32, "%s", NULL);
 		format(pVars[playerid][pIp], 24, "%s", NULL);
-		GetPlayerName(playerid, pVars[playerid][pAccName], 24);
-		GetPlayerIp(playerid, pVars[playerid][pIp], 24);
 	}
 	
+	GetPlayerName(playerid, pVars[playerid][pAccName], 24);
+	GetPlayerIp(playerid, pVars[playerid][pIp], 24);
 	ResetPlayerMoney(playerid);
 	ResetPlayerWeapons(playerid);
 	

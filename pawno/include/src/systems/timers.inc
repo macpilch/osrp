@@ -76,8 +76,7 @@ task globalTimer[1000]() {
 		
 		foreach(vehItter, j) {
 			if(vVars[j][vEngine]) {
-				vVars[j][vFuel] -= 0.02;
-				vVars[j][vMileage] += 0.1;
+				vVars[j][vFuel] -= 0.01;
 				
 				if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
 					if(getVehicleFuel(j) <= 0) {
@@ -93,6 +92,8 @@ task globalTimer[1000]() {
 					}
 				}
 			}
+			
+			saveVehicleValues();
 		}
 	}
 }
@@ -108,7 +109,6 @@ task updateWebsiteDate[5000]() {
 
 task settingsTimer[30000]() {
 	saveServerValues();
-	saveVehicleValues();
 }
 
 task townHallBellsTimer[59000]() {
