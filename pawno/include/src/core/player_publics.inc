@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 12.08.2022
+	Modified: 15.08.2022
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -106,11 +106,15 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 	return 1;
 }
 
-sampCallback:OnPlayerSpawn(playerid) {	
+sampCallback:OnPlayerSpawn(playerid) {
+	SetCameraBehindPlayer(playerid);
 	SetPlayerHealth(playerid, pVars[playerid][pHp]);
 	SetPlayerArmour(playerid, pVars[playerid][pAp]);
-	GivePlayerMoney(playerid, pVars[playerid][pMoney]);
 	SetPlayerSkin(playerid, pVars[playerid][pSkin]);
+	GivePlayerMoney(playerid, pVars[playerid][pMoney]);
+	SetPlayerName(playerid, pVars[playerid][pCharName2]);
+	SetPlayerInterior(playerid, 0);
+	SetPlayerVirtualWorld(playerid, 0);
 	TextDrawShowForPlayer(playerid, website);
 	
 	mainStr[0] = EOS;
@@ -128,9 +132,9 @@ sampCallback:OnPlayerSpawn(playerid) {
 		SetPlayerPos(playerid, DEFAULT_POS_X, DEFAULT_POS_Y, DEFAULT_POS_Z);
 	}
 	
-	/*if(isBW[playerid]) {
+	if(isBW[playerid]) {
 		setPlayerBW(playerid);
-	}*/
+	}
 	
 	new str[64];
 	new callSec = GetTickCount();
@@ -147,7 +151,7 @@ sampCallback:OnPlayerDeath(playerid, killerid, reason) {
 	format(str, sizeof(str), "[LOG] Callback: OnPlayerDeath -- Called! (%d ms).", (GetTickCount() - callSec));
 	print(str);
 	
-	//isBW[playerid] = true;
+	isBW[playerid] = true;
 	return 1;
 }
 
@@ -159,30 +163,30 @@ sampCallback:OnPlayerText(playerid, text[]) {
 	
 	if(strfind(textStr, "!!", false) != -1) {
 		format(mainStr, sizeof(mainStr), "%s krzyczy: %s", pVars[playerid][pCharName], textStr);
-		sendDistanceMessage(playerid, 70.0, mainStr, COLOR_GRAY, COLOR_GRAY, COLOR_GRAY, COLOR_GRAY);
+		sendDistanceMessage(playerid, 70.0, mainStr, COLOR_GRAY, COLOR_GRAY, COLOR_GRAY, COLOR_WHITE);
 		return 0;
-	} else if(strfind(textStr, ":)", false) != -1) {
+	} else if(strfind(textStr, ":)", false) == 0) {
 		format(mainStr, sizeof(mainStr), "* %s uœmiecha siê.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		return 0;
-	} else if(strfind(textStr, ":D", false) != -1 || strfind(textStr, ":d", false) != -1 || strfind(text[0], "xD", false) != -1) {
+	} else if(strfind(textStr, ":D", true) == 0 || strfind(textStr, "xD", true) == 0) {
 		format(mainStr, sizeof(mainStr), "* %s œmieje siê.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		return 0;
-	} else if(strfind(textStr, ":P", false) != -1 || strfind(textStr, ":p", false) != -1) {
+	} else if(strfind(textStr, ":P", true) == 0) {
 		format(mainStr, sizeof(mainStr), "* %s wystawia jêzyk.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		return 0;
-	} else if(strfind(textStr, ":<", false) != -1) {
+	} else if(strfind(textStr, ":<", false) == 0) {
 		format(mainStr, sizeof(mainStr), "* %s krzywi siê.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		return 0;		
-	} else if(strfind(text[0], ":(", false) != -1) {
+	} else if(strfind(textStr, ":(", false) == 0) {
 		format(mainStr, sizeof(mainStr), "* %s robi smutn¹ minê.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		return 0;
-	} else if(strfind(textStr[0], ".", false) != -1) {
-		if(strfind(textStr[1], " ", false) != -1) {
+	} else if(strfind(textStr, ".", false) == 0) {
+		if(strfind(textStr, ". ", false) == 0) {
 			for(new i = 0; i < 2; i++) {
 				TextDrawShowForPlayer(playerid, oocWarning[playerid][i]);
 			}
@@ -203,7 +207,7 @@ sampCallback:OnPlayerText(playerid, text[]) {
 		return 0;
 	} else {
 		format(mainStr, sizeof(mainStr), "%s mówi: %s", pVars[playerid][pCharName], textStr);
-		sendDistanceMessage(playerid, 20.0, mainStr, COLOR_GRAY, COLOR_GRAY, COLOR_GRAY, COLOR_GRAY);
+		sendDistanceMessage(playerid, 20.0, mainStr, COLOR_GRAY, COLOR_GRAY, COLOR_GRAY, COLOR_WHITE);
 	}
 	return 0;
 }
@@ -225,7 +229,7 @@ sampCallback:OnPlayerCommandPerformed(playerid, cmd[], params[], result, flags) 
 }
 
 sampCallback:OnPlayerStateChange(playerid, newstate, oldstate) {
-	new vehicleid = getVehicleIdForPlayer(GetPlayerVehicleID(playerid));
+	new vehicleid = actualVehicle[playerid];
 
 	if(newstate == PLAYER_STATE_DRIVER && oldstate == PLAYER_STATE_ONFOOT) {
 		if(!vVars[vehicleid][vEngine] && !vehicleNonEngine(GetPlayerVehicleID(playerid))) {
@@ -252,6 +256,10 @@ sampCallback:OnPlayerStateChange(playerid, newstate, oldstate) {
 			for(new i = 0; i < 2; i++) {
 				TextDrawHideForPlayer(playerid, vehicleTips[playerid][i]);
 			}
+		}
+		
+		if(hasBelts[playerid]) {
+			hasBelts[playerid] = false;
 		}
 	}
 	return 1;
@@ -355,7 +363,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			}
 			
 			new charsCount;
-			new accsNum;
+			new accNum;
 			new tmpQuery[64];
 			
 			if(strlen(inputtext) < 2 || strlen(inputtext) > 32) {
@@ -370,23 +378,24 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				allAccounts++;
 			}
 			
-			accsNum = mysql_fetch_int();
+			accNum = mysql_fetch_int();
 			mysql_free_result();
 			
 			queryStr[0] = EOS;
 			format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `Players`");
 			mysql_query(queryStr);
 			mysql_store_result();
+			
 			charsCount = mysql_fetch_int();
 			mysql_free_result();
 			
-			if(!charsCount) {
-				pVars[playerid][pUid] = 1;
+			if(!accNum) {
 				pVars[playerid][pGuid] = allAccounts;
 			} else {
-				pVars[playerid][pUid] = charsCount + 1;
-				pVars[playerid][pGuid] = accsNum;
+				pVars[playerid][pGuid] = accNum;
 			}
+			
+			pVars[playerid][pUid] = charsCount + 1;
 			
 			format(queryStr, sizeof(queryStr), "INSERT INTO `Players` (`GUID`, `UID`, `AccName`, `IP`, `CharName`, `CharName2`, `Pass`, `Sex`) VALUES ('%d', '%d', '%s', '%s', '%s', '%s', '%s', '%d')",
 			pVars[playerid][pGuid], pVars[playerid][pUid], pVars[playerid][pAccName], pVars[playerid][pIp], pVars[playerid][pCharName], pVars[playerid][pCharName2], inputtext, pVars[playerid][pSex]);
@@ -394,7 +403,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			hasLoged[playerid] = true;
 			pVars[playerid][pHp] = 100.0;
-			pVars[playerid][pMoney] = 50;
+			GivePlayerMoneyEx(playerid, 50);
 			pVars[playerid][pX] = DEFAULT_POS_X;
 			pVars[playerid][pY] = DEFAULT_POS_Y;
 			pVars[playerid][pZ] = DEFAULT_POS_Z;
@@ -520,9 +529,13 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			if(!vVars[tmpVehId][vSpawned]) {
 				vVars[tmpVehId][vId] = CreateVehicle(vVars[tmpVehId][vModelId], vVars[tmpVehId][vX], vVars[tmpVehId][vY], vVars[tmpVehId][vZ], 0.0, vVars[tmpVehId][vColor1], vVars[tmpVehId][vColor2], 0);
+				
+				DestroyDynamicMapIcon(vehMapIcon[tmpVehId]);
+				DestroyDynamicCP(vehCP[tmpVehId]);
+				
 				vehCP[tmpVehId] = CreateDynamicCP(vVars[tmpVehId][vX], vVars[tmpVehId][vY], vVars[tmpVehId][vZ], 2.0, 0, 0, -1, 100, -1, 0);
 				vehMapIcon[tmpVehId] = CreateDynamicMapIcon(vVars[tmpVehId][vX], vVars[tmpVehId][vY], vVars[tmpVehId][vZ], 55, COLOR_WHITE, 0, 0, -1, 4000, MAPICON_GLOBAL, -1, 0);
-				actualVehicle[playerid] = vVars[tmpVehId][vId];
+				actualVehicle[playerid] = tmpVehId;
 				
 				if(!vVars[tmpVehId][vEngine]) {
 					SetVehicleParamsEx(vVars[tmpVehId][vId], 0, 0, 0, 0, 0, 0, 0);
@@ -542,6 +555,8 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				
 				actualVehicle[playerid] = INVALID_VEHICLE_ID;
 				vVars[tmpVehId][vSpawned] = false;
+				vehCP[tmpVehId] = -1;
+				vehMapIcon[tmpVehId] = -1;
 			}
 		}
 	}

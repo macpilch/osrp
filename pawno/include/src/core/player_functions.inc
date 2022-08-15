@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
-	Modified: 12.08.2022
+	Modified: 15.08.2022
 */
 
 #if !defined PLAYER_FUNCTIONS
@@ -17,7 +17,7 @@ Callback:hideVehicleSpawn(playerid) {
 }
 
 Callback:hideVehicleStats(playerid) {
-	for(new i = 0; i < 2; i++) {
+	for(new i = 0; i < sizeof(vehicleStats); i++) {
 		TextDrawSetString(vehicleStats[playerid][i], NULL);
 		TextDrawHideForPlayer(playerid, vehicleStats[playerid][i]);
 	}
@@ -25,7 +25,7 @@ Callback:hideVehicleStats(playerid) {
 }
 
 Callback:hideHelpInfo(playerid) {
-	for(new i = 0; i < 2; i++) {
+	for(new i = 0; i < sizeof(helpInfo); i++) {
 		TextDrawHideForPlayer(playerid, helpInfo[playerid][i]);
 	}
 	return 1;
@@ -45,8 +45,17 @@ Callback:healthDamage(playerid) {
 }
 
 Callback:hideOOCWarning(playerid) {
-	for(new i = 0; i < 2; i++) {
+	for(new i = 0; i < sizeof(oocWarning); i++) {
 		TextDrawHideForPlayer(playerid, oocWarning[playerid][i]);
+	}
+	return 1;
+}
+
+Callback:hideFirstHoursInfo() {
+	foreach(Player, i) { // bedzie chowalo wszystkim graczom
+		for(new j = 0; j < sizeof(firstHoursInfo); j++) {
+			TextDrawHideForPlayer(i, firstHoursInfo[j]);
+		}
 	}
 	return 1;
 }
@@ -108,39 +117,39 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawUseBox(helpInfo[playerid][1], 1);
 	TextDrawBoxColor(helpInfo[playerid][1], 102);
 	TextDrawSetShadow(helpInfo[playerid][1], 0);
-	TextDrawSetOutline(helpInfo[playerid][1], 0);
+	TextDrawSetOutline(helpInfo[playerid][1], 1);
 	TextDrawFont(helpInfo[playerid][1], 0);
 	
-	firstHoursInfo[playerid][0] = TextDrawCreate(489.136047, 285.833221, "~w~Jako nowy gracz, co 10 minut~n~gry otrzymujesz $25 na~n~");
-	TextDrawLetterSize(firstHoursInfo[playerid][0], 0.305226, 1.273333);
-	TextDrawAlignment(firstHoursInfo[playerid][0], 2);
-	TextDrawColor(firstHoursInfo[playerid][0], -1);
-	TextDrawSetShadow(firstHoursInfo[playerid][0], 0);
-	TextDrawSetOutline(firstHoursInfo[playerid][0], 1);
-	TextDrawBackgroundColor(firstHoursInfo[playerid][0], 255);
-	TextDrawFont(firstHoursInfo[playerid][0], 1);
-	TextDrawSetProportional(firstHoursInfo[playerid][0], 1);
+	firstHoursInfo[0] = TextDrawCreate(489.136047, 285.833221, "~w~Jako nowy gracz, co 10 minut~n~gry otrzymujesz $25 na~n~");
+	TextDrawLetterSize(firstHoursInfo[0], 0.305226, 1.273333);
+	TextDrawAlignment(firstHoursInfo[0], 2);
+	TextDrawColor(firstHoursInfo[0], -1);
+	TextDrawSetShadow(firstHoursInfo[0], 0);
+	TextDrawSetOutline(firstHoursInfo[0], 0);
+	TextDrawBackgroundColor(firstHoursInfo[0], 255);
+	TextDrawFont(firstHoursInfo[0], 1);
+	TextDrawSetProportional(firstHoursInfo[0], 1);
 
-	firstHoursInfo[playerid][1] = TextDrawCreate(453.996887, 309.750000, "~w~pierwsze wydatki.");
-	TextDrawLetterSize(firstHoursInfo[playerid][1], 0.304289, 1.232499);
-	TextDrawAlignment(firstHoursInfo[playerid][1], 2);
-	TextDrawColor(firstHoursInfo[playerid][1], -1);
-	TextDrawSetShadow(firstHoursInfo[playerid][1], 0);
-	TextDrawSetOutline(firstHoursInfo[playerid][1], 1);
-	TextDrawBackgroundColor(firstHoursInfo[playerid][1], 255);
-	TextDrawFont(firstHoursInfo[playerid][1], 1);
-	TextDrawSetProportional(firstHoursInfo[playerid][1], 1);
+	firstHoursInfo[1] = TextDrawCreate(453.996887, 309.750000, "~w~pierwsze wydatki.");
+	TextDrawLetterSize(firstHoursInfo[1], 0.304289, 1.232499);
+	TextDrawAlignment(firstHoursInfo[1], 2);
+	TextDrawColor(firstHoursInfo[1], -1);
+	TextDrawSetShadow(firstHoursInfo[1], 0);
+	TextDrawSetOutline(firstHoursInfo[1], 0);
+	TextDrawBackgroundColor(firstHoursInfo[1], 255);
+	TextDrawFont(firstHoursInfo[1], 1);
+	TextDrawSetProportional(firstHoursInfo[1], 1);
 
-	firstHoursInfo[playerid][2] = TextDrawCreate(581.560852, 285.583374, "_");
-	TextDrawLetterSize(firstHoursInfo[playerid][2], 0.000000, 7.525923);
-	TextDrawTextSize(firstHoursInfo[playerid][2], 399.991180, 0.000000);
-	TextDrawAlignment(firstHoursInfo[playerid][2], 1);
-	TextDrawColor(firstHoursInfo[playerid][2], 0);
-	TextDrawUseBox(firstHoursInfo[playerid][2], 1);
-	TextDrawBoxColor(firstHoursInfo[playerid][2], 102);
-	TextDrawSetShadow(firstHoursInfo[playerid][2], 0);
-	TextDrawSetOutline(firstHoursInfo[playerid][2], 0);
-	TextDrawFont(firstHoursInfo[playerid][2], 0);
+	firstHoursInfo[2] = TextDrawCreate(581.560852, 285.583374, "_");
+	TextDrawLetterSize(firstHoursInfo[2], 0.000000, 7.525923);
+	TextDrawTextSize(firstHoursInfo[2], 399.991180, 0.000000);
+	TextDrawAlignment(firstHoursInfo[2], 1);
+	TextDrawColor(firstHoursInfo[2], 0);
+	TextDrawUseBox(firstHoursInfo[2], 1);
+	TextDrawBoxColor(firstHoursInfo[2], 102);
+	TextDrawSetShadow(firstHoursInfo[2], 0);
+	TextDrawSetOutline(firstHoursInfo[2], 1);
+	TextDrawFont(firstHoursInfo[2], 0);
 	
 	vehicleTips[playerid][0] = TextDrawCreate(303.601470, 43.166690, "~w~Nacisnij LCTRL, by odpalic silnik~n~lub LPM, by zapalic swiatla.");
 	TextDrawLetterSize(vehicleTips[playerid][0], 0.313660, 1.115832);
@@ -160,7 +169,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawUseBox(vehicleTips[playerid][1], 1);
 	TextDrawBoxColor(vehicleTips[playerid][1], 102);
 	TextDrawSetShadow(vehicleTips[playerid][1], 0);
-	TextDrawSetOutline(vehicleTips[playerid][1], 0);
+	TextDrawSetOutline(vehicleTips[playerid][1], 1);
 	TextDrawFont(vehicleTips[playerid][1], 0);
 	
 	vehicleStats[playerid][0] = TextDrawCreate(309.692871, 340.083465, "~p~UID~w~: 0___~p~Owner: ~w~0:0__(0) ~p~Model~w~: 0~n~~p~SAMP ID~w~: 0___~p~Kolor~w~: 0:0__~p~HP~w~: 0.0");
@@ -191,7 +200,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawUseBox(vehicleFuelStatus[playerid][0], 1);
 	TextDrawBoxColor(vehicleFuelStatus[playerid][0], 102);
 	TextDrawSetShadow(vehicleFuelStatus[playerid][0], 0);
-	TextDrawSetOutline(vehicleFuelStatus[playerid][0], 0);
+	TextDrawSetOutline(vehicleFuelStatus[playerid][0], 1);
 	TextDrawFont(vehicleFuelStatus[playerid][0], 0);
 
 	vehicleFuelStatus[playerid][1] = TextDrawCreate(607.797912, 59.833332, "_");
@@ -202,7 +211,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawUseBox(vehicleFuelStatus[playerid][1], 1);
 	TextDrawBoxColor(vehicleFuelStatus[playerid][1], -2139094785);
 	TextDrawSetShadow(vehicleFuelStatus[playerid][1], 0);
-	TextDrawSetOutline(vehicleFuelStatus[playerid][1], 0);
+	TextDrawSetOutline(vehicleFuelStatus[playerid][1], 1);
 	TextDrawBackgroundColor(vehicleFuelStatus[playerid][1], -2139094785);
 	TextDrawFont(vehicleFuelStatus[playerid][1], 0);
 
@@ -214,7 +223,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawUseBox(vehicleFuelStatus[playerid][2], 1);
 	TextDrawBoxColor(vehicleFuelStatus[playerid][2], 16711935);
 	TextDrawSetShadow(vehicleFuelStatus[playerid][2], 0);
-	TextDrawSetOutline(vehicleFuelStatus[playerid][2], 0);
+	TextDrawSetOutline(vehicleFuelStatus[playerid][2], 1);
 	TextDrawBackgroundColor(vehicleFuelStatus[playerid][2], 16711935);
 	TextDrawFont(vehicleFuelStatus[playerid][2], 0);
 	
@@ -236,7 +245,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawUseBox(oocWarning[playerid][1], 1);
 	TextDrawBoxColor(oocWarning[playerid][1], 102);
 	TextDrawSetShadow(oocWarning[playerid][1], 0);
-	TextDrawSetOutline(oocWarning[playerid][1], 0);
+	TextDrawSetOutline(oocWarning[playerid][1], 1);
 	TextDrawFont(oocWarning[playerid][1], 0);
 	
 	damageRedScreen[playerid] = TextDrawCreate(641.531494, 1.500000, "_");
@@ -247,7 +256,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawUseBox(damageRedScreen[playerid], 1);
 	TextDrawBoxColor(damageRedScreen[playerid], 0xFF0000EE);
 	TextDrawSetShadow(damageRedScreen[playerid], 0);
-	TextDrawSetOutline(damageRedScreen[playerid], 0);
+	TextDrawSetOutline(damageRedScreen[playerid], 1);
 	TextDrawFont(damageRedScreen[playerid], 0);	
 	
 	bwText[playerid] = TextDrawCreate(509.282592, 280.000030, "BW");
@@ -278,7 +287,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawUseBox(vehicleSpawn[playerid][1], 1);
 	TextDrawBoxColor(vehicleSpawn[playerid][1], 102);
 	TextDrawSetShadow(vehicleSpawn[playerid][1], 0);
-	TextDrawSetOutline(vehicleSpawn[playerid][1], 0);
+	TextDrawSetOutline(vehicleSpawn[playerid][1], 1);
 	TextDrawFont(vehicleSpawn[playerid][1], 0);
 	return 1;
 }
@@ -303,23 +312,24 @@ stock setPlayerDefaultValues(playerid) {
 	if(!hasLoged[playerid]) {
 		pVars[playerid][pUid] = 0;
 		pVars[playerid][pGuid] = 0;
-		pVars[playerid][pCharId] = 1;
+		pVars[playerid][pCharId] = 0;
 	
 		format(pVars[playerid][pAccName], 24, "%s", NULL);
 		format(pVars[playerid][pCharName], 24, "%s", NULL);
 		format(pVars[playerid][pCharName2], 24, "%s", NULL);
 		format(pVars[playerid][pPass], 32, "%s", NULL);
 		format(pVars[playerid][pIp], 24, "%s", NULL);
+		
+		GetPlayerName(playerid, pVars[playerid][pAccName], 24);
+		GetPlayerIp(playerid, pVars[playerid][pIp], 24);
 	}
 	
-	GetPlayerName(playerid, pVars[playerid][pAccName], 24);
-	GetPlayerIp(playerid, pVars[playerid][pIp], 24);
 	ResetPlayerMoney(playerid);
 	ResetPlayerWeapons(playerid);
 	
 	pVars[playerid][pAccRank] = 0;
 	pVars[playerid][pSex] = MAN_SEX;
-	pVars[playerid][pStrength] = 3000;
+	pVars[playerid][pStrength] = 0;
 	pVars[playerid][pHours] = 0;
 	pVars[playerid][pMinutes] = 0;
 	pVars[playerid][pSeconds] = 0;
@@ -341,6 +351,8 @@ stock setPlayerDefaultValues(playerid) {
 	isBW[playerid] = false;
 	usedCmdLogin[playerid] = false;
 	hasBelts[playerid] = false;
+	
+	printf("[DEBUG] AccName: %s", pVars[playerid][pAccName]);
 	return 1;
 }
 
@@ -356,7 +368,7 @@ stock resetPlayerValues(playerid) {
 	format(pVars[playerid][pIp], 24, "%s", NULL);
 
 	pVars[playerid][pAccRank] = 0;
-	pVars[playerid][pSex] = 0;
+	pVars[playerid][pSex] = MAN_SEX;
 	pVars[playerid][pStrength] = 0;
 	pVars[playerid][pHours] = 0;
 	pVars[playerid][pMinutes] = 0;
@@ -420,6 +432,14 @@ stock getPlayerStrengthPower(playerid) {
 		}
 	}
 	return 0;
+}
+
+// return: void
+stock GivePlayerMoneyEx(playerid, money) {
+	ResetPlayerMoney(playerid);
+	
+	pVars[playerid][pMoney] += money;
+	GivePlayerMoney(playerid, pVars[playerid][pMoney]);
 }
 
 #endif 

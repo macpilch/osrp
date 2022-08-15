@@ -3,13 +3,13 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 11.08.2022
+	Modified: 14.08.2022
 */
 
 #if !defined _TIMERS_
 #define _TIMERS_
 
-task globalTimer[1000]() {
+Timer:globalTimer[1000]() {
 	foreach(Player, i) {
 		playerAFKTime[i]++;
 		GetPlayerHealth(i, pVars[i][pHp]);
@@ -21,14 +21,28 @@ task globalTimer[1000]() {
 				gettime(h, mins, secs);
 			}
 			
-			if(pVars[i][pHours] > 20) {
-				format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d)", pVars[i][pCharName], i, h, mins);
+			if(isBW[i]) {
+				if(pVars[i][pHours] > 20) {
+					format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d, nieprzytomny)", pVars[i][pCharName], i, h, mins);
+				} else {
+					format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(AFK od %02d:%02d, nieprzytomny)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
+				}				
+			} else if(hasBelts[i]) {
+				if(pVars[i][pHours] > 20) {
+					format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d, pasy)", pVars[i][pCharName], i, h, mins);
+				} else {
+					format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(AFK od %02d:%02d, pasy)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
+				}			
 			} else {
-				format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(AFK od %02d:%02d)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
+				if(pVars[i][pHours] > 20) {
+					format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d)", pVars[i][pCharName], i, h, mins);
+				} else {
+					format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(AFK od %02d:%02d)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
+				}
 			}
 		} else if(isBW[i]) // by MisterMagik
 		{
-			//setPlayerBW(i);
+			setPlayerBW(i);
 			
 			if(pVars[i][pHours] > 20) {
 				format(timerStr, sizeof(timerStr), "%s (%d)\n(nieprzytomny)", pVars[i][pCharName], i);
@@ -49,15 +63,19 @@ task globalTimer[1000]() {
 			}
 		}
 		
-		/*if(pVars[i][pHp] <= 1) {
+		if(pVars[i][pHp] <= 1) {
+			pVars[i][pHp] = 1.0;
 			isBW[i] = true;
-		}*/
+			
+			SetPlayerHealth(i, 1.0);
+		}
 		
 		TextDrawHideForPlayer(i, damageRedScreen[i]);
 		UpdateDynamic3DTextLabelText(pVars[i][p3dInfo], COLOR_WHITE, timerStr);
 		
-		if(hasLoged[i])
+		if(hasLoged[i]) {
 			savePlayerValues(i);
+		}
 		
 		// Narazie niech bedzie na 1
 		if(playerAFKTime[i] == 1) {
@@ -92,13 +110,11 @@ task globalTimer[1000]() {
 					}
 				}
 			}
-			
-			saveVehicleValues();
 		}
 	}
 }
 
-task updateWebsiteDate[5000]() {
+Timer:updateWebsiteDateTimer[2000]() {
 	new day, month, year;
 	getdate(year, month, day);
 	
@@ -107,11 +123,12 @@ task updateWebsiteDate[5000]() {
 	TextDrawSetString(website, timerStr);
 }
 
-task settingsTimer[30000]() {
+Timer:settingsTimer[10000]() {
 	saveServerValues();
+	saveVehicleValues();
 }
 
-task townHallBellsTimer[59000]() {
+Timer:townHallBellsTimer[59000000]() { // co 59 min
 	new hours, minutes, seconds;
 	gettime(hours, minutes, seconds);
 	
@@ -120,6 +137,21 @@ task townHallBellsTimer[59000]() {
 			timerStr[0] = EOS;
 			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d razy. **", hours);
 			SendClientMessage(i, COLOR_WHITE, timerStr);
+		}
+	}
+}
+
+Timer:giveFreeMoneyTimer[590000]() {
+	foreach(Player, i) {
+		if(pVars[i][pHours] >= 0 && pVars[i][pHours] <= 1) {
+			GivePlayerMoneyEx(i, 25);
+			GameTextForPlayer(i, "~w~+~g~$25", 2000, 6);
+			
+			for(new j = 0; j < sizeof(firstHoursInfo); j++) {
+				TextDrawShowForPlayer(i, firstHoursInfo[j]);
+			}
+			
+			SetTimer("hideFirstHoursInfo", 8000, false);
 		}
 	}
 }

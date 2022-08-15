@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 04.08.2022
+	Modified: 15.08.2022
 */
 
 #if !defined _DEFINES_
@@ -30,10 +30,11 @@
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_GRAY 0xCDC9C9FF
 #define COLOR_PURPLE 0xBA55D3FF
+#define COLOR_ORANGE 0xFF9900FF
+#define COLOR_LIGHTORANGE 0xFFCC66FF
 
 #define NULL "\0"
 
-#define MAX_NUM_CHARS 6
 #define MAX_CHARS_NAMES 20
 #define MAN_SEX 0
 #define WOMAN_SEX 1
@@ -54,5 +55,7 @@
 #define VEHICLE_FUEL_TANK_SMALL 20
 #define VEHICLE_FUEL_TANK_MEDIUM 40
 #define VEHICLE_FUEL_TANK_LARGE 60 
+
+forward Float:getVehicleFuel(srvvehid);
 
 #endif 

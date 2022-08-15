@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: admin_cmds.inc
 	Date: 04.08.2022
-	Modified: 11.08.2022
+	Modified: 13.08.2022
 */
 
 #if !defined _ADMIN_CMDS_
@@ -121,6 +121,7 @@ CMD:spawnvehicle(playerid, params[]) {
 			Iter_Add(vehItter, freeId);
 			GetPlayerPos(playerid, x, y, z);
 			vehicleId = CreateVehicle(vehicleModelId, x + 2, y + 2, z + 2, 0.0, color1, color2, 0);
+			actualVehicle[playerid] = freeId;
 			
 			if(!vehicleNonEngine(vehicleId)) {
 				SetVehicleParamsEx(vehicleId, 0, 0, 0, 0, 0, 0, 0);
@@ -141,7 +142,6 @@ CMD:spawnvehicle(playerid, params[]) {
 			vVars[freeId][vX] = x;
 			vVars[freeId][vY] = y;
 			vVars[freeId][vZ] = z;
-			actualVehicle[playerid] = vehicleId;
 			
 			format(queryStr, sizeof(queryStr), "INSERT INTO `Vehicles` (`UID`, `ID`, `OUID`, `CharName`, `ModelID`, `Color1`, `Color2`, `X`, `Y`, `Z`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d', '%d', '%f', '%f', '%f')",
 			vVars[freeId][vUid], vVars[freeId][vId], vVars[freeId][vOUid], vVars[freeId][vCharName], vVars[freeId][vModelId], vVars[freeId][vColor1], vVars[freeId][vColor2], vVars[freeId][vX], vVars[freeId][vY], vVars[freeId][vZ]);
@@ -165,6 +165,7 @@ CMD:deletevehicle(playerid, params[]) {
 			mysql_query(queryStr);
 			
 			DestroyVehicle(vVars[vehUid - 1][vModelId]);
+			actualVehicle[playerid] = INVALID_VEHICLE_ID;
 			Iter_Remove(vehItter, vehUid - 1);
 			
 			vVars[vehUid - 1][vUid] = 0;

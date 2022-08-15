@@ -30,6 +30,8 @@ sampCallback:OnVehicleSpawn(vehicleid) {
 
 sampCallback:OnVehicleDeath(vehicleid, killerid) {
 	SendClientMessage(killerid, COLOR_WHITE, "Witma ! OnVehicleDeath");
+	
+	DestroyVehicle(vehicleid);
 	return 1;
 }
 

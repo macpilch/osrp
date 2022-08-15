@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: main.pwn
 	Date: 24.07.2022
-	Modified: 04.08.2022
+	Modified: 15.08.2022
 */
 
 #include <a_samp>
@@ -28,6 +28,7 @@
 #include "src\core\global_functions"
 #include "src\core\player_functions"
 #include "src\core\vehicle_functions"
+#include "src\systems\item_functions"
 #include "src\systems\timers"
 
 main() {

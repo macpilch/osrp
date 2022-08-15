@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 11.08.2022
+	Modified: 15.08.2022
 */
 
 #if !defined _PLAYER_CMDS_
@@ -37,10 +37,10 @@ CMD:w(playerid, params[]) {
 	
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "(( > %s (%d): %s ))", pVars[id][pCharName], id, pmStr);
-	SendClientMessage(playerid, COLOR_WHITE, mainStr);
+	SendClientMessage(playerid, COLOR_LIGHTORANGE, mainStr);
 	
 	format(mainStr, sizeof(mainStr), "(( %s (%d): %s ))", pVars[playerid][pCharName], playerid, pmStr);
-	SendClientMessage(id, COLOR_WHITE, mainStr);
+	SendClientMessage(id, COLOR_ORANGE, mainStr);
 	return 1;
 }
 
@@ -107,6 +107,8 @@ CMD:do(playerid, params[]) {
 
 CMD:login(playerid, params[]) {
 	TogglePlayerSpectating(playerid, 1);
+	SetPlayerName(playerid, pVars[playerid][pAccName]);
+	GetPlayerName(playerid, pVars[playerid][pAccName], 24);
 	
 	hasLoged[playerid] = true;
 	usedCmdLogin[playerid] = true;
@@ -131,50 +133,59 @@ CMD:stats(playerid, params[]) {
 	return 1;
 }
 
+CMD:p(playerid, params[]) {
+	showDialogItems(playerid);
+	return 1;
+}
+
 CMD:v(playerid, params[]) {
+	if(!checkPlayerVehicleId(playerid)) {
+		mainStr[0] = EOS;
+			
+		strcat(mainStr, "W tym miejscu pojawi siê lista posiadanych przez Ciebie pojazdów.\n\n");
+		strcat(mainStr, "Kup nowy pojazd w salonie samochodowym lub u¿ywany od innego gracza.\n\n");
+		strcat(mainStr, "Pojazdom mo¿na dodawaæ komponenty i zabezpieczenia w warsztatach.");
+		return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+	}
+	
 	new opt[32];
 	
 	if(sscanf(params, "s[32]", opt)) {
-		if(!checkPlayerVehicleId(playerid)) {
+		if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
+			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "SELECT `UID`, `ModelID` FROM `Vehicles` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+			mysql_query(queryStr);
+			mysql_store_result();
+			
+			enum {
+				UID = 0,
+				ModelID
+			};
+			
+			new j;
+			new tmpVVars[MAX_VEHICLES][2];
+			
 			mainStr[0] = EOS;
-			
-			strcat(mainStr, "W tym miejscu pojawi siê lista posiadanych przez Ciebie pojazdów.\n\n");
-			strcat(mainStr, "Kup nowy pojazd w salonie samochodowym lub u¿ywany od innego gracza.\n\n");
-			strcat(mainStr, "Pojazdom mo¿na dodawaæ komponenty i zabezpieczenia w warsztatach.");
-			return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
-		}
-		
-		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "SELECT `UID`, `ModelID` FROM `Vehicles` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
-		mysql_query(queryStr);
-		mysql_store_result();
-		
-		enum {
-			UID = 0,
-			ModelID
-		};
-		
-		new i;
-		new tmpVVars[MAX_VEHICLES][2];
-		
-		mainStr[0] = EOS;
-		while(mysql_fetch_row(queryStr, "|")) {
-			sscanf(queryStr, "p<|>ii", tmpVVars[i][UID], tmpVVars[i][ModelID]);
-			
-			if(vVars[i][vSpawned]) {
-				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d   %s*", mainStr, tmpVVars[i][UID], VehicleNames[tmpVVars[i][ModelID] - 400]);
-			} else {
-				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d   %s", mainStr, tmpVVars[i][UID], VehicleNames[tmpVVars[i][ModelID] - 400]);
+			while(mysql_fetch_row(queryStr, "|")) {
+				sscanf(queryStr, "p<|>ii", tmpVVars[j][UID], tmpVVars[j][ModelID]);
+				
+				if(vVars[j][vSpawned]) {
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d   %s*", mainStr, tmpVVars[j][UID], VehicleNames[tmpVVars[j][ModelID] - 400]);
+				} else {
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d   %s", mainStr, tmpVVars[j][UID], VehicleNames[tmpVVars[j][ModelID] - 400]);
+				}
+				
+				j++;
 			}
 			
-			i++;
+			mysql_free_result();
+			ShowPlayerDialog(playerid, DIALOG_VEHICLE_SELECT, DIALOG_STYLE_LIST, "Wybór pojazdu (* = zespawnowany)", mainStr, "(Un)spawn", "Anuluj");
+		} else {
+			
 		}
-		
-		mysql_free_result();
-		ShowPlayerDialog(playerid, DIALOG_VEHICLE_SELECT, DIALOG_STYLE_LIST, "Wybór pojazdu (* = zespawnowany)", mainStr, "(Un)spawn", "Anuluj");
 	} else {
 		if(strfind(opt, "zaparkuj", true) != -1 || strfind(opt, "parkuj", true) != -1) {
-			new vehicleid = getVehicleIdForPlayer(actualVehicle[playerid]);
+			new vehicleid = actualVehicle[playerid];
 			new Float:x, Float:y, Float:z;
 			
 			GetVehiclePos(vVars[vehicleid][vId], x, y, z);
@@ -189,11 +200,11 @@ CMD:v(playerid, params[]) {
 			return 1;
 		} else if(strfind(opt, "z", true) == 0 || strfind(opt, "zamknij", true) != -1) {
 			new Float:x, Float:y, Float:z;
-			new vehicleid = getVehicleIdForPlayer(actualVehicle[playerid]);
+			new vehicleid = actualVehicle[playerid];
 			
 			GetVehiclePos(vVars[vehicleid][vId], x, y, z);
 			
-			if(IsPlayerInRangeOfPoint(playerid, 1.0, x, y, z)) {
+			if(IsPlayerInRangeOfPoint(playerid, 3.0, x, y, z)) {
 				if(vehicleNonEngine(GetPlayerVehicleID(playerid))) {
 					return GameTextForPlayer(playerid, "~g~Pojazdy bez silnika nie~n~maja zamkow.", 5000, 6);
 				} else {
@@ -209,7 +220,7 @@ CMD:v(playerid, params[]) {
 			return 1;
 		} else if(strfind(opt, "info", true) != -1) {
 			new str[64];
-			new vehicleid = getVehicleIdForPlayer(actualVehicle[playerid]);
+			new vehicleid = actualVehicle[playerid];
 			new Float:vHp;
 			
 			GetVehicleHealth(vVars[vehicleid][vId], vHp);
@@ -230,11 +241,14 @@ CMD:v(playerid, params[]) {
 			return 1;
 		} else if(strfind(opt, "namierz", true) != -1) {
 			new Float:x, Float:y, Float:z;
-			new vehicleid = getVehicleIdForPlayer(actualVehicle[playerid]);
+			new vehicleid = actualVehicle[playerid];
 			
 			GetVehiclePos(vVars[vehicleid][vId], x, y, z);
 			
 			if(vehCP[vehicleid] == -1 && vehMapIcon[vehicleid] == -1) {
+				DestroyDynamicMapIcon(vehMapIcon[vehicleid]);
+				DestroyDynamicCP(vehCP[vehicleid]);
+				
 				vehCP[vehicleid] = CreateDynamicCP(x, y, z, 2.0, 0, 0, -1, 100, -1, 0);
 				vehMapIcon[vehicleid] = CreateDynamicMapIcon(x, y, z, 55, 0, 0, -1, -1, 4000, MAPICON_GLOBAL, -1, 0);
 			}
@@ -242,10 +256,13 @@ CMD:v(playerid, params[]) {
 			GameTextForPlayer(playerid, "~y~Pojazd zostal pomyslnie namierzony.", 5000, 3);
 			return 1;
 		} else if(strfind(opt, "reset", true) != -1) {
-			new vehicleid = getVehicleIdForPlayer(actualVehicle[playerid]);
+			new vehicleid = actualVehicle[playerid];
 			
 			DestroyDynamicMapIcon(vehMapIcon[vehicleid]);
-			DestroyDynamicCP(vehCP[vehicleid]);	
+			DestroyDynamicCP(vehCP[vehicleid]);
+			
+			vehCP[vehicleid] = -1;
+			vehMapIcon[vehicleid] = -1;
 			return 1;
 		} else {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v [zaparkuj/z(amknij)/info/namierz/reset]");
@@ -270,7 +287,7 @@ CMD:duty(playerid, params[]) {
 }
 
 CMD:pasy(playerid, params[]) {
-	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
+	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER || GetPlayerState(playerid) == PLAYER_STATE_PASSENGER) {
 		if(!hasBelts[playerid]) {
 			GameTextForPlayer(playerid, "~w~Pasy ~g~zapiete", 5000, 6);
 		

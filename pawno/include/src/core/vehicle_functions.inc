@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_functions.inc
 	Date: 29.07.2022
-	Modified: 12.08.2022
+	Modified: 13.08.2022
 */
 
 #if !defined _VEHICLE_FUNCTIONS_
@@ -25,7 +25,7 @@ stock initVehicleValues() {
 		sscanf(queryStr, "p<|>iiis[24]iiifffffiiii", vVars[i][vUid], vVars[i][vId], vVars[i][vOUid], vVars[i][vCharName], vVars[i][vModelId], vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vFuel], 
 		vVars[i][vFuelTank], vVars[i][vLock], vVars[i][vEngine], vVars[i][vSpawned], vVars[i][vMileage]);
 		
-		if(vVars[i][vSpawned]) {
+		/*if(vVars[i][vSpawned]) {
 			vVars[i][vId] = CreateVehicle(vVars[i][vModelId], vVars[i][vX], vVars[i][vY], vVars[i][vZ], 0.0, vVars[i][vColor1], vVars[i][vColor2], 0);
 			
 			if(vVars[i][vEngine]) {
@@ -33,7 +33,7 @@ stock initVehicleValues() {
 			} else {
 				SetVehicleParamsEx(vVars[i][vId], 0, 0, 0, 0, 0, 0, 0);
 			}
-		}
+		}*/
 		
 		Iter_Add(vehItter, i);
 		
@@ -42,6 +42,11 @@ stock initVehicleValues() {
 	}
 	
 	mysql_free_result();
+	
+	for(new i = 0; i < MAX_VEHICLES; i++) {
+		vehCP[i] = -1;
+		vehMapIcon[i] = -1;
+	}
 	return 1;
 }
 
@@ -58,6 +63,7 @@ stock saveVehicleValues() {
 	return 1;
 }
 
+/*
 stock getVehicleIdForPlayer(vehicleid) {
 	new vehid;
 	
@@ -69,6 +75,7 @@ stock getVehicleIdForPlayer(vehicleid) {
 	}
 	return vehid;
 }
+*/
 
 stock checkPlayerVehicleId(playerid) {
 	foreach(vehItter, i) {
@@ -80,7 +87,7 @@ stock checkPlayerVehicleId(playerid) {
 }
 
 stock vehicleEngineStatus(playerid, vehicleid) {
-	new vehicleid2 = getVehicleIdForPlayer(actualVehicle[playerid]);
+	new vehicleid2 = actualVehicle[playerid];
 	
 	if(!vVars[vehicleid2][vEngine]) {
 		if(getVehicleFuel(vehicleid2) <= 0) {
@@ -110,7 +117,7 @@ stock vehicleEngineStatus(playerid, vehicleid) {
 
 Callback:vehEngineOn(playerid, vehicleid) {
 	new engine, lights, alarm, doors, bonnet, boot, objective;
-	new vehicleid2 = getVehicleIdForPlayer(actualVehicle[playerid]);
+	new vehicleid2 = actualVehicle[playerid];
 
 	GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
 	SetVehicleParamsEx(vehicleid, 1, lights, alarm, doors, bonnet, boot, objective);
