@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 15.08.2022
+	Modified: 20.08.2022
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -27,6 +27,7 @@ sampCallback:OnPlayerDisconnect(playerid, reason) {
 	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_WHITE, NULL);
 	savePlayerValues(playerid);
 	resetPlayerValues(playerid); // dla dobra pamieci
+	resetVehicleValues(playerid);
 	
 	new str[64];
 	new callSec = GetTickCount();
@@ -39,6 +40,7 @@ sampCallback:OnPlayerDisconnect(playerid, reason) {
 sampCallback:OnPlayerRequestClass(playerid, classid) {	
 	SpawnPlayer(playerid);
 	TogglePlayerSpectating(playerid, 1);
+	setPlayerCamerasView(playerid);
 	
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "SELECT `AccName` FROM `Players` WHERE `AccName` = '%s'", pVars[playerid][pAccName]);
@@ -59,12 +61,12 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 			mysql_free_result();
 			
 			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "SELECT `UID`, `CharName`, `Pass` FROM `Players` WHERE `CharName2` = '%s'", pVars[playerid][pCharName2]);
+			format(queryStr, sizeof(queryStr), "SELECT `GUID`, `UID`, `CharName`, `Pass` FROM `Players` WHERE `CharName2` = '%s'", pVars[playerid][pCharName2]);
 			mysql_query(queryStr);
 			mysql_store_result();
 			
 			mysql_fetch_row(queryStr, "|");
-			sscanf(queryStr, "p<|>is[24]s[32]", pVars[playerid][pUid], pVars[playerid][pCharName], pVars[playerid][pPass]);
+			sscanf(queryStr, "p<|>iis[24]s[32]", pVars[playerid][pGuid], pVars[playerid][pUid], pVars[playerid][pCharName], pVars[playerid][pPass]);
 			mysql_free_result();
 			
 			mainStr[0] = EOS;
@@ -80,6 +82,9 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 	} else {
 		mysql_free_result();
 		
+		new tmpPVars[10][2];
+		new i;
+		
 		queryStr[0] = EOS;
 		mainStr[0] = EOS;
 		
@@ -88,8 +93,10 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 		mysql_store_result();
 		
 		while(mysql_fetch_row(queryStr, "|")) {
-			sscanf(queryStr, "p<|>is[24]", pVars[playerid][pUid], pVars[playerid][pCharName]);
-			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d %s", mainStr, pVars[playerid][pUid], pVars[playerid][pCharName]);
+			sscanf(queryStr, "p<|>is[24]", tmpPVars[i][0], tmpPVars[i][1]);
+			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d %s", mainStr, tmpPVars[i][0], tmpPVars[i][1]);
+			
+			i++;
 		}
 		
 		mysql_free_result();
@@ -116,6 +123,8 @@ sampCallback:OnPlayerSpawn(playerid) {
 	SetPlayerInterior(playerid, 0);
 	SetPlayerVirtualWorld(playerid, 0);
 	TextDrawShowForPlayer(playerid, website);
+	StopAudioStreamForPlayer(playerid);
+	KillTimer(cameraTimer[playerid]);
 	
 	mainStr[0] = EOS;
 	if(pVars[playerid][pHours] > 20) {
@@ -132,9 +141,7 @@ sampCallback:OnPlayerSpawn(playerid) {
 		SetPlayerPos(playerid, DEFAULT_POS_X, DEFAULT_POS_Y, DEFAULT_POS_Z);
 	}
 	
-	if(isBW[playerid]) {
-		setPlayerBW(playerid);
-	}
+	isSpawned[playerid] = true;
 	
 	new str[64];
 	new callSec = GetTickCount();
@@ -150,8 +157,6 @@ sampCallback:OnPlayerDeath(playerid, killerid, reason) {
 	
 	format(str, sizeof(str), "[LOG] Callback: OnPlayerDeath -- Called! (%d ms).", (GetTickCount() - callSec));
 	print(str);
-	
-	isBW[playerid] = true;
 	return 1;
 }
 
@@ -163,13 +168,15 @@ sampCallback:OnPlayerText(playerid, text[]) {
 	
 	if(strfind(textStr, "!!", false) != -1) {
 		format(mainStr, sizeof(mainStr), "%s krzyczy: %s", pVars[playerid][pCharName], textStr);
-		sendDistanceMessage(playerid, 70.0, mainStr, COLOR_GRAY, COLOR_GRAY, COLOR_GRAY, COLOR_WHITE);
+		sendDistanceMessage(playerid, 70.0, mainStr, COLOR_DARKGRAY, COLOR_MEDGRAY, COLOR_GRAY, COLOR_WHITE);
 		return 0;
 	} else if(strfind(textStr, ":)", false) == 0) {
 		format(mainStr, sizeof(mainStr), "* %s uœmiecha siê.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		return 0;
 	} else if(strfind(textStr, ":D", true) == 0 || strfind(textStr, "xD", true) == 0) {
+		ApplyAnimation(playerid, "RAPPING", "Laugh_01", 4.1, 0, 1, 1, 1, 1, 1);
+		
 		format(mainStr, sizeof(mainStr), "* %s œmieje siê.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		return 0;
@@ -207,7 +214,7 @@ sampCallback:OnPlayerText(playerid, text[]) {
 		return 0;
 	} else {
 		format(mainStr, sizeof(mainStr), "%s mówi: %s", pVars[playerid][pCharName], textStr);
-		sendDistanceMessage(playerid, 20.0, mainStr, COLOR_GRAY, COLOR_GRAY, COLOR_GRAY, COLOR_WHITE);
+		sendDistanceMessage(playerid, 20.0, mainStr, COLOR_DARKGRAY, COLOR_MEDGRAY, COLOR_GRAY, COLOR_WHITE);
 	}
 	return 0;
 }
@@ -275,6 +282,18 @@ sampCallback:OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			}
 			
 			vehicleEngineStatus(playerid, vehicleid);
+		}
+	}
+	
+	if(newkeys & KEY_FIRE) {
+		if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER && !vehicleNonEngine(vehicleid)) {
+			for(new i = 0; i < 2; i++) {
+				TextDrawHideForPlayer(playerid, vehicleTips[playerid][i]);
+			}
+			
+			new panels, doors, lights, tires;	
+			GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
+			UpdateVehicleDamageStatus(vehicleid, panels, doors, (lights & 0x45), tires);
 		}
 	}
 	return 1;
@@ -402,19 +421,15 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			mysql_query(queryStr);
 			
 			hasLoged[playerid] = true;
-			pVars[playerid][pHp] = 100.0;
-			GivePlayerMoneyEx(playerid, 50);
-			pVars[playerid][pX] = DEFAULT_POS_X;
-			pVars[playerid][pY] = DEFAULT_POS_Y;
-			pVars[playerid][pZ] = DEFAULT_POS_Z;
 			
 			if(pVars[playerid][pSex] == MAN_SEX) {
-				pVars[playerid][pSkin] = 291;
+				pVars[playerid][pSkin] = pVars[playerid][pLastSkin] = 291;
 			} else if(pVars[playerid][pSex] == WOMAN_SEX) {
-				pVars[playerid][pSkin] = 13;
+				pVars[playerid][pSkin] = pVars[playerid][pLastSkin] = 13;
 			}
 			
 			TogglePlayerSpectating(playerid, 0);
+			GivePlayerMoneyEx(playerid, 50);
 			
 			format(mainStr, sizeof(mainStr), "{66FFCC}> Postaæ utworzona. Przed kolejnym wejœciem na serwer ustaw nick SA-MP na {FFFFFF}%s. {66FFCC}Pamiêtaj has³o!", pVars[playerid][pCharName2]);
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);
@@ -433,12 +448,12 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			setPlayerDefaultValues(playerid);
 			pVars[playerid][pUid] = strval(inputtext);
 			
-			format(queryStr, sizeof(queryStr), "SELECT `CharName`, `CharName2`, `Pass` FROM `Players` WHERE `AccName` = '%s' AND `UID` = '%d'", pVars[playerid][pAccName], pVars[playerid][pUid]);
+			format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharName`, `CharName2`, `Pass` FROM `Players` WHERE `AccName` = '%s' AND `UID` = '%d'", pVars[playerid][pAccName], pVars[playerid][pUid]);
 			mysql_query(queryStr);
 			mysql_store_result();
 			
 			mysql_fetch_row(queryStr, "|");
-			sscanf(queryStr, "p<|>s[24]s[24]s[32]", pVars[playerid][pCharName], pVars[playerid][pCharName2], pVars[playerid][pPass]);
+			sscanf(queryStr, "p<|>is[24]s[24]s[32]", pVars[playerid][pGuid], pVars[playerid][pCharName], pVars[playerid][pCharName2], pVars[playerid][pPass]);
 			mysql_free_result();
 			
 			format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", pVars[playerid][pCharName]);
@@ -497,12 +512,12 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			mysql_free_result();
 			
-			format(queryStr, sizeof(queryStr), "SELECT `UID`, `Pass` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+			format(queryStr, sizeof(queryStr), "SELECT `GUID`, `UID`, `AccName`, `Pass` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 			mysql_query(queryStr);
 			mysql_store_result();
 			
 			mysql_fetch_row(queryStr, "|");
-			sscanf(queryStr, "p<|>is[32]", pVars[playerid][pUid], pVars[playerid][pPass]);
+			sscanf(queryStr, "p<|>iis[24]s[32]", pVars[playerid][pGuid], pVars[playerid][pUid], pVars[playerid][pAccName], pVars[playerid][pPass]);
 			mysql_free_result();
 			
 			GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~n~~n~~y~Postac zmieniona.", 5000, 3);
@@ -557,6 +572,86 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				vVars[tmpVehId][vSpawned] = false;
 				vehCP[tmpVehId] = -1;
 				vehMapIcon[tmpVehId] = -1;
+			}
+		}
+		case DIALOG_VEHICLE_OPTIONS: {
+			if(!response) {
+				return 1;
+			}
+			
+			new vehid = actualVehicle[playerid];
+			
+			switch(listitem) {
+				case 0: {
+					static bool:vehState;
+					new engine, lights, alarm, doors, bonnet, boot, objective;
+					
+					GetVehicleParamsEx(vVars[vehid][vId], engine, lights, alarm, doors, bonnet, boot, objective);
+					
+					if(!vehState) {
+						SetVehicleParamsEx(vVars[vehid][vId], engine, 1, alarm, doors, bonnet, boot, objective);
+					
+						vehState = true;
+					} else {
+						SetVehicleParamsEx(vVars[vehid][vId], engine, 0, alarm, doors, bonnet, boot, objective);
+					
+						vehState = false;
+					}
+				}
+				case 1: {
+					static bool:vehState;
+					new engine, lights, alarm, doors, bonnet, boot, objective;
+					
+					GetVehicleParamsEx(vVars[vehid][vId], engine, lights, alarm, doors, bonnet, boot, objective);
+					
+					if(!vehState) {
+						SetVehicleParamsEx(vVars[vehid][vId], engine, lights, alarm, doors, 1, boot, objective);
+					
+						vehState = true;
+					} else {
+						SetVehicleParamsEx(vVars[vehid][vId], engine, lights, alarm, doors, 0, boot, objective);
+					
+						vehState = false;
+					}					
+				}
+				case 2: {
+					static bool:vehState;
+					new engine, lights, alarm, doors, bonnet, boot, objective;
+					
+					GetVehicleParamsEx(vVars[vehid][vId], engine, lights, alarm, doors, bonnet, boot, objective);
+					
+					if(!vehState) {
+						SetVehicleParamsEx(vVars[vehid][vId], engine, lights, alarm, doors, bonnet, 1, objective);
+					
+						vehState = true;
+					} else {
+						SetVehicleParamsEx(vVars[vehid][vId], engine, lights, alarm, doors, bonnet, 0, objective);
+					
+						vehState = false;
+					}					
+				}
+				case 3: {
+					static bool:vehState;
+					new engine, lights, alarm, doors, bonnet, boot, objective;
+					
+					GetVehicleParamsEx(vVars[vehid][vId], engine, lights, alarm, doors, bonnet, boot, objective);
+					
+					if(!vehState) {
+						SetVehicleParamsEx(vVars[vehid][vId], engine, 1, alarm, doors, bonnet, boot, objective);
+					
+						vehState = true;
+					} else {
+						SetVehicleParamsEx(vVars[vehid][vId], engine, 0, alarm, doors, bonnet, boot, objective);
+					
+						vehState = false;
+					}					
+				}
+				case 4: {
+					
+				}
+				case 5: {
+					
+				}
 			}
 		}
 	}

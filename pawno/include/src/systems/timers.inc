@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 14.08.2022
+	Modified: 20.08.2022
 */
 
 #if !defined _TIMERS_
@@ -23,9 +23,9 @@ Timer:globalTimer[1000]() {
 			
 			if(isBW[i]) {
 				if(pVars[i][pHours] > 20) {
-					format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d, nieprzytomny)", pVars[i][pCharName], i, h, mins);
+					format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d, %s)", pVars[i][pCharName], i, h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 				} else {
-					format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(AFK od %02d:%02d, nieprzytomny)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
+					format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(AFK od %02d:%02d, %s)", pVars[i][pCharName], i, pVars[i][pHours], h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 				}				
 			} else if(hasBelts[i]) {
 				if(pVars[i][pHours] > 20) {
@@ -41,13 +41,11 @@ Timer:globalTimer[1000]() {
 				}
 			}
 		} else if(isBW[i]) // by MisterMagik
-		{
-			setPlayerBW(i);
-			
+		{	
 			if(pVars[i][pHours] > 20) {
-				format(timerStr, sizeof(timerStr), "%s (%d)\n(nieprzytomny)", pVars[i][pCharName], i);
+				format(timerStr, sizeof(timerStr), "%s (%d)\n(%s)", pVars[i][pCharName], i, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 			} else {
-				format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(nieprzytomny)", pVars[i][pCharName], i, pVars[i][pHours]);
+				format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(%s)", pVars[i][pCharName], i, pVars[i][pHours], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 			}
 		} else if(hasBelts[i]) {
 			if(pVars[i][pHours] > 20) {
@@ -63,11 +61,11 @@ Timer:globalTimer[1000]() {
 			}
 		}
 		
-		if(pVars[i][pHp] <= 1) {
+		if(pVars[i][pHp] <= 2.0 && !isBW[i] && isSpawned[i]) {
 			pVars[i][pHp] = 1.0;
-			isBW[i] = true;
 			
-			SetPlayerHealth(i, 1.0);
+			SetPlayerHealth(i, pVars[i][pHp]);
+			setPlayerBW(i, 5);
 		}
 		
 		TextDrawHideForPlayer(i, damageRedScreen[i]);
@@ -119,7 +117,7 @@ Timer:updateWebsiteDateTimer[2000]() {
 	getdate(year, month, day);
 	
 	timerStr[0] = EOS;
-	format(timerStr, sizeof(timerStr), "samp-rp.com_:_%d.%d.%d", day, month, year);
+	format(timerStr, sizeof(timerStr), "h-rp_:_%d.%d.%2d", day, month, year);
 	TextDrawSetString(website, timerStr);
 }
 
@@ -128,12 +126,12 @@ Timer:settingsTimer[10000]() {
 	saveVehicleValues();
 }
 
-Timer:townHallBellsTimer[59000000]() { // co 59 min
+Timer:townHallBellsTimer[590000]() {
 	new hours, minutes, seconds;
 	gettime(hours, minutes, seconds);
 	
 	foreach(Player, i) {
-		if(minutes == 0) {
+		if(minutes == 0 && seconds == 0) {
 			timerStr[0] = EOS;
 			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d razy. **", hours);
 			SendClientMessage(i, COLOR_WHITE, timerStr);

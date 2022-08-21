@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 24.07.2022
-	Modified: 04.08.2022
+	Modified: 20.08.2022
 */
 
 #if !defined _PLAYER_
@@ -22,13 +22,13 @@ enum CharSurName {
 enum PlayerData {
 	pUid,
 	pGuid,
-	pCharId, // narazie nie u¿ywane
+	pCharId,
 	pAccName[24],
-	pAccRank, // for ranks
 	pCharName[24],
 	pCharName2[24],
 	pPass[32],
 	pIp[24],
+	pRank, // for ranks
 	pSex,
 	pStrength,
 	pHours,
@@ -37,15 +37,33 @@ enum PlayerData {
 	Float:pHp,
 	Float:pAp,
 	pSkin,
+	pLastSkin,
 	pMoney,
 	pBank,
 	pBw,
 	pAj,
+	pAl,
 	pDriverLicense,
+	pGov,
+	pHotel,
+	pIdCard,
+	pDetention,
+	pPdp,
+	pTelNum,
+	pBankAcc,
+	pGroups,
+	pTraveled,
+	pDoors,
+	pInvi,
+	pChatStyle,
+	pComputer,
+	pWalkAnim,
+	pScreen,
 	Float:pX,
 	Float:pY,
 	Float:pZ,
-	Text3D:p3dInfo
+	Text3D:p3dInfo,
+	Text3D:pCharDesc
 };
 
 #endif 

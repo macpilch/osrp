@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: arrays.inc
 	Date: 25.07.2022
-	Modified: 10.08.2022
+	Modified: 21.08.2022
 */
 
 #if !defined _ARRAYS_
@@ -17,73 +17,49 @@ new queryStr[512];
 new pVars[MAX_PLAYERS][PlayerData];
 new vVars[MAX_VEHICLES][VehicleData];
 
-new charManName[MAX_CHARS_NAMES][CharName] = {
-	{"Marcin", false},
-	{"Tomasz", false},
-	{"Marian", false},
-	{"Waldemar", false},
-	{"Janusz", false},
-	{"Maciej", false},
-	{"Jakub", false},
-	{"Piotr", false},
-	{"Robert", false},
-	{"Franciszek", false},
-	{"Andrzej", false},
-	{"Tadeusz", false},
-	{"Brajan", false},
-	{"Mateusz", false},
-	{"Damian", false},
-	{"Oskar", false},
-	{"Krzysztof", false},
-	{"Zygfryd", false},
-	{"Zdzislaw", false},
-	{"Adam", false}
+new Float:startCameraPos[][] = {
+	{2485.5459,-1656.8232,13.3414}
 };
 
-new charWomName[MAX_CHARS_NAMES][CharName] = {
-	{"Katarzyna", false},
-	{"Malgorzata", false},
-	{"Aleksandra", false},
-	{"Barbara", false},
-	{"Monika", false},
-	{"Natalia", false},
-	{"Julia", false},
-	{"Anna", false},
-	{"Agnieszka", false},
-	{"Elwira", false},
-	{"Zuzanna", false},
-	{"Marta", false},
-	{"Justyna", false},
-	{"Marianna", false},
-	{"Maria", false},
-	{"Otylla", false},
-	{"Arletta", false},
-	{"Dzesika", false},
-	{"Dagmara", false},
-	{"Joanna", false}
+new Float:endCameraPos[][] = {
+	{2495.3320,-1649.1501,13.5506}
 };
 
-new charSur[MAX_CHARS_NAMES][CharSurName] = {
-	{"Nowak", false},
-	{"Kowalski", false},
-	{"Zamoyski", false},
-	{"Urban", false},
-	{"Jarosz", false},
-	{"Kozak", false},
-	{"Wisniowski", false},
-	{"Dabrowski", false},
-	{"Oracz", false},
-	{"Kopacz", false},
-	{"Zielinski", false},
-	{"Lewandowski", false},
-	{"Zamorski", false},
-	{"Krol", false},
-	{"Smialy", false},
-	{"Malolepszy", false},
-	{"Kiepski", false},
-	{"Krawczyk", false},
-	{"Domanski", false},
-	{"Nowakowski", false}
+new charManName[][CharName] = {
+	{"Abdiel", false}, {"Abram", false}, {"Adolfo", false}, {"Adriel", false}, {"Alberto", false}, {"Alden", false}, {"Alejandro", false}, {"Alessandro", false},
+	{"Alonso", false}, {"Aloysha", false}, {"Andrusha", false}, {"Antonio", false}, {"Arman", false}, {"Armani", false}, {"Asa", false}, {"Aubrey", false},
+	{"August", false}, {"Beau", false}, {"Borya", false}, {"Braulio", false}, {"Brodie", false}, {"Brycen", false}, {"Bryson", false}, {"Cheslav", false},
+	{"Cyrus", false}, {"Daiki", false}, {"Dalton", false}, {"Damien", false}, {"Dangelo", false}, {"Darnell", false}, {"Darwin", false}, {"Dylon", false},
+	{"Eduard", false}, {"Elias", false}, {"Elijah", false}, {"Elisha", false}, {"Elmer", false}, {"Emiliano", false}, {"Enrique", false}, {"Esteban", false},
+	{"Ezequiel", false}, {"Fedyenka", false}, {"Feliks", false}, {"Fjodor", false}, {"Francisco", false}, {"Gael", false}, {"Gaige", false}, {"Gavril", false},
+	{"Gerald", false}, {"Gerardo", false}, {"German", false}, {"Gian", false}, {"Giancario", false}, {"Gianni", false}, {"Gonzalo", false}, {"Graham", false},
+	{"Gustavo", false}, {"Hamza", false}, {"Herbert", false}, {"Heriberto", false}, {"Humberto", false}, {"Ignacio", false}, {"Iov", false}, {"Irving", false},
+	{"Isiah", false}, {"Jadyn", false}, {"Jaeden", false}, {"Jaheem", false}, {"Jamari", false}, {"Jamil", false}, {"Jamison", false}, {"Jaron", false},
+	{"Jarrett", false}, {"Jarrod", false}, {"Jascha", false}, {"Javon", false}, {"Jaylan", false}, {"Jaylin", false}, {"Jorden", false}, {"Josue", false},
+	{"Jovany", false}, {"Justyn", false}, {"Kaiden", false}, {"Kaito", false}, {"Kale", false}, {"Keaton", false}, {"Kenta", false}, {"Kevon", false},
+	{"Keyon", false}, {"Kieran", false}, {"Kiril", false}, {"Korbin", false}, {"Leonardo", false}, {"Leonel", false}, {"London", false}, {"Malakai", false},
+	{"Malik", false}, {"Marlon", false}, {"Marquise", false}, {"Maurice", false}, {"Mauricio", false}, {"Micah", false}, {"Milton", false}, {"Moses", false},
+	{"Naoto", false}, {"Nasir", false}, {"Naum", false}, {"Nestor", false}, {"Octavio", false}, {"Omari", false}, {"Osbaldo", false}, {"Osvaldo", false},
+	{"Petya", false}, {"Quinten", false}, {"Ramon", false}, {"Reid", false}, {"Rhett", false}, {"Riku", false}, {"Rodolfo", false}, {"Rodrigo", false},
+	{"Ronan", false}, {"Rurik", false}, {"Santos", false}, {"Seamus", false}, {"Sergio", false}, {"Serguei", false}, {"Seriozha", false}, {"Shashenka", false},
+	{"Shouhei", false}, {"Slavik", false}, {"Sterling", false}, {"Takahiro", false}, {"Takumi", false}, {"Takuya", false}, {"Tariq", false}, {"Tate", false},
+	{"Tavion", false}, {"Thaddeus", false}, {"Theodore", false}, {"Titus", false}, {"Trevin", false}, {"Tristian", false}, {"Tristin", false}, {"Tsubasa", false},
+	{"Vance", false}, {"Volody", false}, {"Yadiel", false}, {"Yahir", false}, {"Yakov", false}, {"Yuuto", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}
+};
+
+new charWomName[][CharName] = {
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}
+};
+
+new charSur[][CharSurName] = {
+	{"Abate", false}, {"Abbattista", false}, {"Adami", false}, {"Adamo", false}, {"Adams", false}, {"Adriani", false}, {"Agnoli", false}, {"Agrusa", false},
+	{"Aiello", false}, {"Alessi", false}, {"Alfano", false}, {"Alonge", false}, {"Altosinno", false}, {"Alunni", false}, {"Alvarez", false}, {"Alvine", false},
+	{"Anasetti", false}, {"Anderlini", false}, {"Anderson", false}, {"Andollina", false}, {"Androsciani", false}, {"Angeletti", false}, {"Angelicola", false}, {"Angerami", false},
+	{"Angotto", false}, {"Ankundinov", false}, {"Annibali", false}, {"Anzalmo", false}, {"Aquilino", false}, {"Arca", false}, {"Arcari", false}, {"Arcuni", false},
+	{"Ardizzone", false}, {"Arena", false}, {"Arent", false}, {"Armentano", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}
 };
 
 new VehicleNames[212][] = {

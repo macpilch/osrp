@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_functions.inc
 	Date: 29.07.2022
-	Modified: 13.08.2022
+	Modified: 20.08.2022
 */
 
 #if !defined _VEHICLE_FUNCTIONS_
@@ -13,7 +13,7 @@ stock initVehicleValues() {
 	queryStr[0] = EOS;
 	
 	for(new i = 0; i < MAX_VEHICLES; i++) {
-		format(queryStr, sizeof(queryStr), "SELECT `UID`, `ID`, `OUID`, `CharName`, `ModelID`, `Color1`, `Color2`, `X`, `Y`, `Z`, `Fuel`, `FuelTank`, `Lock`, `Engine`, `Spawned`, `Mileage` FROM `Vehicles` WHERE `UID` = '%d'", i + 1);
+		format(queryStr, sizeof(queryStr), "SELECT `UID`, `ID`, `OUID`, `CharName`, `ModelID`, `Color1`, `Color2`, `X`, `Y`, `Z`, `Fuel`, `FuelTank`, `Lock`, `Engine`, `Spawned`, `Mileage`, `Desc` FROM `Vehicles` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
 		mysql_store_result();
 		
@@ -22,8 +22,8 @@ stock initVehicleValues() {
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iiis[24]iiifffffiiii", vVars[i][vUid], vVars[i][vId], vVars[i][vOUid], vVars[i][vCharName], vVars[i][vModelId], vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vFuel], 
-		vVars[i][vFuelTank], vVars[i][vLock], vVars[i][vEngine], vVars[i][vSpawned], vVars[i][vMileage]);
+		sscanf(queryStr, "p<|>iiis[24]iiifffffiiiis[64]", vVars[i][vUid], vVars[i][vId], vVars[i][vOUid], vVars[i][vCharName], vVars[i][vModelId], vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vFuel], 
+		vVars[i][vFuelTank], vVars[i][vLock], vVars[i][vEngine], vVars[i][vSpawned], vVars[i][vMileage], vVars[i][vDescInfo]);
 		
 		/*if(vVars[i][vSpawned]) {
 			vVars[i][vId] = CreateVehicle(vVars[i][vModelId], vVars[i][vX], vVars[i][vY], vVars[i][vZ], 0.0, vVars[i][vColor1], vVars[i][vColor2], 0);
@@ -37,16 +37,14 @@ stock initVehicleValues() {
 		
 		Iter_Add(vehItter, i);
 		
-		printf("[DEBUG] Uid: %d, Id: %d, OUid: %d, Charname: %s, ModelId: %d, Color1: %d, Color2: %d, X: %f, Y: %f, Z: %f, Fuel: %f, FuelTank: %f, Lock: %d, Engine: %d, Spawned: %d, Mileage: %d", vVars[i][vUid], vVars[i][vId], vVars[i][vOUid], 
-		vVars[i][vCharName], vVars[i][vModelId], vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vFuel], vVars[i][vFuelTank], vVars[i][vLock], vVars[i][vEngine], vVars[i][vSpawned], vVars[i][vMileage]);
+		vehCP[i] = -1;
+		vehMapIcon[i] = -1;
+		
+		printf("[DEBUG] Uid: %d, Id: %d, OUid: %d, Charname: %s, ModelId: %d, Color1: %d, Color2: %d, X: %f, Y: %f, Z: %f, Fuel: %f, FuelTank: %f, Lock: %d, Engine: %d, Spawned: %d, Mileage: %d, Desc: %s", vVars[i][vUid], vVars[i][vId], vVars[i][vOUid], 
+		vVars[i][vCharName], vVars[i][vModelId], vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vFuel], vVars[i][vFuelTank], vVars[i][vLock], vVars[i][vEngine], vVars[i][vSpawned], vVars[i][vMileage], vVars[i][vDescInfo]);
 	}
 	
 	mysql_free_result();
-	
-	for(new i = 0; i < MAX_VEHICLES; i++) {
-		vehCP[i] = -1;
-		vehMapIcon[i] = -1;
-	}
 	return 1;
 }
 
@@ -56,8 +54,8 @@ stock saveVehicleValues() {
 	foreach(vehItter, i) {
 		GetVehiclePos(vVars[i][vId], vVars[i][vX], vVars[i][vY], vVars[i][vZ]);
 		
-		format(queryStr, sizeof(queryStr), "UPDATE `Vehicles` SET `Color1` = '%d', `Color2` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Fuel` = '%f', `FuelTank` = '%f', `Lock` = '%d', `Engine` = '%d', `Spawned` = '%d', `Mileage` = '%d' WHERE `UID` = '%d'",
-		vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vFuel], vVars[i][vFuelTank], vVars[i][vLock], vVars[i][vEngine], vVars[i][vSpawned], vVars[i][vMileage], i + 1);
+		format(queryStr, sizeof(queryStr), "UPDATE `Vehicles` SET `Color1` = '%d', `Color2` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Fuel` = '%f', `FuelTank` = '%f', `Lock` = '%d', `Engine` = '%d', `Spawned` = '%d', `Mileage` = '%d', `Desc` = '%s' WHERE `UID` = '%d'",
+		vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vFuel], vVars[i][vFuelTank], vVars[i][vLock], vVars[i][vEngine], vVars[i][vSpawned], vVars[i][vMileage], vVars[i][vDescInfo], i + 1);
 		mysql_query(queryStr);
 	}
 	return 1;
@@ -76,6 +74,19 @@ stock getVehicleIdForPlayer(vehicleid) {
 	return vehid;
 }
 */
+
+stock resetVehicleValues(playerid) {
+	DestroyVehicle(vVars[actualVehicle[playerid]][vId]);
+	DestroyDynamic3DTextLabel(vVars[actualVehicle[playerid]][vDesc]);
+	DestroyDynamicMapIcon(vehMapIcon[actualVehicle[playerid]]);
+	DestroyDynamicCP(vehCP[actualVehicle[playerid]]);
+	
+	vVars[actualVehicle[playerid]][vSpawned] = false;
+	vehCP[actualVehicle[playerid]] = -1;
+	vehMapIcon[actualVehicle[playerid]] = -1;
+	actualVehicle[playerid] = INVALID_VEHICLE_ID;
+	return 1;
+}
 
 stock checkPlayerVehicleId(playerid) {
 	foreach(vehItter, i) {
@@ -116,17 +127,19 @@ stock vehicleEngineStatus(playerid, vehicleid) {
 }
 
 Callback:vehEngineOn(playerid, vehicleid) {
-	new engine, lights, alarm, doors, bonnet, boot, objective;
-	new vehicleid2 = actualVehicle[playerid];
+	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
+		new engine, lights, alarm, doors, bonnet, boot, objective;
+		new vehicleid2 = actualVehicle[playerid];
 
-	GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
-	SetVehicleParamsEx(vehicleid, 1, lights, alarm, doors, bonnet, boot, objective);
-	
-	for(new i = 0; i < 3; i++) {
-		TextDrawShowForPlayer(playerid, vehicleFuelStatus[playerid][i]);
+		GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
+		SetVehicleParamsEx(vehicleid, 1, lights, alarm, doors, bonnet, boot, objective);
+		
+		for(new i = 0; i < 3; i++) {
+			TextDrawShowForPlayer(playerid, vehicleFuelStatus[playerid][i]);
+		}
+		
+		vVars[vehicleid2][vEngine] = true;
 	}
-	
-	vVars[vehicleid2][vEngine] = true;
 	return 1;
 }
 

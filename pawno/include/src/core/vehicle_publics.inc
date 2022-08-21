@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_publics.inc
 	Date: 29.07.2022
-	Modified: 11.08.2022
+	Modified: 20.08.2022
 */
 
 #if !defined _VEHICLE_PUBLICS_
@@ -12,6 +12,7 @@
 sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 	if(vehicleid && !vehicleNonEngine(vehicleid) && pVars[playerid][pDriverLicense] < 1) {
 		mainStr[0] = EOS;
+		
 		strcat(mainStr, "Musisz najpierw wyrobiæ prawo jazdy.");
 		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 	}
@@ -32,6 +33,7 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 	SendClientMessage(killerid, COLOR_WHITE, "Witma ! OnVehicleDeath");
 	
 	DestroyVehicle(vehicleid);
+	GameTextForPlayer(killerid, "Pojazd zostanie odspawnowany.", 5000, 3);
 	return 1;
 }
 
@@ -57,10 +59,11 @@ sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
 	UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
 	
-	if(!hasBelts[playerid])
+	if(!hasBelts[playerid]) {
 		SetPlayerHealth(playerid, pVars[playerid][pHp] - 10);
-	else
+	} else {
 		SetPlayerHealth(playerid, pVars[playerid][pHp] - 5);
+	}
 	
 	SetTimerEx("healthDamage", 100, false, "i", playerid);
 	return 1;

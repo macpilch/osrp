@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: admin_cmds.inc
 	Date: 04.08.2022
-	Modified: 13.08.2022
+	Modified: 20.08.2022
 */
 
 #if !defined _ADMIN_CMDS_
@@ -30,7 +30,7 @@ CMD:givehealth(playerid, params[]) {
 }
 
 CMD:freezeplayer(playerid, params[]) {
-	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
 		new toPlayerid, freezeOnOff;
 		
 		if(sscanf(params, "ii", toPlayerid, freezeOnOff)) {	//freezeOnOff: 0-uncontrollable/1-controllable
@@ -62,7 +62,7 @@ CMD:freezeplayer(playerid, params[]) {
 }
 
 CMD:godmode(playerid, params[]) {
-	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
 		if(isAdminDuty[playerid] == true) {
 			if(!isGodMode[playerid]) {
 				isGodMode[playerid] = true;
@@ -80,7 +80,7 @@ CMD:godmode(playerid, params[]) {
 }
 
 CMD:giveweapon(playerid, params[]) {
-	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
 		if(isAdminDuty[playerid]) {
 			new weaponId, ammo;
 			
@@ -96,7 +96,7 @@ CMD:giveweapon(playerid, params[]) {
 }
 
 CMD:spawnvehicle(playerid, params[]) {
-	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
 		if(isAdminDuty[playerid]) {
 			new vehicleId, vehicleModelId, vehsCount, freeId;
 			new color1 = random(255), color2 = random(255);
@@ -143,6 +143,9 @@ CMD:spawnvehicle(playerid, params[]) {
 			vVars[freeId][vY] = y;
 			vVars[freeId][vZ] = z;
 			
+			format(vVars[freeId][vDescInfo], 64, NULL);
+			UpdateDynamic3DTextLabelText(vVars[freeId][vDesc], COLOR_WHITE, vVars[freeId][vDescInfo]);
+			
 			format(queryStr, sizeof(queryStr), "INSERT INTO `Vehicles` (`UID`, `ID`, `OUID`, `CharName`, `ModelID`, `Color1`, `Color2`, `X`, `Y`, `Z`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d', '%d', '%f', '%f', '%f')",
 			vVars[freeId][vUid], vVars[freeId][vId], vVars[freeId][vOUid], vVars[freeId][vCharName], vVars[freeId][vModelId], vVars[freeId][vColor1], vVars[freeId][vColor2], vVars[freeId][vX], vVars[freeId][vY], vVars[freeId][vZ]);
 			mysql_query(queryStr);
@@ -152,7 +155,7 @@ CMD:spawnvehicle(playerid, params[]) {
 }
 
 CMD:deletevehicle(playerid, params[]) {
-	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
 		if(isAdminDuty[playerid]) {
 			new vehUid;
 			
@@ -164,7 +167,7 @@ CMD:deletevehicle(playerid, params[]) {
 			format(queryStr, sizeof(queryStr), "DELETE FROM `Vehicles` WHERE `UID` = '%d'", vehUid);
 			mysql_query(queryStr);
 			
-			DestroyVehicle(vVars[vehUid - 1][vModelId]);
+			DestroyVehicle(vVars[vehUid - 1][vId]);
 			actualVehicle[playerid] = INVALID_VEHICLE_ID;
 			Iter_Remove(vehItter, vehUid - 1);
 			
@@ -191,7 +194,7 @@ CMD:deletevehicle(playerid, params[]) {
 }
 
 CMD:spectateplayer(playerid, params[]) {
-	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
 		if(isAdminDuty[playerid]) {
 			new toPlayerId;
 			

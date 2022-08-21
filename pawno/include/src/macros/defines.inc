@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 15.08.2022
+	Modified: 18.08.2022
 */
 
 #if !defined _DEFINES_
@@ -29,6 +29,8 @@
 
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_GRAY 0xCDC9C9FF
+#define COLOR_MEDGRAY 0x8B8B83FF
+#define COLOR_DARKGRAY 0x696969FF
 #define COLOR_PURPLE 0xBA55D3FF
 #define COLOR_ORANGE 0xFF9900FF
 #define COLOR_LIGHTORANGE 0xFFCC66FF
@@ -42,6 +44,8 @@
 #define DEFAULT_POS_X 837.8678
 #define DEFAULT_POS_Y -1344.6394
 #define DEFAULT_POS_Z 7.1719
+
+#define CAMERA_SPEED 5000
 
 // admin ranks
 #define HEADADMIN_RANK 5

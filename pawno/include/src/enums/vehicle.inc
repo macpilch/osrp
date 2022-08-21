@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle.inc
 	Date: 29.07.2022
-	Modified: 14.08.2022
+	Modified: 20.08.2022
 */
 
 #if !defined _VEHICLE_
@@ -25,7 +25,9 @@ enum VehicleData {
 	bool:vLock,
 	bool:vEngine,
 	bool:vSpawned,
-	vMileage // Przebieg
+	vMileage, // Przebieg
+	Text3D:vDesc,
+	vDescInfo[64]
 };
 
 #endif 

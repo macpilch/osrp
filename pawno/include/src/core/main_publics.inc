@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: main_publics.inc
 	Date: 24.07.2022
-	Modified: 05.08.2022
+	Modified: 20.08.2022
 */
 
 #if !defined _MAIN_PUBLICS_
@@ -32,7 +32,12 @@ sampCallback:OnGameModeInit() {
 	initVehicleValues();
 	
 	for(new i = 0; i < MAX_PLAYERS; i++) {
-		pVars[i][p3dInfo] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 0.15, 30.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 30.0, -1, 0);
+		pVars[i][p3dInfo] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 0.15, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);
+		pVars[i][pCharDesc] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 0.0, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);
+	}
+	
+	for(new i = 0; i < MAX_VEHICLES; i++) {
+		vVars[i][vDesc] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 0.1, 20.0, INVALID_PLAYER_ID, i, 0, 0, 0, -1, 20.0, -1, 0);
 	}
 	
 	website = TextDrawCreate(8.433380, 427.000000, "_");

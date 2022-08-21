@@ -3,11 +3,11 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
-	Modified: 15.08.2022
+	Modified: 20.08.2022
 */
 
-#if !defined PLAYER_FUNCTIONS
-#define PLAYER_FUNCTIONS
+#if !defined _PLAYER_FUNCTIONS_
+#define _PLAYER_FUNCTIONS_
 
 Callback:hideVehicleSpawn(playerid) {
 	for(new i = 0; i < sizeof(vehicleSpawn); i++) {
@@ -61,13 +61,32 @@ Callback:hideFirstHoursInfo() {
 }
 
 Callback:bwTimer(playerid) {
-	isBW[playerid] = false;
-	pVars[playerid][pHp] = 20.0;
+	pVars[playerid][pBw]--;
 	
-	TextDrawHideForPlayer(playerid, bwText[playerid]);
-	SetPlayerHealth(playerid, pVars[playerid][pHp]);
-	TogglePlayerControllable(playerid, 1);
-	ClearAnimations(playerid);
+	format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", pVars[playerid][pBw]);
+	GameTextForPlayer(playerid, mainStr, 4000, 1);
+	
+	SetTimerEx("bwTimer", 1000, false, "i", playerid);
+	return 1;
+}
+
+Callback:setPlayerCamerasView(playerid) {
+	InterpolateCameraPos(playerid, startCameraPos[0][0], startCameraPos[0][1], startCameraPos[0][2], endCameraPos[0][0], endCameraPos[0][1], endCameraPos[0][2], CAMERA_SPEED, CAMERA_CUT);
+	InterpolateCameraLookAt(playerid, startCameraPos[0][0], startCameraPos[0][1], startCameraPos[0][2], endCameraPos[0][0], endCameraPos[0][1], endCameraPos[0][2], CAMERA_SPEED, CAMERA_CUT);
+	
+	cameraTimer[playerid] = SetTimerEx("setPlayerCamerasView", 6000, false, "i", playerid);
+	return 1;
+}
+
+Callback:refreshCmds(playerid, cmd) {
+	switch(cmd) {
+		case 0: {
+			usedCmdLogin[playerid] = false;
+		}
+		case 1: {
+			usedCmdReport[playerid] = false;
+		}
+	}
 	return 1;
 }
 
@@ -103,7 +122,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawLetterSize(helpInfo[playerid][0], 0.307100, 1.302500);
 	TextDrawAlignment(helpInfo[playerid][0], 2);
 	TextDrawColor(helpInfo[playerid][0], -1);
-	TextDrawSetShadow(helpInfo[playerid][0], -256);
+	TextDrawSetShadow(helpInfo[playerid][0], 0);
 	TextDrawSetOutline(helpInfo[playerid][0], 0);
 	TextDrawBackgroundColor(helpInfo[playerid][0], 255);
 	TextDrawFont(helpInfo[playerid][0], 1);
@@ -232,8 +251,8 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawAlignment(oocWarning[playerid][0], 2);
 	TextDrawColor(oocWarning[playerid][0], -1);
 	TextDrawSetShadow(oocWarning[playerid][0], 0);
-	TextDrawSetOutline(oocWarning[playerid][0], 1);
-	TextDrawBackgroundColor(oocWarning[playerid][0], 51);
+	TextDrawSetOutline(oocWarning[playerid][0], 0);
+	TextDrawBackgroundColor(oocWarning[playerid][0], 255);
 	TextDrawFont(oocWarning[playerid][0], 1);
 	TextDrawSetProportional(oocWarning[playerid][0], 1);
 
@@ -257,24 +276,14 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawBoxColor(damageRedScreen[playerid], 0xFF0000EE);
 	TextDrawSetShadow(damageRedScreen[playerid], 0);
 	TextDrawSetOutline(damageRedScreen[playerid], 1);
-	TextDrawFont(damageRedScreen[playerid], 0);	
-	
-	bwText[playerid] = TextDrawCreate(509.282592, 280.000030, "BW");
-	TextDrawLetterSize(bwText[playerid], 0.315534, 1.430833);
-	TextDrawAlignment(bwText[playerid], 2);
-	TextDrawColor(bwText[playerid], -1);
-	TextDrawSetShadow(bwText[playerid], 0);
-	TextDrawSetOutline(bwText[playerid], 1);
-	TextDrawBackgroundColor(bwText[playerid], 51);
-	TextDrawFont(bwText[playerid], 1);
-	TextDrawSetProportional(bwText[playerid], 1);
+	TextDrawFont(damageRedScreen[playerid], 0);
 	
 	vehicleSpawn[playerid][0] = TextDrawCreate(497.569305, 285.250030, "Pojazd zostal zespawnowany.~n~Jezeli nie mozesz go znalesc w~n~miejscu zaznaczonym na radarze,~n~uzyj /v reset.");
 	TextDrawLetterSize(vehicleSpawn[playerid][0], 0.368945, 1.407499);
 	TextDrawAlignment(vehicleSpawn[playerid][0], 2);
 	TextDrawColor(vehicleSpawn[playerid][0], -1);
 	TextDrawSetShadow(vehicleSpawn[playerid][0], 0);
-	TextDrawSetOutline(vehicleSpawn[playerid][0], 1);
+	TextDrawSetOutline(vehicleSpawn[playerid][0], 0);
 	TextDrawBackgroundColor(vehicleSpawn[playerid][0], 255);
 	TextDrawFont(vehicleSpawn[playerid][0], 1);
 	TextDrawSetProportional(vehicleSpawn[playerid][0], 1);
@@ -300,7 +309,7 @@ stock loadPlayerValues(playerid) {
 	
 	mysql_fetch_row(queryStr, "|");
 	sscanf(queryStr, "p<|>iiis[24]iiiiiffiiiiiifff", 
-	pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pAccRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], 
+	pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], 
 	pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	
 	mysql_free_result();
@@ -327,32 +336,48 @@ stock setPlayerDefaultValues(playerid) {
 	ResetPlayerMoney(playerid);
 	ResetPlayerWeapons(playerid);
 	
-	pVars[playerid][pAccRank] = 0;
+	pVars[playerid][pRank] = 0;
 	pVars[playerid][pSex] = MAN_SEX;
-	pVars[playerid][pStrength] = 0;
+	pVars[playerid][pStrength] = 3000;
 	pVars[playerid][pHours] = 0;
 	pVars[playerid][pMinutes] = 0;
 	pVars[playerid][pSeconds] = 0;
-	pVars[playerid][pHp] = 0.0;
+	pVars[playerid][pHp] = 100.0;
 	pVars[playerid][pAp] = 0.0;
 	pVars[playerid][pSkin] = 0;
 	pVars[playerid][pMoney] = 0;
 	pVars[playerid][pBank] = 0;
 	pVars[playerid][pBw] = 0;
 	pVars[playerid][pAj] = 0;
+	pVars[playerid][pAl] = 0;
 	pVars[playerid][pDriverLicense] = 0;
-	pVars[playerid][pX] = 0.0;
-	pVars[playerid][pY] = 0.0;
-	pVars[playerid][pZ] = 0.0;
+	pVars[playerid][pGov] = 0;
+	pVars[playerid][pHotel] = 0;
+	pVars[playerid][pIdCard] = 0;
+	pVars[playerid][pDetention] = 0;
+	pVars[playerid][pPdp] = 0;
+	pVars[playerid][pTelNum] = 0;
+	pVars[playerid][pBankAcc] = 0;
+	pVars[playerid][pGroups] = 0;
+	pVars[playerid][pTraveled] = 0;
+	pVars[playerid][pDoors] = 0;
+	pVars[playerid][pInvi] = 0;
+	pVars[playerid][pChatStyle] = 0;
+	pVars[playerid][pComputer] = 0;
+	pVars[playerid][pWalkAnim] = 0;
+	pVars[playerid][pScreen] = 0;
+	pVars[playerid][pX] = DEFAULT_POS_X;
+	pVars[playerid][pY] = DEFAULT_POS_Y;
+	pVars[playerid][pZ] = DEFAULT_POS_Z;
+	isSpawned[playerid] = false;
 	hasLoged[playerid] = false;
 	isAdminDuty[playerid] = false;
 	isSpectating[playerid] = false;
 	isGodMode[playerid] = false;
 	isBW[playerid] = false;
 	usedCmdLogin[playerid] = false;
+	usedCmdReport[playerid] = false;
 	hasBelts[playerid] = false;
-	
-	printf("[DEBUG] AccName: %s", pVars[playerid][pAccName]);
 	return 1;
 }
 
@@ -367,8 +392,8 @@ stock resetPlayerValues(playerid) {
 	format(pVars[playerid][pPass], 32, "%s", NULL);
 	format(pVars[playerid][pIp], 24, "%s", NULL);
 
-	pVars[playerid][pAccRank] = 0;
-	pVars[playerid][pSex] = MAN_SEX;
+	pVars[playerid][pRank] = 0;
+	pVars[playerid][pSex] = 0;
 	pVars[playerid][pStrength] = 0;
 	pVars[playerid][pHours] = 0;
 	pVars[playerid][pMinutes] = 0;
@@ -380,16 +405,34 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pBank] = 0;
 	pVars[playerid][pBw] = 0;
 	pVars[playerid][pAj] = 0;
+	pVars[playerid][pAl] = 0;
 	pVars[playerid][pDriverLicense] = 0;
+	pVars[playerid][pGov] = 0;
+	pVars[playerid][pHotel] = 0;
+	pVars[playerid][pIdCard] = 0;
+	pVars[playerid][pDetention] = 0;
+	pVars[playerid][pPdp] = 0;
+	pVars[playerid][pTelNum] = 0;
+	pVars[playerid][pBankAcc] = 0;
+	pVars[playerid][pGroups] = 0;
+	pVars[playerid][pTraveled] = 0;
+	pVars[playerid][pDoors] = 0;
+	pVars[playerid][pInvi] = 0;
+	pVars[playerid][pChatStyle] = 0;
+	pVars[playerid][pComputer] = 0;
+	pVars[playerid][pWalkAnim] = 0;
+	pVars[playerid][pScreen] = 0;
 	pVars[playerid][pX] = 0.0;
 	pVars[playerid][pY] = 0.0;
 	pVars[playerid][pZ] = 0.0;
+	isSpawned[playerid] = false;
 	hasLoged[playerid] = false;
 	isAdminDuty[playerid] = false;
 	isSpectating[playerid] = false;
 	isGodMode[playerid] = false;
 	isBW[playerid] = false;
 	usedCmdLogin[playerid] = false;
+	usedCmdReport[playerid] = false;
 	hasBelts[playerid] = false;
 	return 1;
 }
@@ -405,14 +448,18 @@ stock savePlayerValues(playerid) {
 	return 1;
 }
 
-stock setPlayerBW(playerid) {
-	pVars[playerid][pHp] = 999999;
-	TogglePlayerControllable(playerid, 0);
-	ClearAnimations(playerid);
-	ApplyAnimation(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
-	SetPlayerHealth(playerid, pVars[playerid][pHp]);
-	SetTimerEx("bwTimer", 60000, false, "i", playerid);
-	TextDrawShowForPlayer(playerid, bwText[playerid]);
+stock setPlayerBW(playerid, time) {
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "* %s uderzy³ siê w g³owê i straci³ przytomnoœæ.", pVars[playerid][pCharName]);
+	sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+	
+	pVars[playerid][pBw] = time * 60;
+	isBW[playerid] = true;
+	
+	format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", pVars[playerid][pBw] / 60);
+	GameTextForPlayer(playerid, mainStr, 4000, 1);
+	
+	SetTimerEx("bwTimer", 1000, false, "i", playerid);
 	return 1;
 }
 

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: dialogs.inc
 	Date: 25.07.2022
-	Modified: 14.08.2022
+	Modified: 15.08.2022
 */
 
 #if !defined _DIALOGS_
@@ -19,6 +19,7 @@
 #define DIALOG_HELP 8
 #define DIALOG_STATS 9
 #define DIALOG_VEHICLE_SELECT 10
+#define DIALOG_VEHICLE_OPTIONS 11
 #define DIALOG_SHOW_ITEMS 12
 #define DIALOG_DEFAULT 999
 

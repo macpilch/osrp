@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 15.08.2022
+	Modified: 20.08.2022
 */
 
 #if !defined _PLAYER_CMDS_
@@ -13,12 +13,13 @@ CMD:help(playerid, params[]) {
 	mainStr[0] = EOS;
 	
 	strcat(mainStr, "{FFFFFF}0\tJak zacz¹æ?\n0\tPodstawowe komendy\n");
-	strcat(mainStr, "0\tBW\n0\tAnimacje\n0\tPojazdy");
+	strcat(mainStr, "0\tBW\n0\tAnimacje\n0\tPojazdy\n0\tPrzedmioty\n");
+	strcat(mainStr, "0\tOferty\n0\tPraca\n0\tCzaty grupowe\n--- Pomoc dotycz¹ca Twoich grup:");
 	ShowPlayerDialog(playerid, DIALOG_HELP, DIALOG_STYLE_LIST, "Pomoc > Wybór kategorii pomocy", mainStr, "Wybierz", "Anuluj");
 	return 1;
 }
 
-//alias:help("pomoc");
+CMD:pomoc(playerid, params[]) return pc_cmd_help(playerid, params);
 
 CMD:w(playerid, params[]) {
 	new id, pmStr[256];
@@ -44,6 +45,18 @@ CMD:w(playerid, params[]) {
 	return 1;
 }
 
+CMD:czat(playerid, params[]) {
+	new id;
+	
+	if(sscanf(params, "i", id)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /czat [ID]");
+	}
+	
+	SendClientMessage(playerid, COLOR_WHITE, "{FFFF00}Czat z graczem uruchomiony. Od teraz zamiast u¿ywaæ /w [Gracz], po prostu zacznij pisaæ.");
+	SendClientMessage(playerid, COLOR_WHITE, "{FFFF00}Aby anulowaæ czat, po prostu wpisz /czat.");
+	return 1;
+}
+
 CMD:c(playerid, params[]) {
 	new str[256];
 	
@@ -53,7 +66,19 @@ CMD:c(playerid, params[]) {
 	
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "%s szepcze: %s", pVars[playerid][pCharName], str);
-	sendDistanceMessage(playerid, 10.0, mainStr, COLOR_WHITE, COLOR_GRAY, COLOR_GRAY, COLOR_GRAY);
+	sendDistanceMessage(playerid, 10.0, mainStr, COLOR_DARKGRAY, COLOR_MEDGRAY, COLOR_GRAY, COLOR_WHITE);
+	return 1;
+}
+
+CMD:m(playerid, params[]) {
+	new str[256];
+	
+	if(sscanf(params, "s[256]", str)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /m [Tekst]");
+	}
+	
+	format(str, sizeof(str), "{FFFF00}%s :o< %s", pVars[playerid][pCharName], str);
+	sendDistanceMessage(playerid, 100.0, str, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE);
 	return 1;
 }
 
@@ -62,12 +87,12 @@ CMD:a(playerid, params[]) {
 	
 	mainStr[0] = EOS;
 	foreach(Player, i) {
-		if(pVars[i][pAccRank] >= SUPPORT_RANK && pVars[i][pAccRank] <= HEADADMIN_RANK) {
+		if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
 			if(isAdminDuty[i]) {
 				adminsCount++;
 				
 				if(adminsCount > 0)
-					format(mainStr, sizeof(mainStr), "%sADM %d\t\t\t\t%s\n", mainStr, pVars[i][pAccRank], pVars[i][pAccName]);
+					format(mainStr, sizeof(mainStr), "%sADM %d\t\t\t\t%s\n", mainStr, pVars[i][pRank], pVars[i][pAccName]);
 			} else {
 				adminsCount = 0;
 			}
@@ -127,9 +152,32 @@ CMD:stats(playerid, params[]) {
 	
 	mainStr[0] = EOS;
 	format(tmpStr, sizeof(tmpStr), "%s (UID %d, ID %d, Globalne %d) [%s]", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, pVars[playerid][pGuid], pVars[playerid][pIp]);
-	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nSi³a:\t\t\t\t%d\nP³eæ:\t\t\t\t%s\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nSkin:\t\t\t\t%d\nOstatni skin:\t\t\t%d", 
-	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAj], pVars[playerid][pBw], pVars[playerid][pHp], pVars[playerid][pStrength], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pSkin], pVars[playerid][pSkin]);
+	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nAL:\t\t\t\t%d\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nSi³a:\t\t\t\t%d\nP³eæ:\t\t\t\t%s\nRz¹d:\t\t\t\t%d\nPrawko:\t\t\t%d\nHotel:\t\t\t\t%d\nPrzetrzymanie:\t\t\t%dh\nPDP:\t\t\t\t%d\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nTelefon:\t\t\t%d\nNumer konta:\t\t\t%d\nGrupy:\t\t\t\t-\nSkin:\t\t\t\t%d\nWyje¿d¿one:\t\t\t%dkm\nOstatni skin:\t\t\t%d\nDrzwi:\t\t\t\t%d\nZaproszenie od:\t\t%d\n------\n", 
+	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAl], pVars[playerid][pAj], pVars[playerid][pBw], pVars[playerid][pHp], pVars[playerid][pStrength], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pGov], pVars[playerid][pDriverLicense], pVars[playerid][pHotel], pVars[playerid][pDetention], pVars[playerid][pPdp], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pTelNum], pVars[playerid][pBankAcc], pVars[playerid][pSkin],
+	pVars[playerid][pTraveled], pVars[playerid][pLastSkin], pVars[playerid][pDoors], pVars[playerid][pInvi]);
 	ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, tmpStr, mainStr, "OK", "Zamknij");
+	return 1;
+}
+
+CMD:opis(playerid, params[]) {
+	new str[64], opt[16];
+	
+	if(sscanf(params, "s[64]", str)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /opis [Tresc] lub /opis usun");
+	}
+	
+	if(strfind(opt, "usun", true) != -1) {
+		DestroyDynamic3DTextLabel(pVars[playerid][pCharDesc]);
+		GameTextForPlayer(playerid, "~w~Opis zostal usuniety.", 4000, 3);
+		return 1;
+	} else {
+		mainStr[0] = EOS;
+		
+		format(mainStr, sizeof(mainStr), "Opis: %s.", str);
+		SendClientMessage(playerid, COLOR_PURPLE, mainStr);
+		
+		UpdateDynamic3DTextLabelText(pVars[playerid][pCharDesc], COLOR_PURPLE, str);
+	}
 	return 1;
 }
 
@@ -137,6 +185,26 @@ CMD:p(playerid, params[]) {
 	showDialogItems(playerid);
 	return 1;
 }
+
+CMD:u(playerid, params[]) return pc_cmd_p(playerid, params);
+
+CMD:time(playerid, params[]) {
+	new hours, minutes, seconds;
+	new str[32];
+	
+	gettime(hours, minutes, seconds);
+	ApplyAnimation(playerid, "PLAYIDLES", "TIME", 4.1, 0, 1, 1, 1, 1, 1);
+	
+	format(str, sizeof(str), "~w~godzina: ~p~%02d:%02d:%02d~w~.", hours, minutes, seconds);
+	GameTextForPlayer(playerid, str, 7000, 1);
+	
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "* %s spogl¹da na zegarek.", pVars[playerid][pCharName]);
+	sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+	return 1;
+}
+
+CMD:zegarek(playerid, params[]) return pc_cmd_time(playerid, params);
 
 CMD:v(playerid, params[]) {
 	if(!checkPlayerVehicleId(playerid)) {
@@ -181,7 +249,11 @@ CMD:v(playerid, params[]) {
 			mysql_free_result();
 			ShowPlayerDialog(playerid, DIALOG_VEHICLE_SELECT, DIALOG_STYLE_LIST, "Wybór pojazdu (* = zespawnowany)", mainStr, "(Un)spawn", "Anuluj");
 		} else {
+			mainStr[0] = EOS;
 			
+			strcat(mainStr, "{FFFFFF}1\tW³¹cz/wy³¹cz œwiat³a\n2\tOtwórz/zamknij maskê\n3\tOtwórz/zamknij baga¿nik\n");
+			strcat(mainStr, "4\tOtwórz/zamknij okno\n5\tZobacz komponenty pojazdu\n6\tUstaw unikaln¹ rejestracjê\n-\n");
+			ShowPlayerDialog(playerid, DIALOG_VEHICLE_OPTIONS, DIALOG_STYLE_LIST, "W pojeŸdzie", mainStr, "OK", "Anuluj");
 		}
 	} else {
 		if(strfind(opt, "zaparkuj", true) != -1 || strfind(opt, "parkuj", true) != -1) {
@@ -264,6 +336,9 @@ CMD:v(playerid, params[]) {
 			vehCP[vehicleid] = -1;
 			vehMapIcon[vehicleid] = -1;
 			return 1;
+		} else if(strfind(opt, "opis", true) != -1) {
+			
+			return 1;
 		} else {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v [zaparkuj/z(amknij)/info/namierz/reset]");
 		}
@@ -271,8 +346,35 @@ CMD:v(playerid, params[]) {
 	return 1;
 }
 
+CMD:report(playerid, params[]) {
+	new str[256];
+	new reason[128];
+	new id;
+	
+	if(usedCmdReport[playerid]) {
+		SendClientMessage(playerid, COLOR_WHITE, "Mo¿esz wysy³aæ tylko jeden raport na minutê. Spokojnie, albo ktoœ przygl¹da siê ju¿ sytuacji,");
+		SendClientMessage(playerid, COLOR_WHITE, "albo tak czy inaczej wszyscy s¹ zajêci innym raportem i powielanie Twojego nic nie zmieni.");
+		SetTimerEx("refreshCmds", 60000, false, "ii", playerid, 1);
+		return 1;
+	}
+	
+	if(sscanf(params, "is[128]", id, reason)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /report [ID] [Treœæ]");
+	}
+	
+	usedCmdReport[playerid] = true;
+	
+	format(str, sizeof(str), "{FF0000}Wys³ano: [ID %d]%s: %d %s (%s)", playerid, pVars[playerid][pCharName], id, reason, pVars[id][pCharName]);
+	SendClientMessage(playerid, COLOR_WHITE, str);
+	SendClientMessage(playerid, COLOR_WHITE, "{A52A2A}Pamiêtaj proszê, ¿e /raport s³u¿y do raportowania biê¿¹cych sytuacji z gry.");
+	SendClientMessage(playerid, COLOR_WHITE, "{A52A2A}Nie ma tu systemu kolejkowania próœb i prawie na pewno zostan¹ one pominiête.");
+	SendClientMessage(playerid, COLOR_WHITE, "{A52A2A}Je¿eli masz jakiœ problem lub proœbê, napisz temat w odpowiednim dziale naszego forum.");
+	SendClientMessage(playerid, COLOR_WHITE, "{A52A2A}Prosimy NIE powtarzaæ raportów. Nie zwiêksza to widocznoœci, a IRYTUJE administracjê.");
+	return 1;
+}
+
 CMD:duty(playerid, params[]) {
-	if(pVars[playerid][pAccRank] >= SUPPORT_RANK && pVars[playerid][pAccRank] <= HEADADMIN_RANK) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
 		if(!isAdminDuty[playerid]) {
 			isAdminDuty[playerid] = true;
 				
@@ -300,3 +402,5 @@ CMD:pasy(playerid, params[]) {
 	}
 	return 1;
 }
+
+#endif 
