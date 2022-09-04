@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: main.pwn
 	Date: 24.07.2022
-	Modified: 15.08.2022
+	Modified: 29.08.2022
 */
 
 #include <a_samp>
@@ -18,6 +18,7 @@
 #include "src\macros\dialogs"
 #include "src\enums\player"
 #include "src\enums\vehicle"
+#include "src\enums\item"
 #include "src\core\vars"
 #include "src\core\arrays"
 #include "src\core\main_publics"

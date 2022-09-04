@@ -3,11 +3,28 @@
 	Author: steeZ (macpilch)
 	File: admin_cmds.inc
 	Date: 04.08.2022
-	Modified: 20.08.2022
+	Modified: 02.09.2022
 */
 
 #if !defined _ADMIN_CMDS_
 #define _ADMIN_CMDS_
+
+CMD:setbw(playerid, params[]) {
+	new pId, time;
+	
+	if(sscanf(params, "ii", pId, time)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /setbw [ID] [Czas w Min]");
+	}
+	
+	setPlayerBW(pId, time);
+	
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "%s nada³(a) Ci BW.", pVars[playerid][pCharName]);
+	SendClientMessage(pId, COLOR_WHITE, mainStr);
+	format(mainStr, sizeof(mainStr), "Nada³eœ(aœ) BW graczowi %s.", pVars[pId][pCharName]);
+	SendClientMessage(playerid, COLOR_WHITE, mainStr);
+	return 1;
+}
 
 CMD:givehealth(playerid, params[]) {
 	if(isAdminDuty[playerid]) {
@@ -164,10 +181,21 @@ CMD:deletevehicle(playerid, params[]) {
 			}
 			
 			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "SELECT `UID` FROM `Vehicles` WHERE `UID` = '%d'", vehUid);
+			mysql_query(queryStr);
+			mysql_store_result();
+			
+			if(!mysql_num_rows()) {
+				return SendClientMessage(playerid, COLOR_WHITE, "Podany pojazd nie istnieje!");
+			}
+			
+			mysql_free_result();
+			
 			format(queryStr, sizeof(queryStr), "DELETE FROM `Vehicles` WHERE `UID` = '%d'", vehUid);
 			mysql_query(queryStr);
 			
 			DestroyVehicle(vVars[vehUid - 1][vId]);
+			DestroyDynamic3DTextLabel(vVars[vehUid - 1][vDesc]);
 			actualVehicle[playerid] = INVALID_VEHICLE_ID;
 			Iter_Remove(vehItter, vehUid - 1);
 			
@@ -175,7 +203,8 @@ CMD:deletevehicle(playerid, params[]) {
 			vVars[vehUid - 1][vId] = 0;
 			vVars[vehUid - 1][vOUid] = 0;
 			vVars[vehUid - 1][vUid] = 0;
-			format(vVars[vehUid - 1][vCharName], 24, "%s", NULL);
+			format(vVars[vehUid - 1][vCharName], 24, NULL);
+			format(vVars[vehUid - 1][vDescInfo], 64, NULL);
 			vVars[vehUid - 1][vModelId] = 0;
 			vVars[vehUid - 1][vColor1] = 0;
 			vVars[vehUid - 1][vColor2] = 0;

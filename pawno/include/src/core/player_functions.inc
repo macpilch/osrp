@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
-	Modified: 20.08.2022
+	Modified: 31.08.2022
 */
 
 #if !defined _PLAYER_FUNCTIONS_
@@ -52,7 +52,7 @@ Callback:hideOOCWarning(playerid) {
 }
 
 Callback:hideFirstHoursInfo() {
-	foreach(Player, i) { // bedzie chowalo wszystkim graczom
+	foreach(new i : Player) { // bedzie chowalo wszystkim graczom
 		for(new j = 0; j < sizeof(firstHoursInfo); j++) {
 			TextDrawHideForPlayer(i, firstHoursInfo[j]);
 		}
@@ -63,10 +63,23 @@ Callback:hideFirstHoursInfo() {
 Callback:bwTimer(playerid) {
 	pVars[playerid][pBw]--;
 	
-	format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", pVars[playerid][pBw]);
-	GameTextForPlayer(playerid, mainStr, 4000, 1);
-	
-	SetTimerEx("bwTimer", 1000, false, "i", playerid);
+	if((pVars[playerid][pBw] / 60) > 0) {
+		format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", ((pVars[playerid][pBw] / 60) > 1) ? (pVars[playerid][pBw] / 60) : 1); // int powinien uciac na same minuty
+		GameTextForPlayer(playerid, mainStr, 4000, 1);
+		SetTimerEx("bwTimer", 1000, false, "i", playerid);
+	} else {
+		pVars[playerid][pBw] = 0;
+		isBW[playerid] = false;
+		
+		SetPlayerHealthEx(playerid, 5.0);
+		SetPlayerDrunkLevel(playerid, 10000);
+		TogglePlayerControllable(playerid, 1);
+		
+		mainStr[0] = EOS;
+		strcat(mainStr, "Ockn¹³eœ(aœ) siê po odniesieniu powa¿nych obra¿eñ.\n");
+		strcat(mainStr, "Krêci Ci siê w g³owie. Udaj siê do apteki, tam Ci z tym pomog¹.");
+		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+	}
 	return 1;
 }
 
@@ -101,7 +114,7 @@ stock sendDistanceMessage(playerid, Float:range, str[], color, color2, color3, c
 	
 	GetPlayerPos(playerid, x, y, z);
 	
-	foreach(Player, i) {
+	foreach(new i : Player) {
 		if(IsPlayerInRangeOfPoint(i, range, x, y, z)) {
 			if(range <= (range / 4)) {
 				SendClientMessage(i, color, str);
@@ -303,7 +316,7 @@ stock createPlayerTextDraws(playerid) {
 
 stock loadPlayerValues(playerid) {
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `AccRank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `DriverLicense`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `Rank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `DriverLicense`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	mysql_store_result();
 	
@@ -342,7 +355,7 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pHours] = 0;
 	pVars[playerid][pMinutes] = 0;
 	pVars[playerid][pSeconds] = 0;
-	pVars[playerid][pHp] = 100.0;
+	pVars[playerid][pHp] = 0.0;
 	pVars[playerid][pAp] = 0.0;
 	pVars[playerid][pSkin] = 0;
 	pVars[playerid][pMoney] = 0;
@@ -448,17 +461,20 @@ stock savePlayerValues(playerid) {
 	return 1;
 }
 
-stock setPlayerBW(playerid, time) {
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "* %s uderzy³ siê w g³owê i straci³ przytomnoœæ.", pVars[playerid][pCharName]);
-	sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+stock setPlayerBW(playerid, minutes) {
+	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER || GetPlayerState(playerid) == PLAYER_STATE_PASSENGER) {
+		mainStr[0] = EOS;
+		format(mainStr, sizeof(mainStr), "* %s uderzy³ siê w g³owê i straci³ przytomnoœæ.", pVars[playerid][pCharName]);
+		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+	}
 	
-	pVars[playerid][pBw] = time * 60;
+	pVars[playerid][pBw] = (minutes * 60);
 	isBW[playerid] = true;
 	
 	format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", pVars[playerid][pBw] / 60);
 	GameTextForPlayer(playerid, mainStr, 4000, 1);
 	
+	TogglePlayerControllable(playerid, 0);
 	SetTimerEx("bwTimer", 1000, false, "i", playerid);
 	return 1;
 }
@@ -482,6 +498,12 @@ stock getPlayerStrengthPower(playerid) {
 }
 
 // return: void
+stock SetPlayerHealthEx(playerid, Float:health) {
+	pVars[playerid][pHp] = health;
+	
+	SetPlayerHealth(playerid, pVars[playerid][pHp]);
+}
+
 stock GivePlayerMoneyEx(playerid, money) {
 	ResetPlayerMoney(playerid);
 	

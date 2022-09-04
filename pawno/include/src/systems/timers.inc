@@ -3,14 +3,14 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 20.08.2022
+	Modified: 01.09.2022
 */
 
 #if !defined _TIMERS_
 #define _TIMERS_
 
 Timer:globalTimer[1000]() {
-	foreach(Player, i) {
+	foreach(new i : Player) {
 		playerAFKTime[i]++;
 		GetPlayerHealth(i, pVars[i][pHp]);
 		
@@ -61,11 +61,11 @@ Timer:globalTimer[1000]() {
 			}
 		}
 		
-		if(pVars[i][pHp] <= 2.0 && !isBW[i] && isSpawned[i]) {
-			pVars[i][pHp] = 1.0;
+		if(pVars[i][pHp] <= 3.0 && !isBW[i] && isSpawned[i]) {
+			SetPlayerHealth(i, 2.0);
 			
-			SetPlayerHealth(i, pVars[i][pHp]);
-			setPlayerBW(i, 5);
+			//SetPlayerHealthEx(i, 2.0);
+			setPlayerBW(i, 3);
 		}
 		
 		TextDrawHideForPlayer(i, damageRedScreen[i]);
@@ -90,7 +90,7 @@ Timer:globalTimer[1000]() {
 			}
 		}
 		
-		foreach(vehItter, j) {
+		foreach(new j : vehItter) {
 			if(vVars[j][vEngine]) {
 				vVars[j][vFuel] -= 0.01;
 				
@@ -117,21 +117,20 @@ Timer:updateWebsiteDateTimer[2000]() {
 	getdate(year, month, day);
 	
 	timerStr[0] = EOS;
-	format(timerStr, sizeof(timerStr), "h-rp_:_%d.%d.%2d", day, month, year);
+	format(timerStr, sizeof(timerStr), "samp-rp.com_:_%d.%d.%2d", day, month, year);
 	TextDrawSetString(website, timerStr);
 }
 
 Timer:settingsTimer[10000]() {
 	saveServerValues();
-	saveVehicleValues();
 }
 
 Timer:townHallBellsTimer[590000]() {
 	new hours, minutes, seconds;
 	gettime(hours, minutes, seconds);
 	
-	foreach(Player, i) {
-		if(minutes == 0 && seconds == 0) {
+	foreach(new i : Player) {
+		if(minutes == 0) {
 			timerStr[0] = EOS;
 			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d razy. **", hours);
 			SendClientMessage(i, COLOR_WHITE, timerStr);
@@ -140,7 +139,7 @@ Timer:townHallBellsTimer[590000]() {
 }
 
 Timer:giveFreeMoneyTimer[590000]() {
-	foreach(Player, i) {
+	foreach(new i : Player) {
 		if(pVars[i][pHours] >= 0 && pVars[i][pHours] <= 1) {
 			GivePlayerMoneyEx(i, 25);
 			GameTextForPlayer(i, "~w~+~g~$25", 2000, 6);

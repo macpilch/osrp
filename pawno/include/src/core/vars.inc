@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 20.08.2022
+	Modified: 29.08.2022
 */
 
 #if !defined _VARS_
@@ -41,5 +41,6 @@ new Text:oocWarning[MAX_PLAYERS][2];
 new Text:damageRedScreen[MAX_PLAYERS];
 
 new Iterator:vehItter<MAX_VEHICLES>;
+new Iterator:itemItter<MAX_ITEMS>;
 
 #endif 

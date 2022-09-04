@@ -51,7 +51,7 @@ stock initVehicleValues() {
 stock saveVehicleValues() {
 	queryStr[0] = EOS;
 	
-	foreach(vehItter, i) {
+	foreach(new i : vehItter) {
 		GetVehiclePos(vVars[i][vId], vVars[i][vX], vVars[i][vY], vVars[i][vZ]);
 		
 		format(queryStr, sizeof(queryStr), "UPDATE `Vehicles` SET `Color1` = '%d', `Color2` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Fuel` = '%f', `FuelTank` = '%f', `Lock` = '%d', `Engine` = '%d', `Spawned` = '%d', `Mileage` = '%d', `Desc` = '%s' WHERE `UID` = '%d'",
@@ -89,7 +89,7 @@ stock resetVehicleValues(playerid) {
 }
 
 stock checkPlayerVehicleId(playerid) {
-	foreach(vehItter, i) {
+	foreach(new i : vehItter) {
 		if(!strcmp(vVars[i][vCharName], pVars[playerid][pCharName], false)) {
 			return 1;
 		}

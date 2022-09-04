@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 20.08.2022
+	Modified: 25.08.2022
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -115,9 +115,9 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 
 sampCallback:OnPlayerSpawn(playerid) {
 	SetCameraBehindPlayer(playerid);
-	SetPlayerHealth(playerid, pVars[playerid][pHp]);
 	SetPlayerArmour(playerid, pVars[playerid][pAp]);
 	SetPlayerSkin(playerid, pVars[playerid][pSkin]);
+	ResetPlayerMoney(playerid);
 	GivePlayerMoney(playerid, pVars[playerid][pMoney]);
 	SetPlayerName(playerid, pVars[playerid][pCharName2]);
 	SetPlayerInterior(playerid, 0);
@@ -315,6 +315,7 @@ sampCallback:OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid) {
 sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 	switch(dialogid) {
 		case DIALOG_REGISTER: {
+			new str[2048];
 			mainStr[0] = EOS;
 			
 			if(!response) {
@@ -322,14 +323,14 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return ShowPlayerDialog(playerid, DIALOG_LOGIN_CHANGE_CHAR, DIALOG_STYLE_INPUT, "Zmiana postaci", mainStr, "Zmieñ", "STWÓRZ");
 			}
 			
-			for(new i = 0; i < MAX_CHARS_NAMES; i++) {
-				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charSur[i][chSurName]);
+			for(new i = 0; i < sizeof(charSur); i++) {
+				format(str, sizeof(str), "%s\n{FFFFFF}%s", str, charSur[i][chSurName]);
 			}
 			
-			ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");
+			ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", str, "Mê¿czyzna", "Kobieta");
 		}
 		case DIALOG_REGISTER_SURNAME: {
-			mainStr[0] = EOS;
+			new str[2048];
 			
 			format(pVars[playerid][pCharName], 24, "%s", inputtext);
 			format(tmpName, sizeof(tmpName), "%s", inputtext);
@@ -337,30 +338,30 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			if(!response) {			
 				pVars[playerid][pSex] = WOMAN_SEX;
 				
-				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
-					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charWomName[i][chName]);
+				for(new i = 0; i < sizeof(charWomName); i++) {
+					format(str, sizeof(str), "%s\n{FFFFFF}%s", str, charWomName[i][chName]);
 				}
-				return ShowPlayerDialog(playerid, DIALOG_REGISTER_NAME, DIALOG_STYLE_LIST, "Krok 2/3: imiê (losowe ¿eñskie imiona)", mainStr, "Dalej", "Od nowa");
+				return ShowPlayerDialog(playerid, DIALOG_REGISTER_NAME, DIALOG_STYLE_LIST, "Krok 2/3: imiê (losowe ¿eñskie imiona)", str, "Dalej", "Od nowa");
 			}
 			
 			pVars[playerid][pSex] = MAN_SEX;
 			
-			for(new i = 0; i < MAX_CHARS_NAMES; i++) {
-				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charManName[i][chName]);
+			for(new i = 0; i < sizeof(charManName); i++) {
+				format(str, sizeof(str), "%s\n{FFFFFF}%s", str, charManName[i][chName]);
 			}
 			
-			ShowPlayerDialog(playerid, DIALOG_REGISTER_NAME, DIALOG_STYLE_LIST, "Krok 2/3: imiê (losowe mêskie imiona)", mainStr, "Dalej", "Od nowa");
+			ShowPlayerDialog(playerid, DIALOG_REGISTER_NAME, DIALOG_STYLE_LIST, "Krok 2/3: imiê (losowe mêskie imiona)", str, "Dalej", "Od nowa");
 		}
 		case DIALOG_REGISTER_NAME: {
-			mainStr[0] = EOS;
-			
 			if(!response) {
+				new str[2048];
+			
 				setPlayerDefaultValues(playerid);
 				
-				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
-					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charSur[i][chSurName]);
+				for(new i = 0; i < sizeof(charSur); i++) {
+					format(str, sizeof(str), "%s\n{FFFFFF}%s", str, charSur[i][chSurName]);
 				}
-				return ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");		
+				return ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", str, "Mê¿czyzna", "Kobieta");		
 			}
 			
 			format(pVars[playerid][pCharName], 24, "%s %s", inputtext, pVars[playerid][pCharName]);
@@ -370,15 +371,15 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			ShowPlayerDialog(playerid, DIALOG_REGISTER_PASS, DIALOG_STYLE_INPUT, "Krok 3/3: has³o", "Podaj proszê has³o, za pomoc¹ którego bêdziesz siê logowaæ.", "Zapisz", "Od nowa");
 		}
 		case DIALOG_REGISTER_PASS: {
-			mainStr[0] = EOS;
-			
 			if(!response) {
+				new str[2048];
+				
 				setPlayerDefaultValues(playerid);
 				
-				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
-					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charSur[i][chSurName]);
+				for(new i = 0; i < sizeof(charSur); i++) {
+					format(str, sizeof(str), "%s\n{FFFFFF}%s", str, charSur[i][chSurName]);
 				}
-				return ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");			
+				return ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", str, "Mê¿czyzna", "Kobieta");			
 			}
 			
 			new charsCount;
@@ -429,8 +430,10 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			}
 			
 			TogglePlayerSpectating(playerid, 0);
+			SetPlayerHealthEx(playerid, 100.0);
 			GivePlayerMoneyEx(playerid, 50);
 			
+			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "{66FFCC}> Postaæ utworzona. Przed kolejnym wejœciem na serwer ustaw nick SA-MP na {FFFFFF}%s. {66FFCC}Pamiêtaj has³o!", pVars[playerid][pCharName2]);
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 			
@@ -489,12 +492,14 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			queryStr[0] = EOS;
 			
 			if(!response) {
+				new str[2048];
+				
 				setPlayerDefaultValues(playerid);
 				
-				for(new i = 0; i < MAX_CHARS_NAMES; i++) {
-					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%s", mainStr, charSur[i][chSurName]);
+				for(new i = 0; i < sizeof(charSur); i++) {
+					format(str, sizeof(str), "%s\n{FFFFFF}%s", str, charSur[i][chSurName]);
 				}
-				return ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", mainStr, "Mê¿czyzna", "Kobieta");				
+				return ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", str, "Mê¿czyzna", "Kobieta");				
 			}
 			
 			setPlayerDefaultValues(playerid);
@@ -535,7 +540,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			tmpUid = strval(inputtext);
 			
-			foreach(vehItter, i) {
+			foreach(new i : vehItter) {
 				if(tmpUid == vVars[i][vUid]) {
 					tmpVehId = i;
 					break;

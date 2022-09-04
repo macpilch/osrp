@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: main_publics.inc
 	Date: 24.07.2022
-	Modified: 20.08.2022
+	Modified: 29.08.2022
 */
 
 #if !defined _MAIN_PUBLICS_
@@ -30,6 +30,7 @@ sampCallback:OnGameModeInit() {
 	
 	initServerValues();
 	initVehicleValues();
+	initItemValues();
 	
 	for(new i = 0; i < MAX_PLAYERS; i++) {
 		pVars[i][p3dInfo] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 0.15, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);

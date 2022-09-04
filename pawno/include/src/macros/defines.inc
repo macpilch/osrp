@@ -3,17 +3,18 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 18.08.2022
+	Modified: 02.09.2022
 */
 
 #if !defined _DEFINES_
 #define _DEFINES_
 
 #undef MAX_PLAYERS
-#define MAX_PLAYERS 2
-
 #undef MAX_VEHICLES
+
+#define MAX_PLAYERS 2
 #define MAX_VEHICLES 10
+#define MAX_ITEMS 20
 
 // Callbacks
 #define sampCallback:%0(%1) \
@@ -23,9 +24,9 @@
 		forward %0(%1); public %0(%1)
 
 #define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "server_904"
-#define MYSQL_PASS "rtpbkoxnje"
-#define MYSQL_DB "server_904_srv"
+#define MYSQL_USER "root"
+#define MYSQL_PASS "1234"
+#define MYSQL_DB "samp"
 
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_GRAY 0xCDC9C9FF
@@ -37,7 +38,6 @@
 
 #define NULL "\0"
 
-#define MAX_CHARS_NAMES 20
 #define MAN_SEX 0
 #define WOMAN_SEX 1
 
