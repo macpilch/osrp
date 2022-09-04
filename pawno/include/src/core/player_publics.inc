@@ -654,6 +654,14 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				}
 			}
 		}
+		
+		case DIALOG_PETROL_STATION: {
+			if(!response){
+				return 1;
+			}
+			
+			
+		}
 	}
 	return 1;
 }

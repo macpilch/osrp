@@ -42,4 +42,19 @@ new Text:damageRedScreen[MAX_PLAYERS];
 
 new Iterator:vehItter<MAX_VEHICLES>;
 
+// Fuel System
+
+/*
+	gasPump[MAX_GAS_PUMP][4] = {
+	x,
+	y,
+	z,
+	distance
+	}
+*/
+new Float:gasPump[MAX_GAS_PUMP][4];
+
+// Dla znacznika stacji na minimapie
+new Float:petrolStations[MAX_PETROL_STATIONS][3];
+
 #endif 

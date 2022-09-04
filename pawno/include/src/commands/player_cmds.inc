@@ -403,4 +403,15 @@ CMD:pasy(playerid, params[]) {
 	return 1;
 }
 
+CMD:tankuj(playerid, params[])
+{
+	new srvvehid = GetPlayerVehicleID(playerid);
+	if(isPlayerInAnyVehicle(playerid) && !vehicleNonEngine(srvvehid)){
+		mainStr[0] = EOS;
+		format(mainStr, sizeof(mainStr), "Cena: $4/1L\nWpisz ilosc paliwa do zatankowania:");
+		ShowPlayerDialog(playerid, DIALOG_PETROL_STATION, DIALOG_STYLE_INPUT, "Stacja paliw", mainStr, "Tankuj", "Anuluj");
+	}
+	return 1;
+}
+
 #endif 
