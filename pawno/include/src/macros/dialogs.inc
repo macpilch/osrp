@@ -21,6 +21,10 @@
 #define DIALOG_VEHICLE_SELECT 10
 #define DIALOG_VEHICLE_OPTIONS 11
 #define DIALOG_SHOW_ITEMS 12
+
+//Fuel system dialogs
+#define DIALOG_PETROL_STATION 20
+
 #define DIALOG_DEFAULT 999
 
 #endif 

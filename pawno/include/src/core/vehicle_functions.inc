@@ -162,4 +162,21 @@ stock setVehicleFuel(srvvehid, Float:fuel) {
 	return 1;
 }
 
+stock getVehicleFuelTank(srvvehid){
+	return vVars[srvvehid][vFuelTank];
+}
+
+/*
+	Dla parametru funkcji setVehicleFuelTank najlepiej uzyc 
+	makra (defines.inc) 
+	VEHICLE_FUEL_TANK_SMALL,
+	VEHICLE_FUEL_TANK_MEDIUM,
+	VEHICLE_FUEL_TANK_LARGE,
+*/
+
+stock setVehicleFuelTank(srvvehid, fuel_tank_size){
+	vVars[srvvehid][vFuelTank] = fuel_tank_size;
+	return 1;
+}
+
 #endif 
