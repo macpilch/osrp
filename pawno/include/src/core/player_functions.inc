@@ -288,7 +288,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawAlignment(damageRedScreen[playerid], 1);
 	TextDrawColor(damageRedScreen[playerid], 0);
 	TextDrawUseBox(damageRedScreen[playerid], 1);
-	TextDrawBoxColor(damageRedScreen[playerid], 0xFF0000EE);
+	TextDrawBoxColor(damageRedScreen[playerid], 0xFF000044);
 	TextDrawSetShadow(damageRedScreen[playerid], 0);
 	TextDrawSetOutline(damageRedScreen[playerid], 1);
 	TextDrawFont(damageRedScreen[playerid], 0);
