@@ -123,6 +123,7 @@ Timer:updateWebsiteDateTimer[2000]() {
 
 Timer:settingsTimer[10000]() {
 	saveServerValues();
+	saveVehicleValues();
 }
 
 Timer:townHallBellsTimer[590000]() {

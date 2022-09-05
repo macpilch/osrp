@@ -76,15 +76,17 @@ stock getVehicleIdForPlayer(vehicleid) {
 */
 
 stock resetVehicleValues(playerid) {
-	DestroyVehicle(vVars[actualVehicle[playerid]][vId]);
-	DestroyDynamic3DTextLabel(vVars[actualVehicle[playerid]][vDesc]);
-	DestroyDynamicMapIcon(vehMapIcon[actualVehicle[playerid]]);
-	DestroyDynamicCP(vehCP[actualVehicle[playerid]]);
+	new vehid = actualVehicle[playerid];
 	
-	vVars[actualVehicle[playerid]][vSpawned] = false;
-	vehCP[actualVehicle[playerid]] = -1;
-	vehMapIcon[actualVehicle[playerid]] = -1;
+	DestroyVehicle(vVars[vehid][vId]);
+	DestroyDynamic3DTextLabel(vVars[vehid][vDesc]);
+	DestroyDynamicMapIcon(vehMapIcon[vehid]);
+	DestroyDynamicCP(vehCP[vehid]);
+	
+	vehCP[vehid] = -1;
+	vehMapIcon[vehid] = -1;
 	actualVehicle[playerid] = INVALID_VEHICLE_ID;
+	vVars[vehid][vSpawned] = false;
 	return 1;
 }
 
@@ -98,10 +100,10 @@ stock checkPlayerVehicleId(playerid) {
 }
 
 stock vehicleEngineStatus(playerid, vehicleid) {
-	new vehicleid2 = actualVehicle[playerid];
+	new vehid = actualVehicle[playerid];
 	
-	if(!vVars[vehicleid2][vEngine]) {
-		if(getVehicleFuel(vehicleid2) <= 0) {
+	if(!vVars[vehid][vEngine]) {
+		if(getVehicleFuel(vehid) <= 0) {
 			return GameTextForPlayer(playerid, "~r~Brak paliwa w pojezdzie.", 5000, 3);
 		}
 	
@@ -121,7 +123,7 @@ stock vehicleEngineStatus(playerid, vehicleid) {
 			TextDrawShowForPlayer(playerid, vehicleTips[playerid][i]);
 		}
 	
-		vVars[vehicleid2][vEngine] = false;
+		vVars[vehid][vEngine] = false;
 	}
 	return 1;
 }
@@ -129,7 +131,7 @@ stock vehicleEngineStatus(playerid, vehicleid) {
 Callback:vehEngineOn(playerid, vehicleid) {
 	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
 		new engine, lights, alarm, doors, bonnet, boot, objective;
-		new vehicleid2 = actualVehicle[playerid];
+		new vehid = actualVehicle[playerid];
 
 		GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
 		SetVehicleParamsEx(vehicleid, 1, lights, alarm, doors, bonnet, boot, objective);
@@ -138,7 +140,7 @@ Callback:vehEngineOn(playerid, vehicleid) {
 			TextDrawShowForPlayer(playerid, vehicleFuelStatus[playerid][i]);
 		}
 		
-		vVars[vehicleid2][vEngine] = true;
+		vVars[vehid][vEngine] = true;
 	}
 	return 1;
 }
@@ -162,7 +164,7 @@ stock setVehicleFuel(srvvehid, Float:fuel) {
 	return 1;
 }
 
-stock getVehicleFuelTank(srvvehid){
+stock Float:getVehicleFuelTank(srvvehid) {
 	return vVars[srvvehid][vFuelTank];
 }
 
@@ -174,7 +176,7 @@ stock getVehicleFuelTank(srvvehid){
 	VEHICLE_FUEL_TANK_LARGE,
 */
 
-stock setVehicleFuelTank(srvvehid, fuel_tank_size){
+stock setVehicleFuelTank(srvvehid, fuel_tank_size) {
 	vVars[srvvehid][vFuelTank] = fuel_tank_size;
 	return 1;
 }

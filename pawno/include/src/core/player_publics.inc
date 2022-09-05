@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 25.08.2022
+	Modified: 04.09.2022
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -291,9 +291,9 @@ sampCallback:OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 				TextDrawHideForPlayer(playerid, vehicleTips[playerid][i]);
 			}
 			
-			new panels, doors, lights, tires;	
-			GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
-			UpdateVehicleDamageStatus(vehicleid, panels, doors, (lights & 0x45), tires);
+			new engine, lights, alarm, doors, bonnet, boot, objective;
+			GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
+			SetVehicleParamsEx(vehicleid, engine, 1, alarm, doors, bonnet, boot, objective);
 		}
 	}
 	return 1;
@@ -416,9 +416,10 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			}
 			
 			pVars[playerid][pUid] = charsCount + 1;
+			pVars[playerid][pCharId]++;
 			
-			format(queryStr, sizeof(queryStr), "INSERT INTO `Players` (`GUID`, `UID`, `AccName`, `IP`, `CharName`, `CharName2`, `Pass`, `Sex`) VALUES ('%d', '%d', '%s', '%s', '%s', '%s', '%s', '%d')",
-			pVars[playerid][pGuid], pVars[playerid][pUid], pVars[playerid][pAccName], pVars[playerid][pIp], pVars[playerid][pCharName], pVars[playerid][pCharName2], inputtext, pVars[playerid][pSex]);
+			format(queryStr, sizeof(queryStr), "INSERT INTO `Players` (`GUID`, `UID`, `CharId`, `AccName`, `IP`, `CharName`, `CharName2`, `Pass`, `Sex`) VALUES ('%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%d')",
+			pVars[playerid][pGuid], pVars[playerid][pUid], pVars[playerid][pCharId], pVars[playerid][pAccName], pVars[playerid][pIp], pVars[playerid][pCharName], pVars[playerid][pCharName2], inputtext, pVars[playerid][pSex]);
 			mysql_query(queryStr);
 			
 			hasLoged[playerid] = true;
@@ -566,6 +567,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				}
 				
 				SetTimerEx("hideVehicleSpawn", 7000, false, "i", playerid);
+				
 				vVars[tmpVehId][vSpawned] = true;
 			} else {
 				DestroyVehicle(vVars[tmpVehId][vId]);
@@ -574,9 +576,9 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				GameTextForPlayer(playerid, "~r~Pojazd~n~~n~~w~Pojazd zostal odspawnowany.", 5000, 3);
 				
 				actualVehicle[playerid] = INVALID_VEHICLE_ID;
-				vVars[tmpVehId][vSpawned] = false;
 				vehCP[tmpVehId] = -1;
 				vehMapIcon[tmpVehId] = -1;
+				vVars[tmpVehId][vSpawned] = false;
 			}
 		}
 		case DIALOG_VEHICLE_OPTIONS: {

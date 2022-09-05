@@ -13,8 +13,10 @@
 #undef MAX_VEHICLES
 
 #define MAX_PLAYERS 2
-#define MAX_VEHICLES 10
+#define MAX_VEHICLES 20
 #define MAX_ITEMS 20
+#define MAX_GAS_PUMP 8
+#define MAX_PETROL_STATIONS 8
 
 // Callbacks
 #define sampCallback:%0(%1) \
@@ -24,9 +26,9 @@
 		forward %0(%1); public %0(%1)
 
 #define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "root"
-#define MYSQL_PASS "1234"
-#define MYSQL_DB "samp"
+#define MYSQL_USER "server_812"
+#define MYSQL_PASS "j3gb0fn29c"
+#define MYSQL_DB "server_812_srv"
 
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_GRAY 0xCDC9C9FF
@@ -61,5 +63,6 @@
 #define VEHICLE_FUEL_TANK_LARGE 60 
 
 forward Float:getVehicleFuel(srvvehid);
+forward Float:getVehicleFuelTank(srvvehid);
 
 #endif 

@@ -248,21 +248,21 @@ CMD:spectateplayer(playerid, params[]) {
 	return 1;
 }
 
-CMD:setfuel(playerid, params[]){
-	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK){
-		if(isAdminDuty[playerid]){
+CMD:setfuel(playerid, params[]) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+		if(isAdminDuty[playerid]) {
 			new srvvehid, Float:fuel;
 			
-			if(sscanf(params, "%ii", srvvehid, fuel)){
+			if(sscanf(params, "if", srvvehid, fuel)) {
 				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /setfuel [Id pojazdu][Ilosc paliwa].");
 			}
 			
-			if(fuel >= getVehicleFuelTank(srvvehid)){
+			if(fuel >= getVehicleFuelTank(srvvehid)) {
 				vVars[srvvehid][vFuel] = getVehicleFuelTank(srvvehid);
-			}
-			
+			}	
 		}
 	}
+	return 1;
 }
 
 #endif 
