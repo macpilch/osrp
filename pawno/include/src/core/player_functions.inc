@@ -66,6 +66,8 @@ Callback:bwTimer(playerid) {
 	if((pVars[playerid][pBw] / 60) > 0) {
 		format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", ((pVars[playerid][pBw] / 60) > 1) ? (pVars[playerid][pBw] / 60) : 1); // int powinien uciac na same minuty
 		GameTextForPlayer(playerid, mainStr, 4000, 1);
+		TogglePlayerControllable(playerid, 0);
+		ApplyAnimation(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
 		SetTimerEx("bwTimer", 1000, false, "i", playerid);
 	} else {
 		pVars[playerid][pBw] = 0;
