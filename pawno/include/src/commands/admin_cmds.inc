@@ -253,7 +253,7 @@ CMD:setfuel(playerid, params[]){
 		if(isAdminDuty[playerid]){
 			new srvvehid, Float:fuel;
 			
-			if(sscanf(params, "%ii", srvvehid, fuel)){
+			if(sscanf(params, "ii", srvvehid, fuel)){
 				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /setfuel [Id pojazdu][Ilosc paliwa].");
 			}
 			
