@@ -251,23 +251,23 @@ CMD:spectateplayer(playerid, params[]) {
 CMD:setfuel(playerid, params[]){
 	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK){
 		if(isAdminDuty[playerid]){
-			new srvvehid, Float:fuel;
-			
-			if(sscanf(params, "ii", srvvehid, fuel)){
-				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /setfuel [Id pojazdu][Ilosc paliwa].");
+			new toPlayerId, Float:fuel;
+
+			if(sscanf(params, "ii", toPlayerId, fuel)){
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /setfuel [Id gracza][Ilosc paliwa].");
 			}
-			
-			if(fuel >= getVehicleFuelTank(srvvehid)){
+		
+			if(fuel >= getVehicleFuelTank(actualVehicle[toPlayerId])){
 				mainStr[0] = EOS;
-				format(mainStr, sizeof(mainStr), "{00FF00}[CMD]{FFFFFF}: Dodano %i litrow paliwa do pojazdu %i.", fuel, srvvehid);
-				vVars[srvvehid][vFuel] = getVehicleFuelTank(srvvehid);
+				format(mainStr, sizeof(mainStr), "{00FF00}[CMD]{FFFFFF}: Dodano %i litrow paliwa do pojazdu %i.", fuel, actualVehicle[toPlayerId]);
+				vVars[actualVehicle[toPlayerId]][vFuel] = getVehicleFuelTank(actualVehicle[toPlayerId]);
 				return SendClientMessage(playerid, COLOR_WHITE, mainStr);
 				
 			}
 			else{
 				mainStr[0] = EOS;
-				format(mainStr, sizeof(mainStr), "{00FF00}[CMD]{FFFFFF}: Dodano %i litro paliwa do pojazdu %i.", fuel, srvvehid);
-				setVehicleFuel(srvvehid, fuel);
+				format(mainStr, sizeof(mainStr), "{00FF00}[CMD]{FFFFFF}: Dodano %i litro paliwa do pojazdu %i.", fuel, actualVehicle[toPlayerId]);
+				setVehicleFuel(actualVehicle[toPlayerId], fuel);
 				return SendClientMessage(playerid, COLOR_WHITE, mainStr);
 			}
 			
