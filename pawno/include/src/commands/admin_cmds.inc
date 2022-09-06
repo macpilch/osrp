@@ -259,14 +259,14 @@ CMD:setfuel(playerid, params[]){
 		
 			if(fuel >= getVehicleFuelTank(actualVehicle[toPlayerId])){
 				mainStr[0] = EOS;
-				format(mainStr, sizeof(mainStr), "{00FF00}[CMD]{FFFFFF}: Dodano %i litrow paliwa do pojazdu %i.", fuel, actualVehicle[toPlayerId]);
+				format(mainStr, sizeof(mainStr), "{00FF00}[CMD]{FFFFFF}: Dodano %f litrow paliwa do pojazdu %i.", fuel, actualVehicle[toPlayerId]);
 				vVars[actualVehicle[toPlayerId]][vFuel] = getVehicleFuelTank(actualVehicle[toPlayerId]);
 				return SendClientMessage(playerid, COLOR_WHITE, mainStr);
 				
 			}
 			else{
 				mainStr[0] = EOS;
-				format(mainStr, sizeof(mainStr), "{00FF00}[CMD]{FFFFFF}: Dodano %i litro paliwa do pojazdu %i.", fuel, actualVehicle[toPlayerId]);
+				format(mainStr, sizeof(mainStr), "{00FF00}[CMD]{FFFFFF}: Dodano %f litro paliwa do pojazdu %i.", fuel, actualVehicle[toPlayerId]);
 				setVehicleFuel(actualVehicle[toPlayerId], fuel);
 				return SendClientMessage(playerid, COLOR_WHITE, mainStr);
 			}
