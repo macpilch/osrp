@@ -17,6 +17,7 @@ new queryStr[512];
 new pVars[MAX_PLAYERS][PlayerData];
 new vVars[MAX_VEHICLES][VehicleData];
 new iVars[MAX_ITEMS][ItemData];
+//new fVars[MAX_FRACTIONS][fractionData];
 
 new Float:startCameraPos[][] = {
 	{2485.5459,-1656.8232,13.3414}
@@ -277,5 +278,44 @@ new VehicleNames[212][] = {
 	"Farm Plow",
 	"Utility Trailer"
 };
+
+// Fuel System
+
+/*
+	gasPump[MAX_GAS_PUMP][4] = {
+	x,
+	y,
+	z,
+	distance
+	}
+*/
+new Float:gasPump[MAX_GAS_PUMP][4]={
+	//Idlewood station
+	{1940.7306,-1767.3242,13.3906, 5.0},
+	{1940.7300,-1771.3781,13.3906, 5.0},
+	{1940.7307,-1774.3474,13.3906, 5.0},
+	{1940.6904,-1778.3640,13.3906, 5.0},
+	//Temple to do
+	{},
+	{},
+	//
+	{-97.9225,-1173.3949,2.3911, 5.0},
+	{-92.9576,-1161.4316,2.2120, 5.0},
+	{-86.0421,-1164.7002,2.2441, 5.0},
+	{-90.9616,-1176.2837,2.1791, 5.0}
+	//
+}
+
+// Dla znacznika stacji na minimapie
+//x,y,z, ilosc dystrybutorow
+new Float:petrolStations[MAX_PETROL_STATIONS][4]={
+	//Idlewood station
+	{1940.7300,-1771.3781,13.3906, 4},
+	// Temple station
+	{1003.9293,-937.5521,42.3281, 2},
+	//
+	{-91.1946,-1169.8501,2.4179, 4}
+	//
+}
 
 #endif 
