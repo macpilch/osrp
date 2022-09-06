@@ -61,11 +61,12 @@ Callback:hideFirstHoursInfo() {
 }
 
 Callback:bwTimer(playerid) {
-	pVars[playerid][pBw]--;
-	
 	if((pVars[playerid][pBw] / 60) > 0) {
-		format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", ((pVars[playerid][pBw] / 60) > 1) ? (pVars[playerid][pBw] / 60) : 1); // int powinien uciac na same minuty
+		format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", pVars[playerid][pBw] / 60); // int powinien uciac na same minuty
 		GameTextForPlayer(playerid, mainStr, 4000, 1);
+		TogglePlayerControllable(playerid, 0);
+		ApplyAnimation(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
+		pVars[playerid][pBw]--;
 		SetTimerEx("bwTimer", 1000, false, "i", playerid);
 	} else {
 		pVars[playerid][pBw] = 0;
@@ -286,7 +287,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawAlignment(damageRedScreen[playerid], 1);
 	TextDrawColor(damageRedScreen[playerid], 0);
 	TextDrawUseBox(damageRedScreen[playerid], 1);
-	TextDrawBoxColor(damageRedScreen[playerid], 0xFF0000EE);
+	TextDrawBoxColor(damageRedScreen[playerid], 0xFF000044);
 	TextDrawSetShadow(damageRedScreen[playerid], 0);
 	TextDrawSetOutline(damageRedScreen[playerid], 1);
 	TextDrawFont(damageRedScreen[playerid], 0);
@@ -482,16 +483,16 @@ stock setPlayerBW(playerid, minutes) {
 stock getPlayerStrengthPower(playerid) {
 	switch(pVars[playerid][pStrength]) {
 		case 3000 .. 3200: {
-			return 5;
+			return 2;
 		}
 		case 3201 .. 3500: {
-			return 8;
+			return 5;
 		}
 		case 3501 .. 3800: {
-			return 13;
+			return 8;
 		}
 		case 3801 .. 4400: {
-			return 15;
+			return 10;
 		}
 	}
 	return 0;

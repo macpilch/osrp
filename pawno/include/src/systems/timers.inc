@@ -117,7 +117,7 @@ Timer:updateWebsiteDateTimer[2000]() {
 	getdate(year, month, day);
 	
 	timerStr[0] = EOS;
-	format(timerStr, sizeof(timerStr), "samp-rp.com_:_%d.%d.%2d", day, month, year);
+	format(timerStr, sizeof(timerStr), "samp-rp.com_:_%d.%d.%d", day, month, year - 2000);
 	TextDrawSetString(website, timerStr);
 }
 
@@ -126,7 +126,7 @@ Timer:settingsTimer[10000]() {
 	saveVehicleValues();
 }
 
-Timer:townHallBellsTimer[590000]() {
+Timer:townHallBellsTimer[59000]() {
 	new hours, minutes, seconds;
 	gettime(hours, minutes, seconds);
 	

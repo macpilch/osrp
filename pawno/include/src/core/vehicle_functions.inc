@@ -61,7 +61,6 @@ stock saveVehicleValues() {
 	return 1;
 }
 
-/*
 stock getVehicleIdForPlayer(vehicleid) {
 	new vehid;
 	
@@ -73,7 +72,6 @@ stock getVehicleIdForPlayer(vehicleid) {
 	}
 	return vehid;
 }
-*/
 
 stock resetVehicleValues(playerid) {
 	new vehid = actualVehicle[playerid];

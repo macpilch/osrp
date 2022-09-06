@@ -26,6 +26,29 @@ CMD:setbw(playerid, params[]) {
 	return 1;
 }
 
+CMD:unbw(playerid, params[]) {
+	new pId;
+	
+	if(sscanf(params, "i", pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /unbw [ID]");
+	}
+	
+	SetPlayerHealthEx(pId, 100.0);
+	TogglePlayerControllable(pId, 0);
+	SetPlayerDrunkLevel(pId, 0);
+	ClearAnimations(pId);
+	
+	pVars[pId][pBw] = 0;
+	isBW[pId] = false;
+	
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "%s zdj¹³(ê³a) Ci BW.", pVars[playerid][pCharName]);
+	SendClientMessage(pId, COLOR_WHITE, mainStr);
+	format(mainStr, sizeof(mainStr), "Zdj¹³eœ(e³aœ) BW graczowi %s.", pVars[pId][pCharName]);
+	SendClientMessage(playerid, COLOR_WHITE, mainStr);
+	return 1;
+}
+
 CMD:givehealth(playerid, params[]) {
 	if(isAdminDuty[playerid]) {
 		new toPlayerid, hp; // id player to give hp
@@ -258,8 +281,18 @@ CMD:setfuel(playerid, params[]) {
 			}
 			
 			if(fuel >= getVehicleFuelTank(srvvehid)) {
+				mainStr[0] = EOS;
+				format(mainStr, sizeof(mainStr), "{00FF00}[CMD]{FFFFFF}: Dodano %i litrow paliwa do pojazdu %i.", fuel, srvvehid);
 				vVars[srvvehid][vFuel] = getVehicleFuelTank(srvvehid);
-			}	
+				return SendClientMessage(playerid, COLOR_WHITE, mainStr);
+			
+			} else
+			{
+				mainStr[0] = EOS;
+				format(mainStr, sizeof(mainStr), "{00FF00}[CMD]{FFFFFF}: Dodano %i litro paliwa do pojazdu %i.", fuel, srvvehid);
+				setVehicleFuel(srvvehid, fuel);
+				return SendClientMessage(playerid, COLOR_WHITE, mainStr);
+			}
 		}
 	}
 	return 1;

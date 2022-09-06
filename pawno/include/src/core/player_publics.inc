@@ -236,10 +236,13 @@ sampCallback:OnPlayerCommandPerformed(playerid, cmd[], params[], result, flags) 
 }
 
 sampCallback:OnPlayerStateChange(playerid, newstate, oldstate) {
-	new vehicleid = actualVehicle[playerid];
+	new vehid, vehicleid = GetPlayerVehicleID(playerid);
 
 	if(newstate == PLAYER_STATE_DRIVER && oldstate == PLAYER_STATE_ONFOOT) {
-		if(!vVars[vehicleid][vEngine] && !vehicleNonEngine(GetPlayerVehicleID(playerid))) {
+		actualVehicle[playerid] = getVehicleIdForPlayer(vehicleid);
+		vehid = actualVehicle[playerid];
+		
+		if(!vVars[vehid][vEngine] && !vehicleNonEngine(vehicleid)) {
 			for(new i = 0; i < 2; i++) {
 				TextDrawShowForPlayer(playerid, vehicleTips[playerid][i]);
 			}
@@ -255,7 +258,7 @@ sampCallback:OnPlayerStateChange(playerid, newstate, oldstate) {
 	}
 	
 	if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_DRIVER) {
-		if(!vehicleNonEngine(GetPlayerVehicleID(playerid))) {
+		if(!vehicleNonEngine(vehicleid)) {
 			for(new i = 0; i < 3; i++) {
 				TextDrawHideForPlayer(playerid, vehicleFuelStatus[playerid][i]);
 			}
@@ -556,7 +559,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				
 				vehCP[tmpVehId] = CreateDynamicCP(vVars[tmpVehId][vX], vVars[tmpVehId][vY], vVars[tmpVehId][vZ], 2.0, 0, 0, -1, 100, -1, 0);
 				vehMapIcon[tmpVehId] = CreateDynamicMapIcon(vVars[tmpVehId][vX], vVars[tmpVehId][vY], vVars[tmpVehId][vZ], 55, COLOR_WHITE, 0, 0, -1, 4000, MAPICON_GLOBAL, -1, 0);
-				actualVehicle[playerid] = tmpVehId;
 				
 				if(!vVars[tmpVehId][vEngine]) {
 					SetVehicleParamsEx(vVars[tmpVehId][vId], 0, 0, 0, 0, 0, 0, 0);
