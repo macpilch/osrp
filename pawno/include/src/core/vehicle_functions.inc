@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_functions.inc
 	Date: 29.07.2022
-	Modified: 20.08.2022
+	Modified: 07.09.2022
 */
 
 #if !defined _VEHICLE_FUNCTIONS_
@@ -24,16 +24,6 @@ stock initVehicleValues() {
 		mysql_fetch_row(queryStr, "|");
 		sscanf(queryStr, "p<|>iiis[24]iiifffffiiiis[64]", vVars[i][vUid], vVars[i][vId], vVars[i][vOUid], vVars[i][vCharName], vVars[i][vModelId], vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vFuel], 
 		vVars[i][vFuelTank], vVars[i][vLock], vVars[i][vEngine], vVars[i][vSpawned], vVars[i][vMileage], vVars[i][vDescInfo]);
-		
-		/*if(vVars[i][vSpawned]) {
-			vVars[i][vId] = CreateVehicle(vVars[i][vModelId], vVars[i][vX], vVars[i][vY], vVars[i][vZ], 0.0, vVars[i][vColor1], vVars[i][vColor2], 0);
-			
-			if(vVars[i][vEngine]) {
-				SetVehicleParamsEx(vVars[i][vId], 1, 0, 0, 0, 0, 0, 0);
-			} else {
-				SetVehicleParamsEx(vVars[i][vId], 0, 0, 0, 0, 0, 0, 0);
-			}
-		}*/
 		
 		Iter_Add(vehItter, i);
 		
@@ -141,6 +131,34 @@ Callback:vehEngineOn(playerid, vehicleid) {
 		vVars[vehid][vEngine] = true;
 	}
 	return 1;
+}
+
+stock getVehicleSpeed(vehicleid) {
+	new Float:vehPos[3], vehVel;
+	
+	GetVehicleVelocity(vehicleid, vehPos[0], vehPos[1], vehPos[2]);
+	
+	vehVel = floatround(floatsqroot(vehPos[0] * vehPos[0] + vehPos[1] * vehPos[1] + vehPos[2] * vehPos[2]) * 180);
+	return vehVel;
+}
+
+stock setPlayerVehDamage(playerid) {
+	new vehicleid = GetPlayerVehicleID(playerid);
+	new speed = getVehicleSpeed(vehicleid);
+	
+	switch(speed) {
+		case 80 .. 99:
+			return 4;
+		case 100 .. 139:
+			return 6;
+		case 140 .. 169:
+			return 10;
+		case 170 .. 220:
+			return 14;
+		default:
+			return 2;
+	}
+	return 0;
 }
 
 stock vehicleNonEngine(vehicleid) {

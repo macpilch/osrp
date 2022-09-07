@@ -55,14 +55,15 @@ sampCallback:OnVehicleRespray(playerid, vehicleid, color1, color2) {
 sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehicleDamageStatusUpdate");
 	new panels, doors, lights, tires;
+	new damage = setPlayerVehDamage(playerid);
 	
 	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
 	UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
 	
 	if(!hasBelts[playerid]) {
-		SetPlayerHealth(playerid, pVars[playerid][pHp] - 10);
+		SetPlayerHealth(playerid, pVars[playerid][pHp] - damage);
 	} else {
-		SetPlayerHealth(playerid, pVars[playerid][pHp] - 5);
+		SetPlayerHealth(playerid, pVars[playerid][pHp] - (damage + 2));
 	}
 	
 	SetTimerEx("healthDamage", 100, false, "i", playerid);
