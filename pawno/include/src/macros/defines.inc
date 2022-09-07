@@ -15,8 +15,9 @@
 #define MAX_PLAYERS 2
 #define MAX_VEHICLES 20
 #define MAX_ITEMS 20
+#define MAX_STATIONS 8
 #define MAX_GAS_PUMP 8
-#define MAX_PETROL_STATIONS 8
+#define MAX_PETROL_STATIONS 3
 
 // Callbacks
 #define sampCallback:%0(%1) \

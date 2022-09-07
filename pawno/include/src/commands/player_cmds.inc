@@ -414,12 +414,20 @@ CMD:pasy(playerid, params[]) {
 }
 
 CMD:tankuj(playerid, params[]) {
-	new srvvehid = GetPlayerVehicleID(playerid);
+	new vehicleid = GetPlayerVehicleID(playerid);
 	
-	if(IsPlayerInAnyVehicle(playerid) && !vehicleNonEngine(srvvehid)) {
+	if(IsPlayerInAnyVehicle(playerid) && !vehicleNonEngine(vehicleid)){
 		mainStr[0] = EOS;
-		strcat(mainStr, "Cena: $4/1L\nWpisz ilosc paliwa do zatankowania:");
-		ShowPlayerDialog(playerid, DIALOG_PETROL_STATION, DIALOG_STYLE_INPUT, "Stacja paliw", mainStr, "Tankuj", "Anuluj");
+		
+		for(new i=0; i<MAX_STATIONS; i++)
+		{
+			CreateDynamicCP(gasPump[i][0], gasPump[i][1], gasPump[i][2], 2.0, 0, 0, -1, 100, -1, 0);
+		
+			if(IsPlayerInRangeOfPoint(playerid, gasPump[i][0], gasPump[i][1], gasPump[i][2], 50.0)) {
+				strcat(mainStr, "Cena: $4/1L\nWpisz ilosc paliwa do zatankowania:");
+				ShowPlayerDialog(playerid, DIALOG_PETROL_STATION, DIALOG_STYLE_INPUT, "Stacja paliw", mainStr, "Tankuj", "Anuluj");
+			}
+		}
 	}
 	return 1;
 }
