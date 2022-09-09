@@ -280,20 +280,41 @@ CMD:setfuel(playerid, params[]) {
 				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /setfuel [Id gracza][Ilosc paliwa].");
 			}
 		
-			if(fuel >= getVehicleFuelTank(actualVehicle[toPlayerId])) {
+			/*if(fuel >= getVehicleFuelTank(actualVehicle[toPlayerId])) {
 				mainStr[0] = EOS;
 				
 				format(mainStr, sizeof(mainStr), "{00FF00}[CMD]{FFFFFF}: Dodano %0.1f litrow paliwa do pojazdu %d.", fuel, actualVehicle[toPlayerId]);
 				vVars[actualVehicle[toPlayerId]][vFuel] = getVehicleFuelTank(actualVehicle[toPlayerId]);
 				SendClientMessage(playerid, COLOR_WHITE, mainStr);
 			} else
-			{
-				vVars[actualVehicle[toPlayerId]][vFuel] += fuel;
+			{*/
+			vVars[actualVehicle[toPlayerId]][vFuel] += fuel;
 			
-				mainStr[0] = EOS;
-				format(mainStr, sizeof(mainStr), "{00FF00}[CMD]{FFFFFF}: Dodano %0.1f litro paliwa do pojazdu %d.", fuel, actualVehicle[toPlayerId]);
-				SendClientMessage(playerid, COLOR_WHITE, mainStr);
+			mainStr[0] = EOS;
+			format(mainStr, sizeof(mainStr), "{00FF00}[CMD]{FFFFFF}: Dodano %0.1f litro paliwa do pojazdu %d.", fuel, actualVehicle[toPlayerId]);
+			SendClientMessage(playerid, COLOR_WHITE, mainStr);
+			//}
+		}
+	}
+	return 1;
+}
+
+CMD:giveitem(playerid, params[]) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+		if(isAdminDuty[playerid]) {
+			new pId, itemid;
+			
+			if(sscanf(params, "ii", pId, itemid)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /giveitem [ID] [ID przedmiotu]");
 			}
+			
+			addPlayerItem(pId, itemid);
+			
+			mainStr[0] = EOS;
+			format(mainStr, sizeof(mainStr), "* %s da³(a) Ci przedmiot %s.", pVars[playerid][pCharName], itemNames[itemid]);
+			SendClientMessage(pId, COLOR_WHITE, mainStr);
+			format(mainStr, sizeof(mainStr), "Da³eœ(aœ) przedmiot %s graczowi %s.", itemNames[itemid], pVars[pId][pCharName]);
+			SendClientMessage(playerid, COLOR_WHITE, mainStr);			
 		}
 	}
 	return 1;

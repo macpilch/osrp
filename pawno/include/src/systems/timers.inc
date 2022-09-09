@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 01.09.2022
+	Modified: 09.09.2022
 */
 
 #if !defined _TIMERS_
@@ -11,6 +11,8 @@
 
 Timer:globalTimer[1000]() {
 	foreach(new i : Player) {
+		new srvItemId = checkSrvItemIdForPlayer(i), drunkLevel = GetPlayerDrunkLevel(i);
+		
 		playerAFKTime[i]++;
 		GetPlayerHealth(i, pVars[i][pHp]);
 		
@@ -22,42 +24,115 @@ Timer:globalTimer[1000]() {
 			}
 			
 			if(isBW[i]) {
-				if(pVars[i][pHours] > 20) {
-					format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d, %s)", pVars[i][pCharName], i, h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+				if(iVars[srvItemId][iId] == P_ROLKI) {
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(rolki, AFK od %02d:%02d, %s)", pVars[i][pCharName], i, h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki, AFK od %02d:%02d, %s)", pVars[i][pCharName], i, pVars[i][pHours], h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+					}					
+				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0) {
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, AFK od %02d:%02d, %s)", pVars[i][pCharName], i, h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(podpity, AFK od %02d:%02d, %s)", pVars[i][pCharName], i, pVars[i][pHours], h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+					}		
 				} else {
-					format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(AFK od %02d:%02d, %s)", pVars[i][pCharName], i, pVars[i][pHours], h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
-				}				
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d, %s)", pVars[i][pCharName], i, h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(AFK od %02d:%02d, %s)", pVars[i][pCharName], i, pVars[i][pHours], h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+					}		
+				}
 			} else if(hasBelts[i]) {
-				if(pVars[i][pHours] > 20) {
-					format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d, pasy)", pVars[i][pCharName], i, h, mins);
+				if(drunkLevel >= 2000) {
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, AFK od %02d:%02d, pasy)", pVars[i][pCharName], i, h, mins);
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(podpity, AFK od %02d:%02d, pasy)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
+					}
 				} else {
-					format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(AFK od %02d:%02d, pasy)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
-				}			
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d, pasy)", pVars[i][pCharName], i, h, mins);
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(AFK od %02d:%02d, pasy)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
+					}
+				}	
 			} else {
-				if(pVars[i][pHours] > 20) {
-					format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d)", pVars[i][pCharName], i, h, mins);
+				if(iVars[srvItemId][iId] == P_ROLKI) {
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(rolki, AFK od %02d:%02d)", pVars[i][pCharName], i, h, mins);
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki, AFK od %02d:%02d)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
+					}
+				} else if(drunkLevel >= 2000) {
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, rolki, AFK od %02d:%02d)", pVars[i][pCharName], i, h, mins);
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(podpity, rolki, AFK od %02d:%02d)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
+					}					
 				} else {
-					format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(AFK od %02d:%02d)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d)", pVars[i][pCharName], i, h, mins);
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(AFK od %02d:%02d)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
+					}
 				}
 			}
-		} else if(isBW[i]) // by MisterMagik
-		{	
-			if(pVars[i][pHours] > 20) {
-				format(timerStr, sizeof(timerStr), "%s (%d)\n(%s)", pVars[i][pCharName], i, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
-			} else {
-				format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(%s)", pVars[i][pCharName], i, pVars[i][pHours], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
-			}
-		} else if(hasBelts[i]) {
-			if(pVars[i][pHours] > 20) {
-				format(timerStr, sizeof(timerStr), "%s (%d)\n(pasy)", pVars[i][pCharName], i);
-			} else {
-				format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(pasy)", pVars[i][pCharName], i, pVars[i][pHours]);
-			}			
 		} else {
-			if(pVars[i][pHours] > 20) {
-				format(timerStr, sizeof(timerStr), "%s (%d)", pVars[i][pCharName], i);
+			if(isBW[i]) { // by MisterMagik
+				if(iVars[srvItemId][iId] == P_ROLKI) {
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(rolki, %s)", pVars[i][pCharName], i, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki, %s)", pVars[i][pCharName], i, pVars[i][pHours], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+					}				
+				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 60 > 0) {
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, %s)", pVars[i][pCharName], i, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(podpity, %s)", pVars[i][pCharName], i, pVars[i][pHours], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+					}		
+				} else {
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(%s)", pVars[i][pCharName], i, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(%s)", pVars[i][pCharName], i, pVars[i][pHours], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+					}
+				}
+			} else if(hasBelts[i]) {
+				if(drunkLevel >= 2000) {
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, pasy)", pVars[i][pCharName], i);
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(podpity, pasy)", pVars[i][pCharName], i, pVars[i][pHours]);
+					}
+				} else {
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(pasy)", pVars[i][pCharName], i);
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(pasy)", pVars[i][pCharName], i, pVars[i][pHours]);
+					}					
+				}
 			} else {
-				format(timerStr, sizeof(timerStr), "%s (%d, %dh)", pVars[i][pCharName], i, pVars[i][pHours]);
+				if(iVars[srvItemId][iId] == P_ROLKI) {
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(rolki)", pVars[i][pCharName], i);
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki)", pVars[i][pCharName], i, pVars[i][pHours]);
+					}
+				} else if(drunkLevel >= 2000) {
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity)", pVars[i][pCharName], i);
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(podpity)", pVars[i][pCharName], i, pVars[i][pHours]);
+					}				
+				} else {
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)", pVars[i][pCharName], i);
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)", pVars[i][pCharName], i, pVars[i][pHours]);
+					}				
+				}
 			}
 		}
 		
@@ -124,6 +199,7 @@ Timer:updateWebsiteDateTimer[2000]() {
 Timer:settingsTimer[10000]() {
 	saveServerValues();
 	saveVehicleValues();
+	saveItemValues();
 }
 
 Timer:townHallBellsTimer[59000]() {

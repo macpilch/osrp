@@ -392,6 +392,7 @@ stock setPlayerDefaultValues(playerid) {
 	usedCmdLogin[playerid] = false;
 	usedCmdReport[playerid] = false;
 	hasBelts[playerid] = false;
+	usedTelephone[playerid] = false;
 	return 1;
 }
 
@@ -448,6 +449,7 @@ stock resetPlayerValues(playerid) {
 	usedCmdLogin[playerid] = false;
 	usedCmdReport[playerid] = false;
 	hasBelts[playerid] = false;
+	usedTelephone[playerid] = false;
 	return 1;
 }
 

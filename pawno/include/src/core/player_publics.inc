@@ -213,8 +213,13 @@ sampCallback:OnPlayerText(playerid, text[]) {
 		SetPlayerChatBubble(playerid, str2, COLOR_WHITE, 30.0, 10000);
 		return 0;
 	} else {
-		format(mainStr, sizeof(mainStr), "%s mówi: %s", pVars[playerid][pCharName], textStr);
-		sendDistanceMessage(playerid, 20.0, mainStr, COLOR_DARKGRAY, COLOR_MEDGRAY, COLOR_GRAY, COLOR_WHITE);
+		if(usedTelephone[playerid]) {
+			format(mainStr, sizeof(mainStr), "%s (telefon): %s", pVars[playerid][pCharName], textStr);
+			sendDistanceMessage(playerid, 20.0, mainStr, COLOR_DARKGRAY, COLOR_MEDGRAY, COLOR_GRAY, COLOR_WHITE);
+		} else {
+			format(mainStr, sizeof(mainStr), "%s mówi: %s", pVars[playerid][pCharName], textStr);
+			sendDistanceMessage(playerid, 20.0, mainStr, COLOR_DARKGRAY, COLOR_MEDGRAY, COLOR_GRAY, COLOR_WHITE);			
+		}
 	}
 	return 0;
 }
@@ -297,6 +302,15 @@ sampCallback:OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			new engine, lights, alarm, doors, bonnet, boot, objective;
 			GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
 			SetVehicleParamsEx(vehicleid, engine, 1, alarm, doors, bonnet, boot, objective);
+		}
+	}
+	
+	if(newkeys & KEY_JUMP) {
+		new srvItemId = checkSrvItemIdForPlayer(playerid);
+		
+		if(iVars[srvItemId][iId] == P_ROLKI) {
+			ClearAnimations(playerid);
+			ApplyAnimation(playerid, "SKATE", "skate_run", 4.1, 1, 1, 1, 1, 1, 1);
 		}
 	}
 	return 1;
@@ -436,6 +450,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			TogglePlayerSpectating(playerid, 0);
 			SetPlayerHealthEx(playerid, 100.0);
 			GivePlayerMoneyEx(playerid, 50);
+			addPlayerItem(playerid, P_ROLKI);
 			
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "{66FFCC}> Postaæ utworzona. Przed kolejnym wejœciem na serwer ustaw nick SA-MP na {FFFFFF}%s. {66FFCC}Pamiêtaj has³o!", pVars[playerid][pCharName2]);
@@ -653,7 +668,11 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 						SetVehicleParamsEx(vVars[vehid][vId], engine, 0, alarm, doors, bonnet, boot, objective);
 					
 						vehState = false;
-					}					
+					}
+
+					mainStr[0] = EOS;
+					format(mainStr, sizeof(mainStr), "** %s otwiera szybê.");
+					sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 				}
 				case 4: {
 					
@@ -670,6 +689,25 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			}
 			
 			
+		}
+		case DIALOG_SHOW_ITEMS: {
+			if(!response) {
+				return 1;
+			}
+			
+			new tmpUid, tmpItemId, itemid;
+			
+			tmpUid = strval(inputtext);
+			
+			foreach(new i : itemItter) {
+				if(tmpUid == iVars[i][iUid]) {
+					tmpItemId = i;
+					break;
+				}
+			}
+			
+			itemid = iVars[tmpItemId][iId];
+			enableItemProperties(playerid, tmpItemId, itemid);
 		}
 	}
 	return 1;

@@ -33,6 +33,7 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 	SendClientMessage(killerid, COLOR_WHITE, "Witma ! OnVehicleDeath");
 	
 	DestroyVehicle(vehicleid);
+	vVars[actualVehicle[killerid]][vSpawned] = false;
 	GameTextForPlayer(killerid, "Pojazd zostanie odspawnowany.", 5000, 3);
 	return 1;
 }
@@ -66,7 +67,9 @@ sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 		SetPlayerHealth(playerid, pVars[playerid][pHp] - (damage + 2));
 	}
 	
-	SetTimerEx("healthDamage", 100, false, "i", playerid);
+	if(damage >= 4) {
+		SetTimerEx("healthDamage", 100, false, "i", playerid);
+	}
 	return 1;
 }
 

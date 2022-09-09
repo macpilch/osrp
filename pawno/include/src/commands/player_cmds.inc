@@ -160,16 +160,15 @@ CMD:stats(playerid, params[]) {
 }
 
 CMD:opis(playerid, params[]) {
-	new str[64], opt[16];
+	new str[64];
 	
 	if(sscanf(params, "s[64]", str)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /opis [Tresc] lub /opis usun");
 	}
 	
-	if(strfind(opt, "usun", true) != -1) {
+	if(strfind(str, "usun", true) != -1) {
 		DestroyDynamic3DTextLabel(pVars[playerid][pCharDesc]);
 		GameTextForPlayer(playerid, "~w~Opis zostal usuniety.", 4000, 3);
-		return 1;
 	} else {
 		mainStr[0] = EOS;
 		
@@ -282,6 +281,8 @@ CMD:v(playerid, params[]) {
 				if(vehicleNonEngine(GetPlayerVehicleID(playerid))) {
 					return GameTextForPlayer(playerid, "~g~Pojazdy bez silnika nie~n~maja zamkow.", 5000, 6);
 				} else {
+					ApplyAnimation(playerid, "INT_HOUSE", "wash_up", 4.1, 0, 1, 1, 1, 1, 1);
+				
 					if(!vVars[vehid][vLock]) {
 						GameTextForPlayer(playerid, "~w~Pojazd ~r~zamkniety", 5000, 6);
 						vVars[vehid][vLock] = true;
@@ -414,14 +415,15 @@ CMD:pasy(playerid, params[]) {
 }
 
 CMD:tankuj(playerid, params[]) {
-	new vehicleid = GetPlayerVehicleID(playerid);
+	new vehicleid = GetPlayerVehicleID(playerid), vehid = actualVehicle[playerid];
 	
-	if(IsPlayerInAnyVehicle(playerid) && !vehicleNonEngine(vehicleid)){
+	if(IsPlayerInAnyVehicle(playerid) && !vehicleNonEngine(vehicleid) && !vVars[vehid][vEngine]){
 		mainStr[0] = EOS;
 		
 		for(new i=0; i<MAX_STATIONS; i++)
 		{
 			CreateDynamicCP(gasPump[i][0], gasPump[i][1], gasPump[i][2], 2.0, 0, 0, -1, 100, -1, 0);
+			CreateDynamicMapIcon(petrolStations[i][0], petrolStations[i][1], petrolStations[i][2], 19, 0, 0, -1, -1, 4000, MAPICON_GLOBAL, -1, 0);
 		
 			if(IsPlayerInRangeOfPoint(playerid, gasPump[i][0], gasPump[i][1], gasPump[i][2], 50.0)) {
 				strcat(mainStr, "Cena: $4/1L\nWpisz ilosc paliwa do zatankowania:");

@@ -158,7 +158,7 @@ stock setPlayerVehDamage(playerid) {
 		default:
 			return 2;
 	}
-	return 0;
+	return 1;
 }
 
 stock vehicleNonEngine(vehicleid) {

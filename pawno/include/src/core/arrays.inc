@@ -64,6 +64,10 @@ new charSur[][CharSurName] = {
 	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}
 };
 
+new itemNames[][] = {
+	"Rolki", "Piwo", "Wino", "Sprunk", "Teczka", "Ubranie"
+};
+
 new VehicleNames[212][] = {
 	"Landstalker",
 	"Bravura",
