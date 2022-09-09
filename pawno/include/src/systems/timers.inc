@@ -169,7 +169,11 @@ Timer:globalTimer[1000]() {
 			if(vVars[j][vEngine]) {
 				vVars[j][vFuel] -= 0.01;
 				
+				mainStr[0] = EOS;
 				if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
+					format(mainStr, sizeof(mainStr), "~w~Predkosc: ~b~%i ~w~KM/H~n~~w~Przebieg: ~b~%i~w~ L", getVehicleSpeed(vVars[j][vId]), vVars[j][vMileage]);
+					TextDrawSetString(vehicleSpeedMeter[i][0], mainStr);
+					TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
 					if(getVehicleFuel(j) <= 0) {
 						new engine, lights, alarm, doors, bonnet, boot, objective;
 						
@@ -182,6 +186,10 @@ Timer:globalTimer[1000]() {
 						GameTextForPlayer(i, "~r~Brak paliwa w pojezdzie.", 5000, 3);
 					}
 				}
+				else {
+					TextDrawHideForPlayer(i, vehicleSpeedMeter[i][0]);
+				}
+				
 			}
 		}
 	}

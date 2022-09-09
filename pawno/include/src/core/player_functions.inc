@@ -312,6 +312,28 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawSetShadow(vehicleSpawn[playerid][1], 0);
 	TextDrawSetOutline(vehicleSpawn[playerid][1], 1);
 	TextDrawFont(vehicleSpawn[playerid][1], 0);
+	
+	vehicleSpeedMeter[playerid][0] = TextDrawCreate(200.000, 361.666503, "~w~Predkosc:~b~0 KM/H~n~~w~Przebieg:~b~0 L");
+	TextDrawLetterSize(vehicleSpeedMeter[playerid][0], 0.270087, 1.139165);
+	TextDrawAlignment(vehicleSpeedMeter[playerid][0], 2);
+	TextDrawColor(vehicleSpeedMeter[playerid][0], -1);
+	TextDrawSetShadow(vehicleSpeedMeter[playerid][0], 0);
+	TextDrawSetOutline(vehicleSpeedMeter[playerid][0], 1);
+	TextDrawBackgroundColor(vehicleSpeedMeter[playerid][0], 51);
+	TextDrawFont(vehicleSpeedMeter[playerid][0], 1);
+	TextDrawSetProportional(vehicleSpeedMeter[playerid][0], 1);
+	
+	vehicleSpeedMeter[playerid][1] = TextDrawCreate(307.818756, 361.666503, "_");
+	TextDrawLetterSize(vehicleSpeedMeter[playerid][1], 0.000000, 5.840735);
+	TextDrawTextSize(vehicleSpeedMeter[playerid][1], 399.991241, 0.000000);
+	TextDrawAlignment(vehicleSpeedMeter[playerid][1], 1);
+	TextDrawColor(vehicleSpeedMeter[playerid][1], 0);
+	TextDrawUseBox(vehicleSpeedMeter[playerid][1], 1);
+	TextDrawBoxColor(vehicleSpeedMeter[playerid][1], 102);
+	TextDrawSetShadow(vehicleSpeedMeter[playerid][1], 0);
+	TextDrawSetOutline(vehicleSpeedMeter[playerid][1], 1);
+	TextDrawFont(vehicleSpeedMeter[playerid][1], 0);
+	
 	return 1;
 }
 

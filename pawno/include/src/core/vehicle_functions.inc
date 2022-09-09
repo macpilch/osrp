@@ -145,16 +145,36 @@ stock getVehicleSpeed(vehicleid) {
 stock setPlayerVehDamage(playerid) {
 	new vehicleid = GetPlayerVehicleID(playerid);
 	new speed = getVehicleSpeed(vehicleid);
+	new chancePlayerDizzines;
 	
 	switch(speed) {
 		case 80 .. 99:
 			return 4;
-		case 100 .. 139:
+		case 100 .. 139: {
+			chancePlayerDizzines = random(100);
+			if(chancePlayerDizzines >= 90) {
+				SetPlayerDrunkLevel(playerid, 1000);
+				return 6;
+			}
 			return 6;
-		case 140 .. 169:
+		}
+		case 140 .. 169: {
+			chancePlayerDizzines = random(100);
+			if(chancePlayerDizzines >= 40) {
+				SetPlayerDrunkLevel(playerid, 10000);
+				return 10;
+			}
 			return 10;
-		case 170 .. 220:
+		}
+		case 170 .. 220: {
+			chancePlayerDizzines = random(100);
+			if(chancePlayerDizzines >= 20) {
+				SetPlayerDrunkLevel(playerid, 10000);
+				return 14;
+			}
 			return 14;
+		}
+			
 		default:
 			return 2;
 	}
