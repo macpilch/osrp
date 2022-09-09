@@ -12,6 +12,7 @@
 sampCallback:OnGameModeInit() {
 	EnableStuntBonusForAll(0);
 	DisableInteriorEnterExits();
+	ManualVehicleEngineAndLights();
 	ShowNameTags(0);
 	AddPlayerClass(0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0);
 	SetWeather(10);

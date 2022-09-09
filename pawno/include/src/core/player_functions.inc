@@ -313,7 +313,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawSetOutline(vehicleSpawn[playerid][1], 1);
 	TextDrawFont(vehicleSpawn[playerid][1], 0);
 	
-	vehicleSpeedMeter[playerid][0] = TextDrawCreate(200.000, 361.666503, "~w~Predkosc:~b~0 KM/H~n~~w~Przebieg:~b~0 L");
+	vehicleSpeedMeter[playerid][0] = TextDrawCreate(200.000, 361.666503, "~w~Predkosc:~b~0 ~w~KM/H~n~~w~Przebieg:~b~0 ~w~KM~n~~w~Paliwo:~b~0 ~w~L");
 	TextDrawLetterSize(vehicleSpeedMeter[playerid][0], 0.270087, 1.139165);
 	TextDrawAlignment(vehicleSpeedMeter[playerid][0], 2);
 	TextDrawColor(vehicleSpeedMeter[playerid][0], -1);

@@ -92,13 +92,42 @@ Timer:globalTimer[1000]() {
 		
 		foreach(new j : vehItter) {
 			if(vVars[j][vEngine]) {
-				vVars[j][vFuel] -= 0.01;
 				
-				mainStr[0] = EOS;
+				switch(getVehicleSpeed(vVars[j][vId])) {
+					case 1 .. 50: {
+						vVars[j][vFuel] -= 0.001;
+					}
+					
+					case 51 .. 90: {
+						vVars[j][vFuel] -= 0.004;
+					}
+					
+					case 91 .. 120: {
+						vVars[j][vFuel] -= 0.005;
+					}
+					
+					case 121 .. 220: {
+						vVars[j][vFuel] -= 0.01;
+					}
+					
+					default: {
+						vVars[j][vFuel] -= 0.0001;
+					}
+				}
+				timerStr[0] = EOS;
+				
 				if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
-					format(mainStr, sizeof(mainStr), "~w~Predkosc: ~b~%i ~w~KM/H~n~~w~Przebieg: ~b~%i~w~ L", getVehicleSpeed(vVars[j][vId]), vVars[j][vMileage]);
-					TextDrawSetString(vehicleSpeedMeter[i][0], mainStr);
-					TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
+					if(hasBelts[i]) {
+						format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%i ~w~KM/H~n~~w~Przebieg: ~b~%i~w~ KM~n~~w~Paliwo: ~b~%f~w~ L~n~Pasy: ~g~zapiete", getVehicleSpeed(vVars[j][vId]), vVars[j][vMileage], vVars[j][vFuel]);
+						TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
+						TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
+					}
+					else {
+						format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%i ~w~KM/H~n~~w~Przebieg: ~b~%i~w~ KM~n~~w~Paliwo: ~b~%f~w~ L~n~Pasy: ~r~odpiete", getVehicleSpeed(vVars[j][vId]), vVars[j][vMileage], vVars[j][vFuel]);
+						TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
+						TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
+					}
+					
 					if(getVehicleFuel(j) <= 0) {
 						new engine, lights, alarm, doors, bonnet, boot, objective;
 						
@@ -111,10 +140,26 @@ Timer:globalTimer[1000]() {
 						GameTextForPlayer(i, "~r~Brak paliwa w pojezdzie.", 5000, 3);
 					}
 				}
+				else if(GetPlayerState(i) == PLAYER_STATE_PASSENGER) {
+					if(hasBelts[i]) {
+						format(timerStr, sizeof(timerStr), "Pasy: ~g~zapiete");
+						TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
+						TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
+					}
+					else {
+						format(timerStr, sizeof(timerStr), "Pasy: ~r~odpiete");
+						TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
+						TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
+					}
+					
+				}
 				else {
 					TextDrawHideForPlayer(i, vehicleSpeedMeter[i][0]);
 				}
 				
+			}
+			else {
+				TextDrawHideForPlayer(i, vehicleSpeedMeter[i][0]);
 			}
 		}
 	}
