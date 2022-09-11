@@ -415,17 +415,44 @@ CMD:pasy(playerid, params[]) {
 
 CMD:tankuj(playerid, params[]) {
 	new vehicleid = GetPlayerVehicleID(playerid);
-	
+	/*
 	if(IsPlayerInAnyVehicle(playerid) && !vehicleNonEngine(vehicleid)){
 		mainStr[0] = EOS;
 		format(mainStr, sizeof(mainStr), "Cena $4/L\nWpisz ilosc paliwa do zatankowania: ");
-		for(new i=0; i<MAX_STATIONS; i++)
+		for(new i=0; i<MAX_PETROL_STATIONS; i++)
 		{		
-			if(IsPlayerInRangeOfPoint(playerid, gasPump[i][3], gasPump[i][0], gasPump[i][1], gasPump[i][2])) {
-				ShowPlayerDialog(playerid, DIALOG_PETROL_STATION, DIALOG_STYLE_INPUT, "Stacja paliw", mainStr, "Tankuj", "Anuluj");
+			if(IsPlayerInRangeOfPoint(playerid, petrolStations[i][3], petrolStations[i][0], petrolStations[i][1], petrolStations[i][2])) {
+				
+				for(new y=0; y<MAX_GAS_PUMPS; y++) {
+					if(IsPlayerInRangeOfPoint(playerid, gasPump[i][3], gasPump[i][0], gasPump[i][1], gasPump[i][2])) {
+				
+						ShowPlayerDialog(playerid, DIALOG_PETROL_STATION, DIALOG_STYLE_INPUT, "Stacja paliw", mainStr, "Tankuj", "Anuluj");
+					}
+				}
+				
+			}
+			
+		}
+	}
+	*/
+	
+	if(IsPlayerInAnyVehicle(playerid) && !vehicleNonEngine(vehicleid)) {
+		mainStr[0] = EOS;
+			
+		for(new i=0; i<MAX_PETROL_STATIONS; i++) {
+			if(IsPlayerInRangeOfPoint(playerid, sVars[i][sDistance], sVars[i][sX], sVars[i][sY], sVars[i][sZ])) {
+				for(new y=0; y < MAX_GAS_PUMPS; y++) {
+					if(gVars[y][gSId] == sVars[i][sId]) {
+						if(IsPlayerInRangeOfPoint(playerid, gVars[y][gDistance], gVars[y][gX], gVars[y][gY], gVars[y][gZ])) {
+							ShowPlayerDialog(playerid, DIALOG_PETROL_STATION, DIALOG_STYLE_INPUT, sVars[i][sName], mainStr, "Tankuj", "Anuluj");
+						}
+					}
+						
+				}
 			}
 		}
 	}
+	
 	return 1;
 }
 

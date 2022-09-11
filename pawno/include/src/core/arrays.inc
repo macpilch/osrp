@@ -17,6 +17,8 @@ new queryStr[512];
 new pVars[MAX_PLAYERS][PlayerData];
 new vVars[MAX_VEHICLES][VehicleData];
 new iVars[MAX_ITEMS][ItemData];
+new sVars[MAX_PETROL_STATIONS][stationData];
+new gVars[MAX_GAS_PUMP][gasPumpData];
 //new fVars[MAX_FRACTIONS][fractionData];
 
 new Float:startCameraPos[][] = {
