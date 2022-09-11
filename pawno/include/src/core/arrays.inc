@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: arrays.inc
 	Date: 25.07.2022
-	Modified: 29.08.2022
+	Modified: 10.09.2022
 */
 
 #if !defined _ARRAYS_
@@ -18,6 +18,7 @@ new pVars[MAX_PLAYERS][PlayerData];
 new vVars[MAX_VEHICLES][VehicleData];
 new iVars[MAX_ITEMS][ItemData];
 //new fVars[MAX_FRACTIONS][fractionData];
+new dVars[MAX_DOORS][DoorData];
 
 new Float:startCameraPos[][] = {
 	{2485.5459,-1656.8232,13.3414}

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 09.09.2022
+	Modified: 11.09.2022
 */
 
 #if !defined _TIMERS_
@@ -174,6 +174,7 @@ Timer:globalTimer[1000]() {
 					format(mainStr, sizeof(mainStr), "~w~Predkosc: ~b~%i ~w~KM/H~n~~w~Przebieg: ~b~%i~w~ L", getVehicleSpeed(vVars[j][vId]), vVars[j][vMileage]);
 					TextDrawSetString(vehicleSpeedMeter[i][0], mainStr);
 					TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
+					
 					if(getVehicleFuel(j) <= 0) {
 						new engine, lights, alarm, doors, bonnet, boot, objective;
 						
@@ -185,11 +186,9 @@ Timer:globalTimer[1000]() {
 							
 						GameTextForPlayer(i, "~r~Brak paliwa w pojezdzie.", 5000, 3);
 					}
-				}
-				else {
+				} else {
 					TextDrawHideForPlayer(i, vehicleSpeedMeter[i][0]);
 				}
-				
 			}
 		}
 	}
@@ -208,6 +207,7 @@ Timer:settingsTimer[10000]() {
 	saveServerValues();
 	saveVehicleValues();
 	saveItemValues();
+	saveDoorValues();
 }
 
 Timer:townHallBellsTimer[59000]() {

@@ -9,6 +9,13 @@
 #if !defined _PLAYER_FUNCTIONS_
 #define _PLAYER_FUNCTIONS_
 
+Callback:hideDoorInfo(playerid) {
+	for(new i = 0; i < 3; i++) {
+		TextDrawHideForPlayer(playerid, doorInfo[playerid][i]);
+	}	
+	return 1;
+}
+
 Callback:hideVehicleSpawn(playerid) {
 	for(new i = 0; i < sizeof(vehicleSpawn); i++) {
 		TextDrawHideForPlayer(playerid, vehicleSpawn[playerid][i]);
@@ -334,19 +341,49 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawSetOutline(vehicleSpeedMeter[playerid][1], 1);
 	TextDrawFont(vehicleSpeedMeter[playerid][1], 0);
 	
+	doorInfo[playerid][0] = TextDrawCreate(501.786163, 284.083343, "Drzwi");
+	TextDrawLetterSize(doorInfo[playerid][0], 0.381127, 1.471666);
+	TextDrawAlignment(doorInfo[playerid][0], 2);
+	TextDrawColor(doorInfo[playerid][0], -1);
+	TextDrawSetShadow(doorInfo[playerid][0], 0);
+	TextDrawSetOutline(doorInfo[playerid][0], 1);
+	TextDrawBackgroundColor(doorInfo[playerid][0], 255);
+	TextDrawFont(doorInfo[playerid][0], 1);
+	TextDrawSetProportional(doorInfo[playerid][0], 1);
+
+	doorInfo[playerid][1] = TextDrawCreate(501.317596, 312.083374, "~y~Aby wejsc, wcisnij jednoczesnie~n~~w~LALT i SPACE.");
+	TextDrawLetterSize(doorInfo[playerid][1], 0.327715, 1.314165);
+	TextDrawAlignment(doorInfo[playerid][1], 2);
+	TextDrawColor(doorInfo[playerid][1], -1);
+	TextDrawSetShadow(doorInfo[playerid][1], 0);
+	TextDrawSetOutline(doorInfo[playerid][1], 1);
+	TextDrawBackgroundColor(doorInfo[playerid][1], 255);
+	TextDrawFont(doorInfo[playerid][1], 1);
+	TextDrawSetProportional(doorInfo[playerid][1], 1);
+	
+	doorInfo[playerid][2] = TextDrawCreate(601.238647, 285.000000, "_");
+	TextDrawLetterSize(doorInfo[playerid][2], 0.000000, 5.711111);
+	TextDrawTextSize(doorInfo[playerid][2], 404.207916, 0.000000);
+	TextDrawAlignment(doorInfo[playerid][2], 1);
+	TextDrawColor(doorInfo[playerid][2], 0);
+	TextDrawUseBox(doorInfo[playerid][2], 1);
+	TextDrawBoxColor(doorInfo[playerid][2], 102);
+	TextDrawSetShadow(doorInfo[playerid][2], 0);
+	TextDrawSetOutline(doorInfo[playerid][2], 0);
+	TextDrawFont(doorInfo[playerid][2], 0);
 	return 1;
 }
 
 stock loadPlayerValues(playerid) {
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `Rank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `DriverLicense`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `Rank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `VW`, `INT`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `DriverLicense`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	mysql_store_result();
 	
 	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>iiis[24]iiiiiffiiiiiifff", 
-	pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], 
-	pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+	sscanf(queryStr, "p<|>iiis[24]iiiiiiiffiiiiiifff", 
+	pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pHp],
+	pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	
 	mysql_free_result();
 	return 1;
@@ -378,6 +415,8 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pHours] = 0;
 	pVars[playerid][pMinutes] = 0;
 	pVars[playerid][pSeconds] = 0;
+	pVars[playerid][pVw] = 0;
+	pVars[playerid][pInt] = 0;
 	pVars[playerid][pHp] = 0.0;
 	pVars[playerid][pAp] = 0.0;
 	pVars[playerid][pSkin] = 0;
@@ -435,6 +474,8 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pHours] = 0;
 	pVars[playerid][pMinutes] = 0;
 	pVars[playerid][pSeconds] = 0;
+	pVars[playerid][pVw] = 0;
+	pVars[playerid][pInt] = 0;
 	pVars[playerid][pHp] = 0.0;
 	pVars[playerid][pAp] = 0.0;
 	pVars[playerid][pSkin] = 0;
@@ -477,11 +518,13 @@ stock resetPlayerValues(playerid) {
 
 stock savePlayerValues(playerid) {
 	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+	pVars[playerid][pVw] = GetPlayerVirtualWorld(playerid);
+	pVars[playerid][pInt] = GetPlayerInterior(playerid);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `Hp` = '%f', `Ap` = '%f', `Skin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `DriverLicense` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'", 
-	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pX], 
-	pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `VW` = '%d', `INT` = '%d', `Hp` = '%f', `Ap` = '%f', `Skin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `DriverLicense` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'", 
+	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense],
+	pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	return 1;
 }

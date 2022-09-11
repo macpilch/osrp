@@ -41,8 +41,10 @@ new Text:vehicleSpawn[MAX_PLAYERS][2];
 new Text:vehicleSpeedMeter[MAX_PLAYERS][2];
 new Text:oocWarning[MAX_PLAYERS][2];
 new Text:damageRedScreen[MAX_PLAYERS];
+new Text:doorInfo[MAX_PLAYERS][3];
 
 new Iterator:vehItter<MAX_VEHICLES>;
 new Iterator:itemItter<MAX_ITEMS>;
+new Iterator:doorItter<MAX_DOORS>;
 
 #endif 

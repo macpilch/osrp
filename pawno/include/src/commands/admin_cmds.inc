@@ -320,4 +320,19 @@ CMD:giveitem(playerid, params[]) {
 	return 1;
 }
 
+CMD:createdoor(playerid, params[]) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+		if(isAdminDuty[playerid]) {
+			new pId, name[32];
+			
+			if(sscanf(params, "is[32]", pId, name)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /createdoor [ID Ownera] [Nazwa]");
+			}
+			
+			createNewDoor(playerid, pId, name);
+		}
+	}
+	return 1;
+}
+
 #endif 

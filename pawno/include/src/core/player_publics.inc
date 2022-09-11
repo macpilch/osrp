@@ -120,8 +120,8 @@ sampCallback:OnPlayerSpawn(playerid) {
 	ResetPlayerMoney(playerid);
 	GivePlayerMoney(playerid, pVars[playerid][pMoney]);
 	SetPlayerName(playerid, pVars[playerid][pCharName2]);
-	SetPlayerInterior(playerid, 0);
-	SetPlayerVirtualWorld(playerid, 0);
+	SetPlayerInterior(playerid, pVars[playerid][pInt]);
+	SetPlayerVirtualWorld(playerid, pVars[playerid][pVw]);
 	TextDrawShowForPlayer(playerid, website);
 	StopAudioStreamForPlayer(playerid);
 	KillTimer(cameraTimer[playerid]);
@@ -312,6 +312,49 @@ sampCallback:OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			ClearAnimations(playerid);
 			ApplyAnimation(playerid, "SKATE", "skate_run", 4.1, 1, 1, 1, 1, 1, 1);
 		}
+	}
+	
+	if((newkeys & KEY_JUMP) && (newkeys & KEY_WALK)) {
+		new tmpDoorId = pVars[playerid][pDoors];
+		new vw = GetPlayerVirtualWorld(playerid), int = GetPlayerInterior(playerid);
+		
+		if(dVars[tmpDoorId][dVw] != vw && dVars[tmpDoorId][dInt] != int) {
+			if(IsPlayerInRangeOfPoint(playerid, 3.0, dVars[tmpDoorId][dEnterX], dVars[tmpDoorId][dEnterY], dVars[tmpDoorId][dEnterZ])) {
+				SetPlayerPos(playerid, dVars[tmpDoorId][dExitX], dVars[tmpDoorId][dExitY], dVars[tmpDoorId][dExitZ]);
+				SetPlayerVirtualWorld(playerid, dVars[tmpDoorId][dVw]);
+				SetPlayerInterior(playerid, dVars[tmpDoorId][dInt]);
+			}
+		} else {
+			if(IsPlayerInRangeOfPoint(playerid, 3.0, dVars[tmpDoorId][dExitX], dVars[tmpDoorId][dExitY], dVars[tmpDoorId][dExitZ])) {
+				SetPlayerPos(playerid, dVars[tmpDoorId][dEnterX], dVars[tmpDoorId][dEnterY], dVars[tmpDoorId][dEnterZ]);
+				SetPlayerVirtualWorld(playerid, 0);
+				SetPlayerInterior(playerid, 0);
+			}
+		}
+	}
+	return 1;
+}
+
+sampCallback:OnPlayerPickUpDynamicPickup(playerid, pickupid) {
+	new tmpDoorId, vw = GetPlayerVirtualWorld(playerid), int = GetPlayerInterior(playerid);
+	
+	foreach(new i : doorItter) {
+		if(dVars[i][dPickupEnt] == pickupid || dVars[i][dPickupExt] == pickupid) {
+			tmpDoorId = i;
+			break;
+		}
+	}
+	
+	pVars[playerid][pDoors] = tmpDoorId;
+	
+	if(dVars[tmpDoorId][dVw] != vw && dVars[tmpDoorId][dInt] != int) {
+		TextDrawSetString(doorInfo[playerid][0], dVars[tmpDoorId][dName]);
+		
+		for(new i = 0; i < 3; i++) {
+			TextDrawShowForPlayer(playerid, doorInfo[playerid][i]);
+		}
+		
+		SetTimerEx("hideDoorInfo", 5000, false, "i", playerid);
 	}
 	return 1;
 }
