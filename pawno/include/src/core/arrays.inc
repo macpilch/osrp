@@ -18,7 +18,7 @@ new pVars[MAX_PLAYERS][PlayerData];
 new vVars[MAX_VEHICLES][VehicleData];
 new iVars[MAX_ITEMS][ItemData];
 new sVars[MAX_PETROL_STATIONS][stationData];
-new gVars[MAX_GAS_PUMP][gasPumpData];
+new gVars[MAX_GAS_PUMPS][gasPumpData];
 //new fVars[MAX_FRACTIONS][fractionData];
 
 new Float:startCameraPos[][] = {
@@ -291,7 +291,7 @@ new VehicleNames[212][] = {
 	distance
 	}
 */
-new Float:gasPump[MAX_GAS_PUMP][4]={
+new Float:gasPump[MAX_GAS_PUMPS][4]={
 	//Idlewood station
 	{1940.7306,-1767.3242,13.3906, 5.0},
 	{1940.7300,-1771.3781,13.3906, 5.0},
