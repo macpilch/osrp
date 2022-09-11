@@ -69,7 +69,7 @@ Callback:hideFirstHoursInfo() {
 
 Callback:bwTimer(playerid) {
 	if((pVars[playerid][pBw] / 60) > 0) {
-		format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", pVars[playerid][pBw] / 60); // int powinien uciac na same minuty
+		format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", !(pVars[playerid][pBw] / 60) ? 1 : pVars[playerid][pBw] / 60); // int powinien uciac na same minuty
 		GameTextForPlayer(playerid, mainStr, 4000, 1);
 		TogglePlayerControllable(playerid, 0);
 		ApplyAnimation(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
@@ -320,7 +320,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawSetOutline(vehicleSpawn[playerid][1], 1);
 	TextDrawFont(vehicleSpawn[playerid][1], 0);
 	
-	vehicleSpeedMeter[playerid][0] = TextDrawCreate(200.000, 361.666503, "~w~Predkosc:~b~0 KM/H~n~~w~Przebieg:~b~0 L");
+	vehicleSpeedMeter[playerid][0] = TextDrawCreate(200.000, 361.666503, "~w~Predkosc:~b~0 ~w~KM/H~n~~w~Przebieg:~b~0 ~w~KM~n~~w~Paliwo:~b~0 ~w~L");
 	TextDrawLetterSize(vehicleSpeedMeter[playerid][0], 0.270087, 1.139165);
 	TextDrawAlignment(vehicleSpeedMeter[playerid][0], 2);
 	TextDrawColor(vehicleSpeedMeter[playerid][0], -1);

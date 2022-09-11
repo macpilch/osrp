@@ -282,6 +282,7 @@ sampCallback:OnPlayerStateChange(playerid, newstate, oldstate) {
 
 sampCallback:OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	new vehicleid = GetPlayerVehicleID(playerid);
+	new vehid = actualVehicle[playerid];
 
 	if(newkeys & KEY_ACTION) {
 		if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER && !vehicleNonEngine(vehicleid)) {
@@ -299,9 +300,12 @@ sampCallback:OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 				TextDrawHideForPlayer(playerid, vehicleTips[playerid][i]);
 			}
 			
-			new engine, lights, alarm, doors, bonnet, boot, objective;
-			GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
-			SetVehicleParamsEx(vehicleid, engine, 1, alarm, doors, bonnet, boot, objective);
+			if(vVars[vehid][vLights]) {
+				vehLightsOff(playerid, vehicleid);
+			}
+			else {
+				vehLightsOn(playerid, vehicleid);
+			}
 		}
 	}
 	

@@ -87,6 +87,32 @@ stock checkPlayerVehicleId(playerid) {
 	return 0;
 }
 
+Callback:vehLightsOn(playerid, vehicleid) {
+	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
+		new engine, lights, alarm, doors, bonnet, boot, objective;
+		new vehid = actualVehicle[playerid];
+
+		GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
+		SetVehicleParamsEx(vehicleid, engine, 1, alarm, doors, bonnet, boot, objective);
+		
+		vVars[vehid][vLights] = true;
+	}
+	return 1;
+}
+
+Callback:vehLightsOff(playerid, vehicleid) {
+	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
+		new engine, lights, alarm, doors, bonnet, boot, objective;
+		new vehid = actualVehicle[playerid];
+
+		GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
+		SetVehicleParamsEx(vehicleid, engine, 0, alarm, doors, bonnet, boot, objective);
+		
+		vVars[vehid][vLights] = false;
+	}
+	return 1;
+}
+
 stock vehicleEngineStatus(playerid, vehicleid) {
 	new vehid = actualVehicle[playerid];
 	
@@ -115,6 +141,7 @@ stock vehicleEngineStatus(playerid, vehicleid) {
 	}
 	return 1;
 }
+
 
 Callback:vehEngineOn(playerid, vehicleid) {
 	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
