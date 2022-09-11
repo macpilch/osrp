@@ -731,9 +731,36 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 		}
 		
 		case DIALOG_PETROL_STATION: {
+			new fuel, money;
 			if(!response){
 				return 1;
+	
 			}
+			else {
+				fuel = float(strval(inputtext));
+			
+				if(fuel > vVars[actualVehicle[playerid]][vFuelTank]) {
+					searchGasPump(playerid);
+				}
+				else if (fuel == 0) {
+					searchGasPump(playerid);
+				}
+				else {
+					money = fuel * playerFuelPrice[playerid];
+					if(pVars[playerid][pMoney] >= money) {
+						GivePlayerMoney(playerid, -money);
+						vVars[actualVehicle[playerid]][vFuel] += fuel;
+					}
+					else 
+					{
+						SendClientMessage(playerid, COLOR_WHITE, "[Stacja paliw]: Nie posiadasz wystarczajacej ilosci gotowki.");
+					}
+					
+				}
+				
+			}
+		
+			
 			
 			
 		}

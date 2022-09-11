@@ -14,7 +14,7 @@ new allAccounts;
 new cameraTimer[MAX_PLAYERS];
 new playerAFKTime[MAX_PLAYERS];
 new actualVehicle[MAX_PLAYERS];
-
+new playerFuelPrice[MAX_PLAYERS]; // Do tablicy trafia cena paliwa dla danego gracza podczas uzywania funkcji tankuj
 new vehCP[MAX_VEHICLES];
 new vehMapIcon[MAX_VEHICLES];
 
