@@ -740,7 +740,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				mainStr[0] = EOS;
 				fuel = strval(inputtext);
 			
-				if(fuel > vVars[actualVehicle[playerid]][vFuelTank]) {
+				if(vVars[actualVehicle[playerid]][vFuel] + fuel > vVars[actualVehicle[playerid]][vFuelTank]) {
 					searchGasPumps(playerid);
 				}
 				else if (fuel == 0) {
