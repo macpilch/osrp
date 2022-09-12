@@ -295,7 +295,7 @@ new VehicleNames[212][] = {
 	z,
 	distance
 	}
-*/
+
 new Float:gasPump[MAX_GAS_PUMPS][4]={
 	//Idlewood station
 	{1940.7306,-1767.3242,13.3906, 5.0},
@@ -324,5 +324,5 @@ new Float:petrolStations[MAX_PETROL_STATIONS][4]={
 	{-91.1946,-1169.8501,2.4179, 4.0}
 	//
 };
-
+*/
 #endif 

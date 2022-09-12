@@ -415,23 +415,9 @@ CMD:pasy(playerid, params[]) {
 }
 
 CMD:tankuj(playerid, params[]) {
-	new vehicleid = GetPlayerVehicleID(playerid);
 	
-	if(IsPlayerInAnyVehicle(playerid) && !vehicleNonEngine(vehicleid)) {
-		mainStr[0] = EOS;
-			
-		for(new i = 0; i < MAX_PETROL_STATIONS; i++) {
-			if(IsPlayerInRangeOfPoint(playerid, sVars[i][sDistance], sVars[i][sX], sVars[i][sY], sVars[i][sZ])) {
-				for(new y = 0; y < MAX_GAS_PUMPS; y++) {
-					if(gVars[y][gSId] == sVars[i][sId]) {
-						if(IsPlayerInRangeOfPoint(playerid, gVars[y][gDistance], gVars[y][gX], gVars[y][gY], gVars[y][gZ])) {
-							ShowPlayerDialog(playerid, DIALOG_PETROL_STATION, DIALOG_STYLE_INPUT, sVars[i][sName], mainStr, "Tankuj", "Anuluj");
-						}
-					}	
-				}
-			}
-		}
-	}
+	searchGasPumps(playerid);
+	
 	return 1;
 }
 

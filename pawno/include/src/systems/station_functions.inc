@@ -65,7 +65,7 @@ stock initGasPumpValues() {
 
 stock searchGasPumps(playerid) {
 	
-	new vehicleid = GetPlayerVehcileID(playerid);
+	new vehicleid = GetPlayerVehicleID(playerid);
 	
 	if(IsPlayerInAnyVehicle(playerid) && !vehicleNonEngine(vehicleid)) {
 		mainStr[0] = EOS;
@@ -76,6 +76,7 @@ stock searchGasPumps(playerid) {
 				for(new y=0; y < MAX_GAS_PUMPS; y++) {
 					if(gVars[y][gSId] == sVars[i][sId]) {
 						if(IsPlayerInRangeOfPoint(playerid, gVars[y][gDistance], gVars[y][gX], gVars[y][gY], gVars[y][gZ])) {
+							format(mainStr, sizeof(mainStr), "Cena: $%i/L\nWpisz ilosc litrow paliwa do zatankowania: ");
 							ShowPlayerDialog(playerid, DIALOG_PETROL_STATION, DIALOG_STYLE_INPUT, sVars[i][sName], mainStr, "Tankuj", "Anuluj");
 						}
 					}

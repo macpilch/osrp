@@ -737,13 +737,13 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 	
 			}
 			else {
-				fuel = float(strval(inputtext));
+				fuel = strval(inputtext);
 			
 				if(fuel > vVars[actualVehicle[playerid]][vFuelTank]) {
-					searchGasPump(playerid);
+					searchGasPumps(playerid);
 				}
 				else if (fuel == 0) {
-					searchGasPump(playerid);
+					searchGasPumps(playerid);
 				}
 				else {
 					money = fuel * playerFuelPrice[playerid];
