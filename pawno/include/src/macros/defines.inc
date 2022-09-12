@@ -17,7 +17,7 @@
 #define MAX_ITEMS 20
 #define MAX_DOORS 10
 #define MAX_STATIONS 8
-#define MAX_GAS_PUMPS 8
+#define MAX_GAS_PUMPS 20
 #define MAX_PETROL_STATIONS 3
 
 // Callbacks

@@ -182,6 +182,7 @@ CMD:spawnvehicle(playerid, params[]) {
 			vVars[freeId][vX] = x;
 			vVars[freeId][vY] = y;
 			vVars[freeId][vZ] = z;
+			vVars[freeId][vFuelTank] = VEHICLE_FUEL_TANK_MEDIUM;
 			
 			format(vVars[freeId][vDescInfo], 64, NULL);
 			UpdateDynamic3DTextLabelText(vVars[freeId][vDesc], COLOR_WHITE, vVars[freeId][vDescInfo]);

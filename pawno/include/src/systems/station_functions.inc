@@ -12,9 +12,10 @@
 stock initStationValues() {
 	
 	//Stations 
+	
 	//Idlewood
 	sVars[0][sId] = 0;
-	format(sVars[0][sName], 24, "Stacja paliw Idlewood");
+	format(sVars[0][sName], 32, "Stacja paliw Idlewood");
 	sVars[0][sPrice] = 4;
 	sVars[0][sIsOpen] = true;
 	sVars[0][sGasPumps] = 4;
@@ -22,6 +23,19 @@ stock initStationValues() {
 	sVars[0][sY] = -1771.3781;
 	sVars[0][sZ] = 13.3906;
 	sVars[0][sDistance] = 50.0;
+	//Temple to do
+	
+	//
+	
+	//Flint County 
+	sVars[2][sId] = 2;
+	format(sVars[2][sName], 32, "Stacja paliw Flint County");
+	sVars[2][sPrice] = 3;
+	sVars[2][sIsOpen] = true;
+	sVars[2][sX] = -91.1946;
+	sVars[2][sY] = -1169.8501;
+	sVars[2][sZ] = 2.4179;
+	sVars[2][sDistance] = 50.0;
 	//
 	
 	return 1;
@@ -30,7 +44,7 @@ stock initStationValues() {
 stock initGasPumpValues() {
 	
 	//Gas pumps
-	//Idlewood 1 of 4
+	//Idlewood (4)
 	gVars[0][gId] = 0;
 	gVars[0][gSId] = 0;
 	gVars[0][gX] = 1940.7306;
@@ -60,6 +74,41 @@ stock initGasPumpValues() {
 	gVars[3][gDistance] = 4.0;
 	//
 	
+	//Temple  (2) - dwa dystrybutory 
+	
+	//
+	
+	//Flint County (4)
+	
+	gVars[6][gId] = 6;
+	gVars[6][gSId] = 2;
+	gVars[6][gX] = -97.9225;
+	gVars[6][gY] = -1173.3949;
+	gVars[6][gZ] = 2.3911;
+	gVars[6][gDistance] = 4.0;
+	
+	gVars[7][gId] = 7;
+	gVars[7][gSId] = 2;
+	gVars[7][gX] = -92.9576;
+	gVars[7][gY] = -1161.4316;
+	gVars[7][gZ] = 2.2120;
+	gVars[7][gDistance] = 4.0;
+	
+	gVars[8][gId] = 8;
+	gVars[8][gSId] = 2;
+	gVars[8][gX] = -86.0421;
+	gVars[8][gY] = -1164.7002;
+	gVars[8][gZ] = 2.2441;
+	gVars[8][gDistance] = 4.0;
+	
+	gVars[9][gId] = 9;
+	gVars[9][gSId] = 2;
+	gVars[9][gX] = -90.9616;
+	gVars[9][gY] = -1176.2837;
+	gVars[9][gZ] = 2.1791;
+	gVars[9][gDistance] = 4.0;
+	
+	//
 	return 1;
 }
 
