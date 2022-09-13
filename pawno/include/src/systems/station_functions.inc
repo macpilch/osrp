@@ -87,7 +87,7 @@ stock searchGasPumps(playerid) {
 stock changePricesGasPumps(){
 	
 	new price;
-	
+	queryStr[0] = EOS;
 	for(new i=0; i< MAX_PETROL_STATIONS; i++){
 		
 		price=random(13);
@@ -96,6 +96,11 @@ stock changePricesGasPumps(){
 		}
 		
 		sVars[i][sPrice] = price;
+		
+		format(queryStr, sizeof(queryStr), "UPDATE stations SET price = %i WHERE ID = %i", sVars[i][sPrice], i+1);
+		
+		mysql_query(queryStr);
+		
 		
 		
 		
