@@ -29,6 +29,7 @@ stock initStationValues() {
 		sscanf(queryStr, "p<|>is[32]iiiffff", sVars[i][sId], sVars[i][sName], sVars[i][sPrice], sVars[i][sIsOpen], sVars[i][sGasPumps], sVars[i][sX], sVars[i][sY], sVars[i][sZ], sVars[i][sDistance]);
 		
 	}
+	mysql_free_result();
 	return 1;
 }
 
@@ -53,6 +54,7 @@ stock initGasPumpValues() {
 		
 		sscanf(queryStr, "p<|>iiffff", gVars[i][gId], gVars[i][gSId], gVars[i][gX], gVars[i][gY], gVars[i][gZ], gVars[i][gDistance]);
 	}
+	mysql_free_result();
 	return 1;
 }
 

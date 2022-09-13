@@ -291,7 +291,7 @@ stock setPlayerVehDamage(playerid) {
 			
 		}
 			
-	
+		
 			
 		
 			
