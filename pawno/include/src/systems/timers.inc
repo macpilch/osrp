@@ -30,7 +30,7 @@ Timer:globalTimer[1000]() {
 					} else {
 						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki, AFK od %02d:%02d, %s)", pVars[i][pCharName], i, pVars[i][pHours], h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 					}					
-				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0) {
+				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i]) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, AFK od %02d:%02d, %s)", pVars[i][pCharName], i, h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 					} else {
@@ -44,7 +44,7 @@ Timer:globalTimer[1000]() {
 					}		
 				}
 			} else if(hasBelts[i]) {
-				if(drunkLevel >= 2000) {
+				if(drunkLevel >= 2000 && !isDizzines[i]) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, AFK od %02d:%02d, pasy)", pVars[i][pCharName], i, h, mins);
 					} else {
@@ -64,7 +64,7 @@ Timer:globalTimer[1000]() {
 					} else {
 						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki, AFK od %02d:%02d)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
 					}
-				} else if(drunkLevel >= 2000) {
+				} else if(drunkLevel >= 2000 && !isDizzines[i]) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, rolki, AFK od %02d:%02d)", pVars[i][pCharName], i, h, mins);
 					} else {
@@ -86,7 +86,7 @@ Timer:globalTimer[1000]() {
 					} else {
 						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki, %s)", pVars[i][pCharName], i, pVars[i][pHours], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 					}				
-				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 60 > 0) {
+				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 60 > 0 && !isDizzines[i]) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, %s)", pVars[i][pCharName], i, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 					} else {
@@ -100,7 +100,7 @@ Timer:globalTimer[1000]() {
 					}
 				}
 			} else if(hasBelts[i]) {
-				if(drunkLevel >= 2000) {
+				if(drunkLevel >= 2000 && !isDizzines[i]) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, pasy)", pVars[i][pCharName], i);
 					} else {
@@ -120,7 +120,7 @@ Timer:globalTimer[1000]() {
 					} else {
 						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki)", pVars[i][pCharName], i, pVars[i][pHours]);
 					}
-				} else if(drunkLevel >= 2000) {
+				} else if(drunkLevel >= 2000 && !isDizzines[i]) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity)", pVars[i][pCharName], i);
 					} else {
