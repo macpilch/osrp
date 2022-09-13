@@ -108,6 +108,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			if(!iVars[srvitemid][iUsed]) {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_DRINK_BEER);
 				iVars[srvitemid][iUsed] = true;
+				isDizzines[playerid] = false;
 			} else {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 				iVars[srvitemid][iUsed] = false;
@@ -117,6 +118,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			if(!iVars[srvitemid][iUsed]) {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_DRINK_WINE);
 				iVars[srvitemid][iUsed] = true;
+				isDizzines[playerid] = false;
 			} else {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 				iVars[srvitemid][iUsed] = false;
