@@ -224,6 +224,7 @@ Timer:globalTimer[1000]() {
 				}
 			}
 		}
+		changePricesGasPumps();
 	}
 }
 

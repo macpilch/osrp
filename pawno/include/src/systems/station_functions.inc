@@ -138,5 +138,25 @@ stock searchGasPumps(playerid) {
 	return 1;
 }
 
+stock changePricesGasPumps(){
+	
+	new price;
+	
+	for(new i=0; i< MAX_PETROL_STATIONS; i++){
+		
+		price=random(13);
+		if(price <= 5) {
+			price = 5;
+		}
+		
+		sVars[i][sPrice] = price;
+		
+		
+		
+	}
+	
+	return 1;
+}
+
 
 #endif
