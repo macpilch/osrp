@@ -224,7 +224,7 @@ Timer:globalTimer[1000]() {
 				}
 			}
 		}
-		changePricesGasPumps();
+		
 	}
 }
 
@@ -253,6 +253,10 @@ Timer:townHallBellsTimer[59000]() {
 			timerStr[0] = EOS;
 			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d razy. **", hours);
 			SendClientMessage(i, COLOR_WHITE, timerStr);
+		}
+		
+		if(hours == 0) {
+			changePricesGasPumps();
 		}
 	}
 }
