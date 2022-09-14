@@ -327,4 +327,17 @@ CMD:createdoor(playerid, params[]) {
 	return 1;
 }
 
+CMD:createbusstop(playerid, params[]) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+		
+		if(isAdminDuty[playerid]) {
+			
+			if(sscanf(params, "s[32]", name)) {
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /createbusstop [Nazwa przystanku].");
+			}
+		}
+	}
+	return 1;
+}
+
 #endif 

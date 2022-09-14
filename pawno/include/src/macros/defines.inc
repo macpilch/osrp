@@ -19,6 +19,7 @@
 #define MAX_STATIONS 8
 #define MAX_GAS_PUMPS 20
 #define MAX_PETROL_STATIONS 3
+#define MAX_BUS_STOPS 10
 
 // Callbacks
 #define sampCallback:%0(%1) \

@@ -24,6 +24,7 @@ new bool:isAdminDuty[MAX_PLAYERS]; // false(0) is admin duty off or true(1) is a
 new	bool:isSpectating[MAX_PLAYERS];
 new	bool:isGodMode[MAX_PLAYERS];
 new	bool:isBW[MAX_PLAYERS];
+new bool:isInBus[MAX_PLAYERS];
 new bool:usedCmdLogin[MAX_PLAYERS];
 new bool:usedCmdReport[MAX_PLAYERS];
 new bool:hasBelts[MAX_PLAYERS];
