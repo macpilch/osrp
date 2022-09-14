@@ -34,6 +34,7 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 	
 	DestroyVehicle(vehicleid);
 	vVars[actualVehicle[killerid]][vSpawned] = false;
+	vVars[actualVehicle[killerid]][vEngine] = false;
 	GameTextForPlayer(killerid, "Pojazd zostanie odspawnowany.", 5000, 3);
 	return 1;
 }
