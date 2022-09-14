@@ -421,4 +421,11 @@ CMD:tankuj(playerid, params[]) {
 	return 1;
 }
 
+CMD:bus(playerid, params[]) {
+	
+	searchPlayerBusStop(playerid);
+	
+	return 1;
+}
+
 #endif 

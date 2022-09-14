@@ -790,6 +790,27 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			itemid = iVars[tmpItemId][iId];
 			enableItemProperties(playerid, tmpItemId, itemid);
 		}
+		
+		/*
+		case DIALOG_SHOW_BUS_STOPS: {
+			if(!response) {
+				return 1;
+			}
+			
+			new tmpBsId, busstopid;
+			
+			tmpBsId = strval(inputtext);
+			
+			foreach(new i : busstopItter) {
+				
+				
+				
+			}
+			
+			busstopid = bVars
+			
+		}
+		*/
 	}
 	return 1;
 }

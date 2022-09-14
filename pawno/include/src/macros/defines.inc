@@ -9,6 +9,10 @@
 #if !defined _DEFINES_
 #define _DEFINES_
 
+#if !defined isnull
+	#define isnull(%1) ((!(%1[0])) || (((%1[0]) == '\1') && (!(%1[1]))))
+#endif
+
 #undef MAX_PLAYERS
 #undef MAX_VEHICLES
 

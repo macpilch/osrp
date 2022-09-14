@@ -22,6 +22,10 @@
 #define DIALOG_VEHICLE_OPTIONS 11
 #define DIALOG_SHOW_ITEMS 12
 
+//Bus stops
+
+#define DIALOG_SHOW_BUS_STOPS 16
+
 //Fuel system dialogs
 #define DIALOG_PETROL_STATION 20
 

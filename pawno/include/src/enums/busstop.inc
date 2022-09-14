@@ -11,7 +11,7 @@
 #define _BUSSTOP_
 
 enum busStopData{
-	bsID,
+	bsId,
 	bsName[32],
 	bsPrice,
 	Float: bsX,
