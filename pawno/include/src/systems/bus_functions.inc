@@ -31,7 +31,7 @@ stock initBusStopValues(){
 		
 		Iter_Add(busstopItter, i);
 		
-		printf("[DEBUG] SrvId: %d, Uid: %d, Id: %d, OUid: %d, Name: %s, Used: %d\n", i, iVars[i][iUid], iVars[i][iId], iVars[i][iOUid], iVars[i][iName], iVars[i][iUsed]);
+		printf("[DEBUG] Id: %d,  Name: %s, ", i, bVars[i][bsName]);
 		
 	}
 	
@@ -64,24 +64,27 @@ stock searchPlayerBusStop(playerid) {
 	for(new i = 0; i < MAX_BUS_STOPS; i++) {
 		if(IsPlayerInRangeOfPoint(playerid, 10.0, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ])) {
 			
-			ShowPlayerDialog(playerid, DIALOG_SHOW_BUS_STOPS, DIALOG_STYLE_LIST, bVars[i][bsName], showAllBusStops(i), "Ok", "Anuluj");
+			ShowPlayerDialog(playerid, DIALOG_SHOW_BUS_STOPS, DIALOG_STYLE_LIST, bVars[i][bsName], showAllBusStops(playerid, i), "Ok", "Anuluj");
+			actualBusStop[playerid] = i;
 		}
 	}
 	return 1;
 }
 
-stock showAllBusStops(id) {
+stock showAllBusStops(playerid, id) {
 	mainStr[0] = EOS;
 	new tempStr[516];
 	tempStr[0] = EOS;
 	
 	foreach(new i: busstopItter) {
 		if(id == i) {
-			
+			format(tempStr, sizeof(tempStr), "(%d) %s (Aktualny) \n", bVars[i][bsId], bVars[i][bsName]);
+			strcat(mainStr, tempStr);
+			actualBusStop[playerid] = id;
 		}
-		else if(isnull(bVars[i][bsName])) {
+		//else if(isnull(bVars[i][bsName])) {
 			
-		}
+		//}
 		else {
 			format(tempStr, sizeof(tempStr), "(%d) %s\n", bVars[i][bsId], bVars[i][bsName]);
 			strcat(mainStr, tempStr);
@@ -90,6 +93,26 @@ stock showAllBusStops(id) {
 	}
 	
 	return mainStr;
+}
+
+stock teleportToBusStop(playerid, busstopid) {
+		mainStr[0] = EOS;
+		
+		foreach(new i: busstopItter) {
+			if(actualBusStop[playerid] == i) {
+				format(mainStr, sizeof(mainStr), "[Przystanek]: Znajdujesz sie juz na tym przystanku.");
+				SendClientMessage(playerid, COLOR_WHITE, mainStr);
+			}
+			else if(busstopid == i) {
+				format(mainStr, sizeof(mainStr), "[Przystanek]: Znajdujesz sie na przystanku nr.%d %s", bVars[i][bsId], bVars[i][bsName]);
+				SendClientMessage(playerid, COLOR_WHITE, mainStr);
+				SetPlayerPos(playerid, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ]);
+				actualBusStop[playerid] = -1;
+				
+			}
+		}
+		
+
 }
 
 #endif

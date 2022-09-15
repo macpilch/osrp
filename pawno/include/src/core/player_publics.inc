@@ -791,7 +791,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			enableItemProperties(playerid, tmpItemId, itemid);
 		}
 		
-		/*
+		
 		case DIALOG_SHOW_BUS_STOPS: {
 			if(!response) {
 				return 1;
@@ -802,15 +802,20 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			tmpBsId = strval(inputtext);
 			
 			foreach(new i : busstopItter) {
-				
-				
+				if(tmpBsId == bVars[i][bsId]) {
+					tmpBsId = i;
+					break;
+				}
 				
 			}
 			
-			busstopid = bVars
+			busstopid = bVars[tmpBsId][bsId];
+			
+			teleportToBusStop(playerid, listitem);
+			
 			
 		}
-		*/
+		
 	}
 	return 1;
 }
