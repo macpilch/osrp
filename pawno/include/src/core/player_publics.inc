@@ -336,6 +336,10 @@ sampCallback:OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			}
 		}
 	}
+	
+	if((newkeys & KEY_NO)) {
+		searchPlayerCashpoint(playerid);
+	}
 	return 1;
 }
 
@@ -816,6 +820,76 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 		}
 		
+		case DIALOG_SHOW_CASHPOINT: {
+			if(!response) {
+				return 1;
+			}
+			mainStr[0] = EOS;
+			
+			switch(listitem) {
+				
+				case 0: {
+					searchPlayerCashpoint(playerid);
+				}
+				
+				case 1: {
+					format(mainStr, sizeof(mainStr), "Ile chcesz wplacic pieniedzy:");
+					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_IN, DIALOG_STYLE_INPUT, cVars[actualCashpoint[playerid]][csName], mainStr, "Ok", "Anuluj");
+				}
+				
+				case 2: {
+					format(mainStr, sizeof(mainStr), "Ile chcesz wyplacic pieniedzy:");
+					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_OUT, DIALOG_STYLE_INPUT, cVars[actualCashpoint[playerid]][csName], mainStr, "Ok", "Anuluj");
+				}
+				
+			}
+		}
+		
+		case DIALOG_SHOW_CASHPOINT_IN: {
+			if(!response) {
+				return 1;
+			}
+			queryStr[0] = EOS;
+			new money = strval(inputtext);
+			pVars[playerid][pMoney] = GetPlayerMoney(playerid);
+			if(money > pVars[playerid][pMoney]) {
+				
+			}
+			else if(money <= 0) {
+				
+			}
+			else {
+				pVars[playerid][pMoney] -= money;
+				pVars[playerid][pBank] += money;
+				format(queryStr, sizeof(queryStr), "UPDATE players SET pMoney = %d, pBank = %d WHERE UID = %d", pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pUid]);
+				mysql_query(queryStr);
+				
+				mysql_free_result();
+			}
+		}
+		
+			case DIALOG_SHOW_CASHPOINT_OUT: {
+			if(!response) {
+				return 1;
+			}
+			queryStr[0] = EOS;
+			new money = strval(inputtext);
+			pVars[playerid][pMoney] = GetPlayerMoney(playerid);
+			if(money > pVars[playerid][pBank]) {
+				
+			}
+			else if(money <= 0) {
+				
+			}
+			else {
+				pVars[playerid][pMoney] += money;
+				pVars[playerid][pBank] -= money;
+				format(queryStr, sizeof(queryStr), "UPDATE players SET pMoney = %d, pBank = %d WHERE UID = %d", pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pUid]);
+				mysql_query(queryStr);
+				GivePlayerMoney(playerid, pVars[playerid][pMoney]);
+				mysql_free_result();
+			}
+		}
 	}
 	return 1;
 }

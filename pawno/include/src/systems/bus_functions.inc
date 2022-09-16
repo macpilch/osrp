@@ -31,7 +31,7 @@ stock initBusStopValues(){
 		
 		Iter_Add(busstopItter, i);
 		
-		printf("[DEBUG] Id: %d,  Name: %s, ", i, bVars[i][bsName]);
+		printf("[DEBUG] Id: %d,  Name: %s", i, bVars[i][bsName]);
 		
 	}
 	
@@ -50,11 +50,6 @@ stock createNewBusStop(playerid, busstopname[32]) {
 	format(queryStr, sizeof(queryStr), "INSERT INTO busstops (`name`, `price`, `x`, `y`, `z`) VALUES ( '%s', '%d', '%f', '%f', '%f')", busstopname, price, x, y, z);
 	
 	mysql_query(queryStr);
-	
-	
-	
-	
-		
 			
 	return 1;
 }

@@ -15,6 +15,7 @@ new cameraTimer[MAX_PLAYERS];
 new playerAFKTime[MAX_PLAYERS];
 new actualVehicle[MAX_PLAYERS];
 new actualBusStop[MAX_PLAYERS]; //Zapisuje aktualny przystanek gracza po wpisaniu CMD:bus
+new actualCashpoint[MAX_PLAYERS]; // Zapisuje aktualny bankomat w zasiegu gracza
 new playerFuelPrice[MAX_PLAYERS]; // Do tablicy trafia cena paliwa dla danego gracza podczas uzywania funkcji tankuj
 new vehCP[MAX_VEHICLES];
 new vehMapIcon[MAX_VEHICLES];

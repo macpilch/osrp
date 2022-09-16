@@ -23,6 +23,8 @@ new gVars[MAX_GAS_PUMPS][gasPumpData];
 new bVars[MAX_BUS_STOPS][busStopData];
 //new fVars[MAX_FRACTIONS][fractionData];
 new dVars[MAX_DOORS][DoorData];
+//Cashpoints system 
+new cVars[MAX_CASHPOINTS][cashpointData];
 
 new Float:startCameraPos[][] = {
 	{2485.5459,-1656.8232,13.3414}

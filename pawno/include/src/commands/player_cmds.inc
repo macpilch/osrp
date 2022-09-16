@@ -428,4 +428,8 @@ CMD:bus(playerid, params[]) {
 	return 1;
 }
 
+CMD:bankomat(playerid) {
+	
+}
+
 #endif 

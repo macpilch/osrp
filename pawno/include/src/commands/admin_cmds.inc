@@ -343,4 +343,20 @@ CMD:createbusstop(playerid, params[]) {
 	return 1;
 }
 
+CMD:createcashpoint(playerid, params[]) {
+	new name[32];
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+		
+		if(isAdminDuty[playerid]) {
+			
+			if(sscanf(params, "s[32]", name)) {
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /createcashpoint [Nazwa bankomatu].");
+			}
+			
+			createNewCashpoint(playerid, name);
+		}
+	}
+	return 1;
+}
+
 #endif 
