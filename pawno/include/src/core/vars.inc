@@ -14,6 +14,8 @@ new allAccounts;
 new cameraTimer[MAX_PLAYERS];
 new playerAFKTime[MAX_PLAYERS];
 new actualVehicle[MAX_PLAYERS];
+new actualBusStop[MAX_PLAYERS]; //Zapisuje aktualny przystanek gracza po wpisaniu CMD:bus
+new actualCashpoint[MAX_PLAYERS]; // Zapisuje aktualny bankomat w zasiegu gracza
 new playerFuelPrice[MAX_PLAYERS]; // Do tablicy trafia cena paliwa dla danego gracza podczas uzywania funkcji tankuj
 new vehCP[MAX_VEHICLES];
 new vehMapIcon[MAX_VEHICLES];
@@ -21,12 +23,15 @@ new vehMapIcon[MAX_VEHICLES];
 new bool:isSpawned[MAX_PLAYERS];
 new bool:hasLoged[MAX_PLAYERS];
 new bool:isAdminDuty[MAX_PLAYERS]; // false(0) is admin duty off or true(1) is admin duty on only when player have ranks: SUPPORT_RANK, ADMIN_RANK, HEADADMIN_RANK
+new bool:isPlayerDuty[MAX_PLAYERS]; 
 new	bool:isSpectating[MAX_PLAYERS];
 new	bool:isGodMode[MAX_PLAYERS];
 new	bool:isBW[MAX_PLAYERS];
+new bool:isInBus[MAX_PLAYERS];
 new bool:usedCmdLogin[MAX_PLAYERS];
 new bool:usedCmdReport[MAX_PLAYERS];
 new bool:hasBelts[MAX_PLAYERS];
+new bool:isDizzines[MAX_PLAYERS];
 new bool:usedTelephone[MAX_PLAYERS];
 
 new MySQL:hMySQL;
@@ -46,5 +51,7 @@ new Text:doorInfo[MAX_PLAYERS][3];
 new Iterator:vehItter<MAX_VEHICLES>;
 new Iterator:itemItter<MAX_ITEMS>;
 new Iterator:doorItter<MAX_DOORS>;
+new Iterator:busstopItter<MAX_BUS_STOPS>;
+new Iterator:cashpointItter<MAX_CASHPOINTS>;
 
 #endif 

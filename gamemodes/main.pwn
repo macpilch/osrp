@@ -22,6 +22,7 @@
 #include "src\enums\item"
 #include "src\enums\door"
 #include "src\enums\station"
+#include "src\enums\busstop"
 #include "src\core\vars"
 #include "src\core\arrays"
 #include "src\core\main_publics"
@@ -36,6 +37,8 @@
 #include "src\systems\door_functions"
 #include "src\systems\station_functions"
 #include "src\systems\timers"
+#include "src\systems\bus_functions"
+
 
 main() {
 	new str[64];

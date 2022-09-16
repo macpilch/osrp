@@ -182,6 +182,7 @@ CMD:spawnvehicle(playerid, params[]) {
 			vVars[freeId][vX] = x;
 			vVars[freeId][vY] = y;
 			vVars[freeId][vZ] = z;
+			vVars[freeId][vFuelTank] = VEHICLE_FUEL_TANK_MEDIUM;
 			
 			format(vVars[freeId][vDescInfo], 64, NULL);
 			UpdateDynamic3DTextLabelText(vVars[freeId][vDesc], COLOR_WHITE, vVars[freeId][vDescInfo]);
@@ -323,6 +324,55 @@ CMD:createdoor(playerid, params[]) {
 			createNewDoor(playerid, pId, name);
 		}
 	}
+	return 1;
+}
+
+CMD:createbusstop(playerid, params[]) {
+	new name[32];
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+		
+		if(isAdminDuty[playerid]) {
+			
+			if(sscanf(params, "s[32]", name)) {
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /createbusstop [Nazwa przystanku].");
+			}
+			
+			createNewBusStop(playerid, name);
+		}
+	}
+	return 1;
+}
+
+CMD:createcashpoint(playerid, params[]) {
+	new name[32];
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+		
+		if(isAdminDuty[playerid]) {
+			
+			if(sscanf(params, "s[32]", name)) {
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /createcashpoint [Nazwa bankomatu].");
+			}
+			
+			createNewCashpoint(playerid, name);
+		}
+	}
+	return 1;
+}
+
+CMD:createfraction(playerid, params[]) {
+	new name[32];
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+		
+		if(isAdminDuty[playerid]) {
+			if(sscanf(params, "s[32]", name)) {
+				
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /createfraction [Nazwa frakcji],");
+			}
+			
+			createNewFraction(playerid, name);
+		}
+	}
+	
 	return 1;
 }
 

@@ -11,7 +11,7 @@
 
 enum stationData {
 	sId,
-	sName[24],
+	sName[32],
 	sPrice,
 	bool: sIsOpen,
 	sGasPumps,

@@ -10,11 +10,10 @@
 #define _FRACTION_
 
 enum fractionData {
-	fUid,
-	fCharId,
 	fId,
-	fFractionName[40],
-	fMoney
+	fUid,
+	fGuid,
+	fName[32]
 	
 }
 

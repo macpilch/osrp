@@ -336,6 +336,10 @@ sampCallback:OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			}
 		}
 	}
+	
+	if((newkeys & KEY_NO)) {
+		searchPlayerCashpoint(playerid);
+	}
 	return 1;
 }
 
@@ -737,22 +741,29 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 	
 			}
 			else {
-				fuel = float(strval(inputtext));
+				mainStr[0] = EOS;
+				fuel = strval(inputtext);
 			
-				if(fuel > vVars[actualVehicle[playerid]][vFuelTank]) {
-					searchGasPump(playerid);
+				if(vVars[actualVehicle[playerid]][vFuel] + fuel > vVars[actualVehicle[playerid]][vFuelTank]) {
+					searchGasPumps(playerid);
 				}
 				else if (fuel == 0) {
-					searchGasPump(playerid);
+					searchGasPumps(playerid);
+				}
+				else if(fuel < 0) {
+					searchGasPumps(playerid);
 				}
 				else {
 					money = fuel * playerFuelPrice[playerid];
+					
 					if(pVars[playerid][pMoney] >= money) {
+						format(mainStr, sizeof(mainStr), "[Stacja paliw]: Zatankowano %i litrow paliwa za $%i. %f", fuel, money, vVars[actualVehicle[playerid]][vFuelTank]);
 						GivePlayerMoney(playerid, -money);
-						vVars[actualVehicle[playerid]][vFuel] += fuel;
+						vVars[actualVehicle[playerid]][vFuel] += float(fuel);
+						SendClientMessage(playerid, COLOR_WHITE, mainStr);
+						
 					}
-					else 
-					{
+					else {
 						SendClientMessage(playerid, COLOR_WHITE, "[Stacja paliw]: Nie posiadasz wystarczajacej ilosci gotowki.");
 					}
 					
@@ -782,6 +793,111 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			itemid = iVars[tmpItemId][iId];
 			enableItemProperties(playerid, tmpItemId, itemid);
+		}
+		
+		
+		case DIALOG_SHOW_BUS_STOPS: {
+			if(!response) {
+				return 1;
+			}
+			
+			new tmpBsId, busstopid;
+			
+			tmpBsId = strval(inputtext);
+			
+			foreach(new i : busstopItter) {
+				if(tmpBsId == bVars[i][bsId]) {
+					tmpBsId = i;
+					break;
+				}
+				
+			}
+			
+			busstopid = bVars[tmpBsId][bsId];
+			
+			teleportToBusStop(playerid, listitem);
+			
+			
+		}
+		
+		case DIALOG_SHOW_CASHPOINT: {
+			if(!response) {
+				return 1;
+			}
+			mainStr[0] = EOS;
+			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "SELECT Money, Bank FROM players WHERE UID = %d", pVars[playerid][pUid]);
+			mysql_query(queryStr); 
+			mysql_store_result();
+			mysql_fetch_row(queryStr, "|");
+			sscanf(queryStr, "p<|>ii", pVars[playerid][pMoney], pVars[playerid][pBank]);
+			mysql_free_result();
+			switch(listitem) {
+				
+				case 0: {
+					searchPlayerCashpoint(playerid);
+				}
+				
+				case 1: {
+					format(mainStr, sizeof(mainStr), "Ile chcesz wplacic pieniedzy:");
+					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_IN, DIALOG_STYLE_INPUT, cVars[actualCashpoint[playerid]][csName], mainStr, "Ok", "Anuluj");
+				}
+				
+				case 2: {
+					format(mainStr, sizeof(mainStr), "Ile chcesz wyplacic pieniedzy:");
+					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_OUT, DIALOG_STYLE_INPUT, cVars[actualCashpoint[playerid]][csName], mainStr, "Ok", "Anuluj");
+				}
+				
+			}
+		}
+		
+		case DIALOG_SHOW_CASHPOINT_IN: {
+			if(!response) {
+				return 1;
+			}
+			queryStr[0] = EOS;
+			new money = strval(inputtext);
+			pVars[playerid][pMoney] = GetPlayerMoney(playerid);
+			if(money > pVars[playerid][pMoney]) {
+				
+			}
+			else if(money <= 0) {
+				
+			}
+			else {
+				GivePlayerMoney(playerid, -money);
+				pVars[playerid][pMoney] = GetPlayerMoney(playerid);
+				pVars[playerid][pBank] += money;
+				
+				
+				format(queryStr, sizeof(queryStr), "UPDATE players SET Money = %d, Bank = %d WHERE UID = %d", pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pUid]);
+				mysql_query(queryStr);
+				
+				mysql_free_result();
+			}
+		}
+		
+			case DIALOG_SHOW_CASHPOINT_OUT: {
+			if(!response) {
+				return 1;
+			}
+			queryStr[0] = EOS;
+			new money = strval(inputtext);
+			pVars[playerid][pMoney] = GetPlayerMoney(playerid);
+			if(money > pVars[playerid][pBank]) {
+				
+			}
+			else if(money <= 0) {
+				
+			}
+			else {
+				GivePlayerMoney(playerid, money);
+				pVars[playerid][pMoney] += money;
+				pVars[playerid][pBank] -= money;
+				format(queryStr, sizeof(queryStr), "UPDATE players SET Money = %d, Bank = %d WHERE UID = %d", pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pUid]);
+				mysql_query(queryStr);
+				mysql_free_result();
+			}
 		}
 	}
 	return 1;

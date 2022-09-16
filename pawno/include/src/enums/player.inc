@@ -54,6 +54,7 @@ enum PlayerData {
 	pTelNum,
 	pBankAcc,
 	pGroups,
+	pFraction,
 	pTraveled,
 	pDoors,
 	pInvi,

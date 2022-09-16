@@ -22,6 +22,16 @@
 #define DIALOG_VEHICLE_OPTIONS 11
 #define DIALOG_SHOW_ITEMS 12
 
+//Bus stops
+
+#define DIALOG_SHOW_BUS_STOPS 16
+
+//Cashpoints
+
+#define DIALOG_SHOW_CASHPOINT 17
+#define DIALOG_SHOW_CASHPOINT_IN 18
+#define DIALOG_SHOW_CASHPOINT_OUT 19
+
 //Fuel system dialogs
 #define DIALOG_PETROL_STATION 20
 

@@ -9,6 +9,10 @@
 #if !defined _DEFINES_
 #define _DEFINES_
 
+#if !defined isnull
+	#define isnull(%1) ((!(%1[0])) || (((%1[0]) == '\1') && (!(%1[1]))))
+#endif
+
 #undef MAX_PLAYERS
 #undef MAX_VEHICLES
 
@@ -17,8 +21,11 @@
 #define MAX_ITEMS 20
 #define MAX_DOORS 10
 #define MAX_STATIONS 8
-#define MAX_GAS_PUMPS 8
+#define MAX_GAS_PUMPS 20
 #define MAX_PETROL_STATIONS 3
+#define MAX_BUS_STOPS 10
+#define MAX_CASHPOINTS 20
+#define MAX_FRACTIONS 100
 
 // Callbacks
 #define sampCallback:%0(%1) \

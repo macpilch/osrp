@@ -175,35 +175,126 @@ stock setPlayerVehDamage(playerid) {
 	new chancePlayerDizzines;
 	
 	switch(speed) {
+		case 0 .. 50:
+			if(hasBelts[playerid]) {
+				return 0;
+			}
+			else {
+				
+				return 1;
+			}
+			
+		case 51 .. 79:
+			if(hasBelts[playerid]) {
+				return 0;
+			}
+			else {
+				return 2;
+			}
 		case 80 .. 99:
-			return 4;
+		
+			if(hasBelts[playerid]) {
+				
+				return 2;
+			}
+			else {
+				if(chancePlayerDizzines >= 80) {
+					isDizzines[playerid] = true;
+					SetPlayerDrunkLevel(playerid, 1000);
+					return 4;
+				}
+				else {
+					return 4;
+				}
+				
+			}
+			
 		case 100 .. 139: {
 			chancePlayerDizzines = random(100);
-			if(chancePlayerDizzines >= 90) {
-				SetPlayerDrunkLevel(playerid, 1000);
-				return 6;
+			
+			if(hasBelts[playerid]) {
+				
+				if(chancePlayerDizzines >= 90) {
+					isDizzines[playerid] = true;
+					SetPlayerDrunkLevel(playerid, 1000);
+					return 3;
+				}
+				else {
+					return 3;
+				}
+				
 			}
-			return 6;
+			else {
+				if(chancePlayerDizzines >= 60) {
+					isDizzines[playerid] = true;
+					SetPlayerDrunkLevel(playerid, 1000);
+					return 6;
+				}
+				else {
+					return 6;
+				}
+			}
+			
+			
 		}
 		case 140 .. 169: {
 			chancePlayerDizzines = random(100);
-			if(chancePlayerDizzines >= 40) {
-				SetPlayerDrunkLevel(playerid, 10000);
-				return 10;
+			
+			if(hasBelts[playerid]) {
+				if(chancePlayerDizzines >= 80) {
+					isDizzines[playerid] = true;
+					SetPlayerDrunkLevel(playerid, 1000);
+					return 5;
+				}
+				else {
+					return 5;
+				}
+				
 			}
-			return 10;
+			else {
+				
+				if(chancePlayerDizzines >= 50) {
+					isDizzines[playerid] = true;
+					SetPlayerDrunkLevel(playerid, 10000);
+					return 10;
+				}
+				else {
+					return 10;
+				}
+			}
 		}
 		case 170 .. 220: {
 			chancePlayerDizzines = random(100);
-			if(chancePlayerDizzines >= 20) {
-				SetPlayerDrunkLevel(playerid, 10000);
-				return 14;
+			if(hasBelts[playerid]) {
+				if(chancePlayerDizzines >= 60) {
+					isDizzines[playerid] = true;
+					SetPlayerDrunkLevel(playerid, 10000);
+					return 6;
+				}
+				else {
+					return 6;
+				}
+				
+				
 			}
-			return 14;
+			else {
+				if(chancePlayerDizzines >= 20) {
+					isDizzines[playerid] = true;
+					SetPlayerDrunkLevel(playerid, 10000);
+					return 14;
+				}
+				else {
+					return 14;
+				}
+			}
+			
+			
 		}
 			
-		default:
-			return 2;
+		
+			
+		
+			
 	}
 	return 1;
 }
