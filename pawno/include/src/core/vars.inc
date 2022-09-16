@@ -51,5 +51,6 @@ new Iterator:vehItter<MAX_VEHICLES>;
 new Iterator:itemItter<MAX_ITEMS>;
 new Iterator:doorItter<MAX_DOORS>;
 new Iterator:busstopItter<MAX_BUS_STOPS>;
+new Iterator:cashpointItter<MAX_CASHPOINTS>;
 
 #endif 

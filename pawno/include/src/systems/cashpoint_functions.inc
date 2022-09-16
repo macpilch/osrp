@@ -27,7 +27,7 @@ stock initCashpointValues() {
 		}
 		*/
 		mysql_fetch_row(queryStr, "|");
-		
+		Iter_Add(cashpointItter, i);
 		sscanf(queryStr, "p<|>is[32]iffff", cVars[i][csId], cVars[i][csName], cVars[i][csIsOpen], cVars[i][csX], cVars[i][csY], cVars[i][csZ], cVars[i][csDistance]);
 		printf("[DEBUG] Id: %d,  Name: %s", i, cVars[i][csName]);
 	}
@@ -40,7 +40,7 @@ stock searchPlayerCashpoint(playerid) {
 	
 	mainStr[0] = EOS;
 	queryStr[0] = EOS;
-	for(new i = 0; i < MAX_CASHPOINTS; i++) {
+	foreach(new i: cashpointItter) {
 		if(IsPlayerInRangeOfPoint(playerid, cVars[i][csDistance], cVars[i][csX], cVars[i][csY], cVars[i][csZ])) {
 			format(queryStr, sizeof(queryStr), "SELECT BANK FROM players WHERE UID = %d", pVars[playerid][pUid]);
 			mysql_query(queryStr);
