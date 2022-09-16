@@ -152,8 +152,8 @@ CMD:stats(playerid, params[]) {
 	
 	mainStr[0] = EOS;
 	format(tmpStr, sizeof(tmpStr), "%s (UID %d, ID %d, Globalne %d) [%s]", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, pVars[playerid][pGuid], pVars[playerid][pIp]);
-	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nAL:\t\t\t\t%d\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nSi³a:\t\t\t\t%d\nP³eæ:\t\t\t\t%s\nRz¹d:\t\t\t\t%d\nPrawko:\t\t\t%d\nHotel:\t\t\t\t%d\nPrzetrzymanie:\t\t\t%dh\nPDP:\t\t\t\t%d\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nTelefon:\t\t\t%d\nNumer konta:\t\t\t%d\nGrupy:\t\t\t\t-\nSkin:\t\t\t\t%d\nWyje¿d¿one:\t\t\t%dkm\nOstatni skin:\t\t\t%d\nDrzwi:\t\t\t\t%d\nZaproszenie od:\t\t%d\n------\n", 
-	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAl], pVars[playerid][pAj], pVars[playerid][pBw] / 60, pVars[playerid][pHp], pVars[playerid][pStrength], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pGov], pVars[playerid][pDriverLicense], pVars[playerid][pHotel], pVars[playerid][pDetention], pVars[playerid][pPdp], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pTelNum], pVars[playerid][pBankAcc], pVars[playerid][pSkin],
+	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nAL:\t\t\t\t%d\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nSi³a:\t\t\t\t%d\nP³eæ:\t\t\t\t%s\nRz¹d:\t\t\t\t%d\nPrawko:\t\t\t%d\nHotel:\t\t\t\t%d\nPrzetrzymanie:\t\t\t%dh\nPDP:\t\t\t\t%d\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nTelefon:\t\t\t%d\nNumer konta:\t\t\t%d\nGrupy:\t\t\t\t-\nFrakcja:\t\t\t\t%d\nSkin:\t\t\t\t%d\nWyje¿d¿one:\t\t\t%dkm\nOstatni skin:\t\t\t%d\nDrzwi:\t\t\t\t%d\nZaproszenie od:\t\t%d\n------\n", 
+	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAl], pVars[playerid][pAj], pVars[playerid][pBw] / 60, pVars[playerid][pHp], pVars[playerid][pStrength], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pGov], pVars[playerid][pDriverLicense], pVars[playerid][pHotel], pVars[playerid][pDetention], pVars[playerid][pPdp], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pTelNum], pVars[playerid][pBankAcc], pVars[playerid][pFraction], pVars[playerid][pSkin],
 	pVars[playerid][pTraveled], pVars[playerid][pLastSkin], pVars[playerid][pDoors], pVars[playerid][pInvi]);
 	ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, tmpStr, mainStr, "OK", "Zamknij");
 	return 1;
@@ -384,7 +384,7 @@ CMD:report(playerid, params[]) {
 	return 1;
 }
 
-CMD:duty(playerid, params[]) {
+CMD:aduty(playerid, params[]) {
 	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
 		if(!isAdminDuty[playerid]) {
 			isAdminDuty[playerid] = true;
@@ -429,6 +429,49 @@ CMD:bus(playerid, params[]) {
 }
 
 CMD:bankomat(playerid) {
+	
+}
+
+CMD:dajprawojazdy(playerid, params[]) {
+	new playerToGive; // Id gracza, ktory ma dostac prawo jazdy
+	mainStr[0] = EOS;
+	
+	if(pVars[playerid][pFraction] == 1) {
+		if(isPlayerDuty[playerid]) {
+			if(sscanf(params, "i", playerToGive)) {
+				
+				
+			}
+			
+			else {
+				if(IsPlayerConnected(playerToGive)) {
+					format(mainStr, sizeof(mainStr), "[Frakcja]: Dales prawo jazdy %s.", pVars[playerToGive][pCharName]);
+					pVars[playerToGive][pDriverLicense] = 1;
+					SendClientMessage(playerid, COLOR_WHITE, mainStr);
+					format(mainStr, sizeof(mainStr), "[Urzad]: Otrzymales prawo jazdy.");
+					SendClientMessage(playerToGive, COLOR_WHITE, mainStr);
+				}
+				else {
+					
+				}
+			}
+		}
+		else {
+			
+		}
+	}
+}
+
+CMD:duty(playerid) {
+	if(pVars[playerid][pFraction] != 0) {
+		
+		if(isPlayerDuty[playerid]) {
+			isPlayerDuty[playerid] = false;
+		}
+		else {
+			isPlayerDuty[playerid] = true;
+		}
+	}
 	
 }
 

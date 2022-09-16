@@ -376,14 +376,14 @@ stock createPlayerTextDraws(playerid) {
 
 stock loadPlayerValues(playerid) {
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `Rank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `VW`, `INT`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `DriverLicense`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `Rank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `VW`, `INT`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `Fraction`, `DriverLicense`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	mysql_store_result();
 	
 	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>iiis[24]iiiiiiiffiiiiiifff", 
+	sscanf(queryStr, "p<|>iiis[24]iiiiiiiffiiiiiiifff", 
 	pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pHp],
-	pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+	pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pFraction], pVars[playerid][pDriverLicense], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	
 	mysql_free_result();
 	return 1;
@@ -434,6 +434,7 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pTelNum] = 0;
 	pVars[playerid][pBankAcc] = 0;
 	pVars[playerid][pGroups] = 0;
+	pVars[playerid][pFraction] = 0;
 	pVars[playerid][pTraveled] = 0;
 	pVars[playerid][pDoors] = 0;
 	pVars[playerid][pInvi] = 0;
@@ -447,6 +448,7 @@ stock setPlayerDefaultValues(playerid) {
 	isSpawned[playerid] = false;
 	hasLoged[playerid] = false;
 	isAdminDuty[playerid] = false;
+	isPlayerDuty[playerid] = false;
 	isSpectating[playerid] = false;
 	isGodMode[playerid] = false;
 	isBW[playerid] = false;
@@ -493,6 +495,7 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pTelNum] = 0;
 	pVars[playerid][pBankAcc] = 0;
 	pVars[playerid][pGroups] = 0;
+	pVars[playerid][pFraction] = 0;
 	pVars[playerid][pTraveled] = 0;
 	pVars[playerid][pDoors] = 0;
 	pVars[playerid][pInvi] = 0;
@@ -506,6 +509,7 @@ stock resetPlayerValues(playerid) {
 	isSpawned[playerid] = false;
 	hasLoged[playerid] = false;
 	isAdminDuty[playerid] = false;
+	isPlayerDuty[playerid] = false;
 	isSpectating[playerid] = false;
 	isGodMode[playerid] = false;
 	isBW[playerid] = false;
@@ -522,8 +526,8 @@ stock savePlayerValues(playerid) {
 	pVars[playerid][pInt] = GetPlayerInterior(playerid);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `VW` = '%d', `INT` = '%d', `Hp` = '%f', `Ap` = '%f', `Skin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `DriverLicense` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'", 
-	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense],
+	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `VW` = '%d', `INT` = '%d', `Hp` = '%f', `Ap` = '%f', `Skin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `Fraction` = '%d', `DriverLicense` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'", 
+	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pFraction], pVars[playerid][pDriverLicense],
 	pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	return 1;

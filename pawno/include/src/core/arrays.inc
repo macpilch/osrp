@@ -21,7 +21,7 @@ new sVars[MAX_PETROL_STATIONS][stationData];
 new gVars[MAX_GAS_PUMPS][gasPumpData];
 //Bus stops system
 new bVars[MAX_BUS_STOPS][busStopData];
-//new fVars[MAX_FRACTIONS][fractionData];
+new fVars[MAX_FRACTIONS][fractionData];
 new dVars[MAX_DOORS][DoorData];
 //Cashpoints system 
 new cVars[MAX_CASHPOINTS][cashpointData];

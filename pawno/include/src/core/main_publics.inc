@@ -37,6 +37,7 @@ sampCallback:OnGameModeInit() {
 	initGasPumpValues();
 	initBusStopValues();
 	initCashpointValues();
+	initFractionValues();
 	
 	for(new i = 0; i < MAX_PLAYERS; i++) {
 		pVars[i][p3dInfo] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 0.15, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);

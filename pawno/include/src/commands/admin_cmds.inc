@@ -359,4 +359,21 @@ CMD:createcashpoint(playerid, params[]) {
 	return 1;
 }
 
+CMD:createfraction(playerid, params[]) {
+	new name[32];
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+		
+		if(isAdminDuty[playerid]) {
+			if(sscanf(params, "s[32]", name)) {
+				
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /createfraction [Nazwa frakcji],");
+			}
+			
+			createNewFraction(playerid, name);
+		}
+	}
+	
+	return 1;
+}
+
 #endif 

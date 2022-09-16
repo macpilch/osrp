@@ -23,6 +23,7 @@ new vehMapIcon[MAX_VEHICLES];
 new bool:isSpawned[MAX_PLAYERS];
 new bool:hasLoged[MAX_PLAYERS];
 new bool:isAdminDuty[MAX_PLAYERS]; // false(0) is admin duty off or true(1) is admin duty on only when player have ranks: SUPPORT_RANK, ADMIN_RANK, HEADADMIN_RANK
+new bool:isPlayerDuty[MAX_PLAYERS]; 
 new	bool:isSpectating[MAX_PLAYERS];
 new	bool:isGodMode[MAX_PLAYERS];
 new	bool:isBW[MAX_PLAYERS];
