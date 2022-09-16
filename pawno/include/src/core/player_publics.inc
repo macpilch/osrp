@@ -825,7 +825,13 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return 1;
 			}
 			mainStr[0] = EOS;
-			
+			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "SELECT Money, Bank FROM players WHERE UID = %d", pVars[playerid][pUid]);
+			mysql_query(queryStr); 
+			mysql_store_result();
+			mysql_fetch_row(queryStr, "|");
+			sscanf(queryStr, "p<|>ii", pVars[playerid][pMoney], pVars[playerid][pBank]);
+			mysql_free_result();
 			switch(listitem) {
 				
 				case 0: {
@@ -859,9 +865,12 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				
 			}
 			else {
-				pVars[playerid][pMoney] -= money;
+				GivePlayerMoney(playerid, -money);
+				pVars[playerid][pMoney] = GetPlayerMoney(playerid);
 				pVars[playerid][pBank] += money;
-				format(queryStr, sizeof(queryStr), "UPDATE players SET pMoney = %d, pBank = %d WHERE UID = %d", pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pUid]);
+				
+				
+				format(queryStr, sizeof(queryStr), "UPDATE players SET Money = %d, Bank = %d WHERE UID = %d", pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pUid]);
 				mysql_query(queryStr);
 				
 				mysql_free_result();
@@ -882,11 +891,11 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				
 			}
 			else {
+				GivePlayerMoney(playerid, money);
 				pVars[playerid][pMoney] += money;
 				pVars[playerid][pBank] -= money;
-				format(queryStr, sizeof(queryStr), "UPDATE players SET pMoney = %d, pBank = %d WHERE UID = %d", pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pUid]);
+				format(queryStr, sizeof(queryStr), "UPDATE players SET Money = %d, Bank = %d WHERE UID = %d", pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pUid]);
 				mysql_query(queryStr);
-				GivePlayerMoney(playerid, pVars[playerid][pMoney]);
 				mysql_free_result();
 			}
 		}
