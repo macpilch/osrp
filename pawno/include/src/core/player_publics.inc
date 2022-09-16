@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 04.09.2022
+	Modified: 12.09.2022
 */
 
 #if !defined _PLAYER_PUBLICS_

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 24.07.2022
-	Modified: 11.09.2022
+	Modified: 12.09.2022
 */
 
 #if !defined _PLAYER_
@@ -27,7 +27,7 @@ enum PlayerData {
 	pCharName[24],
 	pCharName2[24],
 	pPass[32],
-	pIp[24],
+	pIp[16],
 	pRank, // for ranks
 	pSex,
 	pStrength,

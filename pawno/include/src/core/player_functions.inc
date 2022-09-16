@@ -400,10 +400,10 @@ stock setPlayerDefaultValues(playerid) {
 		format(pVars[playerid][pCharName], 24, "%s", NULL);
 		format(pVars[playerid][pCharName2], 24, "%s", NULL);
 		format(pVars[playerid][pPass], 32, "%s", NULL);
-		format(pVars[playerid][pIp], 24, "%s", NULL);
+		format(pVars[playerid][pIp], 16, "%s", NULL);
 		
 		GetPlayerName(playerid, pVars[playerid][pAccName], 24);
-		GetPlayerIp(playerid, pVars[playerid][pIp], 24);
+		GetPlayerIp(playerid, pVars[playerid][pIp], 16);
 	}
 	
 	ResetPlayerMoney(playerid);
@@ -466,7 +466,7 @@ stock resetPlayerValues(playerid) {
 	format(pVars[playerid][pCharName], 24, "%s", NULL);
 	format(pVars[playerid][pCharName2], 24, "%s", NULL);
 	format(pVars[playerid][pPass], 32, "%s", NULL);
-	format(pVars[playerid][pIp], 24, "%s", NULL);
+	format(pVars[playerid][pIp], 16, "%s", NULL);
 
 	pVars[playerid][pRank] = 0;
 	pVars[playerid][pSex] = 0;
