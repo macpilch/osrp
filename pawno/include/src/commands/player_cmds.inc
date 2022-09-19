@@ -475,4 +475,25 @@ CMD:duty(playerid) {
 	
 }
 
+CMD:zaprosdofrakcji(playerid, params[]) {
+	new playerToGive, fractionId;
+	mainStr[0] = EOS;
+	if(sscanf(params, "i", playerToGive)) {
+		
+	}
+	else {
+		fractionId = pVars[playerid][pFraction];
+		format(mainStr, sizeof(mainStr), "Otrzymano zaproszenie do frakcji %s.", fVars[fractionId][fName]);
+		ShowPlayerDialog(playerToGive, DIALOG_SHOW_FRACTION_INVITE, DIALOG_STYLE_MSGBOX, "Zaproszenie do frakcji", mainStr, "Ok", "Anuluj");
+	}
+	return 1;
+}
+
+CMD:telefon(playerid, params[]) {
+	
+	
+	
+	return 1;
+}
+
 #endif 

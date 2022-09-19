@@ -877,7 +877,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			}
 		}
 		
-			case DIALOG_SHOW_CASHPOINT_OUT: {
+		case DIALOG_SHOW_CASHPOINT_OUT: {
 			if(!response) {
 				return 1;
 			}
@@ -898,6 +898,26 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				mysql_query(queryStr);
 				mysql_free_result();
 			}
+		}
+		
+		case DIALOG_SHOW_TELEPHONE_MENU: {
+			if(!response) {
+				return 1;
+			}
+			mainStr[0] = EOS;
+			switch(listitem) {
+				case 0: {
+					format(mainStr, sizeof(mainStr), "Wpisz numer\nWybierz z listy");
+					ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_RING, DIALOG_STYLE_LIST, "Telefon", mainStr);
+				}
+				case 1: {
+					format(mainStr, sizeof(mainStr), "Wpisz numer\nWybierz z listy");
+					ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_SMS, DIALOG_STYLE_LIST, "Telefon", mainStr);
+				}
+			}
+			
+			
+			
 		}
 	}
 	return 1;

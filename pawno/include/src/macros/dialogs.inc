@@ -35,6 +35,16 @@
 //Fuel system dialogs
 #define DIALOG_PETROL_STATION 20
 
+//Fraction system
+#define DIALOG_SHOW_FRACTION_PANEL 21
+#define DIALOG_SHOW_FRACTION_INVITE 22
+
+//Telephone system
+#define DIALOG_SHOW_TELEPHONE_MENU 24
+#define DIALOG_SHOW_TELEPHONE_RING 25
+#define DIALOG_SHOW_TELEPHONE_MESSAGE 26
+
+
 #define DIALOG_DEFAULT 999
 
 #endif 

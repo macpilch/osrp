@@ -31,6 +31,7 @@ new bool:isInBus[MAX_PLAYERS];
 new bool:usedCmdLogin[MAX_PLAYERS];
 new bool:usedCmdReport[MAX_PLAYERS];
 new bool:hasBelts[MAX_PLAYERS];
+new bool:hasBank[MAX_PLAYERS];
 new bool:isDizzines[MAX_PLAYERS];
 new bool:usedTelephone[MAX_PLAYERS];
 

@@ -143,6 +143,22 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				return 1;
 			}
 		}
+		
+		case P_TELEPHONE: {
+			if(!iVars[srvitemid][iUsed]) {
+				mainStr[0] = EOS;
+				format(mainStr, sizeof(mainStr), "* %s wyciaga telefon.", pVars[playerid][pCharName]);
+				sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+				
+				format(mainStr, sizeof(mainStr), "Zadzwon\nSMS");
+				ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_MENU, DIALOG_STYLE_LIST, "Telefon", mainStr, "Ok", "Anuluj");
+				iVars[srvitemid][iUsed] = true;
+			}
+			else {
+				
+				iVars[srvitemid][iUsed] = false;
+			}
+		}
 	}
 	return 1;
 }

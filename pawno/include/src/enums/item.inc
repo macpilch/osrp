@@ -15,7 +15,8 @@ enum {
 	P_WINO,
 	P_SPRUNK,
 	P_TECZKA,
-	P_UBRANIE
+	P_UBRANIE,
+	P_TELEPHONE	
 };
 
 enum ItemData {
@@ -23,7 +24,8 @@ enum ItemData {
 	iId,
 	iOUid,
 	iName[32],
-	bool:iUsed
+	bool:iUsed,
+	bool: isTelephone
 };
 
 #endif 
