@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 11.09.2022
+	Modified: 16.09.2022
 */
 
 #if !defined _DEFINES_
@@ -18,6 +18,7 @@
 
 #define MAX_PLAYERS 2
 #define MAX_VEHICLES 20
+#define MAX_PLAYER_CHARS 6
 #define MAX_ITEMS 20
 #define MAX_DOORS 10
 #define MAX_STATIONS 8
@@ -35,9 +36,9 @@
 		forward %0(%1); public %0(%1)
 
 #define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "server_812"
-#define MYSQL_PASS "j3gb0fn29c"
-#define MYSQL_DB "server_812_srv"
+#define MYSQL_USER "server_923"
+#define MYSQL_PASS "t4vz8c0o1k"
+#define MYSQL_DB "server_923_srv"
 
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_GRAY 0xCDC9C9FF

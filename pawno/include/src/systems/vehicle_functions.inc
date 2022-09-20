@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_functions.inc
 	Date: 29.07.2022
-	Modified: 07.09.2022
+	Modified: 16.09.2022
 */
 
 #if !defined _VEHICLE_FUNCTIONS_
@@ -142,7 +142,6 @@ stock vehicleEngineStatus(playerid, vehicleid) {
 	return 1;
 }
 
-
 Callback:vehEngineOn(playerid, vehicleid) {
 	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
 		new engine, lights, alarm, doors, bonnet, boot, objective;
@@ -178,64 +177,50 @@ stock setPlayerVehDamage(playerid) {
 		case 0 .. 50:
 			if(hasBelts[playerid]) {
 				return 0;
-			}
-			else {
-				
+			} else {
 				return 1;
 			}
-			
 		case 51 .. 79:
 			if(hasBelts[playerid]) {
 				return 0;
-			}
-			else {
+			} else {
 				return 2;
 			}
 		case 80 .. 99:
-		
 			if(hasBelts[playerid]) {
-				
 				return 2;
-			}
-			else {
+			} else {
 				if(chancePlayerDizzines >= 80) {
 					isDizzines[playerid] = true;
+					
 					SetPlayerDrunkLevel(playerid, 1000);
 					return 4;
-				}
-				else {
+				} else {
 					return 4;
 				}
-				
 			}
-			
 		case 100 .. 139: {
 			chancePlayerDizzines = random(100);
 			
 			if(hasBelts[playerid]) {
-				
 				if(chancePlayerDizzines >= 90) {
 					isDizzines[playerid] = true;
+					
 					SetPlayerDrunkLevel(playerid, 1000);
 					return 3;
-				}
-				else {
+				} else {
 					return 3;
 				}
-				
-			}
-			else {
+			} else {
 				if(chancePlayerDizzines >= 60) {
 					isDizzines[playerid] = true;
+					
 					SetPlayerDrunkLevel(playerid, 1000);
 					return 6;
-				}
-				else {
+				} else {
 					return 6;
 				}
 			}
-			
-			
 		}
 		case 140 .. 169: {
 			chancePlayerDizzines = random(100);
@@ -243,58 +228,46 @@ stock setPlayerVehDamage(playerid) {
 			if(hasBelts[playerid]) {
 				if(chancePlayerDizzines >= 80) {
 					isDizzines[playerid] = true;
+					
 					SetPlayerDrunkLevel(playerid, 1000);
 					return 5;
-				}
-				else {
+				} else {
 					return 5;
 				}
-				
-			}
-			else {
-				
+			} else {
 				if(chancePlayerDizzines >= 50) {
 					isDizzines[playerid] = true;
+					
 					SetPlayerDrunkLevel(playerid, 10000);
 					return 10;
-				}
-				else {
+				} else {
 					return 10;
 				}
 			}
 		}
 		case 170 .. 220: {
 			chancePlayerDizzines = random(100);
+			
 			if(hasBelts[playerid]) {
 				if(chancePlayerDizzines >= 60) {
 					isDizzines[playerid] = true;
+					
 					SetPlayerDrunkLevel(playerid, 10000);
 					return 6;
-				}
-				else {
+				} else {
 					return 6;
 				}
-				
-				
-			}
-			else {
+			} else {
 				if(chancePlayerDizzines >= 20) {
 					isDizzines[playerid] = true;
+					
 					SetPlayerDrunkLevel(playerid, 10000);
 					return 14;
-				}
-				else {
+				} else {
 					return 14;
 				}
 			}
-			
-			
 		}
-			
-		
-			
-		
-			
 	}
 	return 1;
 }

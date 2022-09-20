@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: door_functions.inc
 	Date: 10.09.2022
-	Modified: 11.09.2022
+	Modified: 16.09.2022
 */
 
 #if !defined _DOOR_FUNCTIONS_

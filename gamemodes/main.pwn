@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: main.pwn
 	Date: 24.07.2022
-	Modified: 11.09.2022
+	Modified: 16.09.2022
 */
 
 #include <a_samp>
@@ -23,6 +23,7 @@
 #include "src\enums\door"
 #include "src\enums\station"
 #include "src\enums\busstop"
+#include "src\enums\cashpoint"
 #include "src\core\vars"
 #include "src\core\arrays"
 #include "src\core\main_publics"
@@ -33,12 +34,13 @@
 #include "src\core\global_functions"
 #include "src\core\player_functions"
 #include "src\systems\vehicle_functions"
+#include "src\systems\fraction_functions"
 #include "src\systems\item_functions"
 #include "src\systems\door_functions"
 #include "src\systems\station_functions"
-#include "src\systems\timers"
 #include "src\systems\bus_functions"
-
+#include "src\systems\cashpoint_functions"
+#include "src\systems\timers"
 
 main() {
 	new str[64];

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 02.09.2022
+	Modified: 20.09.2022
 */
 
 #if !defined _PLAYER_CMDS_
@@ -19,7 +19,9 @@ CMD:help(playerid, params[]) {
 	return 1;
 }
 
-CMD:pomoc(playerid, params[]) return pc_cmd_help(playerid, params);
+CMD:pomoc(playerid, params[]) {
+	return pc_cmd_help(playerid, params);
+}
 
 CMD:w(playerid, params[]) {
 	new id, pmStr[256];
@@ -91,16 +93,18 @@ CMD:a(playerid, params[]) {
 			if(isAdminDuty[i]) {
 				adminsCount++;
 				
-				if(adminsCount > 0)
+				if(adminsCount > 0) {
 					format(mainStr, sizeof(mainStr), "%sADM %d\t\t\t\t%s\n", mainStr, pVars[i][pRank], pVars[i][pAccName]);
+				}
 			} else {
 				adminsCount = 0;
 			}
 		}
 	}
 	
-	if(!adminsCount)
+	if(!adminsCount) {
 		return GameTextForPlayer(playerid, "~r~Nie znaleziono ~w~graczy~n~~r~Spelniajacych kryteria.", 5000, 3);
+	}
 	
 	ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_LIST, "Lista graczy", mainStr, "OK", "Zamknij");
 	return 1;
@@ -140,6 +144,7 @@ CMD:login(playerid, params[]) {
 	
 	savePlayerValues(playerid);
 	setPlayerDefaultValues(playerid);
+	setPlayerCamerasView(playerid);
 	
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", pVars[playerid][pCharName]);
@@ -152,8 +157,8 @@ CMD:stats(playerid, params[]) {
 	
 	mainStr[0] = EOS;
 	format(tmpStr, sizeof(tmpStr), "%s (UID %d, ID %d, Globalne %d) [%s]", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, pVars[playerid][pGuid], pVars[playerid][pIp]);
-	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nAL:\t\t\t\t%d\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nSi³a:\t\t\t\t%d\nP³eæ:\t\t\t\t%s\nRz¹d:\t\t\t\t%d\nPrawko:\t\t\t%d\nHotel:\t\t\t\t%d\nPrzetrzymanie:\t\t\t%dh\nPDP:\t\t\t\t%d\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nTelefon:\t\t\t%d\nNumer konta:\t\t\t%d\nGrupy:\t\t\t\t-\nFrakcja:\t\t\t\t%d\nSkin:\t\t\t\t%d\nWyje¿d¿one:\t\t\t%dkm\nOstatni skin:\t\t\t%d\nDrzwi:\t\t\t\t%d\nZaproszenie od:\t\t%d\n------\n", 
-	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAl], pVars[playerid][pAj], pVars[playerid][pBw] / 60, pVars[playerid][pHp], pVars[playerid][pStrength], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pGov], pVars[playerid][pDriverLicense], pVars[playerid][pHotel], pVars[playerid][pDetention], pVars[playerid][pPdp], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pTelNum], pVars[playerid][pBankAcc], pVars[playerid][pFraction], pVars[playerid][pSkin],
+	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nAL:\t\t\t\t%d\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nSi³a:\t\t\t\t%d\nP³eæ:\t\t\t\t%s\nRz¹d:\t\t\t\t%d\nPrawko:\t\t\t%d\nHotel:\t\t\t\t%d\nPrzetrzymanie:\t\t\t%dh\nPDP:\t\t\t\t%d\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nTelefon:\t\t\t%d\nNumer konta:\t\t\t%d\nGrupy:\t\t\t\t%s\nSkin:\t\t\t\t%d\nWyje¿d¿one:\t\t\t%dkm\nOstatni skin:\t\t\t%d\nDrzwi:\t\t\t\t%d\nZaproszenie od:\t\t%d\n------\n", 
+	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pAl], pVars[playerid][pAj], pVars[playerid][pBw] / 60, pVars[playerid][pHp], pVars[playerid][pStrength], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pGov], pVars[playerid][pDriverLicense], pVars[playerid][pHotel], pVars[playerid][pDetention], pVars[playerid][pPdp], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pTelNum], pVars[playerid][pBankAcc], pVars[playerid][pGroup], pVars[playerid][pSkin],
 	pVars[playerid][pTraveled], pVars[playerid][pLastSkin], pVars[playerid][pDoors], pVars[playerid][pInvi]);
 	ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, tmpStr, mainStr, "OK", "Zamknij");
 	return 1;
@@ -185,7 +190,31 @@ CMD:p(playerid, params[]) {
 	return 1;
 }
 
-CMD:u(playerid, params[]) return pc_cmd_p(playerid, params);
+CMD:u(playerid, params[]) {
+	return pc_cmd_p(playerid, params);
+}
+
+CMD:o(playerid, params[]) {
+	new type, id, cmdParams;
+	new str[32];
+	
+	if(sscanf(params, "iii", type, id, cmdParams)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /o [Us³uga] [Gracz] (Opcjonalne parametry)");
+	}
+	
+	mainStr[0] = EOS;
+	offerFrom[id] = playerid;
+	offerFor[playerid] = id;
+	pVars[playerid][pFraction] = type;
+	format(pVars[playerid][pGroup], 32, fVars[type][fName]);
+	
+	format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[type][fName]);
+	format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", fVars[type][fId], fVars[type][fName], cmdParams);
+	
+	GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
+	ShowPlayerDialog(id, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+	return 1;
+}
 
 CMD:time(playerid, params[]) {
 	new hours, minutes, seconds;
@@ -203,7 +232,9 @@ CMD:time(playerid, params[]) {
 	return 1;
 }
 
-CMD:zegarek(playerid, params[]) return pc_cmd_time(playerid, params);
+CMD:zegarek(playerid, params[]) {
+	return pc_cmd_time(playerid, params);
+}
 
 CMD:v(playerid, params[]) {
 	if(!checkPlayerVehicleId(playerid)) {
@@ -387,13 +418,13 @@ CMD:report(playerid, params[]) {
 CMD:aduty(playerid, params[]) {
 	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
 		if(!isAdminDuty[playerid]) {
-			isAdminDuty[playerid] = true;
-				
 			GameTextForPlayer(playerid, "~w~Wchodzisz na sluzbe~n~Admina", 5000, 3);
-		} else {
-			isAdminDuty[playerid] = false;
-				
+			
+			isAdminDuty[playerid] = true;
+		} else {	
 			GameTextForPlayer(playerid, "~w~Schodzisz ze sluzby~n~Admina", 5000, 3);
+			
+			isAdminDuty[playerid] = false;
 		}
 	}
 	return 1;
@@ -415,21 +446,17 @@ CMD:pasy(playerid, params[]) {
 }
 
 CMD:tankuj(playerid, params[]) {
-	
 	searchGasPumps(playerid);
-	
 	return 1;
 }
 
 CMD:bus(playerid, params[]) {
-	
 	searchPlayerBusStop(playerid);
-	
 	return 1;
 }
 
 CMD:bankomat(playerid) {
-	
+	return 1;
 }
 
 CMD:dajprawojazdy(playerid, params[]) {
@@ -439,40 +466,43 @@ CMD:dajprawojazdy(playerid, params[]) {
 	if(pVars[playerid][pFraction] == 1) {
 		if(isPlayerDuty[playerid]) {
 			if(sscanf(params, "i", playerToGive)) {
-				
-				
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /dajprawojazdy [ID]");
 			}
 			
-			else {
-				if(IsPlayerConnected(playerToGive)) {
-					format(mainStr, sizeof(mainStr), "[Frakcja]: Dales prawo jazdy %s.", pVars[playerToGive][pCharName]);
-					pVars[playerToGive][pDriverLicense] = 1;
-					SendClientMessage(playerid, COLOR_WHITE, mainStr);
-					format(mainStr, sizeof(mainStr), "[Urzad]: Otrzymales prawo jazdy.");
-					SendClientMessage(playerToGive, COLOR_WHITE, mainStr);
-				}
-				else {
-					
-				}
+			if(!IsPlayerConnected(playerToGive)) {
+				return GameTextForPlayer(playerid, "~r~Nie ma takiego gracza.", 3000, 3);
 			}
-		}
-		else {
 			
+			format(mainStr, sizeof(mainStr), "[Frakcja]: Dales prawo jazdy %s.", pVars[playerToGive][pCharName]);
+			
+			pVars[playerToGive][pDriverLicense] = 1;
+			
+			SendClientMessage(playerid, COLOR_WHITE, mainStr);
+			format(mainStr, sizeof(mainStr), "[Urzad]: Otrzymales prawo jazdy.");
+			SendClientMessage(playerToGive, COLOR_WHITE, mainStr);
 		}
 	}
+	return 1;
 }
 
 CMD:duty(playerid) {
+	new fractionId = pVars[playerid][pFraction];
+	mainStr[0] = EOS;
+	
 	if(pVars[playerid][pFraction] != 0) {
-		
 		if(isPlayerDuty[playerid]) {
+			format(mainStr, sizeof(mainStr), "~w~Wchodzisz na sluzbe~n~%s", fVars[fractionId][fName]);
+			GameTextForPlayer(playerid, mainStr, 5000, 3);
+			
 			isPlayerDuty[playerid] = false;
-		}
-		else {
+		} else {
+			format(mainStr, sizeof(mainStr), "~w~Schodzisz ze sluzby~n~%s", fVars[fractionId][fName]);
+			GameTextForPlayer(playerid, mainStr, 5000, 3);
+		
 			isPlayerDuty[playerid] = true;
 		}
 	}
-	
+	return 1;
 }
 
 #endif 

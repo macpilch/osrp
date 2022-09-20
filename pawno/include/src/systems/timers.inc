@@ -3,13 +3,15 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 11.09.2022
+	Modified: 16.09.2022
 */
 
 #if !defined _TIMERS_
 #define _TIMERS_
 
 Timer:globalTimer[1000]() {
+	timerStr[0] = EOS;
+	
 	foreach(new i : Player) {
 		new srvItemId = checkSrvItemIdForPlayer(i), drunkLevel = GetPlayerDrunkLevel(i);
 		
@@ -165,6 +167,30 @@ Timer:globalTimer[1000]() {
 			}
 		}
 		
+		if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
+			if(hasBelts[i]) {
+				format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%d~w~ KM~n~~w~Paliwo: ~b~%f~w~ L~n~Pasy: ~g~zapiete", getVehicleSpeed(vVars[actualVehicle[i]][vId]), vVars[actualVehicle[i]][vMileage], vVars[actualVehicle[i]][vFuel]);
+				TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
+				TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
+			} else {
+				format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%d~w~ KM~n~~w~Paliwo: ~b~%f~w~ L~n~Pasy: ~r~odpiete", getVehicleSpeed(vVars[actualVehicle[i]][vId]), vVars[actualVehicle[i]][vMileage], vVars[actualVehicle[i]][vFuel]);
+				TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
+				TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
+			}
+		} else if(GetPlayerState(i) == PLAYER_STATE_PASSENGER) {
+			if(hasBelts[i]) {
+				format(timerStr, sizeof(timerStr), "Pasy: ~g~zapiete");
+				TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
+				TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
+			} else {
+				format(timerStr, sizeof(timerStr), "Pasy: ~r~odpiete");
+				TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
+				TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
+			}	
+		} else {
+			TextDrawHideForPlayer(i, vehicleSpeedMeter[i][0]);
+		}
+		
 		foreach(new j : vehItter) {
 			if(vVars[j][vEngine]) {
 				switch(getVehicleSpeed(vVars[j][vId])) {
@@ -185,46 +211,19 @@ Timer:globalTimer[1000]() {
 					}
 				}
 				
-				timerStr[0] = EOS;
-				if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
-					if(hasBelts[i]) {
-						format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%i ~w~KM/H~n~~w~Przebieg: ~b~%i~w~ KM~n~~w~Paliwo: ~b~%f~w~ L~n~Pasy: ~g~zapiete", getVehicleSpeed(vVars[j][vId]), vVars[j][vMileage], vVars[j][vFuel]);
-						TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
-						TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
-					} else {
-						format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%i ~w~KM/H~n~~w~Przebieg: ~b~%i~w~ KM~n~~w~Paliwo: ~b~%f~w~ L~n~Pasy: ~r~odpiete", getVehicleSpeed(vVars[j][vId]), vVars[j][vMileage], vVars[j][vFuel]);
-						TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
-						TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
-					}
-					
-					if(getVehicleFuel(j) <= 0) {
-						new engine, lights, alarm, doors, bonnet, boot, objective;
+				if(getVehicleFuel(j) <= 0) {
+					new engine, lights, alarm, doors, bonnet, boot, objective;
 						
-						GetVehicleParamsEx(vVars[j][vId], engine, lights, alarm, doors, bonnet, boot, objective);
-						SetVehicleParamsEx(vVars[j][vId], 0, lights, alarm, doors, bonnet, boot, objective);
+					GetVehicleParamsEx(vVars[j][vId], engine, lights, alarm, doors, bonnet, boot, objective);
+					SetVehicleParamsEx(vVars[j][vId], 0, lights, alarm, doors, bonnet, boot, objective);
 						
-						vVars[j][vFuel] = 0;
-						vVars[j][vEngine] = false;
+					vVars[j][vFuel] = 0;
+					vVars[j][vEngine] = false;
 							
-						GameTextForPlayer(i, "~r~Brak paliwa w pojezdzie.", 5000, 3);
-					}
-				} else if(GetPlayerState(i) == PLAYER_STATE_PASSENGER) {
-					if(hasBelts[i]) {
-						format(timerStr, sizeof(timerStr), "Pasy: ~g~zapiete");
-						TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
-						TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
-					} else {
-						format(timerStr, sizeof(timerStr), "Pasy: ~r~odpiete");
-						TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
-						TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
-					}
-					
-				} else {
-					TextDrawHideForPlayer(i, vehicleSpeedMeter[i][0]);
+					GameTextForPlayer(i, "~r~Brak paliwa w pojezdzie.", 5000, 3);
 				}
 			}
 		}
-		
 	}
 }
 

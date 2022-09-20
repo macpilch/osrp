@@ -7,18 +7,16 @@
 */
 
 #if !defined _CASHPOINT_
-
 #define _CASHPOINT_
 
 enum cashpointData {
-	csId,
+	csUid,
 	csName[32],
 	bool:csIsOpen,
-	Float: csX,
-	Float: csY,
-	Float: csZ,
-	Float: csDistance
-	
+	Float:csX,
+	Float:csY,
+	Float:csZ,
+	Float:csDistance
 };
 
-#endif
+#endif 

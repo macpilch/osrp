@@ -3,7 +3,7 @@
 	Author: MisterMagik
 	File: fraction.inc
 	Date: 05.09.2022
-	Modified: 05.09.2022
+	Modified: 16.09.2022
 */
 
 #if !defined _FRACTION_
@@ -14,7 +14,6 @@ enum fractionData {
 	fUid,
 	fGuid,
 	fName[32]
-	
-}
+};
 
-#endif
+#endif 

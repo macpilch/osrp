@@ -3,32 +3,31 @@
 	Author: MisterMagik
 	File: station.inc
 	Date: 11.09.2022
-	Modified: 11.09.2022
+	Modified: 16.09.2022
 */
 
 #if !defined _STATION_
 #define _STATION_
 
 enum stationData {
-	sId,
+	sUid,
 	sName[32],
 	sPrice,
-	bool: sIsOpen,
+	bool:sIsOpen,
 	sGasPumps,
-	Float: sX,
-	Float: sY,
-	Float: sZ,
-	Float: sDistance
+	Float:sX,
+	Float:sY,
+	Float:sZ,
+	Float:sDistance
 };
 
 enum gasPumpData {
-	gId,
+	gUid,
 	gSId,
-	Float: gX,
-	Float: gY,
-	Float: gZ,
-	Float: gDistance
-	
+	Float:gX,
+	Float:gY,
+	Float:gZ,
+	Float:gDistance
 };
 
 #endif 

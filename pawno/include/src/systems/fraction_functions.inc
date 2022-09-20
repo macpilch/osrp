@@ -13,11 +13,8 @@ stock initFractionValues(){
 	queryStr[0] = EOS;
 
 	for(new i = 0; i < MAX_FRACTIONS; i++) {
-		
-		format(queryStr, sizeof(queryStr), "SELECT * FROM fractions WHERE ID = %i", i+1);
-		
+		format(queryStr, sizeof(queryStr), "SELECT * FROM `Fractions` WHERE `ID` = '%d'", i + 1);
 		mysql_query(queryStr);
-		
 		mysql_store_result();
 		
 		if(!mysql_num_rows()) {
@@ -25,39 +22,41 @@ stock initFractionValues(){
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		
 		sscanf(queryStr, "p<|>iiis[32]", fVars[i][fId], fVars[i][fUid], fVars[i][fGuid], fVars[i][fName]);
 		
-		//Iter_Add(busstopItter, i);
-		
+		Iter_Add(fractionItter, i);
 		printf("[DEBUG] Id: %d,  Uid: %d, Guid: %d, Name: %s", i, fVars[i][fUid], fVars[i][fGuid], fVars[i][fName]);
-		
 	}
 	
 	mysql_free_result();
 	return 1;
 }
 
-stock createNewFraction(playerid, name[32]) {
+stock createNewFraction(playerid, name[]) {
 	new freeId;
+	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO fractions (`UID`, `GUID`, `name`) VALUES ('%d', '%d', '%s')", pVars[playerid][pUid], pVars[playerid][pGuid], name);
+	
+	format(queryStr, sizeof(queryStr), "INSERT INTO `Fractions`(`UID`, `GUID`, `Name`) VALUES ('%d', '%d', '%s')", pVars[playerid][pUid], pVars[playerid][pGuid], name);
 	mysql_query(queryStr); 
 	mysql_free_result();
-	format(queryStr, sizeof(queryStr), "SELECT COUNT(ID) FROM fractions");
+	
+	format(queryStr, sizeof(queryStr), "SELECT COUNT(`ID`) FROM `Fractions`");
 	mysql_query(queryStr);
 	mysql_store_result();
-	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>i", freeId);
+	
+	freeId = mysql_fetch_int();
 	mysql_free_result();
-	format(queryStr, sizeof(queryStr), "UPDATE players SET Fraction = %d WHERE UID = %d, GUID = %d", freeId, pVars[playerid][pUid], pVars[playerid][pGuid]);
+	
+	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Fraction` = '%d' WHERE `UID` = '%d' AND `GUID` = '%d'", freeId, pVars[playerid][pUid], pVars[playerid][pGuid]);
+	
 	fVars[freeId][fUid] = pVars[playerid][pUid];
 	fVars[freeId][fGuid] = pVars[playerid][pGuid];
-	fVars[freeId][fName] = name;
+	format(fVars[freeId][fName], 32, name);
 	pVars[playerid][pFraction] = freeId;
-	printf("[DEBUG] Id: %d, Uid: %d, Guid: %d, Name: %s", freeId, fVars[freeId][fUid], fVars[freeId][fGuid], fVars[freeId][fName]);
 	
+	printf("[DEBUG] Id: %d, Uid: %d, Guid: %d, Name: %s", freeId, fVars[freeId][fUid], fVars[freeId][fGuid], fVars[freeId][fName]);
 	return 1;
 }
 
-#endif
+#endif 

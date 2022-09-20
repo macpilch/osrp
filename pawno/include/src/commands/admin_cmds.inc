@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: admin_cmds.inc
 	Date: 04.08.2022
-	Modified: 02.09.2022
+	Modified: 16.09.2022
 */
 
 #if !defined _ADMIN_CMDS_
@@ -287,7 +287,7 @@ CMD:setfuel(playerid, params[]) {
 			format(mainStr, sizeof(mainStr), "{00FF00}[CMD]{FFFFFF}: Dodano %0.1f litro paliwa do pojazdu %d.", fuel, actualVehicle[toPlayerId]);
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 		}
-	}
+	} else return 0;
 	return 1;
 }
 
@@ -308,7 +308,7 @@ CMD:giveitem(playerid, params[]) {
 			format(mainStr, sizeof(mainStr), "Da³eœ(aœ) przedmiot %s graczowi %s.", itemNames[itemid], pVars[pId][pCharName]);
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);			
 		}
-	}
+	} else return 0;
 	return 1;
 }
 
@@ -323,56 +323,52 @@ CMD:createdoor(playerid, params[]) {
 			
 			createNewDoor(playerid, pId, name);
 		}
-	}
+	} else return 0;
 	return 1;
 }
 
 CMD:createbusstop(playerid, params[]) {
 	new name[32];
+	
 	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
-		
 		if(isAdminDuty[playerid]) {
-			
 			if(sscanf(params, "s[32]", name)) {
 				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /createbusstop [Nazwa przystanku].");
 			}
 			
 			createNewBusStop(playerid, name);
 		}
-	}
+	} else return 0;
 	return 1;
 }
 
 CMD:createcashpoint(playerid, params[]) {
 	new name[32];
+	
 	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
-		
 		if(isAdminDuty[playerid]) {
-			
 			if(sscanf(params, "s[32]", name)) {
 				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /createcashpoint [Nazwa bankomatu].");
 			}
 			
 			createNewCashpoint(playerid, name);
 		}
-	}
+	} else return 0;
 	return 1;
 }
 
 CMD:createfraction(playerid, params[]) {
 	new name[32];
+	
 	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
-		
 		if(isAdminDuty[playerid]) {
 			if(sscanf(params, "s[32]", name)) {
-				
 				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /createfraction [Nazwa frakcji],");
 			}
 			
 			createNewFraction(playerid, name);
 		}
-	}
-	
+	} else return 0;
 	return 1;
 }
 

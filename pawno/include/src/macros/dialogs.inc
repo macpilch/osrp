@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: dialogs.inc
 	Date: 25.07.2022
-	Modified: 15.08.2022
+	Modified: 16.08.2022
 */
 
 #if !defined _DIALOGS_
@@ -21,13 +21,12 @@
 #define DIALOG_VEHICLE_SELECT 10
 #define DIALOG_VEHICLE_OPTIONS 11
 #define DIALOG_SHOW_ITEMS 12
+#define DIALOG_SHOW_OFFER 13
 
 //Bus stops
-
 #define DIALOG_SHOW_BUS_STOPS 16
 
 //Cashpoints
-
 #define DIALOG_SHOW_CASHPOINT 17
 #define DIALOG_SHOW_CASHPOINT_IN 18
 #define DIALOG_SHOW_CASHPOINT_OUT 19

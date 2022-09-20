@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: item_functions.inc
 	Date: 14.08.2022
-	Modified: 07.09.2022
+	Modified: 16.09.2022
 */
 
 #if !defined _ITEM_FUNCTIONS_
@@ -139,8 +139,9 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				
 				iVars[srvitemid][iUsed] = true;
 			} else {
+				SetPlayerSkin(playerid, pVars[playerid][pSkin]);
+			
 				iVars[srvitemid][iUsed] = false;
-				return 1;
 			}
 		}
 	}

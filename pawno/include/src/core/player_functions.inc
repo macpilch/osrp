@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
-	Modified: 31.08.2022
+	Modified: 16.09.2022
 */
 
 #if !defined _PLAYER_FUNCTIONS_
@@ -433,7 +433,7 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pPdp] = 0;
 	pVars[playerid][pTelNum] = 0;
 	pVars[playerid][pBankAcc] = 0;
-	pVars[playerid][pGroups] = 0;
+	format(pVars[playerid][pGroup], 32, NULL);
 	pVars[playerid][pFraction] = 0;
 	pVars[playerid][pTraveled] = 0;
 	pVars[playerid][pDoors] = 0;
@@ -494,7 +494,7 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pPdp] = 0;
 	pVars[playerid][pTelNum] = 0;
 	pVars[playerid][pBankAcc] = 0;
-	pVars[playerid][pGroups] = 0;
+	format(pVars[playerid][pGroup], 32, NULL);
 	pVars[playerid][pFraction] = 0;
 	pVars[playerid][pTraveled] = 0;
 	pVars[playerid][pDoors] = 0;

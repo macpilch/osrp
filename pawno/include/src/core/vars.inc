@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 29.08.2022
+	Modified: 16.09.2022
 */
 
 #if !defined _VARS_
@@ -17,6 +17,8 @@ new actualVehicle[MAX_PLAYERS];
 new actualBusStop[MAX_PLAYERS]; //Zapisuje aktualny przystanek gracza po wpisaniu CMD:bus
 new actualCashpoint[MAX_PLAYERS]; // Zapisuje aktualny bankomat w zasiegu gracza
 new playerFuelPrice[MAX_PLAYERS]; // Do tablicy trafia cena paliwa dla danego gracza podczas uzywania funkcji tankuj
+new offerFrom[MAX_PLAYERS]; // Przechowuje id osoby ktora wyslala oferte
+new offerFor[MAX_PLAYERS]; // Przechowuje id osoby ktora otrzymala oferte
 new vehCP[MAX_VEHICLES];
 new vehMapIcon[MAX_VEHICLES];
 
@@ -27,7 +29,7 @@ new bool:isPlayerDuty[MAX_PLAYERS];
 new	bool:isSpectating[MAX_PLAYERS];
 new	bool:isGodMode[MAX_PLAYERS];
 new	bool:isBW[MAX_PLAYERS];
-new bool:isInBus[MAX_PLAYERS];
+//new bool:isInBus[MAX_PLAYERS];
 new bool:usedCmdLogin[MAX_PLAYERS];
 new bool:usedCmdReport[MAX_PLAYERS];
 new bool:hasBelts[MAX_PLAYERS];
@@ -53,5 +55,6 @@ new Iterator:itemItter<MAX_ITEMS>;
 new Iterator:doorItter<MAX_DOORS>;
 new Iterator:busstopItter<MAX_BUS_STOPS>;
 new Iterator:cashpointItter<MAX_CASHPOINTS>;
+new Iterator:fractionItter<MAX_FRACTIONS>;
 
 #endif 
