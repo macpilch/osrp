@@ -30,7 +30,7 @@ stock initVehicleValues() {
 		vehCP[i] = -1;
 		vehMapIcon[i] = -1;
 		
-		printf("[DEBUG] Uid: %d, Id: %d, OUid: %d, Charname: %s, ModelId: %d, Color1: %d, Color2: %d, X: %f, Y: %f, Z: %f, Fuel: %f, FuelTank: %f, Lock: %d, Engine: %d, Spawned: %d, Mileage: %d, Desc: %s", vVars[i][vUid], vVars[i][vId], vVars[i][vOUid], 
+		printf("[DEBUG] Uid: %d, Id: %d, OUid: %d, Charname: %s, ModelId: %d, Color1: %d, Color2: %d, X: %f, Y: %f, Z: %f, Fuel: %f, FuelTank: %f, Lock: %d, Engine: %d, Spawned: %d, Mileage: %f, Desc: %s", vVars[i][vUid], vVars[i][vId], vVars[i][vOUid], 
 		vVars[i][vCharName], vVars[i][vModelId], vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vFuel], vVars[i][vFuelTank], vVars[i][vLock], vVars[i][vEngine], vVars[i][vSpawned], vVars[i][vMileage], vVars[i][vDescInfo]);
 	}
 	
@@ -44,7 +44,7 @@ stock saveVehicleValues() {
 	foreach(new i : vehItter) {
 		GetVehiclePos(vVars[i][vId], vVars[i][vX], vVars[i][vY], vVars[i][vZ]);
 		
-		format(queryStr, sizeof(queryStr), "UPDATE `Vehicles` SET `Color1` = '%d', `Color2` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Fuel` = '%f', `FuelTank` = '%f', `Lock` = '%d', `Engine` = '%d', `Spawned` = '%d', `Mileage` = '%d', `Desc` = '%s' WHERE `UID` = '%d'",
+		format(queryStr, sizeof(queryStr), "UPDATE `Vehicles` SET `Color1` = '%d', `Color2` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Fuel` = '%f', `FuelTank` = '%f', `Lock` = '%d', `Engine` = '%d', `Spawned` = '%d', `Mileage` = '%f', `Desc` = '%s' WHERE `UID` = '%d'",
 		vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vFuel], vVars[i][vFuelTank], vVars[i][vLock], vVars[i][vEngine], vVars[i][vSpawned], vVars[i][vMileage], vVars[i][vDescInfo], i + 1);
 		mysql_query(queryStr);
 	}
