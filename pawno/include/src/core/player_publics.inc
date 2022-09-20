@@ -908,11 +908,11 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			switch(listitem) {
 				case 0: {
 					format(mainStr, sizeof(mainStr), "Wpisz numer\nWybierz z listy");
-					ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_RING, DIALOG_STYLE_LIST, "Telefon", mainStr);
+					ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_RING, DIALOG_STYLE_LIST, "Telefon", mainStr, "Ok", "Anuluj");
 				}
 				case 1: {
 					format(mainStr, sizeof(mainStr), "Wpisz numer\nWybierz z listy");
-					ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_SMS, DIALOG_STYLE_LIST, "Telefon", mainStr);
+					ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_MESSAGE, DIALOG_STYLE_LIST, "Telefon", mainStr, "Ok", "Anuluj");
 				}
 			}
 			

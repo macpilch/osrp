@@ -72,4 +72,18 @@ stock createNewCashpoint(playerid, cashpointname[32]) {
 	return 1;
 }
 
+stock createNumber(playerid) {
+	new number[6];
+	mainStr[0] = EOS;
+	for(new i=0; i < 6; i++) {
+		number[i] = random(10);
+	}
+	
+	format(mainStr, sizeof(mainStr), "[DEBUG] Name: %s, Number: %s", pVars[playerid][CharName], number);
+	
+	printf(mainStr);
+	
+	return 1;
+}
+
 #endif

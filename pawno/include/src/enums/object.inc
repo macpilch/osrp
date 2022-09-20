@@ -10,7 +10,13 @@
 #define _OBJECT_
 
 enum objectData {
-	
+	oUid,
+	oGuid,
+	oModelid,
+	Float: oX,
+	Float: oY, 
+	Float: oZ, 
+	Float: oRotate
 };
 
 

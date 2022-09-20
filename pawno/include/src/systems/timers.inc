@@ -170,29 +170,34 @@ Timer:globalTimer[1000]() {
 				switch(getVehicleSpeed(vVars[j][vId])) {
 					case 1 .. 50: {
 						vVars[j][vFuel] -= 0.001;
+						vVars[j][vMileage] += getVehicleDistance(vVars[j][vId]);
 					}
 					case 51 .. 90: {
 						vVars[j][vFuel] -= 0.004;
+						vVars[j][vMileage] += getVehicleDistance(vVars[j][vId]);
 					}
 					case 91 .. 120: {
 						vVars[j][vFuel] -= 0.005;
+						vVars[j][vMileage] += getVehicleDistance(vVars[j][vId]);
 					}
 					case 121 .. 220: {
 						vVars[j][vFuel] -= 0.01;
+						vVars[j][vMileage] += getVehicleDistance(vVars[j][vId]);
 					}
 					default: {
 						vVars[j][vFuel] -= 0.0001;
+						vVars[j][vMileage] += getVehicleDistance(vVars[j][vId]);
 					}
 				}
 				
 				timerStr[0] = EOS;
 				if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
 					if(hasBelts[i]) {
-						format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%i ~w~KM/H~n~~w~Przebieg: ~b~%i~w~ KM~n~~w~Paliwo: ~b~%f~w~ L~n~Pasy: ~g~zapiete", getVehicleSpeed(vVars[j][vId]), vVars[j][vMileage], vVars[j][vFuel]);
+						format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%i ~w~KM/H~n~~w~Przebieg: ~b~%f~w~ KM~n~~w~Paliwo: ~b~%f~w~ L~n~Pasy: ~g~zapiete", getVehicleSpeed(vVars[j][vId]), vVars[j][vMileage], vVars[j][vFuel]);
 						TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
 						TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
 					} else {
-						format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%i ~w~KM/H~n~~w~Przebieg: ~b~%i~w~ KM~n~~w~Paliwo: ~b~%f~w~ L~n~Pasy: ~r~odpiete", getVehicleSpeed(vVars[j][vId]), vVars[j][vMileage], vVars[j][vFuel]);
+						format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%i ~w~KM/H~n~~w~Przebieg: ~b~%f~w~ KM~n~~w~Paliwo: ~b~%f~w~ L~n~Pasy: ~r~odpiete", getVehicleSpeed(vVars[j][vId]), vVars[j][vMileage], vVars[j][vFuel]);
 						TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
 						TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
 					}

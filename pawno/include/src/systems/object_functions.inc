@@ -14,5 +14,10 @@ stock initObjectValues() {
 	return 1;
 }
 
+stock createNewObject(playerid, modelid) {
+	
+	return 1;
+}
+
 
 #endif

@@ -496,4 +496,5 @@ CMD:telefon(playerid, params[]) {
 	return 1;
 }
 
+
 #endif 

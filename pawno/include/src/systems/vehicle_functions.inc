@@ -335,4 +335,14 @@ stock setVehicleFuelTank(srvvehid, fuel_tank_size) {
 	return 1;
 }
 
+stock Float: getVehicleDistance(vehicleid) {
+	new Float: vehicleDistance;
+	
+	vehicleDistance = getVehicleSpeed(vehicleid) * 1000/3600/1;
+	
+	vehicleDistance = vehicleDistance/1000;
+	
+	return vehicleDistance;
+}
+
 #endif 
