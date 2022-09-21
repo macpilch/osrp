@@ -36,7 +36,8 @@ stock saveItemValues() {
 	queryStr[0] = EOS;
 	
 	foreach(new i : itemItter) {
-		
+		format(queryStr, sizeof(queryStr), "UPDATE `Items` SET `OUID` = '%d', `Used` = '%d' WHERE `UID` = '%d'", iVars[i][iOUid], iVars[i][iUsed], i + 1);
+		mysql_query(queryStr);
 	}
 	return 1;
 }
@@ -63,8 +64,23 @@ stock addPlayerItem(playerid, itemid) {
 	iVars[freeId][iUsed] = false;
 	Iter_Add(itemItter, freeId);
 	
-	format(queryStr, sizeof(queryStr), "INSERT INTO `Items` (`UID`, `ID`, `OUID`, `Name`, `Used`) VALUES ('%d', '%d', '%s', '%d')", iVars[freeId][iUid], iVars[freeId][iId], iVars[freeId][iOUid], iVars[freeId][iName], iVars[freeId][iUsed]);
+	format(queryStr, sizeof(queryStr), "INSERT INTO `Items` (`UID`, `ID`, `OUID`, `Name`, `Used`) VALUES ('%d', '%d', '%d', '%s', '%d')", iVars[freeId][iUid], iVars[freeId][iId], iVars[freeId][iOUid], iVars[freeId][iName], iVars[freeId][iUsed]);
 	mysql_query(queryStr);
+	
+	if(iVars[freeId][iId] == P_TELEFON) {
+		new number[7], numberStr[16];
+		
+		for(new i = 0; i < sizeof(number); i++) {
+			number[i] = random(10);
+			format(numberStr, sizeof(numberStr), "%s%d", numberStr, number[i]);
+		}
+		
+		pVars[playerid][pTelNum] = strval(numberStr);
+		
+		queryStr[0] = EOS;
+		format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `TelNum` = '%d' WHERE `UID` = '%d'", pVars[playerid][pTelNum], pVars[playerid][pUid]);
+		mysql_query(queryStr);
+	}
 	return 1;
 }
 
@@ -141,6 +157,43 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			} else {
 				SetPlayerSkin(playerid, pVars[playerid][pSkin]);
 			
+				iVars[srvitemid][iUsed] = false;
+			}
+		}
+		case P_TELEFON: {
+			if(!iVars[srvitemid][iUsed]) {
+				if(!usedTelephone[playerid]) {
+					new str[32], h, m, d;
+					
+					gettime(h, m, d);
+					format(str, sizeof(str), "Tel. %d [%d:%d:%d]", pVars[playerid][pTelNum], h, m, d);
+					
+					mainStr[0] = EOS;
+					strcat(mainStr, "{FFFFFF}1\tZadzwoñ do kontaktu lub firmy\n2\tWyœlij SMS do kontaktu\n3\tUsuñ kontakt\n");
+					strcat(mainStr, "4\tWybierz numer\n5\tWycisz telefon\n6\tWy³¹cz");
+					ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
+					
+					format(mainStr, sizeof(mainStr), "* %s wyci¹ga telefon.", pVars[playerid][pCharName]);
+					sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+					
+					iVars[srvitemid][iUsed] = true;
+				} else {
+					new id = checkPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
+					
+					ClearAnimations(playerid);
+					ClearAnimations(id);
+					ApplyAnimation(playerid, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 1, 1);
+					ApplyAnimation(id, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 1, 1);
+				
+					usedTelephone[playerid] = false;
+					usedTelephone[id] = false;
+					telEnterNumber[playerid] = 0;
+					telEnterNumber[id] = 0;
+				
+					GameTextForPlayer(playerid, "~r~Rozmowa zakonczona.", 5000, 3);
+					GameTextForPlayer(id, "~r~Rozmowa zakonczona.", 5000, 3);					
+				}
+			} else {
 				iVars[srvitemid][iUsed] = false;
 			}
 		}

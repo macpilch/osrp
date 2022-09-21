@@ -261,19 +261,19 @@ CMD:v(playerid, params[]) {
 			};
 			
 			new tmpVVars[MAX_VEHICLES][Values];
-			new j;
+			new i;
 			
 			mainStr[0] = EOS;
 			while(mysql_fetch_row(queryStr, "|")) {
-				sscanf(queryStr, "p<|>ii", tmpVVars[j][UID], tmpVVars[j][ModelID]);
+				sscanf(queryStr, "p<|>ii", tmpVVars[i][UID], tmpVVars[i][ModelID]);
 				
-				if(vVars[j][vSpawned]) {
-					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d   %s*", mainStr, tmpVVars[j][UID], VehicleNames[tmpVVars[j][ModelID] - 400]);
+				if(vVars[i][vSpawned]) {
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d   %s*", mainStr, tmpVVars[i][UID], VehicleNames[tmpVVars[i][ModelID] - 400]);
 				} else {
-					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d   %s", mainStr, tmpVVars[j][UID], VehicleNames[tmpVVars[j][ModelID] - 400]);
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d   %s", mainStr, tmpVVars[i][UID], VehicleNames[tmpVVars[i][ModelID] - 400]);
 				}
 				
-				j++;
+				i++;
 			}
 			
 			mysql_free_result();
@@ -504,5 +504,27 @@ CMD:duty(playerid) {
 	}
 	return 1;
 }
+
+CMD:zaprosdofrakcji(playerid, params[]) {
+	new playerToGive, fractionId;
+	mainStr[0] = EOS;
+	if(sscanf(params, "i", playerToGive)) {
+		
+	}
+	else {
+		fractionId = pVars[playerid][pFraction];
+		format(mainStr, sizeof(mainStr), "Otrzymano zaproszenie do frakcji %s.", fVars[fractionId][fName]);
+		ShowPlayerDialog(playerToGive, DIALOG_SHOW_FRACTION_INVITE, DIALOG_STYLE_MSGBOX, "Zaproszenie do frakcji", mainStr, "Ok", "Anuluj");
+	}
+	return 1;
+}
+
+CMD:telefon(playerid, params[]) {
+	
+	
+	
+	return 1;
+}
+
 
 #endif 

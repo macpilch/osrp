@@ -213,7 +213,10 @@ sampCallback:OnPlayerText(playerid, text[]) {
 		return 0;
 	} else {
 		if(usedTelephone[playerid]) {
+			new id = checkPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
+			
 			format(mainStr, sizeof(mainStr), "%s (telefon): %s", pVars[playerid][pCharName], textStr);
+			SendClientMessage(id, COLOR_WHITE, mainStr);
 			sendDistanceMessage(playerid, 20.0, mainStr, COLOR_DARKGRAY, COLOR_MEDGRAY, COLOR_GRAY, COLOR_WHITE);
 		} else {
 			format(mainStr, sizeof(mainStr), "%s mówi: %s", pVars[playerid][pCharName], textStr);
@@ -307,7 +310,7 @@ sampCallback:OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		}
 	}
 	
-	if(newkeys & KEY_JUMP) {
+	if(newkeys & KEY_SPRINT) {
 		new srvItemId = checkSrvItemIdForPlayer(playerid);
 		
 		if(iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) {
@@ -877,7 +880,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 		case DIALOG_SHOW_OFFER: {
 			if(!response) {
 				mainStr[0] = EOS;
-				format(mainStr, sizeof(mainStr), "~y~Oferta %s~n~~w~Odrzucona.", offerFrom[playerid]);
+				format(mainStr, sizeof(mainStr), "~y~Oferta %s~n~~w~Odrzucona.", pVars[offerFrom[playerid]][pCharName]);
 				return GameTextForPlayer(playerid, mainStr, 4000, 3);
 			}
 			
@@ -888,6 +891,141 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			SendClientMessage(playerid, COLOR_WHITE, "(!) Nale¿ysz do nowej grupy. SprawdŸ komendy /g oraz /o, aby rozpocz¹æ pracê.");
 			SendClientMessage(playerid, COLOR_WHITE, "(!) SprawdŸ ponownie /pomoc, aby poznaæ nowe komendy dostêpne tylko dla tej grupy.");
 			SendClientMessage(playerid, COLOR_WHITE, "> Aby przywitaæ siê z cz³onkami tej grupy, napisz: @! Czeœæ. (wiêcej w /pomoc -> Czaty grupowe)");
+		}
+		case DIALOG_SHOW_TELEPHONE_MENU: {
+			if(!response) {
+				return 1;
+			}
+			
+			switch(listitem) {
+				case 0: {
+					new str[128];
+					mainStr[0] = EOS;
+					
+					strcat(mainStr, "{FFFFFF}333\tTaxi, restauracje i inne firmy\n777\tZamówienia\n911\tPomoc, s³u¿by porz¹dkowe\n-----\n");
+					
+					for(new i = 0; i < sizeof(playerContacts); i++) {
+						if(playerContacts[playerid][i] != 0) {
+							format(str, sizeof(str), "%s\n{FFFFFF}%d\t%d\t%s", str, playerContacts[playerid][i], playerContacts[playerid][i], checkPhoneOwnerFromNumber(playerContacts[playerid][i]));
+						}
+					}
+					
+					strcat(mainStr, str);
+					ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_CONTACTS, DIALOG_STYLE_LIST, "Telefon > Kontakty", mainStr, "Wybierz", "Anuluj");
+				}
+				case 1: {
+				
+				}
+				case 2: {
+				
+				}
+				case 3: {
+					ShowPlayerDialog(playerid, DIALOG_TELEPHONE_ENTER_NUMBER, DIALOG_STYLE_INPUT, "Telefon > Numer", "WprowadŸ numer telefonu (Pamiêtaj aby zawiera³ 7 cyfr).", "Wybierz", "Anuluj");
+				}
+			}
+		}
+		case DIALOG_SHOW_TELEPHONE_CONTACTS: {
+			if(!response) {
+				return 1;
+			}
+			
+			new tmpNum, id, str[64], h, m, d;
+			
+			tmpNum = strval(inputtext);
+			id = checkPhoneOwnerIdFromNumber(tmpNum);
+			telEnterNumber[playerid] = tmpNum;
+			telEnterNumber[id] = pVars[playerid][pTelNum];
+			
+			ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 0, 0, 0, 1, 1);
+			ClearAnimations(playerid);
+			ApplyAnimation(playerid, "PED", "PHONE_TALK", 4.1, 1, 0, 0, 0, 1, 1);
+					
+			usedTelephone[playerid] = true;
+					
+			mainStr[0] = EOS;
+			format(str, sizeof(str), "Tel. %d [%d:%d:%d]", pVars[id][pTelNum], h, m, d);
+			strcat(mainStr, "{FFFFFF}8\tOdbierz\n9\tZignoruj");
+			ShowPlayerDialog(id, DIALOG_TELEPHONE_CALL_CHOICE, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");			
+		}
+		case DIALOG_TELEPHONE_ENTER_NUMBER: {
+			if(!response) {
+				return 1;
+			}
+			
+			telEnterNumber[playerid] = strval(inputtext);
+			
+			ShowPlayerDialog(playerid, DIALOG_TELEPHONE_NUMBER_OPTS, DIALOG_STYLE_LIST, "Telefon > Numer > Opcje", "{FFFFFF}1\tZadzwoñ\n2\tDodaj do kontaktów", "Wybierz", "Anuluj");
+		}
+		case DIALOG_TELEPHONE_NUMBER_OPTS: {
+			if(!response) {
+				return 1;
+			}
+			
+			switch(listitem) {
+				case 0: {
+					new id = checkPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
+					new str[32], h, m, d;
+				
+					gettime(h, m, d);
+					ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 0, 0, 0, 1, 1);
+					ClearAnimations(playerid);
+					ApplyAnimation(playerid, "PED", "PHONE_TALK", 4.1, 1, 0, 0, 0, 1, 1);
+					
+					usedTelephone[playerid] = true;
+					telEnterNumber[id] = pVars[playerid][pTelNum];
+					
+					mainStr[0] = EOS;
+					format(str, sizeof(str), "Tel. %d [%d:%d:%d]", pVars[id][pTelNum], h, m, d);
+					strcat(mainStr, "{FFFFFF}8\tOdbierz\n9\tZignoruj");
+					ShowPlayerDialog(id, DIALOG_TELEPHONE_CALL_CHOICE, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
+				}
+				case 1: {
+					queryStr[0] = EOS;
+					
+					for(new i = 0; i < sizeof(playerContacts); i++) {
+						if(!playerContacts[playerid][i]) {
+							playerContacts[playerid][i] = telEnterNumber[playerid];
+							
+							format(queryStr, sizeof(queryStr), "INSERT INTO `Contacts`(`UID`, `Number`) VALUES ('%d', '%d')", pVars[playerid][pUid], playerContacts[playerid][i]);
+							mysql_query(queryStr);
+							break;
+						}
+					}
+					
+					GameTextForPlayer(playerid, "~r~Pomyslnie dodano nowy kontakt.", 5000, 3);
+				}
+			}
+		}
+		case DIALOG_TELEPHONE_CALL_CHOICE: {
+			if(!response) {
+				return 1;
+			}
+			
+			new id = checkPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
+			
+			switch(listitem) {
+				case 0: {
+					ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 0, 0, 0, 1, 1);
+					ClearAnimations(playerid);
+					ApplyAnimation(playerid, "PED", "PHONE_TALK", 4.1, 1, 0, 0, 0, 1, 1);
+					
+					usedTelephone[playerid] = true;
+				}
+				case 1: {
+					ClearAnimations(playerid);
+					ClearAnimations(id);
+					ApplyAnimation(playerid, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 1, 1);
+					ApplyAnimation(id, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 1, 1);
+				
+					usedTelephone[playerid] = false;
+					usedTelephone[id] = false;
+					telEnterNumber[playerid] = 0;
+					telEnterNumber[id] = 0;
+				
+					GameTextForPlayer(playerid, "~r~Rozmowa zakonczona.", 5000, 3);
+					GameTextForPlayer(id, "~r~Rozmowa zakonczona.", 5000, 3);
+				}
+			}
 		}
 	}
 	return 1;

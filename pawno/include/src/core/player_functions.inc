@@ -569,6 +569,30 @@ stock getPlayerStrengthPower(playerid) {
 	return 0;
 }
 
+stock checkPhoneOwnerFromNumber(number) {
+	new pId;
+	
+	foreach(new i : Player) {
+		if(pVars[i][pTelNum] == number) {
+			pId = i;
+			break;
+		}
+	}
+	return pVars[pId][pCharName];
+}
+
+stock checkPhoneOwnerIdFromNumber(number) {
+	new pId;
+	
+	foreach(new i : Player) {
+		if(pVars[i][pTelNum] == number) {
+			pId = i;
+			break;
+		}
+	}
+	return pId;
+}
+
 // return: void
 stock SetPlayerHealthEx(playerid, Float:health) {
 	pVars[playerid][pHp] = health;

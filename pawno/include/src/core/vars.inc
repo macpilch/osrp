@@ -19,6 +19,8 @@ new actualCashpoint[MAX_PLAYERS]; // Zapisuje aktualny bankomat w zasiegu gracza
 new playerFuelPrice[MAX_PLAYERS]; // Do tablicy trafia cena paliwa dla danego gracza podczas uzywania funkcji tankuj
 new offerFrom[MAX_PLAYERS]; // Przechowuje id osoby ktora wyslala oferte
 new offerFor[MAX_PLAYERS]; // Przechowuje id osoby ktora otrzymala oferte
+new playerContacts[MAX_PLAYERS][10];
+new telEnterNumber[MAX_PLAYERS];
 new vehCP[MAX_VEHICLES];
 new vehMapIcon[MAX_VEHICLES];
 
@@ -33,6 +35,7 @@ new	bool:isBW[MAX_PLAYERS];
 new bool:usedCmdLogin[MAX_PLAYERS];
 new bool:usedCmdReport[MAX_PLAYERS];
 new bool:hasBelts[MAX_PLAYERS];
+new bool:hasBank[MAX_PLAYERS];
 new bool:isDizzines[MAX_PLAYERS];
 new bool:usedTelephone[MAX_PLAYERS];
 

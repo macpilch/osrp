@@ -15,6 +15,7 @@
 
 #undef MAX_PLAYERS
 #undef MAX_VEHICLES
+#undef MAX_OBJECTS
 
 #define MAX_PLAYERS 2
 #define MAX_VEHICLES 20
@@ -27,6 +28,7 @@
 #define MAX_BUS_STOPS 10
 #define MAX_CASHPOINTS 20
 #define MAX_FRACTIONS 100
+#define MAX_OBJECTS 100
 
 // Callbacks
 #define sampCallback:%0(%1) \

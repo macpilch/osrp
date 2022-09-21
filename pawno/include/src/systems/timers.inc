@@ -196,18 +196,23 @@ Timer:globalTimer[1000]() {
 				switch(getVehicleSpeed(vVars[j][vId])) {
 					case 1 .. 50: {
 						vVars[j][vFuel] -= 0.001;
+						vVars[j][vMileage] += getVehicleDistance(vVars[j][vId]);
 					}
 					case 51 .. 90: {
 						vVars[j][vFuel] -= 0.004;
+						vVars[j][vMileage] += getVehicleDistance(vVars[j][vId]);
 					}
 					case 91 .. 120: {
 						vVars[j][vFuel] -= 0.005;
+						vVars[j][vMileage] += getVehicleDistance(vVars[j][vId]);
 					}
 					case 121 .. 220: {
 						vVars[j][vFuel] -= 0.01;
+						vVars[j][vMileage] += getVehicleDistance(vVars[j][vId]);
 					}
 					default: {
 						vVars[j][vFuel] -= 0.0001;
+						vVars[j][vMileage] += getVehicleDistance(vVars[j][vId]);
 					}
 				}
 				

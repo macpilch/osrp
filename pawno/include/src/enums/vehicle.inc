@@ -26,7 +26,7 @@ enum VehicleData {
 	bool:vEngine,
 	bool:vLights,
 	bool:vSpawned,
-	vMileage, // Przebieg
+	Float: vMileage, // Przebieg
 	Text3D:vDesc,
 	vDescInfo[64]
 };

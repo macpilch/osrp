@@ -372,4 +372,21 @@ CMD:createfraction(playerid, params[]) {
 	return 1;
 }
 
+CMD:createnumberplayer(playerid, params[]) {
+	new playerToGive;
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+		
+		if(isAdminDuty[playerid]) {
+			if(sscanf(params, "i", playerToGive)) {
+				
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /createnumber [Id gracza],");
+			}
+			
+			createNumber(playerToGive);
+		}
+	}
+	
+	return 1;
+}
+
 #endif 
