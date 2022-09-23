@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 16.09.2022
+	Modified: 23.09.2022
 */
 
 #if !defined _TIMERS_
@@ -169,11 +169,11 @@ Timer:globalTimer[1000]() {
 		
 		if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
 			if(hasBelts[i]) {
-				format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%0.2f~w~ KM~n~~w~Paliwo: ~b~%f~w~ L~n~Pasy: ~g~zapiete", getVehicleSpeed(vVars[actualVehicle[i]][vId]), vVars[actualVehicle[i]][vMileage], vVars[actualVehicle[i]][vFuel]);
+				format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%0.2f~w~ KM~n~~w~Paliwo: ~b~%0.2f~w~ L~n~Pasy: ~g~zapiete", getVehicleSpeed(vVars[actualVehicle[i]][vId]), vVars[actualVehicle[i]][vMileage], vVars[actualVehicle[i]][vFuel]);
 				TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
 				TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
 			} else {
-				format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%0.2f~w~ KM~n~~w~Paliwo: ~b~%f~w~ L~n~Pasy: ~r~odpiete", getVehicleSpeed(vVars[actualVehicle[i]][vId]), vVars[actualVehicle[i]][vMileage], vVars[actualVehicle[i]][vFuel]);
+				format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%0.2f~w~ KM~n~~w~Paliwo: ~b~%0.2f~w~ L~n~Pasy: ~r~odpiete", getVehicleSpeed(vVars[actualVehicle[i]][vId]), vVars[actualVehicle[i]][vMileage], vVars[actualVehicle[i]][vFuel]);
 				TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
 				TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
 			}
