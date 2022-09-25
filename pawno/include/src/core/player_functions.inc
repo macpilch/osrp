@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
-	Modified: 16.09.2022
+	Modified: 25.09.2022
 */
 
 #if !defined _PLAYER_FUNCTIONS_
@@ -371,19 +371,63 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawSetShadow(doorInfo[playerid][2], 0);
 	TextDrawSetOutline(doorInfo[playerid][2], 0);
 	TextDrawFont(doorInfo[playerid][2], 0);
+	
+	telephoneCall[playerid][0] = TextDrawCreate(532.239624, 119.583267, "~w~Ktos do Ciebie dzwoni!~n~~y~Numer: 1234567~n~~n~~y~~h~Wejdz do menu telefonu,~n~~w~by odebrac lub odrzucic~n~polaczenie");
+	TextDrawLetterSize(telephoneCall[playerid][0], 0.269150, 1.139166);
+	TextDrawAlignment(telephoneCall[playerid][0], 2);
+	TextDrawColor(telephoneCall[playerid][0], -1);
+	TextDrawSetShadow(telephoneCall[playerid][0], 0);
+	TextDrawSetOutline(telephoneCall[playerid][0], 0);
+	TextDrawBackgroundColor(telephoneCall[playerid][0], 255);
+	TextDrawFont(telephoneCall[playerid][0], 1);
+	TextDrawSetProportional(telephoneCall[playerid][0], 1);
+
+	telephoneCall[playerid][1] = TextDrawCreate(606.860900, 119.916664, "_");
+	TextDrawLetterSize(telephoneCall[playerid][1], 0.000000, 6.942592);
+	TextDrawTextSize(telephoneCall[playerid][1], 453.871154, 0.000000);
+	TextDrawAlignment(telephoneCall[playerid][1], 1);
+	TextDrawColor(telephoneCall[playerid][1], 0);
+	TextDrawUseBox(telephoneCall[playerid][1], 1);
+	TextDrawBoxColor(telephoneCall[playerid][1], 102);
+	TextDrawSetShadow(telephoneCall[playerid][1], 0);
+	TextDrawSetOutline(telephoneCall[playerid][1], 0);
+	TextDrawFont(telephoneCall[playerid][1], 0);
 	return 1;
 }
 
 stock loadPlayerValues(playerid) {
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `Rank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `VW`, `INT`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `Fraction`, `DriverLicense`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `Rank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `VW`, `INT`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `TelNum`, `Fraction`, `DriverLicense`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	mysql_store_result();
 	
 	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>iiis[24]iiiiiiiffiiiiiiifff", 
+	sscanf(queryStr, "p<|>iiis[24]iiiiiiiffiiiiiiiifff", 
 	pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pHp],
-	pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pFraction], pVars[playerid][pDriverLicense], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+	pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pTelNum], pVars[playerid][pFraction], pVars[playerid][pDriverLicense], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+	
+	mysql_free_result();
+	return 1;
+}
+
+stock loadPlayerContacts(playerid) {
+	queryStr[0] = EOS;
+	
+	format(queryStr, sizeof(queryStr), "SELECT `Number` FROM `Contacts` WHERE `UID` = '%d'", pVars[playerid][pUid]);
+	mysql_query(queryStr);
+	mysql_store_result();
+	
+	if(!mysql_num_rows()) {
+		return 1;
+	}
+	
+	new i;
+	
+	while(mysql_fetch_row(queryStr, "|")) {
+		sscanf(queryStr, "p<|>i", playerContacts[playerid][i]);
+		
+		i++;
+	}
 	
 	mysql_free_result();
 	return 1;
@@ -526,9 +570,9 @@ stock savePlayerValues(playerid) {
 	pVars[playerid][pInt] = GetPlayerInterior(playerid);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `VW` = '%d', `INT` = '%d', `Hp` = '%f', `Ap` = '%f', `Skin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `Fraction` = '%d', `DriverLicense` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'", 
-	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pFraction], pVars[playerid][pDriverLicense],
-	pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `VW` = '%d', `INT` = '%d', `Hp` = '%f', `Ap` = '%f', `Skin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `TelNum` = '%d', `Fraction` = '%d', `DriverLicense` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'", 
+	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pTelNum], pVars[playerid][pFraction],
+	pVars[playerid][pDriverLicense], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	return 1;
 }
@@ -570,7 +614,7 @@ stock getPlayerStrengthPower(playerid) {
 }
 
 stock checkPhoneOwnerFromNumber(number) {
-	new pId;
+	new pId, charName[24];
 	
 	foreach(new i : Player) {
 		if(pVars[i][pTelNum] == number) {
@@ -578,7 +622,9 @@ stock checkPhoneOwnerFromNumber(number) {
 			break;
 		}
 	}
-	return pVars[pId][pCharName];
+	
+	format(charName, sizeof(charName), pVars[pId][pCharName]);
+	return charName;
 }
 
 stock checkPhoneOwnerIdFromNumber(number) {

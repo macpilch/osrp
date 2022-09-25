@@ -336,7 +336,7 @@ CMD:v(playerid, params[]) {
 			vVars[vehid][vUid], vVars[vehid][vOUid], vVars[vehid][vModelId], vVars[vehid][vId], vVars[vehid][vColor1], vVars[vehid][vColor2], vHp);
 			TextDrawSetString(vehicleStats[playerid][0], mainStr);
 			
-			format(str, sizeof(str), "~b~Przebieg~w~: %dkm ~b~Paliwo~w~: %0.1f", vVars[vehid][vMileage], vVars[vehid][vFuel]);
+			format(str, sizeof(str), "~b~Przebieg~w~: %0.1fkm ~b~Paliwo~w~: %0.1f", vVars[vehid][vMileage], vVars[vehid][vFuel]);
 			TextDrawSetString(vehicleStats[playerid][1], str);
 			
 			for(new i = 0; i < 2; i++) {

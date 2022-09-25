@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 16.09.2022
+	Modified: 25.09.2022
 */
 
 #if !defined _DEFINES_
@@ -18,15 +18,15 @@
 #undef MAX_OBJECTS
 
 #define MAX_PLAYERS 2
-#define MAX_VEHICLES 20
+#define MAX_VEHICLES 100
 #define MAX_PLAYER_CHARS 6
-#define MAX_ITEMS 20
-#define MAX_DOORS 10
-#define MAX_STATIONS 8
-#define MAX_GAS_PUMPS 20
-#define MAX_PETROL_STATIONS 3
-#define MAX_BUS_STOPS 10
-#define MAX_CASHPOINTS 20
+#define MAX_ITEMS 100
+#define MAX_DOORS 100
+#define MAX_STATIONS 100
+#define MAX_GAS_PUMPS 100
+#define MAX_PETROL_STATIONS 100
+#define MAX_BUS_STOPS 100
+#define MAX_CASHPOINTS 100
 #define MAX_FRACTIONS 100
 #define MAX_OBJECTS 100
 

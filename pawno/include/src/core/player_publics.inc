@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 16.09.2022
+	Modified: 23.09.2022
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -82,7 +82,7 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 	} else {
 		mysql_free_result();
 		
-		new tmpPVars[MAX_PLAYER_CHARS][2];
+		new tmpPVars[10][2];
 		new i;
 		
 		mainStr[0] = EOS;
@@ -214,9 +214,12 @@ sampCallback:OnPlayerText(playerid, text[]) {
 	} else {
 		if(usedTelephone[playerid]) {
 			new id = checkPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
+			new telStr[256];
+			
+			format(telStr, sizeof(telStr), "{FFFF00}%d (telefon, %s): %s", pVars[playerid][pTelNum], pVars[playerid][pSex] ? ("kobieta") : ("mê¿czyzna"), text);
+			SendClientMessage(id, COLOR_WHITE, telStr);
 			
 			format(mainStr, sizeof(mainStr), "%s (telefon): %s", pVars[playerid][pCharName], textStr);
-			SendClientMessage(id, COLOR_WHITE, mainStr);
 			sendDistanceMessage(playerid, 20.0, mainStr, COLOR_DARKGRAY, COLOR_MEDGRAY, COLOR_GRAY, COLOR_WHITE);
 		} else {
 			format(mainStr, sizeof(mainStr), "%s mówi: %s", pVars[playerid][pCharName], textStr);
@@ -549,6 +552,8 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			if(!strcmp(pVars[playerid][pPass], inputtext, false)) {
 				TogglePlayerSpectating(playerid, 0);
 				loadPlayerValues(playerid);
+				loadPlayerContacts(playerid);
+				
 				hasLoged[playerid] = true;
 				
 				format(mainStr, sizeof(mainStr), "{A52A2A}Witaj, %s (UID %d, ID %d). Mi³ej gry!", pVars[playerid][pCharName], pVars[playerid][pUid], playerid);
@@ -588,12 +593,12 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			mysql_free_result();
 			
-			format(queryStr, sizeof(queryStr), "SELECT `GUID`, `UID`, `AccName`, `Pass` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+			format(queryStr, sizeof(queryStr), "SELECT `UID`, `Pass` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 			mysql_query(queryStr);
 			mysql_store_result();
 			
 			mysql_fetch_row(queryStr, "|");
-			sscanf(queryStr, "p<|>iis[24]s[32]", pVars[playerid][pGuid], pVars[playerid][pUid], pVars[playerid][pAccName], pVars[playerid][pPass]);
+			sscanf(queryStr, "p<|>is[32]", pVars[playerid][pUid], pVars[playerid][pPass]);
 			mysql_free_result();
 			
 			GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~n~~n~~y~Postac zmieniona.", 5000, 3);
@@ -899,7 +904,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			switch(listitem) {
 				case 0: {
-					new str[128];
+					new str[256];
 					mainStr[0] = EOS;
 					
 					strcat(mainStr, "{FFFFFF}333\tTaxi, restauracje i inne firmy\n777\tZamówienia\n911\tPomoc, s³u¿by porz¹dkowe\n-----\n");
@@ -929,7 +934,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return 1;
 			}
 			
-			new tmpNum, id, str[64], h, m, d;
+			new tmpNum, id;
 			
 			tmpNum = strval(inputtext);
 			id = checkPhoneOwnerIdFromNumber(tmpNum);
@@ -937,15 +942,18 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			telEnterNumber[id] = pVars[playerid][pTelNum];
 			
 			ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 0, 0, 0, 1, 1);
-			ClearAnimations(playerid);
-			ApplyAnimation(playerid, "PED", "PHONE_TALK", 4.1, 1, 0, 0, 0, 1, 1);
-					
-			usedTelephone[playerid] = true;
-					
+			PlayerPlaySound(playerid, 3600, 0.0, 0.0, 0.0);
+			
 			mainStr[0] = EOS;
-			format(str, sizeof(str), "Tel. %d [%d:%d:%d]", pVars[id][pTelNum], h, m, d);
-			strcat(mainStr, "{FFFFFF}8\tOdbierz\n9\tZignoruj");
-			ShowPlayerDialog(id, DIALOG_TELEPHONE_CALL_CHOICE, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");			
+			format(mainStr, sizeof(mainStr), "~w~Ktos do Ciebie dzwoni!~n~~y~Numer: %d~n~~n~~y~~h~Wejdz do menu telefonu,~n~~w~by odebrac lub odrzucic~n~polaczenie", pVars[playerid][pTelNum]);
+			TextDrawSetString(telephoneCall[id][0], mainStr);
+			
+			for(new i = 0; i < sizeof(telephoneCall); i++) {
+				TextDrawShowForPlayer(id, telephoneCall[id][i]);
+			}
+			
+			format(mainStr, sizeof(mainStr), "** Dzwoni telefon %s.", pVars[id][pCharName]);
+			sendDistanceMessage(id, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		}
 		case DIALOG_TELEPHONE_ENTER_NUMBER: {
 			if(!response) {
@@ -964,20 +972,22 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			switch(listitem) {
 				case 0: {
 					new id = checkPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
-					new str[32], h, m, d;
-				
-					gettime(h, m, d);
-					ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 0, 0, 0, 1, 1);
-					ClearAnimations(playerid);
-					ApplyAnimation(playerid, "PED", "PHONE_TALK", 4.1, 1, 0, 0, 0, 1, 1);
 					
-					usedTelephone[playerid] = true;
+					ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 1, 1, 1, 1, 1);
+					PlayerPlaySound(playerid, 3600, 0.0, 0.0, 0.0);
+					
 					telEnterNumber[id] = pVars[playerid][pTelNum];
 					
 					mainStr[0] = EOS;
-					format(str, sizeof(str), "Tel. %d [%d:%d:%d]", pVars[id][pTelNum], h, m, d);
-					strcat(mainStr, "{FFFFFF}8\tOdbierz\n9\tZignoruj");
-					ShowPlayerDialog(id, DIALOG_TELEPHONE_CALL_CHOICE, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
+					format(mainStr, sizeof(mainStr), "~w~Ktos do Ciebie dzwoni!~n~~y~Numer: %d~n~~n~~y~~h~Wejdz do menu telefonu,~n~~w~by odebrac lub odrzucic~n~polaczenie", pVars[playerid][pTelNum]);
+					TextDrawSetString(telephoneCall[id][0], mainStr);
+					
+					for(new i = 0; i < sizeof(telephoneCall); i++) {
+						TextDrawShowForPlayer(id, telephoneCall[id][i]);
+					}
+					
+					format(mainStr, sizeof(mainStr), "** Dzwoni telefon %s.", pVars[id][pCharName]);
+					sendDistanceMessage(id, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 				}
 				case 1: {
 					queryStr[0] = EOS;
@@ -986,13 +996,13 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 						if(!playerContacts[playerid][i]) {
 							playerContacts[playerid][i] = telEnterNumber[playerid];
 							
+							GameTextForPlayer(playerid, "~r~Pomyslnie dodano nowy kontakt.", 5000, 3);
+							
 							format(queryStr, sizeof(queryStr), "INSERT INTO `Contacts`(`UID`, `Number`) VALUES ('%d', '%d')", pVars[playerid][pUid], playerContacts[playerid][i]);
 							mysql_query(queryStr);
 							break;
 						}
 					}
-					
-					GameTextForPlayer(playerid, "~r~Pomyslnie dodano nowy kontakt.", 5000, 3);
 				}
 			}
 		}
@@ -1005,17 +1015,14 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			switch(listitem) {
 				case 0: {
-					ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 0, 0, 0, 1, 1);
-					ClearAnimations(playerid);
-					ApplyAnimation(playerid, "PED", "PHONE_TALK", 4.1, 1, 0, 0, 0, 1, 1);
+					ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 1, 1, 1, 1, 1);
 					
+					usedTelephone[id] = true;
 					usedTelephone[playerid] = true;
 				}
 				case 1: {
-					ClearAnimations(playerid);
-					ClearAnimations(id);
-					ApplyAnimation(playerid, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 1, 1);
-					ApplyAnimation(id, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 1, 1);
+					ApplyAnimation(playerid, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
+					ApplyAnimation(id, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
 				
 					usedTelephone[playerid] = false;
 					usedTelephone[id] = false;
@@ -1023,8 +1030,12 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					telEnterNumber[id] = 0;
 				
 					GameTextForPlayer(playerid, "~r~Rozmowa zakonczona.", 5000, 3);
-					GameTextForPlayer(id, "~r~Rozmowa zakonczona.", 5000, 3);
+					SendClientMessage(id, COLOR_WHITE, "{FFFF00}Rozmówca nie odebra³ telefonu.");
 				}
+			}
+			
+			for(new i = 0; i < sizeof(telephoneCall); i++) {
+				TextDrawHideForPlayer(playerid, telephoneCall[playerid][i]);
 			}
 		}
 	}

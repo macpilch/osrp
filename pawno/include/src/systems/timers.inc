@@ -169,11 +169,11 @@ Timer:globalTimer[1000]() {
 		
 		if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
 			if(hasBelts[i]) {
-				format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%d~w~ KM~n~~w~Paliwo: ~b~%f~w~ L~n~Pasy: ~g~zapiete", getVehicleSpeed(vVars[actualVehicle[i]][vId]), vVars[actualVehicle[i]][vMileage], vVars[actualVehicle[i]][vFuel]);
+				format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%0.1f~w~ KM~n~~w~Paliwo: ~b~%0.1f~w~ L~n~Pasy: ~g~zapiete", getVehicleSpeed(vVars[actualVehicle[i]][vId]), vVars[actualVehicle[i]][vMileage], vVars[actualVehicle[i]][vFuel]);
 				TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
 				TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
 			} else {
-				format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%d~w~ KM~n~~w~Paliwo: ~b~%f~w~ L~n~Pasy: ~r~odpiete", getVehicleSpeed(vVars[actualVehicle[i]][vId]), vVars[actualVehicle[i]][vMileage], vVars[actualVehicle[i]][vFuel]);
+				format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%0.1f~w~ KM~n~~w~Paliwo: ~b~%0.1f~w~ L~n~Pasy: ~r~odpiete", getVehicleSpeed(vVars[actualVehicle[i]][vId]), vVars[actualVehicle[i]][vMileage], vVars[actualVehicle[i]][vFuel]);
 				TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
 				TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
 			}
@@ -258,10 +258,10 @@ Timer:townHallBellsTimer[59000]() {
 			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d razy. **", hours);
 			SendClientMessage(i, COLOR_WHITE, timerStr);
 		}
-		
-		if(hours == 0) {
-			changePricesGasPumps();
-		}
+	}
+	
+	if(hours == 0) {
+		changePricesGasPumps();
 	}
 }
 

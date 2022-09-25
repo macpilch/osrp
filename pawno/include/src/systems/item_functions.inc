@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: item_functions.inc
 	Date: 14.08.2022
-	Modified: 16.09.2022
+	Modified: 23.09.2022
 */
 
 #if !defined _ITEM_FUNCTIONS_
@@ -51,10 +51,12 @@ stock addPlayerItem(playerid, itemid) {
 	mysql_store_result();
 	itemsCount = mysql_fetch_int();
 	
-	if(!itemsCount)
+	if(!itemsCount) {
 		freeId = 0;
-	else
+	} else {
 		freeId = itemsCount;
+	}
+	
 	mysql_free_result();
 	
 	iVars[freeId][iUid] = freeId + 1;
@@ -161,40 +163,44 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			}
 		}
 		case P_TELEFON: {
-			if(!iVars[srvitemid][iUsed]) {
-				if(!usedTelephone[playerid]) {
-					new str[32], h, m, d;
-					
-					gettime(h, m, d);
-					format(str, sizeof(str), "Tel. %d [%d:%d:%d]", pVars[playerid][pTelNum], h, m, d);
-					
-					mainStr[0] = EOS;
-					strcat(mainStr, "{FFFFFF}1\tZadzwoñ do kontaktu lub firmy\n2\tWyœlij SMS do kontaktu\n3\tUsuñ kontakt\n");
-					strcat(mainStr, "4\tWybierz numer\n5\tWycisz telefon\n6\tWy³¹cz");
-					ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
-					
-					format(mainStr, sizeof(mainStr), "* %s wyci¹ga telefon.", pVars[playerid][pCharName]);
-					sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
-					
-					iVars[srvitemid][iUsed] = true;
-				} else {
-					new id = checkPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
-					
-					ClearAnimations(playerid);
-					ClearAnimations(id);
-					ApplyAnimation(playerid, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 1, 1);
-					ApplyAnimation(id, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 1, 1);
+			new id = checkPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
+			
+			if(telEnterNumber[id] == pVars[playerid][pTelNum] && !usedTelephone[id] && !usedTelephone[playerid]) {
+				new str[32], h, m, d;
 				
-					usedTelephone[playerid] = false;
-					usedTelephone[id] = false;
-					telEnterNumber[playerid] = 0;
-					telEnterNumber[id] = 0;
+				mainStr[0] = EOS;
 				
-					GameTextForPlayer(playerid, "~r~Rozmowa zakonczona.", 5000, 3);
-					GameTextForPlayer(id, "~r~Rozmowa zakonczona.", 5000, 3);					
-				}
+				gettime(h, m, d);
+				format(str, sizeof(str), "Tel. %d [%d:%d:%d]", pVars[playerid][pTelNum], h, m, d);
+				
+				strcat(mainStr, "{FFFFFF}8\tOdbierz\n9\tZignoruj");
+				ShowPlayerDialog(playerid, DIALOG_TELEPHONE_CALL_CHOICE, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
+			} else if(usedTelephone[id] && usedTelephone[playerid]) {
+				ClearAnimations(playerid);
+				ClearAnimations(id);
+				ApplyAnimation(playerid, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
+				ApplyAnimation(id, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
+				
+				usedTelephone[playerid] = false;
+				usedTelephone[id] = false;
+				telEnterNumber[playerid] = 0;
+				telEnterNumber[id] = 0;
+				
+				GameTextForPlayer(playerid, "~r~Rozmowa zakonczona.", 5000, 3);
+				GameTextForPlayer(id, "~r~Rozmowa zakonczona.", 5000, 3);					
 			} else {
-				iVars[srvitemid][iUsed] = false;
+				new str[32], h, m, d;
+				
+				gettime(h, m, d);
+				format(str, sizeof(str), "Tel. %d [%d:%d:%d]", pVars[playerid][pTelNum], h, m, d);
+				
+				mainStr[0] = EOS;
+				strcat(mainStr, "{FFFFFF}1\tZadzwoñ do kontaktu lub firmy\n2\tWyœlij SMS do kontaktu\n3\tUsuñ kontakt\n");
+				strcat(mainStr, "4\tWybierz numer\n5\tWycisz telefon\n6\tWy³¹cz");
+				ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
+				
+				format(mainStr, sizeof(mainStr), "* %s wyci¹ga telefon.", pVars[playerid][pCharName]);
+				sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 			}
 		}
 	}
@@ -207,6 +213,7 @@ stock showDialogItems(playerid) {
 	
 	queryStr[0] = EOS;
 	mainStr[0] = EOS;
+	
 	format(queryStr, sizeof(queryStr), "SELECT `UID`, `Name` FROM `Items` WHERE `OUID` = '%d'", pVars[playerid][pUid]);
 	mysql_query(queryStr);
 	mysql_store_result();

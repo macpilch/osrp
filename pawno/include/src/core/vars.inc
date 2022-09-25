@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 16.09.2022
+	Modified: 25.09.2022
 */
 
 #if !defined _VARS_
@@ -52,6 +52,7 @@ new Text:vehicleSpeedMeter[MAX_PLAYERS][2];
 new Text:oocWarning[MAX_PLAYERS][2];
 new Text:damageRedScreen[MAX_PLAYERS];
 new Text:doorInfo[MAX_PLAYERS][3];
+new Text:telephoneCall[MAX_PLAYERS][2];
 
 new Iterator:vehItter<MAX_VEHICLES>;
 new Iterator:itemItter<MAX_ITEMS>;
