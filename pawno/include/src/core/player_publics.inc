@@ -192,38 +192,64 @@ sampCallback:OnPlayerText(playerid, text[]) {
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		return 0;
 	} else if(strfind(textStr, ".", false) == 0) {
-		if(strfind(textStr, ". ", false) == 0) {
-			for(new i = 0; i < 2; i++) {
-				TextDrawShowForPlayer(playerid, oocWarning[playerid][i]);
+		if(!isBW[playerid]) {
+			if(strfind(textStr, ". ", false) == 0) {
+				for(new i = 0; i < 2; i++) {
+					TextDrawShowForPlayer(playerid, oocWarning[playerid][i]);
+				}
+				
+				SetTimerEx("hideOOCWarning", 5000, false, "i", playerid);
 			}
 			
-			SetTimerEx("hideOOCWarning", 5000, false, "i", playerid);
-		}
-		
-		new str[128];
-		new str2[64];
-		
-		strmid(str, textStr, 1, strlen(textStr));
-		
-		format(mainStr, sizeof(mainStr), "[%d] %s: (( %s ))", playerid, pVars[playerid][pCharName], str);
-		SendClientMessage(playerid, COLOR_WHITE, mainStr);
+			new str[128];
+			new str2[64];
 			
-		format(str2, sizeof(str2), "(( %s ))", str);
-		SetPlayerChatBubble(playerid, str2, COLOR_WHITE, 30.0, 10000);
-		return 0;
-	} else {
-		if(usedTelephone[playerid]) {
-			new id = checkPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
-			new telStr[256];
+			strmid(str, textStr, 1, strlen(textStr));
 			
-			format(telStr, sizeof(telStr), "{FFFF00}%d (telefon, %s): %s", pVars[playerid][pTelNum], pVars[playerid][pSex] ? ("kobieta") : ("mê¿czyzna"), text);
-			SendClientMessage(id, COLOR_WHITE, telStr);
+			format(mainStr, sizeof(mainStr), "[%d] %s: (( %s ))", playerid, pVars[playerid][pCharName], str);
+			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 			
-			format(mainStr, sizeof(mainStr), "%s (telefon): %s", pVars[playerid][pCharName], textStr);
-			sendDistanceMessage(playerid, 20.0, mainStr, COLOR_DARKGRAY, COLOR_MEDGRAY, COLOR_GRAY, COLOR_WHITE);
+			format(str2, sizeof(str2), "(( %s ))", str);
+			SetPlayerChatBubble(playerid, str2, COLOR_WHITE, 30.0, 10000);
 		} else {
-			format(mainStr, sizeof(mainStr), "%s mówi: %s", pVars[playerid][pCharName], textStr);
-			sendDistanceMessage(playerid, 20.0, mainStr, COLOR_DARKGRAY, COLOR_MEDGRAY, COLOR_GRAY, COLOR_WHITE);			
+			SendClientMessage(playerid, COLOR_GRAY, "Nie mo¿esz tego zrobiæ podczas BW lub AJ. Zamiast /b, u¿yj /w.");
+		}
+		return 0;
+	} else if(strfind(textStr, "@1", true) == 0) {
+		if(!isBW[playerid]) {
+			new str[256], tmpFracId = pVars[playerid][pFraction];
+			
+			strmid(str, textStr, 2, strlen(textStr));
+			
+			mainStr[0] = EOS;
+			format(mainStr, sizeof(mainStr), "@%d %s (( %d.%s: %s ))", fVars[tmpFracId][fUid], fVars[tmpFracId][fName], playerid, pVars[playerid][pCharName], str);
+			
+			foreach(new i : Player) {
+				if(pVars[i][pFraction] == pVars[playerid][pFraction]) {
+					SendClientMessage(i, COLOR_WHITE, mainStr);
+				}
+			}
+		} else {
+			GameTextForPlayer(playerid, "~r~Nie podczas BW.", 4000, 3);
+		}
+	} else {
+		if(!isBW[playerid]) {
+			if(usedTelephone[playerid]) {
+				new id = checkPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
+				new telStr[256];
+				
+				format(telStr, sizeof(telStr), "{FFFF00}%d (telefon, %s): %s", pVars[playerid][pTelNum], pVars[playerid][pSex] ? ("kobieta") : ("mê¿czyzna"), text);
+				SendClientMessage(id, COLOR_WHITE, telStr);
+				
+				format(mainStr, sizeof(mainStr), "%s (telefon): %s", pVars[playerid][pCharName], textStr);
+				sendDistanceMessage(playerid, 20.0, mainStr, COLOR_DARKGRAY, COLOR_MEDGRAY, COLOR_GRAY, COLOR_WHITE);
+			} else {
+				format(mainStr, sizeof(mainStr), "%s mówi: %s", pVars[playerid][pCharName], textStr);
+				sendDistanceMessage(playerid, 20.0, mainStr, COLOR_DARKGRAY, COLOR_MEDGRAY, COLOR_GRAY, COLOR_WHITE);			
+			}
+		} else {
+			SendClientMessage(playerid, COLOR_GRAY, "Nie mo¿esz siê odzywaæ.");
+			return 0;
 		}
 	}
 	return 0;
@@ -341,7 +367,7 @@ sampCallback:OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		}
 	}
 	
-	if((newkeys & KEY_NO)) {
+	if(newkeys & KEY_NO) {
 		searchPlayerCashpoint(playerid);
 	}
 	return 1;
@@ -361,6 +387,10 @@ sampCallback:OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 	
 	if(dVars[tmpDoorId][dVw] != vw && dVars[tmpDoorId][dInt] != int) {
 		TextDrawSetString(doorInfo[playerid][0], dVars[tmpDoorId][dName]);
+		
+		if(!dVars[tmpDoorId][dOpen]) {
+			TextDrawSetString(doorInfo[playerid][1], "~y~Drzwi sa zamkniete.");
+		}
 		
 		for(new i = 0; i < 3; i++) {
 			TextDrawShowForPlayer(playerid, doorInfo[playerid][i]);
@@ -1043,8 +1073,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 }
 
 sampCallback:OnPlayerRequestSpawn(playerid) {
-	StopAudioStreamForPlayer(playerid);
-	
 	new str[64];
 	new callSec = GetTickCount();
 	

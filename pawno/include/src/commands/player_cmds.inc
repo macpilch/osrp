@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 20.09.2022
+	Modified: 25.09.2022
 */
 
 #if !defined _PLAYER_CMDS_
@@ -24,33 +24,33 @@ CMD:pomoc(playerid, params[]) {
 }
 
 CMD:w(playerid, params[]) {
-	new id, pmStr[256];
+	new pId, pmStr[256];
 	
-	if(sscanf(params, "is[256]", id, pmStr)) {
+	if(sscanf(params, "is[256]", pId, pmStr)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /w [ID] [Wiadomoœæ]");
 	}
 	
-	if(id == playerid) {
+	if(pId == playerid) {
 		return GameTextForPlayer(playerid, "~y~Nie mozesz wyslac wiadomosci do siebie.", 5000, 3);
 	}
 	
-	if(!IsPlayerConnected(id)) {
+	if(!IsPlayerConnected(pId)) {
 		return GameTextForPlayer(playerid, "~r~Taki gracz nie istnieje.", 5000, 3);
 	}
 	
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "(( > %s (%d): %s ))", pVars[id][pCharName], id, pmStr);
+	format(mainStr, sizeof(mainStr), "(( > %s (%d): %s ))", pVars[pId][pCharName], pId, pmStr);
 	SendClientMessage(playerid, COLOR_LIGHTORANGE, mainStr);
 	
 	format(mainStr, sizeof(mainStr), "(( %s (%d): %s ))", pVars[playerid][pCharName], playerid, pmStr);
-	SendClientMessage(id, COLOR_ORANGE, mainStr);
+	SendClientMessage(pId, COLOR_ORANGE, mainStr);
 	return 1;
 }
 
 CMD:czat(playerid, params[]) {
-	new id;
+	new pId;
 	
-	if(sscanf(params, "i", id)) {
+	if(sscanf(params, "i", pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /czat [ID]");
 	}
 	
@@ -110,6 +110,25 @@ CMD:a(playerid, params[]) {
 	return 1;
 }
 
+CMD:id(playerid, params[]) {
+	new name[24], str[128];
+	
+	if(sscanf(params, "s[24]", name)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /id [Czêœæ Imienia]");
+	}
+	
+	foreach(new i : Player) {
+		if(strfind(pVars[i][pCharName], name, true) != -1) {
+			format(str, sizeof(str), "%s\n{FFFFFF}%d\t%s", str, i, pVars[i][pCharName]);
+		} else {
+			return GameTextForPlayer(playerid, "~r~Brak wynikow~n~~n~~w~Zaden gracz nie spelnia~n~kryteriow wyszukiwan.", 4000, 3);
+		}
+	}
+	
+	ShowPlayerDialog(playerid, DIALOG_SEARCH_ID, DIALOG_STYLE_LIST, "Lista graczy", str, "PW", "Zamknij");
+	return 1;
+}
+
 CMD:me(playerid, params[]) {
 	new str[512];
 	
@@ -135,6 +154,10 @@ CMD:do(playerid, params[]) {
 }
 
 CMD:login(playerid, params[]) {
+	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER || GetPlayerState(playerid) == PLAYER_STATE_PASSENGER) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Musisz byæ pieszo, by siê wylogowaæ.");
+	}
+	
 	TogglePlayerSpectating(playerid, 1);
 	SetPlayerName(playerid, pVars[playerid][pAccName]);
 	GetPlayerName(playerid, pVars[playerid][pAccName], 24);
@@ -195,16 +218,16 @@ CMD:u(playerid, params[]) {
 }
 
 CMD:o(playerid, params[]) {
-	new type, id, cmdParams;
+	new type, pId, cmdParams;
 	new str[32];
 	
-	if(sscanf(params, "iii", type, id, cmdParams)) {
+	if(sscanf(params, "iii", type, pId, cmdParams)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /o [Us³uga] [Gracz] (Opcjonalne parametry)");
 	}
 	
 	mainStr[0] = EOS;
-	offerFrom[id] = playerid;
-	offerFor[playerid] = id;
+	offerFrom[pId] = playerid;
+	offerFor[playerid] = pId;
 	pVars[playerid][pFraction] = type;
 	format(pVars[playerid][pGroup], 32, fVars[type][fName]);
 	
@@ -212,7 +235,7 @@ CMD:o(playerid, params[]) {
 	format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", fVars[type][fId], fVars[type][fName], cmdParams);
 	
 	GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
-	ShowPlayerDialog(id, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+	ShowPlayerDialog(pId, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
 	return 1;
 }
 
@@ -239,7 +262,7 @@ CMD:zegarek(playerid, params[]) {
 CMD:v(playerid, params[]) {
 	if(!checkPlayerVehicleId(playerid)) {
 		mainStr[0] = EOS;
-			
+		
 		strcat(mainStr, "W tym miejscu pojawi siê lista posiadanych przez Ciebie pojazdów.\n\n");
 		strcat(mainStr, "Kup nowy pojazd w salonie samochodowym lub u¿ywany od innego gracza.\n\n");
 		strcat(mainStr, "Pojazdom mo¿na dodawaæ komponenty i zabezpieczenia w warsztatach.");
@@ -388,6 +411,17 @@ CMD:v(playerid, params[]) {
 	return 1;
 }
 
+CMD:zamknij(playerid, params[]) {
+	mainStr[0] = EOS;
+	
+	format(mainStr, sizeof(mainStr), "* %s zamyka drzwi na klucz.", pVars[playerid][pCharName]);
+	sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+	
+	format(mainStr, sizeof(mainStr), "* %s otwiera drzwi kluczem.", pVars[playerid][pCharName]);
+	sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+	return 1;
+}
+
 CMD:report(playerid, params[]) {
 	new str[256];
 	new reason[128];
@@ -406,7 +440,7 @@ CMD:report(playerid, params[]) {
 	
 	usedCmdReport[playerid] = true;
 	
-	format(str, sizeof(str), "{FF0000}Wys³ano: [ID %d]%s: %d %s (%s)", playerid, pVars[playerid][pCharName], id, reason, pVars[id][pCharName]);
+	format(str, sizeof(str), "{FF0000}Wys³ano: [ID %d]%s: %d %s. (%s)", playerid, pVars[playerid][pCharName], id, reason, pVars[id][pCharName]);
 	SendClientMessage(playerid, COLOR_WHITE, str);
 	SendClientMessage(playerid, COLOR_WHITE, "{A52A2A}Pamiêtaj proszê, ¿e /raport s³u¿y do raportowania biê¿¹cych sytuacji z gry.");
 	SendClientMessage(playerid, COLOR_WHITE, "{A52A2A}Nie ma tu systemu kolejkowania próœb i prawie na pewno zostan¹ one pominiête.");

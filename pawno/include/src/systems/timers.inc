@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 16.09.2022
+	Modified: 25.09.2022
 */
 
 #if !defined _TIMERS_
@@ -224,8 +224,25 @@ Timer:globalTimer[1000]() {
 						
 					vVars[j][vFuel] = 0;
 					vVars[j][vEngine] = false;
-							
+						
 					GameTextForPlayer(i, "~r~Brak paliwa w pojezdzie.", 5000, 3);
+				}
+				
+				new Float:vHealth;
+				GetVehicleHealth(vVars[j][vId], vHealth);
+				
+				if(vHealth <= 300.0) {
+					new engine, lights, alarm, doors, bonnet, boot, objective;
+						
+					GetVehicleParamsEx(vVars[j][vId], engine, lights, alarm, doors, bonnet, boot, objective);
+					SetVehicleParamsEx(vVars[j][vId], 0, lights, alarm, doors, bonnet, boot, objective);					
+					SetVehicleHealth(vVars[j][vId], 300.0);
+					
+					vVars[j][vEngine] = false;
+					
+					if(IsPlayerInVehicle(i, vVars[j][vId])) {
+						SendClientMessage(i, COLOR_PURPLE, "** Silnik zgas³ ze wzglêdu na z³y stan pojazdu. **");
+					}
 				}
 			}
 		}

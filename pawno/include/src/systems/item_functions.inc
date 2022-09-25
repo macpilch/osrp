@@ -43,20 +43,14 @@ stock saveItemValues() {
 }
 
 stock addPlayerItem(playerid, itemid) {
-	new itemsCount, freeId;
+	new freeId;
 	
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `Items`");
 	mysql_query(queryStr);
 	mysql_store_result();
-	itemsCount = mysql_fetch_int();
 	
-	if(!itemsCount) {
-		freeId = 0;
-	} else {
-		freeId = itemsCount;
-	}
-	
+	freeId = mysql_fetch_int();
 	mysql_free_result();
 	
 	iVars[freeId][iUid] = freeId + 1;

@@ -396,6 +396,8 @@ stock createPlayerTextDraws(playerid) {
 }
 
 stock loadPlayerValues(playerid) {
+	StopAudioStreamForPlayer(playerid);
+	
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `Rank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `VW`, `INT`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `TelNum`, `Fraction`, `DriverLicense`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 	mysql_query(queryStr);
@@ -580,7 +582,7 @@ stock savePlayerValues(playerid) {
 stock setPlayerBW(playerid, minutes) {
 	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER || GetPlayerState(playerid) == PLAYER_STATE_PASSENGER) {
 		mainStr[0] = EOS;
-		format(mainStr, sizeof(mainStr), "* %s uderzy³ siê w g³owê i straci³ przytomnoœæ.", pVars[playerid][pCharName]);
+		format(mainStr, sizeof(mainStr), "* %s %s siê w g³owê i %s przytomnoœæ.", pVars[playerid][pCharName], pVars[playerid][pSex] ? ("uderzy³a") : ("uderzy³"), pVars[playerid][pSex] ? ("straci³a") : ("straci³"));
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 	}
 	

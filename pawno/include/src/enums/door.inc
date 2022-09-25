@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: door.inc
 	Date: 10.09.2022
-	Modified: 11.09.2022
+	Modified: 25.09.2022
 */
 
 #if !defined _DOOR_
@@ -21,6 +21,7 @@ enum DoorData {
 	Float:dExitZ,
 	dPickupEnt,
 	dPickupExt,
+	bool:dOpen,
 	dVw,
 	dInt
 };

@@ -35,12 +35,12 @@
 #include "src\core\global_functions"
 #include "src\core\player_functions"
 #include "src\systems\vehicle_functions"
-#include "src\systems\fraction_functions"
 #include "src\systems\item_functions"
 #include "src\systems\door_functions"
 #include "src\systems\bus_functions"
 #include "src\systems\cashpoint_functions"
 #include "src\systems\station_functions"
+#include "src\systems\fraction_functions"
 #include "src\systems\object_functions"
 #include "src\systems\timers"
 
