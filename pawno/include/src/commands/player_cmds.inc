@@ -495,9 +495,10 @@ CMD:bankomat(playerid) {
 
 CMD:dajprawojazdy(playerid, params[]) {
 	new playerToGive; // Id gracza, ktory ma dostac prawo jazdy
+	new fractionId = pVars[playerid][pFraction];
 	mainStr[0] = EOS;
 	
-	if(pVars[playerid][pFraction] == 1) {
+	if((strfind(fVars[fractionId][fName], "Urzad Miasta Los Santos", true) != -1)) {
 		if(isPlayerDuty[playerid]) {
 			if(sscanf(params, "i", playerToGive)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /dajprawojazdy [ID]");
@@ -515,6 +516,9 @@ CMD:dajprawojazdy(playerid, params[]) {
 			format(mainStr, sizeof(mainStr), "[Urzad]: Otrzymales prawo jazdy.");
 			SendClientMessage(playerToGive, COLOR_WHITE, mainStr);
 		}
+	}
+	else {
+		
 	}
 	return 1;
 }
@@ -563,7 +567,6 @@ CMD:telefon(playerid, params[]) {
 CMD:naprawsilnik(playerid, params[]) {
 	
 	new fraction = pVars[playerid][pFraction];
-	fraction -= 1;
 	new toPlayerId, Float: x, Float: y, Float: z;
 	if(sscanf(params, "i", toPlayerId)) {
 		SendClientMessage(playerid, COLOR_WHITE, "Uzycie komendy /Naprawsilnik [Id gracza].");

@@ -12,8 +12,8 @@
 stock initFractionValues(){
 	queryStr[0] = EOS;
 
-	for(new i = 0; i < MAX_FRACTIONS; i++) {
-		format(queryStr, sizeof(queryStr), "SELECT * FROM `Fractions` WHERE `ID` = '%d'", i + 1);
+	for(new i = 1; i < MAX_FRACTIONS; i++) {
+		format(queryStr, sizeof(queryStr), "SELECT * FROM `Fractions` WHERE `ID` = '%d'", i);
 		mysql_query(queryStr);
 		mysql_store_result();
 		
