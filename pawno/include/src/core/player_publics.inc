@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 23.09.2022
+	Modified: 26.09.2022
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -785,7 +785,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				money = fuel * playerFuelPrice[playerid];
 				
 				if(pVars[playerid][pMoney] >= money) {
-					format(mainStr, sizeof(mainStr), "[Stacja paliw]: Zatankowano %i litrow paliwa za $%i. %f", fuel, money, vVars[actualVehicle[playerid]][vFuelTank]);
+					format(mainStr, sizeof(mainStr), "[Stacja paliw]: Zatankowano %i litrow paliwa za $%i.", fuel, money);
 					GivePlayerMoney(playerid, -money);
 					vVars[actualVehicle[playerid]][vFuel] += float(fuel);
 					SendClientMessage(playerid, COLOR_WHITE, mainStr);

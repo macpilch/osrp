@@ -525,12 +525,12 @@ CMD:duty(playerid) {
 	
 	if(pVars[playerid][pFraction] != 0) {
 		if(isPlayerDuty[playerid]) {
-			format(mainStr, sizeof(mainStr), "~w~Wchodzisz na sluzbe~n~%s", fVars[fractionId][fName]);
+			format(mainStr, sizeof(mainStr), "~w~Schodzisz ze sluzby~n~%s", fVars[fractionId][fName]);
 			GameTextForPlayer(playerid, mainStr, 5000, 3);
 			
 			isPlayerDuty[playerid] = false;
 		} else {
-			format(mainStr, sizeof(mainStr), "~w~Schodzisz ze sluzby~n~%s", fVars[fractionId][fName]);
+			format(mainStr, sizeof(mainStr), "~w~Wchodzisz na sluzbe~n~%s", fVars[fractionId][fName]);
 			GameTextForPlayer(playerid, mainStr, 5000, 3);
 		
 			isPlayerDuty[playerid] = true;
@@ -556,6 +556,46 @@ CMD:zaprosdofrakcji(playerid, params[]) {
 CMD:telefon(playerid, params[]) {
 	
 	
+	
+	return 1;
+}
+
+CMD:naprawsilnik(playerid, params[]) {
+	
+	new fraction = pVars[playerid][pFraction];
+	fraction -= 1;
+	new toPlayerId, Float: x, Float: y, Float: z;
+	if(sscanf(params, "i", toPlayerId)) {
+		SendClientMessage(playerid, COLOR_WHITE, "Uzycie komendy /Naprawsilnik [Id gracza].");
+		return 1;
+	}
+	if((strfind(fVars[fraction][fName], "Mechanik", true) != -1)) {
+		if(isPlayerDuty[playerid]) {
+			SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz.");
+			GetPlayerPos(playerid, x, y, z);
+			if(IsPlayerInRangeOfPoint(playerid, 5.0, x, y, z)) {
+				if(IsPlayerInAnyVehicle(toPlayerId)) {
+						
+					RepairVehicle(GetPlayerVehicleID(toPlayerId));
+						
+				}
+				else {
+					SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz musi znajdowac sie w pojezdzie.");
+				}
+					
+		
+			}
+			else {
+				SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Jestes za daleko od gracza.");
+			}
+		}
+		else {
+			SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Nie jestes na sluzbie.");
+		}
+	}
+	else {
+		
+	}
 	
 	return 1;
 }
