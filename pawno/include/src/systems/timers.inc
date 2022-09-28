@@ -228,10 +228,11 @@ Timer:globalTimer[1000]() {
 					GameTextForPlayer(i, "~r~Brak paliwa w pojezdzie.", 5000, 3);
 				}
 				
-				new Float:vHealth;
-				GetVehicleHealth(vVars[j][vId], vHealth);
+				//new Float:vHealth;
+				//GetVehicleHealth(vVars[j][vId], vHealth);
+			
 				
-				if(vHealth <= 300.0) {
+				if(vVars[j][vEngineHp] <= 100.0) {
 					new engine, lights, alarm, doors, bonnet, boot, objective;
 						
 					GetVehicleParamsEx(vVars[j][vId], engine, lights, alarm, doors, bonnet, boot, objective);

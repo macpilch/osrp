@@ -177,6 +177,7 @@ CMD:spawnvehicle(playerid, params[]) {
 			vVars[freeId][vColor2] = color2;
 			vVars[freeId][vLock] = false;
 			vVars[freeId][vEngine] = false;
+			vVars[freeId][vEngineHp] = 1000;
 			vVars[freeId][vSpawned] = true;
 			vVars[freeId][vMileage] = 0;
 			vVars[freeId][vX] = x;
@@ -239,6 +240,7 @@ CMD:deletevehicle(playerid, params[]) {
 			vVars[vehUid - 1][vFuelTank] = 0.0;
 			vVars[vehUid - 1][vLock] = false;
 			vVars[vehUid - 1][vEngine] = false;
+			vVars[vehUid - 1][vEngineHp] = 1000;
 			vVars[vehUid - 1][vSpawned] = false;
 			vVars[vehUid - 1][vMileage] = 0;
 		}

@@ -579,7 +579,7 @@ CMD:naprawsilnik(playerid, params[]) {
 			if(IsPlayerInRangeOfPoint(playerid, 5.0, x, y, z)) {
 				if(IsPlayerInAnyVehicle(toPlayerId)) {
 						
-					RepairVehicle(GetPlayerVehicleID(toPlayerId));
+					vVars[actualVehicle[toPlayerId]][vEngineHp] = 200;
 						
 				}
 				else {
