@@ -172,7 +172,7 @@ stock setPlayerVehDamage(playerid) {
 	new vehicleid = GetPlayerVehicleID(playerid);
 	new speed = getVehicleSpeed(vehicleid);
 	new chancePlayerDizzines;
-	
+	vVars[actualVehicle[playerid]][vEngineHp] -= speed/1.5;
 	switch(speed) {
 		case 0 .. 50:
 			if(hasBelts[playerid]) {
@@ -271,7 +271,7 @@ stock setPlayerVehDamage(playerid) {
 			}
 		}
 	}
-	vVars[actualVehicle[playerid]][vEngineHp] -= speed/1.5;
+	
 	return 1;
 }
 
