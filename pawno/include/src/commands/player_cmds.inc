@@ -69,7 +69,7 @@ CMD:tog(playerid, params[]) {
 	}
 	
 	if(strfind(opt, "w", true) != 1) {
-		GameTextForPlayer(playerid, "~w~Kanaly grupowe ~r~|~n~wylaczone", 5000, 6);
+		GameTextForPlayer(playerid, "~w~Kanaly grupowe ~r~~n~wylaczone", 5000, 6);
 	}
 	return 1;
 }
@@ -641,10 +641,11 @@ CMD:bankomat(playerid) {
 
 CMD:dajprawojazdy(playerid, params[]) {
 	new playerToGive; // Id gracza, ktory ma dostac prawo jazdy
+	new fracId = checkFractionSrvIdForPlayer(playerid);
 	
 	mainStr[0] = EOS;
 	
-	if(pVars[playerid][pFraction] == 1) {
+	if(strfind(fVars[fracId][fName], "Urzad Miasta Los Santos", false) != -1) {
 		if(isPlayerDuty[playerid]) {
 			if(sscanf(params, "i", playerToGive)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /dajprawojazdy [ID Gracza]");
@@ -666,18 +667,18 @@ CMD:dajprawojazdy(playerid, params[]) {
 }
 
 CMD:duty(playerid) {
-	new fractionId = pVars[playerid][pFraction];
+	new fracId = checkFractionSrvIdForPlayer(playerid);
 	
 	mainStr[0] = EOS;
 	
 	if(pVars[playerid][pFraction] != 0) {
 		if(isPlayerDuty[playerid]) {
-			format(mainStr, sizeof(mainStr), "~w~Wchodzisz na sluzbe~n~%s", fVars[fractionId][fName]);
+			format(mainStr, sizeof(mainStr), "~w~Schodzisz ze sluzby~n~%s", fVars[fracId][fName]);
 			GameTextForPlayer(playerid, mainStr, 5000, 3);
 			
 			isPlayerDuty[playerid] = false;
 		} else {
-			format(mainStr, sizeof(mainStr), "~w~Schodzisz ze sluzby~n~%s", fVars[fractionId][fName]);
+			format(mainStr, sizeof(mainStr), "~w~Wchodzisz na sluzbe~n~%s", fVars[fracId][fName]);
 			GameTextForPlayer(playerid, mainStr, 5000, 3);
 		
 			isPlayerDuty[playerid] = true;
@@ -705,5 +706,34 @@ CMD:duty(playerid) {
 CMD:telefon(playerid, params[]) {
 	return 1;
 }*/
+
+CMD:naprawsilnik(playerid, params[]) {
+	new fracId = checkFractionSrvIdForPlayer(playerid);
+	new toPlayerId, Float: x, Float: y, Float: z;
+	
+	if(sscanf(params, "i", toPlayerId)) {
+		return SendClientMessage(playerid, COLOR_WHITE, "Uzycie komendy /Naprawsilnik [Id gracza].");
+	}
+	
+	if(strfind(fVars[fracId][fName], "Mechanik", false) != -1) {
+		if(isPlayerDuty[playerid]) {
+			SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz.");
+			GetPlayerPos(playerid, x, y, z);
+			
+			if(IsPlayerInRangeOfPoint(playerid, 5.0, x, y, z)) {
+				if(IsPlayerInAnyVehicle(toPlayerId)) {
+					vVars[actualVehicle[toPlayerId]][vEngineHp] = 200.0;
+				} else {
+					SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz musi znajdowac sie w pojezdzie.");
+				}
+			} else {
+				SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Jestes za daleko od gracza.");
+			}
+		} else {
+			SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Nie jestes na sluzbie.");
+		}
+	}
+	return 1;
+}
 
 #endif 

@@ -31,8 +31,8 @@ Timer:globalTimer[1000]() {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(rolki, AFK od %02d:%02d, %s)", pVars[i][pCharName], i, h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 					} else {
 						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki, AFK od %02d:%02d, %s)", pVars[i][pCharName], i, pVars[i][pHours], h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
-					}					
-				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i]) {
+					}			
+				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] < 7 || iVars[srvItemId][iId] > 12)) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, AFK od %02d:%02d, %s)", pVars[i][pCharName], i, h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 					} else {
@@ -46,7 +46,7 @@ Timer:globalTimer[1000]() {
 					}		
 				}
 			} else if(hasBelts[i]) {
-				if(drunkLevel >= 2000 && !isDizzines[i]) {
+				if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] < 7 || iVars[srvItemId][iId] > 12)) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, AFK od %02d:%02d, pasy)", pVars[i][pCharName], i, h, mins);
 					} else {
@@ -72,7 +72,7 @@ Timer:globalTimer[1000]() {
 					} else {
 						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki, AFK od %02d:%02d)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
 					}
-				} else if(drunkLevel >= 2000 && !isDizzines[i]) {
+				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] < 7 || iVars[srvItemId][iId] > 12)) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, rolki, AFK od %02d:%02d)", pVars[i][pCharName], i, h, mins);
 					} else {
@@ -94,7 +94,7 @@ Timer:globalTimer[1000]() {
 					} else {
 						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki, %s)", pVars[i][pCharName], i, pVars[i][pHours], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 					}				
-				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 60 > 0 && !isDizzines[i]) {
+				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] < 7 || iVars[srvItemId][iId] > 12)) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, %s)", pVars[i][pCharName], i, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 					} else {
@@ -108,7 +108,7 @@ Timer:globalTimer[1000]() {
 					}
 				}
 			} else if(hasBelts[i]) {
-				if(drunkLevel >= 2000 && !isDizzines[i]) {
+				if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] < 7 || iVars[srvItemId][iId] > 12)) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, pasy)", pVars[i][pCharName], i);
 					} else {
@@ -134,7 +134,7 @@ Timer:globalTimer[1000]() {
 					} else {
 						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki)", pVars[i][pCharName], i, pVars[i][pHours]);
 					}
-				} else if(drunkLevel >= 2000 && !isDizzines[i]) {
+				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] < 7 || iVars[srvItemId][iId] > 12)) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity)", pVars[i][pCharName], i);
 					} else {
@@ -239,16 +239,16 @@ Timer:globalTimer[1000]() {
 					GameTextForPlayer(i, "~r~Brak paliwa w pojezdzie.", 5000, 3);
 				}
 				
-				new Float:vHealth;
+				GetVehicleHealth(vVars[j][vId], vVars[j][vEngineHp]);
 				
-				GetVehicleHealth(vVars[j][vId], vHealth);
-				
-				if(vHealth <= 300.0) {
+				if(vVars[j][vEngineHp] <= 300.0) {
 					new engine, lights, alarm, doors, bonnet, boot, objective;
+					
+					vVars[j][vEngineHp] = 300.0;
 					
 					GetVehicleParamsEx(vVars[j][vId], engine, lights, alarm, doors, bonnet, boot, objective);
 					SetVehicleParamsEx(vVars[j][vId], 0, lights, alarm, doors, bonnet, boot, objective);					
-					SetVehicleHealth(vVars[j][vId], 300.0);
+					SetVehicleHealth(vVars[j][vId], vVars[j][vEngineHp]);
 					
 					vVars[j][vEngine] = false;
 					

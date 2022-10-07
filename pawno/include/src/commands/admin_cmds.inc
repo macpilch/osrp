@@ -221,12 +221,14 @@ CMD:spawnvehicle(playerid, params[]) {
 			vVars[freeId][vLock] = false;
 			vVars[freeId][vEngine] = false;
 			vVars[freeId][vLights] = false;
+			vVars[freeId][vEngineHp] = 1000.0;
 			vVars[freeId][vSpawned] = true;
 			vVars[freeId][vMileage] = 0.0;
 			vVars[freeId][vX] = x;
 			vVars[freeId][vY] = y;
 			vVars[freeId][vZ] = z;
 			vVars[freeId][vFuel] = vVars[freeId][vFuelTank] = VEHICLE_FUEL_TANK_MEDIUM;
+			SetVehicleHealth(vVars[freeId][vId], vVars[freeId][vEngineHp]);
 			
 			format(vVars[freeId][vDescInfo], 64, NULL);
 			UpdateDynamic3DTextLabelText(vVars[freeId][vDesc], COLOR_WHITE, vVars[freeId][vDescInfo]);
@@ -279,6 +281,7 @@ CMD:deletevehicle(playerid, params[]) {
 			vVars[vehUid - 1][vUid] = 0;
 			format(vVars[vehUid - 1][vCharName], 24, NULL);
 			format(vVars[vehUid - 1][vDescInfo], 64, NULL);
+			format(vVars[vehUid - 1][vPlate], 32, NULL);
 			vVars[vehUid - 1][vModelId] = 0;
 			vVars[vehUid - 1][vColor1] = 0;
 			vVars[vehUid - 1][vColor2] = 0;
@@ -290,6 +293,7 @@ CMD:deletevehicle(playerid, params[]) {
 			vVars[vehUid - 1][vLock] = false;
 			vVars[vehUid - 1][vEngine] = false;
 			vVars[vehUid - 1][vLights] = false;
+			vVars[vehUid - 1][vEngineHp] = 0.0;
 			vVars[vehUid - 1][vSpawned] = false;
 			vVars[vehUid - 1][vMileage] = 0;
 		}

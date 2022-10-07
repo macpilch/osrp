@@ -836,8 +836,9 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				
 				if(pVars[playerid][pMoney] >= money) {
 					format(mainStr, sizeof(mainStr), "[Stacja paliw]: Zatankowano %d litrow paliwa za $%d. %0.1f", fuel, money, vVars[vehid][vFuelTank]);
-					GivePlayerMoney(playerid, -money);
+					format(mainStr, sizeof(mainStr), "[Stacja paliw]: Zatankowano %i litrow paliwa za $%i.", fuel, money);
 					
+					GivePlayerMoney(playerid, -money);
 					vVars[vehid][vFuel] += float(fuel);
 					
 					SendClientMessage(playerid, COLOR_WHITE, mainStr);

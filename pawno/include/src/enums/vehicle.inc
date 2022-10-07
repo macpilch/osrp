@@ -24,8 +24,9 @@ enum VehicleData {
 	Float:vFuelTank,
 	bool:vLock,
 	bool:vEngine,
-	bool:vLights,
+	Float:vEngineHp, // Stan silnika
 	bool:vSpawned,
+	bool:vLights,
 	Float:vMileage, // Przebieg
 	Text3D:vDesc,
 	vDescInfo[64],
