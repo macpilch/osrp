@@ -3,13 +3,13 @@
 	Author: MisterMagik
 	File: station.inc
 	Date: 11.09.2022
-	Modified: 16.09.2022
+	Modified: 02.10.2022
 */
 
 #if !defined _STATION_
 #define _STATION_
 
-enum stationData {
+enum StationData {
 	sUid,
 	sName[32],
 	sPrice,
@@ -21,7 +21,7 @@ enum stationData {
 	Float:sDistance
 };
 
-enum gasPumpData {
+enum GasPumpData {
 	gUid,
 	gSId,
 	Float:gX,

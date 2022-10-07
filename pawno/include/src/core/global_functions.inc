@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: global_functions.inc
 	Date: 28.07.2022
-	Modified: 16.09.2022
+	Modified: 02.10.2022
 */
 
 #if !defined _GLOBAL_FUNCTIONS_
@@ -16,7 +16,6 @@ stock initServerValues() {
 	mysql_store_result();
 	
 	allAccounts = mysql_fetch_int();
-	
 	mysql_free_result();
 	return 1;
 }

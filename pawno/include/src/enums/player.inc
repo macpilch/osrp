@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 24.07.2022
-	Modified: 16.09.2022
+	Modified: 02.10.2022
 */
 
 #if !defined _PLAYER_
@@ -46,6 +46,10 @@ enum PlayerData {
 	pAj,
 	pAl,
 	pDriverLicense,
+	pPisSkill,
+	pDglSkill,
+	pShtgSkill,
+	pM4Skill,
 	pGov,
 	pHotel,
 	pIdCard,
@@ -55,7 +59,7 @@ enum PlayerData {
 	pBankAcc,
 	pGroup[32],
 	pFraction,
-	pTraveled,
+	Float:pTraveled,
 	pDoors,
 	pInvi,
 	pChatStyle,

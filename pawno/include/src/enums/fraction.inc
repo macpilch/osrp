@@ -3,17 +3,25 @@
 	Author: MisterMagik
 	File: fraction.inc
 	Date: 05.09.2022
-	Modified: 16.09.2022
+	Modified: 02.10.2022
 */
 
 #if !defined _FRACTION_
 #define _FRACTION_
 
-enum fractionData {
-	fId,
+enum {
+	F_PUBLIC = 0,
+	F_CRIMINAL,
+	F_DRVRLIC,
+	F_BUSSIN
+};
+
+enum FractionData {
 	fUid,
-	fGuid,
-	fName[32]
+	fOUid,
+	fName[32],
+	fType, // 0 - publiczne, 1 - przestepcze, 2 - prawo jazdy, 3 - biznesy
+	fMembers
 };
 
 #endif 

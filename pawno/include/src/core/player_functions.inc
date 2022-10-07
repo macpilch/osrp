@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
-	Modified: 25.09.2022
+	Modified: 02.10.2022
 */
 
 #if !defined _PLAYER_FUNCTIONS_
@@ -69,10 +69,12 @@ Callback:hideFirstHoursInfo() {
 
 Callback:bwTimer(playerid) {
 	if((pVars[playerid][pBw] / 60) > 0) {
-		format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", !(pVars[playerid][pBw] / 60) ? 1 : pVars[playerid][pBw] / 60); // int powinien uciac na same minuty
+		format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", ((pVars[playerid][pBw] / 60) <= 1) ? 1 : (pVars[playerid][pBw] / 60)); // int powinien uciac na same minuty
 		GameTextForPlayer(playerid, mainStr, 4000, 1);
+		
 		TogglePlayerControllable(playerid, 0);
 		ApplyAnimation(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
+		
 		pVars[playerid][pBw]--;
 		SetTimerEx("bwTimer", 1000, false, "i", playerid);
 	} else {
@@ -123,16 +125,14 @@ stock sendDistanceMessage(playerid, Float:range, str[], color, color2, color3, c
 	GetPlayerPos(playerid, x, y, z);
 	
 	foreach(new i : Player) {
-		if(IsPlayerInRangeOfPoint(i, range, x, y, z)) {
-			if(range <= (range / 4)) {
-				SendClientMessage(i, color, str);
-			} else if(range <= (range / 3)) {
-				SendClientMessage(i, color2, str);
-			} else if(range <= (range / 2)) {
-				SendClientMessage(i, color3, str);
-			} else {
-				SendClientMessage(i, color4, str);
-			}
+		if(IsPlayerInRangeOfPoint(i, range / 4, x, y, z)) {
+			SendClientMessage(i, color, str);
+		} else if(IsPlayerInRangeOfPoint(i, range / 3, x, y, z)) {
+			SendClientMessage(i, color2, str);
+		} else if(IsPlayerInRangeOfPoint(i, range / 2, x, y, z)) {
+			SendClientMessage(i, color3, str);
+		} else if(IsPlayerInRangeOfPoint(i, range, x, y, z)) {
+			SendClientMessage(i, color4, str);
 		}
 	}
 	return 1;
@@ -390,7 +390,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawUseBox(telephoneCall[playerid][1], 1);
 	TextDrawBoxColor(telephoneCall[playerid][1], 102);
 	TextDrawSetShadow(telephoneCall[playerid][1], 0);
-	TextDrawSetOutline(telephoneCall[playerid][1], 0);
+	TextDrawSetOutline(telephoneCall[playerid][1], 1);
 	TextDrawFont(telephoneCall[playerid][1], 0);
 	return 1;
 }
@@ -404,17 +404,15 @@ stock loadPlayerValues(playerid) {
 	mysql_store_result();
 	
 	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>iiis[24]iiiiiiiffiiiiiiiifff", 
-	pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pHp],
-	pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pTelNum], pVars[playerid][pFraction], pVars[playerid][pDriverLicense], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
-	
+	sscanf(queryStr, "p<|>iiis[24]iiiiiiiffiiiiiiiifff", pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw],
+	pVars[playerid][pInt], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pTelNum], pVars[playerid][pFraction], pVars[playerid][pDriverLicense], pVars[playerid][pX],
+	pVars[playerid][pY], pVars[playerid][pZ]);
 	mysql_free_result();
 	return 1;
 }
 
 stock loadPlayerContacts(playerid) {
 	queryStr[0] = EOS;
-	
 	format(queryStr, sizeof(queryStr), "SELECT `Number` FROM `Contacts` WHERE `UID` = '%d'", pVars[playerid][pUid]);
 	mysql_query(queryStr);
 	mysql_store_result();
@@ -447,13 +445,13 @@ stock setPlayerDefaultValues(playerid) {
 		format(pVars[playerid][pCharName2], 24, "%s", NULL);
 		format(pVars[playerid][pPass], 32, "%s", NULL);
 		format(pVars[playerid][pIp], 16, "%s", NULL);
-		
 		GetPlayerName(playerid, pVars[playerid][pAccName], 24);
 		GetPlayerIp(playerid, pVars[playerid][pIp], 16);
 	}
 	
 	ResetPlayerMoney(playerid);
 	ResetPlayerWeapons(playerid);
+	format(pVars[playerid][pGroup], 32, NULL);
 	
 	pVars[playerid][pRank] = 0;
 	pVars[playerid][pSex] = MAN_SEX;
@@ -479,7 +477,6 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pPdp] = 0;
 	pVars[playerid][pTelNum] = 0;
 	pVars[playerid][pBankAcc] = 0;
-	format(pVars[playerid][pGroup], 32, NULL);
 	pVars[playerid][pFraction] = 0;
 	pVars[playerid][pTraveled] = 0;
 	pVars[playerid][pDoors] = 0;
@@ -501,7 +498,13 @@ stock setPlayerDefaultValues(playerid) {
 	usedCmdLogin[playerid] = false;
 	usedCmdReport[playerid] = false;
 	hasBelts[playerid] = false;
+	isDizzines[playerid] = false;
 	usedTelephone[playerid] = false;
+	drivingCourse[playerid] = false;
+	
+	for(new i = 0; i < sizeof(chatMessages); i++) {
+		chatMessages[playerid][i] = true;
+	}
 	return 1;
 }
 
@@ -515,6 +518,7 @@ stock resetPlayerValues(playerid) {
 	format(pVars[playerid][pCharName2], 24, "%s", NULL);
 	format(pVars[playerid][pPass], 32, "%s", NULL);
 	format(pVars[playerid][pIp], 16, "%s", NULL);
+	format(pVars[playerid][pGroup], 32, NULL);
 
 	pVars[playerid][pRank] = 0;
 	pVars[playerid][pSex] = 0;
@@ -540,7 +544,6 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pPdp] = 0;
 	pVars[playerid][pTelNum] = 0;
 	pVars[playerid][pBankAcc] = 0;
-	format(pVars[playerid][pGroup], 32, NULL);
 	pVars[playerid][pFraction] = 0;
 	pVars[playerid][pTraveled] = 0;
 	pVars[playerid][pDoors] = 0;
@@ -562,12 +565,19 @@ stock resetPlayerValues(playerid) {
 	usedCmdLogin[playerid] = false;
 	usedCmdReport[playerid] = false;
 	hasBelts[playerid] = false;
+	isDizzines[playerid] = false;
 	usedTelephone[playerid] = false;
+	drivingCourse[playerid] = false;
+	
+	for(new i = 0; i < sizeof(chatMessages); i++) {
+		chatMessages[playerid][i] = false;
+	}	
 	return 1;
 }
 
 stock savePlayerValues(playerid) {
 	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+	
 	pVars[playerid][pVw] = GetPlayerVirtualWorld(playerid);
 	pVars[playerid][pInt] = GetPlayerInterior(playerid);
 	
@@ -589,7 +599,7 @@ stock setPlayerBW(playerid, minutes) {
 	pVars[playerid][pBw] = (minutes * 60);
 	isBW[playerid] = true;
 	
-	format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", pVars[playerid][pBw] / 60);
+	format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", (pVars[playerid][pBw] / 60));
 	GameTextForPlayer(playerid, mainStr, 4000, 1);
 	
 	TogglePlayerControllable(playerid, 0);
@@ -639,6 +649,18 @@ stock checkPhoneOwnerIdFromNumber(number) {
 		}
 	}
 	return pId;
+}
+
+stock checkFractionSrvIdForPlayer(playerid) {
+	new fracId;
+	
+	foreach(new i : fractionItter) {
+		if(fVars[i][fUid] == pVars[playerid][pFraction]) {
+			fracId = i;
+			break;
+		}
+	}
+	return fracId;
 }
 
 // return: void

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: arrays.inc
 	Date: 25.07.2022
-	Modified: 16.09.2022
+	Modified: 02.10.2022
 */
 
 #if !defined _ARRAYS_
@@ -17,16 +17,16 @@ new queryStr[512];
 new pVars[MAX_PLAYERS][PlayerData];
 new vVars[MAX_VEHICLES][VehicleData];
 new iVars[MAX_ITEMS][ItemData];
-new sVars[MAX_PETROL_STATIONS][stationData];
-new gVars[MAX_GAS_PUMPS][gasPumpData];
+new sVars[MAX_PETROL_STATIONS][StationData];
+new gVars[MAX_GAS_PUMPS][GasPumpData];
 //Bus stops system
-new bVars[MAX_BUS_STOPS][busStopData];
-new fVars[MAX_FRACTIONS][fractionData];
+new bVars[MAX_BUS_STOPS][BusStopData];
+new fVars[MAX_FRACTIONS][FractionData];
 new dVars[MAX_DOORS][DoorData];
 //Cashpoints system 
-new cVars[MAX_CASHPOINTS][cashpointData];
+new cVars[MAX_CASHPOINTS][CashpointData];
 //Object system
-new oVars[MAX_OBJECTS][objectData];
+stock oVars[MAX_OBJECTS][ObjectData];
 
 new Float:startCameraPos[][] = {
 	{2485.5459,-1656.8232,13.3414}
@@ -69,12 +69,17 @@ new charSur[][CharSurName] = {
 	{"Aiello", false}, {"Alessi", false}, {"Alfano", false}, {"Alonge", false}, {"Altosinno", false}, {"Alunni", false}, {"Alvarez", false}, {"Alvine", false},
 	{"Anasetti", false}, {"Anderlini", false}, {"Anderson", false}, {"Andollina", false}, {"Androsciani", false}, {"Angeletti", false}, {"Angelicola", false}, {"Angerami", false},
 	{"Angotto", false}, {"Ankundinov", false}, {"Annibali", false}, {"Anzalmo", false}, {"Aquilino", false}, {"Arca", false}, {"Arcari", false}, {"Arcuni", false},
-	{"Ardizzone", false}, {"Arena", false}, {"Arent", false}, {"Armentano", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"Ardizzone", false}, {"Arena", false}, {"Arent", false}, {"Armentano", false}, {"Armocida", false}, {"Armocida", false}, {"Arnold", false}, {"Arrigoni", false},
+	{"Arshan", false}, {"Arshun", false}, {"Artemieva", false}, {"Arti", false}, {"Astengo", false}, {"Astorino", false}, {"Attento", false}, {"Auriemma", false},
 	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}
 };
 
 new itemNames[][] = {
-	"Rolki", "Piwo", "Wino", "Sprunk", "Teczka", "Ubranie", "Telefon"
+	"Rolki", "Piwo", "Wino", "Sprunk", "Teczka", "Ubranie", "Telefon", "Kostka", "Pistolet", "Desert Deagle", "Shotgun", "M4",
+	"Cheeseburger", "Coca-Cola", "Cuba Libre", "Frytki", "Grove Burger", "Hamburger",
+	"Herbata", "Hot Dog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Longer",
+	"Nachos z serem", "Naleœniki", "P¹czek", "P¹czek Afro", "P¹czek Z³otawy", "Piwo",
+	"Sushi", "Wino", "Woda Mineralna", "Discman", "RadioParty", "CD", "Nokia 8110"
 };
 
 new VehicleNames[212][] = {
@@ -331,4 +336,5 @@ new Float:petrolStations[MAX_PETROL_STATIONS][4]={
 	//
 };
 */
+
 #endif 

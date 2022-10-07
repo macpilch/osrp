@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 29.08.2022
-	Modified: 16.08.2022
+	Modified: 02.10.2022
 */
 
 #if !defined _ITEM_
@@ -16,7 +16,12 @@ enum {
 	P_SPRUNK,
 	P_TECZKA,
 	P_UBRANIE,
-	P_TELEFON	
+	P_TELEFON,
+	P_KOSTKA,
+	P_COLT,
+	P_DEAGLE,
+	P_SHOTGUN,
+	P_M4
 };
 
 enum ItemData {
@@ -24,8 +29,8 @@ enum ItemData {
 	iId,
 	iOUid,
 	iName[32],
-	bool:iUsed,
-	bool: isTelephone
+	iValues,
+	bool:iUsed
 };
 
 #endif 

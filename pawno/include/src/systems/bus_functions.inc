@@ -3,7 +3,7 @@
 	Author: MisterMagik
 	File: bus_functions.inc
 	Date: 14.09.2022
-	Modified: 16.09.2022
+	Modified: 02.10.2022
 */
 
 #if !defined _BUS_FUNCTIONS_
@@ -23,8 +23,8 @@ stock initBusStopValues() {
 		
 		mysql_fetch_row(queryStr, "|");
 		sscanf(queryStr, "p<|>is[32]ifff", bVars[i][bsUid], bVars[i][bsName], bVars[i][bsPrice], bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ]);
-		Iter_Add(busstopItter, i);
 		
+		Iter_Add(busstopItter, i);
 		printf("[DEBUG] Uid: %d,  Name: %s", i + 1, bVars[i][bsName]);
 	}
 	
@@ -48,6 +48,7 @@ stock searchPlayerBusStop(playerid) {
 	for(new i = 0; i < MAX_BUS_STOPS; i++) {
 		if(IsPlayerInRangeOfPoint(playerid, 10.0, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ])) {
 			ShowPlayerDialog(playerid, DIALOG_SHOW_BUS_STOPS, DIALOG_STYLE_LIST, bVars[i][bsName], showAllBusStops(playerid, i), "Ok", "Anuluj");
+			
 			actualBusStop[playerid] = i;
 		}
 	}
@@ -56,6 +57,7 @@ stock searchPlayerBusStop(playerid) {
 
 stock showAllBusStops(playerid, id) {
 	new tempStr[512];
+	
 	mainStr[0] = EOS;
 	
 	foreach(new i : busstopItter) {

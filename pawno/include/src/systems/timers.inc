@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 25.09.2022
+	Modified: 02.10.2022
 */
 
 #if !defined _TIMERS_
@@ -51,6 +51,12 @@ Timer:globalTimer[1000]() {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, AFK od %02d:%02d, pasy)", pVars[i][pCharName], i, h, mins);
 					} else {
 						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(podpity, AFK od %02d:%02d, pasy)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
+					}
+				} else if(pVars[i][pStrength] > 3000) {
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d, %dj, pasy)", pVars[i][pCharName], i, h, mins, pVars[i][pStrength]);
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(AFK od %02d:%02d, %dj, pasy)", pVars[i][pCharName], i, pVars[i][pHours], h, mins, pVars[i][pStrength]);
 					}
 				} else {
 					if(pVars[i][pHours] > 20) {
@@ -108,12 +114,18 @@ Timer:globalTimer[1000]() {
 					} else {
 						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(podpity, pasy)", pVars[i][pCharName], i, pVars[i][pHours]);
 					}
+				} else if(pVars[i][pStrength] > 3000) {
+					if(pVars[i][pHours] > 20) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(%dj, pasy)", pVars[i][pCharName], i, pVars[i][pStrength]);
+					} else {
+						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(%dj, pasy)", pVars[i][pCharName], i, pVars[i][pHours], pVars[i][pStrength]);
+					}
 				} else {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(pasy)", pVars[i][pCharName], i);
 					} else {
 						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(pasy)", pVars[i][pCharName], i, pVars[i][pHours]);
-					}					
+					}						
 				}
 			} else {
 				if(iVars[srvItemId][iId] == P_ROLKI) {
@@ -140,7 +152,6 @@ Timer:globalTimer[1000]() {
 		
 		if(pVars[i][pHp] <= 3.0 && !isBW[i] && isSpawned[i]) {
 			SetPlayerHealth(i, 2.0);
-			
 			//SetPlayerHealthEx(i, 2.0);
 			setPlayerBW(i, 3);
 		}
@@ -196,44 +207,45 @@ Timer:globalTimer[1000]() {
 				switch(getVehicleSpeed(vVars[j][vId])) {
 					case 1 .. 50: {
 						vVars[j][vFuel] -= 0.001;
-						vVars[j][vMileage] += getVehicleDistance(vVars[j][vId]);
 					}
 					case 51 .. 90: {
 						vVars[j][vFuel] -= 0.004;
-						vVars[j][vMileage] += getVehicleDistance(vVars[j][vId]);
 					}
 					case 91 .. 120: {
 						vVars[j][vFuel] -= 0.005;
-						vVars[j][vMileage] += getVehicleDistance(vVars[j][vId]);
 					}
 					case 121 .. 220: {
 						vVars[j][vFuel] -= 0.01;
-						vVars[j][vMileage] += getVehicleDistance(vVars[j][vId]);
 					}
 					default: {
 						vVars[j][vFuel] -= 0.0001;
-						vVars[j][vMileage] += getVehicleDistance(vVars[j][vId]);
 					}
+				}
+				
+				if(getVehicleSpeed(vVars[j][vId])) {
+					vVars[j][vMileage] += getVehicleDistance(vVars[j][vId]);
+					pVars[i][pTraveled] += getVehicleDistance(vVars[j][vId]);
 				}
 				
 				if(getVehicleFuel(j) <= 0) {
 					new engine, lights, alarm, doors, bonnet, boot, objective;
-						
+					
 					GetVehicleParamsEx(vVars[j][vId], engine, lights, alarm, doors, bonnet, boot, objective);
 					SetVehicleParamsEx(vVars[j][vId], 0, lights, alarm, doors, bonnet, boot, objective);
-						
+					
 					vVars[j][vFuel] = 0;
 					vVars[j][vEngine] = false;
-						
+					
 					GameTextForPlayer(i, "~r~Brak paliwa w pojezdzie.", 5000, 3);
 				}
 				
 				new Float:vHealth;
+				
 				GetVehicleHealth(vVars[j][vId], vHealth);
 				
 				if(vHealth <= 300.0) {
 					new engine, lights, alarm, doors, bonnet, boot, objective;
-						
+					
 					GetVehicleParamsEx(vVars[j][vId], engine, lights, alarm, doors, bonnet, boot, objective);
 					SetVehicleParamsEx(vVars[j][vId], 0, lights, alarm, doors, bonnet, boot, objective);					
 					SetVehicleHealth(vVars[j][vId], 300.0);
@@ -247,10 +259,26 @@ Timer:globalTimer[1000]() {
 			}
 		}
 	}
+	
+	saveServerValues();
+	saveVehicleValues();
+	saveItemValues();
+	saveDoorValues();
+}
+
+Timer:setRealTimeTimer[600000]() {
+	new h, m, s;
+	
+	gettime(h, m, s);
+	
+	foreach(new i : Player) {
+		SetPlayerTime(i, h, m);
+	}
 }
 
 Timer:updateWebsiteDateTimer[2000]() {
 	new day, month, year;
+	
 	getdate(year, month, day);
 	
 	timerStr[0] = EOS;
@@ -258,15 +286,9 @@ Timer:updateWebsiteDateTimer[2000]() {
 	TextDrawSetString(website, timerStr);
 }
 
-Timer:settingsTimer[10000]() {
-	saveServerValues();
-	saveVehicleValues();
-	saveItemValues();
-	saveDoorValues();
-}
-
 Timer:townHallBellsTimer[59000]() {
 	new hours, minutes, seconds;
+	
 	gettime(hours, minutes, seconds);
 	
 	foreach(new i : Player) {

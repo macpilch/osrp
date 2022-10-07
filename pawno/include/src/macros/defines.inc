@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 25.09.2022
+	Modified: 02.10.2022
 */
 
 #if !defined _DEFINES_
@@ -13,22 +13,34 @@
 	#define isnull(%1) ((!(%1[0])) || (((%1[0]) == '\1') && (!(%1[1]))))
 #endif
 
+#define HOLDING(%0) \
+	((newkeys & (%0)) == (%0))
+	
+#define PRESSED(%0) \
+	(((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
+	
+#define PRESSING(%0,%1) \
+	(%0 & (%1))
+	
+#define RELEASED(%0) \
+	(((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
+
 #undef MAX_PLAYERS
 #undef MAX_VEHICLES
 #undef MAX_OBJECTS
 
 #define MAX_PLAYERS 2
-#define MAX_VEHICLES 100
+#define MAX_VEHICLES 20
 #define MAX_PLAYER_CHARS 6
 #define MAX_ITEMS 100
-#define MAX_DOORS 100
-#define MAX_STATIONS 100
-#define MAX_GAS_PUMPS 100
-#define MAX_PETROL_STATIONS 100
-#define MAX_BUS_STOPS 100
-#define MAX_CASHPOINTS 100
-#define MAX_FRACTIONS 100
-#define MAX_OBJECTS 100
+#define MAX_DOORS 10
+#define MAX_STATIONS 10
+#define MAX_GAS_PUMPS 10
+#define MAX_PETROL_STATIONS 10
+#define MAX_BUS_STOPS 10
+#define MAX_CASHPOINTS 10
+#define MAX_FRACTIONS 10
+#define MAX_OBJECTS 10
 
 // Callbacks
 #define sampCallback:%0(%1) \
@@ -38,9 +50,9 @@
 		forward %0(%1); public %0(%1)
 
 #define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "server_923"
-#define MYSQL_PASS "t4vz8c0o1k"
-#define MYSQL_DB "server_923_srv"
+#define MYSQL_USER "server_823"
+#define MYSQL_PASS "a8p62ulzoc"
+#define MYSQL_DB "server_823_srv"
 
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_GRAY 0xCDC9C9FF

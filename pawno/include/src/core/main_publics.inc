@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: main_publics.inc
 	Date: 24.07.2022
-	Modified: 16.09.2022
+	Modified: 02.10.2022
 */
 
 #if !defined _MAIN_PUBLICS_
@@ -20,7 +20,7 @@ sampCallback:OnGameModeInit() {
 	SetGravity(0.008);
 	SetGameModeText("samp-rp.com (macpilch)");
 	
-	hMySQL = mysql_init(LOG_ALL, 1);
+	hMySQL = mysql_init(LOG_ONLY_ERRORS, 1);
 	mySQLConnect = mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB, hMySQL, 1);
 	
 	if(mySQLConnect) {
@@ -41,7 +41,7 @@ sampCallback:OnGameModeInit() {
 	
 	for(new i = 0; i < MAX_PLAYERS; i++) {
 		pVars[i][p3dInfo] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 0.15, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);
-		pVars[i][pCharDesc] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 0.0, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);
+		pVars[i][pCharDesc] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 1.0, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);
 	}
 	
 	for(new i = 0; i < MAX_VEHICLES; i++) {

@@ -3,7 +3,7 @@
 	Author: MisterMagik
 	File: cashpoint_functions.inc
 	Date: 16.09.2022
-	Modified: 16.09.2022
+	Modified: 02.10.2022
 */
 
 #if !defined _CASHPOINT_FUNCTIONS_
@@ -23,8 +23,8 @@ stock initCashpointValues() {
 		
 		mysql_fetch_row(queryStr, "|");
 		sscanf(queryStr, "p<|>is[32]iffff", cVars[i][csUid], cVars[i][csName], cVars[i][csIsOpen], cVars[i][csX], cVars[i][csY], cVars[i][csZ], cVars[i][csDistance]);
-		Iter_Add(cashpointItter, i);
 		
+		Iter_Add(cashpointItter, i);
 		printf("[DEBUG] Id: %d,  Name: %s", i, cVars[i][csName]);
 	}
 	
@@ -45,8 +45,8 @@ stock searchPlayerCashpoint(playerid) {
 			pVars[playerid][pBank] = mysql_fetch_int();
 			mysql_free_result();
 			
-			format(mainStr, sizeof(mainStr), "Stan konta: {00FF00}$%i{FFFFFF}\nWplac pieniadze\nWyplac pieniadze", pVars[playerid][pBank]);
-			ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT, DIALOG_STYLE_LIST, cVars[i][csName], mainStr, "Ok", "Anuluj");
+			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tStan konta (%d)\n2\tWyp³aæ pieni¹dze\n3\tWp³aæ pieni¹dze", pVars[playerid][pBank]);
+			ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT, DIALOG_STYLE_LIST, "Bankomat", mainStr, "OK", "Anuluj");
 			
 			actualCashpoint[playerid] = i;
 		}
@@ -62,6 +62,7 @@ stock createNewCashpoint(playerid, cashpointname[]) {
 	queryStr[0] = EOS;
 	
 	GetPlayerPos(playerid, x, y, z);
+	
 	format(queryStr, sizeof(queryStr), "INSERT INTO `Cashpoints`(`Name`, `IsOpen`, `X`, `Y`, `Z`, `Distance`) VALUES ('%s', '%d', '%f', '%f', '%f', '%f')", cashpointname, isOpen, x, y, z, distance);
 	mysql_query(queryStr);		
 	return 1;
@@ -70,8 +71,9 @@ stock createNewCashpoint(playerid, cashpointname[]) {
 stock createNumber(playerid) {
 	new number[6], numberStr[16];
 	
-	for(new i=0; i < sizeof(number); i++) {
+	for(new i = 0; i < sizeof(number); i++) {
 		number[i] = random(10);
+		
 		format(numberStr, sizeof(numberStr), "%s%d", numberStr, number[i]);
 	}
 	
