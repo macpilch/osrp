@@ -292,10 +292,13 @@ Timer:townHallBellsTimer[59000]() {
 	gettime(hours, minutes, seconds);
 	
 	foreach(new i : Player) {
-		if(minutes == 0) {
+		if(hours != 0 && minutes == 0) {
 			timerStr[0] = EOS;
 			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d razy. **", hours);
 			SendClientMessage(i, COLOR_WHITE, timerStr);
+		}
+		else {
+			SendClientMessage(i, COLOR_WHITE, "** Dzwony w ratuszu wybi³y pó³noc. **");
 		}
 	}
 	
