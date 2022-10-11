@@ -297,7 +297,7 @@ Timer:townHallBellsTimer[59000]() {
 			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d razy. **", hours);
 			SendClientMessage(i, COLOR_WHITE, timerStr);
 		}
-		else {
+		else if(hours == 0) {
 			SendClientMessage(i, COLOR_WHITE, "** Dzwony w ratuszu wybi³y pó³noc. **");
 		}
 	}
