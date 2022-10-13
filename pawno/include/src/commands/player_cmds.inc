@@ -778,4 +778,35 @@ CMD:naprawsilnik(playerid, params[]) {
 	return 1;
 }
 
+CMD:naprawkaroserie(playerid, params[]) {
+	new fracId = checkFractionSrvIdForPlayer(playerid);
+	new toPlayerId, Float: x, Float: y, Float: z;
+	
+	if(sscanf(params, "i", toPlayerId)) {
+		return SendClientMessage(playerid, COLOR_WHITE, "Uzycie komendy /Naprawkaroserie [Id gracza].");
+	}
+	
+	if(strfind(fVars[fracId][fName], "Mechanik", false) != -1) {
+		if(isPlayerDuty[playerid]) {
+			SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz.");
+			GetPlayerPos(playerid, x, y, z);
+			
+			if(IsPlayerInRangeOfPoint(playerid, 5.0, x, y, z)) {
+				if(IsPlayerInAnyVehicle(toPlayerId)) {
+					RepairVehicle(actualVehicle[toPlayerId]);
+					SetVehicleHealth(actualVehicle[toPlayerId], vVars[actualVehicle[toPlayerId]][vEngineHp]);
+				} else {
+					SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz musi znajdowac sie w pojezdzie.");
+				}
+			} else {
+				SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Jestes za daleko od gracza.");
+			}
+		} else {
+			SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Nie jestes na sluzbie.");
+		}
+	}
+	
+	return 1;
+}
+
 #endif 
