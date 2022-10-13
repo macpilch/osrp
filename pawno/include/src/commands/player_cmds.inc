@@ -167,6 +167,25 @@ CMD:id(playerid, params[]) {
 	return 1;
 }
 
+CMD:sprobuj(playerid, params[]) {
+	new action[128], str[256];
+	new randCase;
+	new actionCases[][] = {
+		"odniós³ sukces próbuj¹c",
+		"odniós³ pora¿kê próbuj¹c"
+	};
+	
+	if(sscanf(params, "s[128]", action)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /sprobuj [Akcja]");
+	}
+	
+	randCase = random(sizeof(actionCases));
+	
+	format(str, sizeof(str), "*** %s %s %s.", pVars[playerid][pCharName], actionCases[randCase], action);
+	sendDistanceMessage(playerid, 30.0, str, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+	return 1;
+}
+
 CMD:me(playerid, params[]) {
 	new str[512], str2[128];
 	new randomTips[][] = {
@@ -266,10 +285,22 @@ CMD:opis(playerid, params[]) {
 	}
 	
 	if(strfind(str, "usun", true) != -1) {
+		queryStr[0] = EOS;
+		
 		if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
-			UpdateDynamic3DTextLabelText(pVars[playerid][pCharDesc], COLOR_WHITE, NULL);
+			if(!strlen(str)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Nie masz ¿adnego opisu.");
+			} else {
+				format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Desc` = '\0' WHERE `UID` = '%d'", pVars[playerid][pUid]);
+				mysql_query(queryStr);
+				
+				UpdateDynamic3DTextLabelText(pVars[playerid][pCharDesc], COLOR_WHITE, NULL);
+			}
 		} else {
 			new vehid = actualVehicle[playerid];
+			
+			format(queryStr, sizeof(queryStr), "UPDATE `Vehicles` SET `Desc` = '\0' WHERE `UID` = '%d'", vVars[vehid][vUid]);
+			mysql_query(queryStr);
 			
 			UpdateDynamic3DTextLabelText(vVars[vehid][vDesc], COLOR_WHITE, NULL);
 		}
@@ -277,8 +308,12 @@ CMD:opis(playerid, params[]) {
 		GameTextForPlayer(playerid, "~w~Opis zostal usuniety.", 4000, 3);
 	} else {
 		mainStr[0] = EOS;
-		format(mainStr, sizeof(mainStr), "%s", str);
+		queryStr[0] = EOS;
 		
+		format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Desc` = '%s' WHERE `UID` = '%d'", str, pVars[playerid][pUid]);
+		mysql_query(queryStr);
+		
+		format(mainStr, sizeof(mainStr), "%s", str);
 		SendClientMessage(playerid, COLOR_GRAY, "Opis postaci ustawiony (aby go usun¹æ, wpisz /opis usun):");
 		SendClientMessage(playerid, COLOR_PURPLE, mainStr);
 		UpdateDynamic3DTextLabelText(pVars[playerid][pCharDesc], COLOR_PURPLE, str);
@@ -305,7 +340,7 @@ CMD:o(playerid, params[]) {
 	mainStr[0] = EOS;
 	offerFrom[pId] = playerid;
 	offerFor[playerid] = pId;
-	offerParams[playerid] = cmdParams;
+	offerParams[pId] = cmdParams;
 	
 	if(strfind(type, "grupa", true) != -1) {
 		strcat(mainStr, "Wpisz nazwê grupy do, której chcesz zaprosiæ gracza:");
@@ -320,8 +355,13 @@ CMD:o(playerid, params[]) {
 			GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
 			
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", fVars[tmpFracId][fUid], fVars[tmpFracId][fName], offerParams[playerid]);
-			ShowPlayerDialog(pId, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Lekcja prowadzenia pojazdu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[pId]);
+			
+			if(offerParams[pId] > 0) {
+				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+			} else {
+				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+			}
 		}
 	}
 	return 1;
@@ -671,17 +711,19 @@ CMD:duty(playerid) {
 	
 	mainStr[0] = EOS;
 	
-	if(pVars[playerid][pFraction] != 0) {
-		if(isPlayerDuty[playerid]) {
-			format(mainStr, sizeof(mainStr), "~w~Schodzisz ze sluzby~n~%s", fVars[fracId][fName]);
-			GameTextForPlayer(playerid, mainStr, 5000, 3);
+	for(new i = 0; i < 5; i++) {
+		if(pVars[playerid][pFraction][i] != 0) {
+			if(isPlayerDuty[playerid]) {
+				format(mainStr, sizeof(mainStr), "~w~Schodzisz ze sluzby~n~%s", fVars[fracId][fName]);
+				GameTextForPlayer(playerid, mainStr, 5000, 3);
+				
+				isPlayerDuty[playerid] = false;
+			} else {
+				format(mainStr, sizeof(mainStr), "~w~Wchodzisz na sluzbe~n~%s", fVars[fracId][fName]);
+				GameTextForPlayer(playerid, mainStr, 5000, 3);
 			
-			isPlayerDuty[playerid] = false;
-		} else {
-			format(mainStr, sizeof(mainStr), "~w~Wchodzisz na sluzbe~n~%s", fVars[fracId][fName]);
-			GameTextForPlayer(playerid, mainStr, 5000, 3);
-		
-			isPlayerDuty[playerid] = true;
+				isPlayerDuty[playerid] = true;
+			}
 		}
 	}
 	return 1;

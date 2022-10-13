@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: admin_cmds.inc
 	Date: 04.08.2022
-	Modified: 02.10.2022
+	Modified: 10.10.2022
 */
 
 #if !defined _ADMIN_CMDS_
@@ -21,6 +21,17 @@ CMD:setbw(playerid, params[]) {
 			setPlayerBW(pId, time);
 			
 			mainStr[0] = EOS;
+			
+			foreach(new i : Player) {
+				if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
+					if(isAdminDuty[i]) {
+						if(pId == playerid) {
+							format(mainStr, sizeof(mainStr), "%s nada³ sobie BW.", pVars[playerid][pCharName]);
+							SendClientMessage(i, COLOR_WHITE, mainStr);
+						}
+					}
+				}
+			}
 			
 			format(mainStr, sizeof(mainStr), "%s nada³(a) Ci BW.", pVars[playerid][pCharName]);
 			SendClientMessage(pId, COLOR_WHITE, mainStr);
@@ -51,9 +62,73 @@ CMD:unbw(playerid, params[]) {
 			isBW[pId] = false;
 			mainStr[0] = EOS;
 			
+			foreach(new i : Player) {
+				if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
+					if(isAdminDuty[i]) {
+						if(pId == playerid) {
+							format(mainStr, sizeof(mainStr), "%s zdj¹³ sobie BW.", pVars[playerid][pCharName]);
+							SendClientMessage(i, COLOR_WHITE, mainStr);
+						}
+					}
+				}
+			}
+			
 			format(mainStr, sizeof(mainStr), "%s zdj¹³(ê³a) Ci BW.", pVars[playerid][pCharName]);
 			SendClientMessage(pId, COLOR_WHITE, mainStr);
 			format(mainStr, sizeof(mainStr), "Zdj¹³eœ(e³aœ) BW graczowi %s.", pVars[pId][pCharName]);
+			SendClientMessage(playerid, COLOR_WHITE, mainStr);
+		}
+	} else {
+		return 0;
+	}
+	return 1;
+}
+
+CMD:rc(playerid, params[]) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+		if(isAdminDuty[playerid]) {
+			new pId;
+			
+			if(sscanf(params, "i", pId)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Nikogo nie podgl¹dasz. /rc [ID/nick] aby rozpocz¹æ.");
+			}
+			
+			if(!isSpectating[playerid]) {
+				TogglePlayerSpectating(playerid, 1);
+				PlayerSpectatePlayer(playerid, pId);
+				
+				isSpectating[playerid] = true;
+			} else
+			{	
+				TogglePlayerSpectating(playerid, 0);
+				
+				isSpectating[playerid] = false;
+			}
+		}
+	} else {
+		return 0;
+	}
+	return 1;
+}
+
+CMD:tt(playerid, params[]) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+		if(isAdminDuty[playerid]) {
+			new pId;
+			new Float:x, Float:y, Float:z;
+			
+			if(sscanf(params, "i", pId)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /tt [ID gracza]");
+			}
+			
+			GetPlayerPos(pId, x, y, z);
+			SetCameraBehindPlayer(pId);
+			SetPlayerPos(playerid, x, y, z + 2.0);
+		
+			mainStr[0] = EOS;
+			format(mainStr, sizeof(mainStr), "%s teleportowa³ siê do Ciebie.", pVars[playerid][pCharName]);
+			SendClientMessage(pId, COLOR_WHITE, mainStr);
+			format(mainStr, sizeof(mainStr), "Teleportowa³eœ siê do %s.", pVars[pId][pCharName]);
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 		}
 	} else {
@@ -93,6 +168,17 @@ CMD:givehealth(playerid, params[]) {
 			SetPlayerHealth(toPlayerid, pVars[toPlayerid][pHp]);
 			
 			mainStr[0] = EOS;
+			
+			foreach(new i : Player) {
+				if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
+					if(isAdminDuty[i]) {
+						if(toPlayerid == playerid) {
+							format(mainStr, sizeof(mainStr), "%s do³adowa³ sobie ¿ycie.", pVars[playerid][pCharName]);
+							SendClientMessage(i, COLOR_WHITE, mainStr);
+						}
+					}
+				}
+			}
 			
 			format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{00FF00}: Otrzymales zdrowie od admina %s", pVars[playerid][pAccName]);
 			SendClientMessage(toPlayerid, COLOR_WHITE, mainStr);
@@ -296,34 +382,6 @@ CMD:deletevehicle(playerid, params[]) {
 			vVars[vehUid - 1][vEngineHp] = 0.0;
 			vVars[vehUid - 1][vSpawned] = false;
 			vVars[vehUid - 1][vMileage] = 0;
-		}
-	} else {
-		return 0;
-	}
-	return 1;
-}
-
-CMD:spectateplayer(playerid, params[]) {
-	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
-		if(isAdminDuty[playerid]) {
-			new toPlayerId;
-			
-			if(sscanf(params, "i", toPlayerId)) {
-				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /spectateplayer [Id gracza].");
-			}
-			
-			if(!isSpectating[playerid]) {
-				GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
-				TogglePlayerSpectating(playerid, 1);
-				PlayerSpectatePlayer(playerid, toPlayerId);
-				
-				isSpectating[playerid] = true;
-			} else
-			{	
-				TogglePlayerSpectating(playerid, 0);
-				
-				isSpectating[playerid] = false;
-			}
 		}
 	} else {
 		return 0;

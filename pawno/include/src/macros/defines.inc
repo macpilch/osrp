@@ -50,9 +50,9 @@
 		forward %0(%1); public %0(%1)
 
 #define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "server_823"
-#define MYSQL_PASS "a8p62ulzoc"
-#define MYSQL_DB "server_823_srv"
+#define MYSQL_USER "root"
+#define MYSQL_PASS "1234"
+#define MYSQL_DB "samp"
 
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_GRAY 0xCDC9C9FF

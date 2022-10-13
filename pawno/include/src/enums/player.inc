@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 24.07.2022
-	Modified: 02.10.2022
+	Modified: 11.10.2022
 */
 
 #if !defined _PLAYER_
@@ -36,6 +36,9 @@ enum PlayerData {
 	pSeconds,
 	Float:pHp,
 	Float:pAp,
+	pBans,
+	pKicks,
+	pWarns,
 	pVw,
 	pInt,
 	pSkin,
@@ -57,8 +60,8 @@ enum PlayerData {
 	pPdp,
 	pTelNum,
 	pBankAcc,
-	pGroup[32],
-	pFraction,
+	pGroup[128],
+	pFraction[5],
 	Float:pTraveled,
 	pDoors,
 	pInvi,
