@@ -21,7 +21,9 @@ enum FractionData {
 	fOUid,
 	fName[32],
 	fType, // 0 - publiczne, 1 - przestepcze, 2 - prawo jazdy, 3 - biznesy
-	fMembers
+	fMembers,
+	fVehicles,
+	fMoney
 };
 
 #endif 

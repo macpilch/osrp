@@ -86,6 +86,9 @@
 #define VEHICLE_FUEL_TANK_MEDIUM 40
 #define VEHICLE_FUEL_TANK_LARGE 60 
 
+//Number plate
+#define VEHICLE_NUMBER_PLATE_NULL ""
+
 forward Float:getVehicleFuel(srvvehid);
 forward Float:getVehicleFuelTank(srvvehid);
 
