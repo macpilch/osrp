@@ -122,8 +122,8 @@ stock vehicleEngineStatus(playerid, vehicleid) {
 			return GameTextForPlayer(playerid, "~r~Brak paliwa w pojezdzie.", 5000, 3);
 		}
 	
-		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~n~~n~~g~Trwa odpalanie silnika...", 5000, 3);
-		SetTimerEx("vehEngineOn", 5000, false, "ii", playerid, vehicleid);
+		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~n~~n~~g~Trwa odpalanie silnika...", 3000, 3);
+		SetTimerEx("vehEngineOn", 3000, false, "ii", playerid, vehicleid);
 	} else {
 		new engine, lights, alarm, doors, bonnet, boot, objective;
 

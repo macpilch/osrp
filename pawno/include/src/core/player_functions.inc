@@ -3,14 +3,14 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
-	Modified: 02.10.2022
+	Modified: 11.10.2022
 */
 
 #if !defined _PLAYER_FUNCTIONS_
 #define _PLAYER_FUNCTIONS_
 
 Callback:hideDoorInfo(playerid) {
-	for(new i = 0; i < 3; i++) {
+	for(new i = 0; i < sizeof(doorInfo); i++) {
 		TextDrawHideForPlayer(playerid, doorInfo[playerid][i]);
 	}	
 	return 1;
@@ -35,6 +35,12 @@ Callback:hideHelpInfo(playerid) {
 	for(new i = 0; i < sizeof(helpInfo); i++) {
 		TextDrawHideForPlayer(playerid, helpInfo[playerid][i]);
 	}
+	return 1;
+}
+
+Callback:setICNameForPlayer(playerid) {
+	SetPlayerName(playerid, pVars[playerid][pCharName2]);
+	GetPlayerName(playerid, pVars[playerid][pCharName2], 24);
 	return 1;
 }
 
@@ -396,18 +402,22 @@ stock createPlayerTextDraws(playerid) {
 }
 
 stock loadPlayerValues(playerid) {
+	new charDesc[128];
+	
 	StopAudioStreamForPlayer(playerid);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `Rank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `VW`, `INT`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `TelNum`, `Fraction`, `DriverLicense`, `X`, `Y`, `Z` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `Rank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `VW`, `INT`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `DriverLicense`, `TelNum`, `Frac0`, `Frac1`, `Frac2`, `Frac3`, `Frac4`, `Traveled`, `X`, `Y`, `Z`, `Desc` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	mysql_store_result();
 	
 	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>iiis[24]iiiiiiiffiiiiiiiifff", pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw],
-	pVars[playerid][pInt], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pTelNum], pVars[playerid][pFraction], pVars[playerid][pDriverLicense], pVars[playerid][pX],
-	pVars[playerid][pY], pVars[playerid][pZ]);
+	sscanf(queryStr, "p<|>iiis[24]iiiiiiiffiiiiiiiiiiiiffffs[128]", pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw],
+	pVars[playerid][pInt], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pTelNum], pVars[playerid][pFraction][0], pVars[playerid][pFraction][1], pVars[playerid][pFraction][2],
+	pVars[playerid][pFraction][3], pVars[playerid][pFraction][4], pVars[playerid][pDriverLicense], pVars[playerid][pTraveled], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], charDesc);
 	mysql_free_result();
+	
+	UpdateDynamic3DTextLabelText(pVars[playerid][pCharDesc], COLOR_PURPLE, charDesc);
 	return 1;
 }
 
@@ -477,7 +487,6 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pPdp] = 0;
 	pVars[playerid][pTelNum] = 0;
 	pVars[playerid][pBankAcc] = 0;
-	pVars[playerid][pFraction] = 0;
 	pVars[playerid][pTraveled] = 0;
 	pVars[playerid][pDoors] = 0;
 	pVars[playerid][pInvi] = 0;
@@ -501,6 +510,10 @@ stock setPlayerDefaultValues(playerid) {
 	isDizzines[playerid] = false;
 	usedTelephone[playerid] = false;
 	drivingCourse[playerid] = false;
+	
+	for(new i = 0; i < 5; i++) {
+		pVars[playerid][pFraction][i] = 0;
+	}
 	
 	for(new i = 0; i < sizeof(chatMessages); i++) {
 		chatMessages[playerid][i] = true;
@@ -544,7 +557,6 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pPdp] = 0;
 	pVars[playerid][pTelNum] = 0;
 	pVars[playerid][pBankAcc] = 0;
-	pVars[playerid][pFraction] = 0;
 	pVars[playerid][pTraveled] = 0;
 	pVars[playerid][pDoors] = 0;
 	pVars[playerid][pInvi] = 0;
@@ -569,6 +581,10 @@ stock resetPlayerValues(playerid) {
 	usedTelephone[playerid] = false;
 	drivingCourse[playerid] = false;
 	
+	for(new i = 0; i < 5; i++) {
+		pVars[playerid][pFraction][i] = 0;
+	}
+	
 	for(new i = 0; i < sizeof(chatMessages); i++) {
 		chatMessages[playerid][i] = false;
 	}	
@@ -582,9 +598,9 @@ stock savePlayerValues(playerid) {
 	pVars[playerid][pInt] = GetPlayerInterior(playerid);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `VW` = '%d', `INT` = '%d', `Hp` = '%f', `Ap` = '%f', `Skin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `TelNum` = '%d', `Fraction` = '%d', `DriverLicense` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'", 
-	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pTelNum], pVars[playerid][pFraction],
-	pVars[playerid][pDriverLicense], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `VW` = '%d', `INT` = '%d', `Hp` = '%f', `Ap` = '%f', `Skin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `TelNum` = '%d', `Frac0` = '%d', `Frac1` = '%d', `Frac2` = '%d', `Frac3` = '%d', `Frac4` = '%d', `DriverLicense` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'",
+	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pTelNum], pVars[playerid][pFraction][0], pVars[playerid][pFraction][1], pVars[playerid][pFraction][2],
+	pVars[playerid][pFraction][3], pVars[playerid][pFraction][4], pVars[playerid][pDriverLicense], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	return 1;
 }
@@ -655,9 +671,11 @@ stock checkFractionSrvIdForPlayer(playerid) {
 	new fracId;
 	
 	foreach(new i : fractionItter) {
-		if(fVars[i][fUid] == pVars[playerid][pFraction]) {
-			fracId = i;
-			break;
+		for(new j = 0; j < 5; j++) {
+			if(fVars[i][fUid] == pVars[playerid][pFraction][j]) {
+				fracId = i;
+				break;
+			}
 		}
 	}
 	return fracId;

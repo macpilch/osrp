@@ -78,8 +78,8 @@ new itemNames[][] = {
 	"Rolki", "Piwo", "Wino", "Sprunk", "Teczka", "Ubranie", "Telefon", "Kostka", "Pistolet", "Desert Deagle", "Shotgun", "M4",
 	"Cheeseburger", "Coca-Cola", "Cuba Libre", "Frytki", "Grove Burger", "Hamburger",
 	"Herbata", "Hot Dog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Longer",
-	"Nachos z serem", "Naleœniki", "P¹czek", "P¹czek Afro", "P¹czek Z³otawy", "Piwo",
-	"Sushi", "Wino", "Woda Mineralna", "Discman", "RadioParty", "CD", "Nokia 8110"
+	"Nachos z serem", "Naleœniki", "P¹czek", "P¹czek Afro", "P¹czek Z³otawy",
+	"Sushi", "Woda Mineralna", "Discman", "RadioParty", "CD", "Nokia 8110"
 };
 
 new VehicleNames[212][] = {
