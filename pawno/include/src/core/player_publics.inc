@@ -975,8 +975,13 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_IN, DIALOG_STYLE_INPUT, "Bank", mainStr, "Wp³aæ", "Anuluj");
 				}
 				case 2: {
+<<<<<<< HEAD
+					format(mainStr, sizeof(mainStr), "Ile chcesz wyp³aciæ pieniedzy:");
+					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_OUT, DIALOG_STYLE_INPUT, cVars[actualCashpoint[playerid]][csName], mainStr, "Wyp³aæ", "Anuluj");
+=======
 					format(mainStr, sizeof(mainStr), "Ile pieniêdzy pragniesz wyp³aciæ z konta?");
 					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_OUT, DIALOG_STYLE_INPUT, cVars[actualCashpoint[playerid]][csName], mainStr, "Ok", "Anuluj");
+>>>>>>> 063d64d0e2873a22bfff8290cc24340f7f00c6b2
 				}
 			}
 		}
@@ -1201,7 +1206,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				case 3: {
 					mainStr[0] = EOS;
 					
-					strcat(mainStr, "Podaj numer, pod który chcesz zadzwoniæ.\n\nMo¿esz szybciej wybieraæ numery telefonów za pomoc¹skrótu /p.\n");
+					strcat(mainStr, "Podaj numer, pod który chcesz zadzwoniæ.\n\nMo¿esz szybciej wybieraæ numery telefonów za pomoc¹ skrótu /p.\n");
 					strcat(mainStr, "Przyk³ad: /p jettyphone 777 (wybierze numer 777).");
 					ShowPlayerDialog(playerid, DIALOG_TELEPHONE_ENTER_NUMBER, DIALOG_STYLE_INPUT, "Numer telefonu", mainStr, "OK", "Anuluj");
 				}
@@ -1341,6 +1346,21 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			for(new i = 0; i < sizeof(telephoneCall); i++) {
 				TextDrawHideForPlayer(playerid, telephoneCall[playerid][i]);
+			}
+		}
+		
+		case DIALOG_SHOW_FRACTION_PANEL: {
+			if(!response) {
+				return 1;
+			}
+			
+			switch(listitem) {
+				case 0: {
+					//zarzadzanie rangami frakcji
+				}
+				case 1: {
+					//zarzadzanie pojazdami frakcji
+				}
 			}
 		}
 	}

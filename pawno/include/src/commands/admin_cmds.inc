@@ -182,7 +182,7 @@ CMD:givehealth(playerid, params[]) {
 			
 			format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{00FF00}: Otrzymales zdrowie od admina %s", pVars[playerid][pAccName]);
 			SendClientMessage(toPlayerid, COLOR_WHITE, mainStr);
-			format(mainStr, sizeof(mainStr), "{00FF00}[Admin]:{00FF00}: Dales zdrowie graczowi %s", pVars[toPlayerid][pCharName2]);
+			format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{00FF00}: Dales zdrowie graczowi %s", pVars[toPlayerid][pCharName2]);
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 		} 
 	} else {
@@ -319,7 +319,7 @@ CMD:spawnvehicle(playerid, params[]) {
 			format(vVars[freeId][vDescInfo], 64, NULL);
 			UpdateDynamic3DTextLabelText(vVars[freeId][vDesc], COLOR_WHITE, vVars[freeId][vDescInfo]);
 			
-			format(vVars[freeId][vPlate], 32, NULL);
+			format(vVars[freeId][vPlate], 32, VEHICLE_NUMBER_PLATE_NULL);
 			SetVehicleNumberPlate(vVars[freeId][vId], vVars[freeId][vPlate]);
 			
 			format(queryStr, sizeof(queryStr), "INSERT INTO `Vehicles` (`UID`, `ID`, `OUID`, `CharName`, `ModelID`, `Color1`, `Color2`, `X`, `Y`, `Z`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d', '%d', '%f', '%f', '%f')",

@@ -777,15 +777,18 @@ CMD:naprawsilnik(playerid, params[]) {
 	if(sscanf(params, "i", toPlayerId)) {
 		return SendClientMessage(playerid, COLOR_WHITE, "Uzycie komendy /Naprawsilnik [Id gracza].");
 	}
-	
+	new vehid = actualVehicle[toPlayerId];
 	if(strfind(fVars[fracId][fName], "Mechanik", false) != -1) {
 		if(isPlayerDuty[playerid]) {
 			SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz.");
 			GetPlayerPos(playerid, x, y, z);
-			
+			mainStr[0] = EOS;
+			format(mainStr, sizeof(mainStr), "actualVehicle[%d] = %d", toPlayerId, actualVehicle[toPlayerId]);
+			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 			if(IsPlayerInRangeOfPoint(playerid, 5.0, x, y, z)) {
 				if(IsPlayerInAnyVehicle(toPlayerId)) {
-					vVars[actualVehicle[toPlayerId]][vEngineHp] = 200.0;
+					vVars[vehid][vEngineHp] = 320.0;
+					SetVehicleHealth(vehid, vVars[vehid][vEngineHp]);
 				} else {
 					SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz musi znajdowac sie w pojezdzie.");
 				}
@@ -806,7 +809,7 @@ CMD:naprawkaroserie(playerid, params[]) {
 	if(sscanf(params, "i", toPlayerId)) {
 		return SendClientMessage(playerid, COLOR_WHITE, "Uzycie komendy /Naprawkaroserie [Id gracza].");
 	}
-	
+	new vehid = actualVehicle[toPlayerId];
 	if(strfind(fVars[fracId][fName], "Mechanik", false) != -1) {
 		if(isPlayerDuty[playerid]) {
 			SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz.");
@@ -814,8 +817,8 @@ CMD:naprawkaroserie(playerid, params[]) {
 			
 			if(IsPlayerInRangeOfPoint(playerid, 5.0, x, y, z)) {
 				if(IsPlayerInAnyVehicle(toPlayerId)) {
-					RepairVehicle(actualVehicle[toPlayerId]);
-					SetVehicleHealth(actualVehicle[toPlayerId], vVars[actualVehicle[toPlayerId]][vEngineHp]);
+					RepairVehicle(vehid);
+					SetVehicleHealth(actualVehicle[toPlayerId], vVars[vehid][vEngineHp]);
 				} else {
 					SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz musi znajdowac sie w pojezdzie.");
 				}
@@ -827,6 +830,13 @@ CMD:naprawkaroserie(playerid, params[]) {
 		}
 	}
 	
+	return 1;
+}
+
+CMD:frakcja(playerid) { // panel frakcji 
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "Zarz¹dzanie rangami\nZarz¹dzanie pojazdami");
+	ShowPlayerDialog(playerid, DIALOG_SHOW_FRACTION_PANEL, DIALOG_STYLE_LIST, "Panel Frakcji", mainStr, "Wybierz", "Anuluj");
 	return 1;
 }
 
