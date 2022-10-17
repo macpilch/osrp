@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 02.10.2022
+	Modified: 13.10.2022
 */
 
 #if !defined _PLAYER_CMDS_
@@ -558,6 +558,27 @@ CMD:v(playerid, params[]) {
 		} else {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v [zaparkuj/z(amknij)/info/namierz/reset]");
 		}
+	}
+	return 1;
+}
+
+CMD:g(playerid, params[]) {
+	if(!showFracsInfo[playerid]) {
+		for(new i = 0; i < 15; i++) {
+			TextDrawShowForPlayer(playerid, fractionsInfo[playerid][i]);
+		}
+		
+		SelectTextDraw(playerid, 0xFF000044);
+		
+		showFracsInfo[playerid] = true;
+	} else {
+		for(new i = 0; i < 15; i++) {
+			TextDrawHideForPlayer(playerid, fractionsInfo[playerid][i]);
+		}
+		
+		CancelSelectTextDraw(playerid);
+		
+		showFracsInfo[playerid] = false;		
 	}
 	return 1;
 }

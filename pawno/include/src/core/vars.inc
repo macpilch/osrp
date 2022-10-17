@@ -44,6 +44,7 @@ new bool:isDizzines[MAX_PLAYERS];
 new bool:usedTelephone[MAX_PLAYERS];
 new bool:chatMessages[MAX_PLAYERS][2]; // 0 - PM, 1 - Grupowe
 new bool:drivingCourse[MAX_PLAYERS];
+new bool:showFracsInfo[MAX_PLAYERS];
 
 // type - MySQL
 new MySQL:hMySQL;
@@ -61,6 +62,7 @@ new Text:oocWarning[MAX_PLAYERS][2];
 new Text:damageRedScreen[MAX_PLAYERS];
 new Text:doorInfo[MAX_PLAYERS][3];
 new Text:telephoneCall[MAX_PLAYERS][2];
+new Text:fractionsInfo[MAX_PLAYERS][15];
 
 // type - Iterator
 new Iterator:vehItter<MAX_VEHICLES>;

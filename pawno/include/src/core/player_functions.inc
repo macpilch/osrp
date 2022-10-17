@@ -398,6 +398,170 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawSetShadow(telephoneCall[playerid][1], 0);
 	TextDrawSetOutline(telephoneCall[playerid][1], 1);
 	TextDrawFont(telephoneCall[playerid][1], 0);
+	
+	fractionsInfo[playerid][0] = TextDrawCreate(111.039489, 138.833312, "~>~  ~w~Grupy");
+	TextDrawLetterSize(fractionsInfo[playerid][0], 0.431259, 1.804166);
+	TextDrawAlignment(fractionsInfo[playerid][0], 2);
+	TextDrawColor(fractionsInfo[playerid][0], -1);
+	TextDrawSetShadow(fractionsInfo[playerid][0], 0);
+	TextDrawSetOutline(fractionsInfo[playerid][0], 0);
+	TextDrawBackgroundColor(fractionsInfo[playerid][0], 255);
+	TextDrawFont(fractionsInfo[playerid][0], 1);
+	TextDrawSetProportional(fractionsInfo[playerid][0], 1);
+	TextDrawSetSelectable(fractionsInfo[playerid][0], 1);
+
+	fractionsInfo[playerid][1] = TextDrawCreate(50.600326, 169.166702, "~b~1  ~w~Test (0)");
+	TextDrawLetterSize(fractionsInfo[playerid][1], 0.412518, 1.541666);
+	TextDrawAlignment(fractionsInfo[playerid][1], 1);
+	TextDrawColor(fractionsInfo[playerid][1], -1);
+	TextDrawSetShadow(fractionsInfo[playerid][1], 0);
+	TextDrawSetOutline(fractionsInfo[playerid][1], 1);
+	TextDrawBackgroundColor(fractionsInfo[playerid][1], 51);
+	TextDrawFont(fractionsInfo[playerid][1], 1);
+	TextDrawSetProportional(fractionsInfo[playerid][1], 1);
+
+	fractionsInfo[playerid][2] = TextDrawCreate(245.973648, 171.500061, "~w~Sluzba");
+	TextDrawLetterSize(fractionsInfo[playerid][2], 0.309911, 1.133332);
+	TextDrawAlignment(fractionsInfo[playerid][2], 1);
+	TextDrawColor(fractionsInfo[playerid][2], -1);
+	TextDrawSetShadow(fractionsInfo[playerid][2], 0);
+	TextDrawSetOutline(fractionsInfo[playerid][2], 1);
+	TextDrawBackgroundColor(fractionsInfo[playerid][2], 51);
+	TextDrawFont(fractionsInfo[playerid][2], 1);
+	TextDrawSetProportional(fractionsInfo[playerid][2], 1);
+	TextDrawSetSelectable(fractionsInfo[playerid][2], 1);
+
+	fractionsInfo[playerid][3] = TextDrawCreate(310.160919, 171.500030, "~w~Info");
+	TextDrawLetterSize(fractionsInfo[playerid][3], 0.319282, 1.162498);
+	TextDrawAlignment(fractionsInfo[playerid][3], 1);
+	TextDrawColor(fractionsInfo[playerid][3], -1);
+	TextDrawSetShadow(fractionsInfo[playerid][3], 0);
+	TextDrawSetOutline(fractionsInfo[playerid][3], 1);
+	TextDrawBackgroundColor(fractionsInfo[playerid][3], 51);
+	TextDrawFont(fractionsInfo[playerid][3], 1);
+	TextDrawSetProportional(fractionsInfo[playerid][3], 1);
+	TextDrawSetSelectable(fractionsInfo[playerid][3], 1);
+
+	fractionsInfo[playerid][4] = TextDrawCreate(357.950378, 171.500000, "~w~Magazyn");
+	TextDrawLetterSize(fractionsInfo[playerid][4], 0.292108, 1.080832);
+	TextDrawAlignment(fractionsInfo[playerid][4], 1);
+	TextDrawColor(fractionsInfo[playerid][4], -1);
+	TextDrawSetShadow(fractionsInfo[playerid][4], 0);
+	TextDrawSetOutline(fractionsInfo[playerid][4], 1);
+	TextDrawBackgroundColor(fractionsInfo[playerid][4], 51);
+	TextDrawFont(fractionsInfo[playerid][4], 1);
+	TextDrawSetProportional(fractionsInfo[playerid][4], 1);
+	TextDrawSetSelectable(fractionsInfo[playerid][4], 1);
+
+	fractionsInfo[playerid][5] = TextDrawCreate(430.102355, 171.499984, "~w~Online");
+	TextDrawLetterSize(fractionsInfo[playerid][5], 0.277583, 1.150831);
+	TextDrawAlignment(fractionsInfo[playerid][5], 1);
+	TextDrawColor(fractionsInfo[playerid][5], -1);
+	TextDrawSetShadow(fractionsInfo[playerid][5], 0);
+	TextDrawSetOutline(fractionsInfo[playerid][5], 1);
+	TextDrawBackgroundColor(fractionsInfo[playerid][5], 51);
+	TextDrawFont(fractionsInfo[playerid][5], 1);
+	TextDrawSetProportional(fractionsInfo[playerid][5], 1);
+	TextDrawSetSelectable(fractionsInfo[playerid][5], 1);
+
+	fractionsInfo[playerid][6] = TextDrawCreate(486.325042, 172.083374, "~w~Zadania");
+	TextDrawLetterSize(fractionsInfo[playerid][6], 0.291639, 1.086666);
+	TextDrawAlignment(fractionsInfo[playerid][6], 1);
+	TextDrawColor(fractionsInfo[playerid][6], -1);
+	TextDrawSetShadow(fractionsInfo[playerid][6], 0);
+	TextDrawSetOutline(fractionsInfo[playerid][6], 1);
+	TextDrawBackgroundColor(fractionsInfo[playerid][6], 51);
+	TextDrawFont(fractionsInfo[playerid][6], 1);
+	TextDrawSetProportional(fractionsInfo[playerid][6], 1);
+	TextDrawSetSelectable(fractionsInfo[playerid][6], 1);
+
+	fractionsInfo[playerid][7] = TextDrawCreate(552.855102, 172.083465, "~w~Pojazdy");
+	TextDrawLetterSize(fractionsInfo[playerid][7], 0.300072, 1.057498);
+	TextDrawAlignment(fractionsInfo[playerid][7], 1);
+	TextDrawColor(fractionsInfo[playerid][7], -1);
+	TextDrawSetShadow(fractionsInfo[playerid][7], 0);
+	TextDrawSetOutline(fractionsInfo[playerid][7], 1);
+	TextDrawBackgroundColor(fractionsInfo[playerid][7], 51);
+	TextDrawFont(fractionsInfo[playerid][7], 1);
+	TextDrawSetProportional(fractionsInfo[playerid][7], 1);
+	TextDrawSetSelectable(fractionsInfo[playerid][7], 1);
+
+	fractionsInfo[playerid][8] = TextDrawCreate(293.420227, 170.083343, "_");
+	TextDrawLetterSize(fractionsInfo[playerid][8], 0.000000, 1.562961);
+	TextDrawTextSize(fractionsInfo[playerid][8], 232.729141, 0.000000);
+	TextDrawAlignment(fractionsInfo[playerid][8], 1);
+	TextDrawColor(fractionsInfo[playerid][8], 0);
+	TextDrawUseBox(fractionsInfo[playerid][8], 1);
+	TextDrawBoxColor(fractionsInfo[playerid][8], 102);
+	TextDrawSetShadow(fractionsInfo[playerid][8], 0);
+	TextDrawSetOutline(fractionsInfo[playerid][8], 0);
+	TextDrawFont(fractionsInfo[playerid][8], 0);
+
+	fractionsInfo[playerid][9] = TextDrawCreate(350.579772, 169.500000, "_");
+	TextDrawLetterSize(fractionsInfo[playerid][9], 0.000000, 1.562961);
+	TextDrawTextSize(fractionsInfo[playerid][9], 295.979492, 0.000000);
+	TextDrawAlignment(fractionsInfo[playerid][9], 1);
+	TextDrawColor(fractionsInfo[playerid][9], 0);
+	TextDrawUseBox(fractionsInfo[playerid][9], 1);
+	TextDrawBoxColor(fractionsInfo[playerid][9], 102);
+	TextDrawSetShadow(fractionsInfo[playerid][9], 0);
+	TextDrawSetOutline(fractionsInfo[playerid][9], 0);
+	TextDrawFont(fractionsInfo[playerid][9], 0);
+
+	fractionsInfo[playerid][10] = TextDrawCreate(415.704254, 168.916656, "_");
+	TextDrawLetterSize(fractionsInfo[playerid][10], 0.000000, 1.757409);
+	TextDrawTextSize(fractionsInfo[playerid][10], 349.859436, 0.000000);
+	TextDrawAlignment(fractionsInfo[playerid][10], 1);
+	TextDrawColor(fractionsInfo[playerid][10], 0);
+	TextDrawUseBox(fractionsInfo[playerid][10], 1);
+	TextDrawBoxColor(fractionsInfo[playerid][10], 102);
+	TextDrawSetShadow(fractionsInfo[playerid][10], 0);
+	TextDrawSetOutline(fractionsInfo[playerid][10], 0);
+	TextDrawFont(fractionsInfo[playerid][10], 0);
+
+	fractionsInfo[playerid][11] = TextDrawCreate(474.737915, 169.500000, "_");
+	TextDrawLetterSize(fractionsInfo[playerid][11], 0.000000, 1.692593);
+	TextDrawTextSize(fractionsInfo[playerid][11], 419.200592, 0.000000);
+	TextDrawAlignment(fractionsInfo[playerid][11], 1);
+	TextDrawColor(fractionsInfo[playerid][11], 0);
+	TextDrawUseBox(fractionsInfo[playerid][11], 1);
+	TextDrawBoxColor(fractionsInfo[playerid][11], 102);
+	TextDrawSetShadow(fractionsInfo[playerid][11], 0);
+	TextDrawSetOutline(fractionsInfo[playerid][11], 0);
+	TextDrawFont(fractionsInfo[playerid][11], 0);
+
+	fractionsInfo[playerid][12] = TextDrawCreate(537.519775, 169.500000, "_");
+	TextDrawLetterSize(fractionsInfo[playerid][12], 0.000000, 1.692593);
+	TextDrawTextSize(fractionsInfo[playerid][12], 477.765747, 0.000000);
+	TextDrawAlignment(fractionsInfo[playerid][12], 1);
+	TextDrawColor(fractionsInfo[playerid][12], 0);
+	TextDrawUseBox(fractionsInfo[playerid][12], 1);
+	TextDrawBoxColor(fractionsInfo[playerid][12], 102);
+	TextDrawSetShadow(fractionsInfo[playerid][12], 0);
+	TextDrawSetOutline(fractionsInfo[playerid][12], 0);
+	TextDrawFont(fractionsInfo[playerid][12], 0);
+
+	fractionsInfo[playerid][13] = TextDrawCreate(608.266479, 169.500000, "_");
+	TextDrawLetterSize(fractionsInfo[playerid][13], 0.000000, 1.692593);
+	TextDrawTextSize(fractionsInfo[playerid][13], 541.016113, 0.000000);
+	TextDrawAlignment(fractionsInfo[playerid][13], 1);
+	TextDrawColor(fractionsInfo[playerid][13], 0);
+	TextDrawUseBox(fractionsInfo[playerid][13], 1);
+	TextDrawBoxColor(fractionsInfo[playerid][13], 102);
+	TextDrawSetShadow(fractionsInfo[playerid][13], 0);
+	TextDrawSetOutline(fractionsInfo[playerid][13], 0);
+	TextDrawFont(fractionsInfo[playerid][13], 0);
+
+	fractionsInfo[playerid][14] = TextDrawCreate(611.077636, 167.166656, "_");
+	TextDrawLetterSize(fractionsInfo[playerid][14], 0.000000, 2.146298);
+	TextDrawTextSize(fractionsInfo[playerid][14], 45.320640, 0.000000);
+	TextDrawAlignment(fractionsInfo[playerid][14], 1);
+	TextDrawColor(fractionsInfo[playerid][14], 0);
+	TextDrawUseBox(fractionsInfo[playerid][14], 1);
+	TextDrawBoxColor(fractionsInfo[playerid][14], 102);
+	TextDrawSetShadow(fractionsInfo[playerid][14], 0);
+	TextDrawSetOutline(fractionsInfo[playerid][14], 0);
+	TextDrawFont(fractionsInfo[playerid][14], 0);
 	return 1;
 }
 

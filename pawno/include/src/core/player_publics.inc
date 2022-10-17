@@ -1164,7 +1164,12 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", fVars[tmpFracId][fUid], fVars[tmpFracId][fName], offerParams[playerid]);
-			ShowPlayerDialog(pId, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+			
+			if(offerParams[pId] > 0) {
+				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+			} else {
+				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+			}
 		}
 		case DIALOG_SHOW_TELEPHONE_MENU: {
 			if(!response) {
@@ -1377,6 +1382,29 @@ sampCallback:OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Fl
 		iVars[srvItemId][iValues]--;
 	}
 	return 1;
+}
+
+sampCallback:OnPlayerClickTextDraw(playerid, Text:clickedid) {
+	if(fractionsInfo[playerid][0] == clickedid) {
+		for(new i = 0; i < 15; i++) {
+			TextDrawHideForPlayer(playerid, fractionsInfo[playerid][i]);
+		}
+		
+		CancelSelectTextDraw(playerid);
+		
+		showFracsInfo[playerid] = false;
+		return 1;
+	} else if(fractionsInfo[playerid][2] == clickedid) {
+		for(new i = 0; i < 15; i++) {
+			TextDrawHideForPlayer(playerid, fractionsInfo[playerid][i]);
+		}
+		
+		pc_cmd_duty(playerid, "");
+		CancelSelectTextDraw(playerid);
+		showFracsInfo[playerid] = false;		
+		return 1;
+	}
+	return 0;
 }
 
 sampCallback:OnEnterExitModShop(playerid, enterexit, interiorid) {
