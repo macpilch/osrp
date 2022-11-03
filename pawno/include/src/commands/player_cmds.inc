@@ -702,26 +702,49 @@ CMD:bankomat(playerid) {
 
 CMD:dajprawojazdy(playerid, params[]) {
 	new playerToGive; // Id gracza, ktory ma dostac prawo jazdy
+	new str[32];
 	new fracId = checkFractionSrvIdForPlayer(playerid);
 	
 	mainStr[0] = EOS;
 	
 	if(strfind(fVars[fracId][fName], "Urzad Miasta Los Santos", false) != -1) {
+		
 		if(isPlayerDuty[playerid]) {
-			if(sscanf(params, "i", playerToGive)) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /dajprawojazdy [ID Gracza]");
+			if(sscanf(params, "is[1]", playerToGive, str)) {
+				return SendClientMessage(playerid, COLOR_WHITE, "U¿ycie komendy /dajprawojazdy [A|B|C] [Id gracza].");
 			}
 			
 			if(!IsPlayerConnected(playerToGive)) {
 				return GameTextForPlayer(playerid, "~r~Nie ma takiego gracza.", 3000, 3);
 			}
 			
-			format(mainStr, sizeof(mainStr), "[Frakcja]: Dales prawo jazdy %s.", pVars[playerToGive][pCharName]);
-			pVars[playerToGive][pDriverLicense] = 1;
+			if(strfind(str, "A", true) != -1) {
+				format(mainStr, sizeof(mainStr), "[Frakcja]: Dales prawo jazdy A %s.", pVars[playerToGive][pCharName]);
+			//	pVars[playerToGive][pDriverLicenseA] = 1;
+				
+				SendClientMessage(playerid, COLOR_WHITE, mainStr);
+				format(mainStr, sizeof(mainStr), "[Urzad]: Otrzymales prawo jazdy A.");
+				SendClientMessage(playerToGive, COLOR_WHITE, mainStr);
+				
+			}
+			else if(strfind(str, "B", true) != -1) {
+				format(mainStr, sizeof(mainStr), "[Frakcja]: Dales prawo jazdy B %s.", pVars[playerToGive][pCharName]);
+				//Narazie pDriverLicense, pozniej bedzie pDriverLicenseB
+				pVars[playerToGive][pDriverLicense] = 1;
+				
+				SendClientMessage(playerid, COLOR_WHITE, mainStr);
+				format(mainStr, sizeof(mainStr), "[Urzad]: Otrzymales prawo jazdy B.");
+				SendClientMessage(playerToGive, COLOR_WHITE, mainStr);
+			}
+			else if(strfind(str, "C", true) != -1) {
+				format(mainStr, sizeof(mainStr), "[Frakcja]: Dales prawo jazdy C %s.", pVars[playerToGive][pCharName]);
+			//	pVars[playerToGive][pDriverLicenseC] = 1;
+				
+				SendClientMessage(playerid, COLOR_WHITE, mainStr);
+				format(mainStr, sizeof(mainStr), "[Urzad]: Otrzymales prawo jazdy C.");
+				SendClientMessage(playerToGive, COLOR_WHITE, mainStr);
+			}
 			
-			SendClientMessage(playerid, COLOR_WHITE, mainStr);
-			format(mainStr, sizeof(mainStr), "[Urzad]: Otrzymales prawo jazdy.");
-			SendClientMessage(playerToGive, COLOR_WHITE, mainStr);
 		}
 	}
 	return 1;

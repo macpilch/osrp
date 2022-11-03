@@ -975,13 +975,13 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_IN, DIALOG_STYLE_INPUT, "Bank", mainStr, "Wp³aæ", "Anuluj");
 				}
 				case 2: {
-<<<<<<< HEAD
+
 					format(mainStr, sizeof(mainStr), "Ile chcesz wyp³aciæ pieniedzy:");
 					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_OUT, DIALOG_STYLE_INPUT, cVars[actualCashpoint[playerid]][csName], mainStr, "Wyp³aæ", "Anuluj");
-=======
+
 					format(mainStr, sizeof(mainStr), "Ile pieniêdzy pragniesz wyp³aciæ z konta?");
 					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_OUT, DIALOG_STYLE_INPUT, cVars[actualCashpoint[playerid]][csName], mainStr, "Ok", "Anuluj");
->>>>>>> 063d64d0e2873a22bfff8290cc24340f7f00c6b2
+
 				}
 			}
 		}
