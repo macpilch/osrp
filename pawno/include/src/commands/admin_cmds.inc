@@ -518,4 +518,27 @@ CMD:createnumberplayer(playerid, params[]) {
 	return 1;
 }
 
+CMD:ustawskin(playerid, params[]) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+		new toPlayerGive, skinid;
+		mainStr[0] = EOS;
+		if(sscanf(params, "ii", skinid, toPlayerGive)) {
+			return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /ustawskin [Id skina] [Id gracza].");
+		}
+		
+		pVars[toPlayerGive][pSkin] = skinid;
+		SetPlayerSkin(toPlayerGive, pVars[toPlayerGive][pSkin]);
+		format(mainStr, sizeof(mainStr), "{00FF00}[ADMIN]{FFFFFF}: Ustawiono skina graczowi %s.", pVars[toPlayerGive][pCharName]);
+		SendClientMessage(playerid, COLOR_WHITE, mainStr);
+		
+		format(mainStr, sizeof(mainStr), "{00FF00}[ADMIN]{FFFFFF}: Ustawiono Ci skina przez admina %s.", pVars[playerid][pAccName]);
+		SendClientMessage(playerid, COLOR_WHITE, mainStr);
+		
+	}
+	else {
+		return 0;
+	}
+	return 1;
+}
+
 #endif 

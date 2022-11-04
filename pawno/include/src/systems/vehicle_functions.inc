@@ -555,4 +555,47 @@ stock isBike(vehicleid) {
 	}
 }
 
+stock isBoat(vehicleid) {
+	new modelid = GetVehicleModel(vehicleid);
+	
+	switch(modelid) {
+		case 0 .. 399: {
+			return 0;
+		}
+		
+		case 430: {
+			return 1;
+		}
+		
+		case 446: {
+			return 1;
+		}
+		
+		case 452 .. 454: {
+			return 1;
+		}
+		
+		case 472 .. 473: {
+			return 1;
+		}
+		
+		case 484: {
+			return 1;
+		}
+		
+		case 493: {
+			return 1;
+		}
+		
+		case 595: {
+			return 1;
+		}
+		
+		default: {
+			return 0;
+		}
+		
+		
+	}
+}
 #endif 
