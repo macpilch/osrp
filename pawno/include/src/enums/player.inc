@@ -48,6 +48,13 @@ enum PlayerData {
 	pBw,
 	pAj,
 	pAl,
+	//pDriverLicenseA
+	//pDriverLicenseB
+	//pDriverLicenseC
+	//pPilotLicense
+	
+	//lub 
+	//pDriverLicense[] - (1 - A / 2 - B / 3- C / 4 - Pilot)
 	pDriverLicense,
 	pPisSkill,
 	pDglSkill,

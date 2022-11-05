@@ -598,4 +598,93 @@ stock isBoat(vehicleid) {
 		
 	}
 }
+
+stock isHelicopter(vehicleid) {
+	new modelid = GetVehicleModel(vehicleid);
+	
+	switch(modelid) {
+		case 0 .. 399: {
+			return 0;
+		}
+		
+		case 417: {
+			return 1;
+		}
+		
+		case 425: {
+			return 1;
+		}
+		
+		case 447: {
+			return 1;
+		}
+		
+		case 469: {
+			return 1;
+		}
+		
+		case 487 .. 488 {
+			return 1;
+		}
+		
+		case 497: {
+			return 1;
+		}
+		
+		case 548: {
+			return 1;
+		}
+		
+		case 563: {
+			return 1;
+		}
+		
+		default: {
+			return 0;
+		}
+	}
+}
+
+stock isPlane(vehicleid) {
+	new modelid = GetVehicleModel(vehicleid);
+	
+	switch(modelid) {
+		case 0 .. 399: {
+			return 0;
+		}
+		
+		case 460: {
+			return 1;
+		}
+		
+		case 476: {
+			return 1;
+		}
+		
+		case 511 .. 513: {
+			return 1;
+		}
+		
+		case 519 .. 520: {
+			return 1;
+		}
+		
+		case 553 {
+			return 1;
+		}
+		
+		case 577 {
+			return 1;
+		}
+		
+		case 592 .. 593 {
+			return 1;
+		}
+		
+		default: {
+			return 0;
+		}
+		
+	}
+}
 #endif 
