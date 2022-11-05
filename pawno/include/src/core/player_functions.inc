@@ -571,14 +571,14 @@ stock loadPlayerValues(playerid) {
 	StopAudioStreamForPlayer(playerid);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `Rank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `VW`, `INT`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `DriverLicense`, `TelNum`, `Frac0`, `Frac1`, `Frac2`, `Frac3`, `Frac4`, `Traveled`, `X`, `Y`, `Z`, `Desc` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `Rank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `VW`, `INT`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `DriverLicense`, `TelNum`, `Frac0`, `Traveled`, `X`, `Y`, `Z`, `Desc` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	mysql_store_result();
 	
 	mysql_fetch_row(queryStr, "|");
 	sscanf(queryStr, "p<|>iiis[24]iiiiiiiffiiiiiiiiiiiiffffs[128]", pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw],
-	pVars[playerid][pInt], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pTelNum], pVars[playerid][pFraction][0], pVars[playerid][pFraction][1], pVars[playerid][pFraction][2],
-	pVars[playerid][pFraction][3], pVars[playerid][pFraction][4], pVars[playerid][pDriverLicense], pVars[playerid][pTraveled], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], charDesc);
+	pVars[playerid][pInt], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pTelNum], pVars[playerid][pFraction][0], /*pVars[playerid][pFraction][1], pVars[playerid][pFraction][2],
+	pVars[playerid][pFraction][3], pVars[playerid][pFraction][4],*/ pVars[playerid][pDriverLicense], pVars[playerid][pTraveled], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], charDesc);
 	mysql_free_result();
 	
 	UpdateDynamic3DTextLabelText(pVars[playerid][pCharDesc], COLOR_PURPLE, charDesc);

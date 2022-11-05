@@ -10,7 +10,7 @@
 #define _VEHICLE_PUBLICS_
 
 sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
-	if(vehicleid && !vehicleNonEngine(vehicleid) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid]) {
+	if(vehicleid && !vehicleNonEngine(vehicleid) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid] && !ispassenger) {
 		ClearAnimations(playerid);
 		
 		mainStr[0] = EOS;
