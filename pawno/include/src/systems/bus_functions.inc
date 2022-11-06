@@ -3,7 +3,7 @@
 	Author: MisterMagik
 	File: bus_functions.inc
 	Date: 14.09.2022
-	Modified: 18.10.2022
+	Modified: 06.11.2022
 */
 
 #if !defined _BUS_FUNCTIONS_

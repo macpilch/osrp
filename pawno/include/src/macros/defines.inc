@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 18.10.2022
+	Modified: 06.11.2022
 */
 
 #if !defined _DEFINES_

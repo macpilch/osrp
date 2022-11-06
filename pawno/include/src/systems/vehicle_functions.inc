@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_functions.inc
 	Date: 29.07.2022
-	Modified: 18.10.2022
+	Modified: 06.11.2022
 */
 
 #if !defined _VEHICLE_FUNCTIONS_
@@ -175,23 +175,25 @@ stock setPlayerVehDamage(playerid) {
 	new vehicleid = GetPlayerVehicleID(playerid);
 	new speed = getVehicleSpeed(vehicleid);
 	new chancePlayerDizzines;
-	vVars[actualVehicle[playerid]][vEngineHp] -= speed/1.5;
+	
+	vVars[actualVehicle[playerid]][vEngineHp] -= speed / 1.5;
+	
 	switch(speed) {
-		case 0 .. 50:
+		case 0 .. 50: {
 			if(hasBelts[playerid]) {
-				
 				return 0;
 			} else {
 				return 1;
 			}
-		case 51 .. 79:
-			
+		}
+		case 51 .. 79: {
 			if(hasBelts[playerid]) {
 				return 0;
 			} else {
 				return 2;
 			}
-		case 80 .. 99:
+		}
+		case 80 .. 99: {
 			if(hasBelts[playerid]) {
 				return 2;
 			} else {
@@ -204,6 +206,7 @@ stock setPlayerVehDamage(playerid) {
 					return 4;
 				}
 			}
+		}
 		case 100 .. 139: {
 			chancePlayerDizzines = random(100);
 			
@@ -274,7 +277,6 @@ stock setPlayerVehDamage(playerid) {
 			}
 		}
 	}
-	
 	return 1;
 }
 
@@ -329,6 +331,282 @@ stock Float:getVehicleDistance(vehicleid) {
 	vehicleDistance = getVehicleSpeed(vehicleid) * 1000 / 3600 / 1;
 	vehicleDistance = vehicleDistance / 1000;
 	return vehicleDistance;
+}
+
+stock isCar(vehicleid) {
+	new modelid = GetVehicleModel(vehicleid);
+	
+	switch(modelid) {
+		case 0 .. 399: {
+			return 0;
+		}
+		case 400 .. 402: {
+			return 1;
+		}
+		case 404 .. 405: {
+			return 1;
+		}	
+		case 409 .. 412: {
+			return 1;
+		}
+		case 415: {
+			return 1;
+		}
+		case 418 .. 422: {
+			return 1;
+		}
+		case 424: {
+			return 1;
+		}
+		case 426: {
+			return 1;
+		}
+		case 429: {
+			return 1;
+		}
+		case 432: {
+			return 1;
+		}
+		case 436: {
+			return 1;
+		}
+		case 438 .. 439 {
+			return 1;
+		}
+		case 442: {
+			return 1;
+		}
+		case 445: {
+			return 1;
+		}
+		case 451: {
+			return 1;
+		}
+		case 458: {
+			return 1;
+		}
+		case 466 .. 467: {
+			return 1;
+		}
+		case 470: {
+			return 1;
+		}
+		case 474 .. 475: {
+			return 1;
+		}
+		case 477 .. 480: {
+			return 1;
+		}
+		case 483: {
+			return 1;
+		}
+		case 489 .. 492: {
+			return 1;
+		} 
+		case 494 .. 496: {
+			return 1;
+		}
+		case 500: {
+			return 1;
+		}
+		case 502 .. 507: {
+			return 1;
+		}
+		case 516 .. 518: {
+			return 1;
+		}
+		case 526 .. 529: {
+			return 1;
+		}
+		case 533 .. 536: {
+			return 1;
+		}
+		case 540 .. 543: {
+			return 1;
+		}
+		case 545 .. 547: {
+			return 1;
+		}		
+		case 549 .. 552: {
+			return 1;
+		}		
+		case 554 .. 555: {
+			return 1;
+		}		
+		case 558 .. 562: {
+			return 1;
+		}		
+		case 565 .. 568: {
+			return 1;
+		}
+		case 575 .. 576: {
+			return 1;
+		}
+		case 579 .. 580: {
+			return 1;
+		}
+		case 582: {
+			return 1;
+		}
+		case 585: {
+			return 1;
+		}
+		case 587 .. 589: {
+			return 1;
+		}
+		case 596 .. 605: {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+stock isTruck(vehicleid) {
+	new modelid = GetVehicleModel(vehicleid);
+	
+	switch (modelid) {
+		case 0 .. 399 {
+			return 0;
+		}
+		case 403: {
+			return 1;
+		}
+		case 514 .. 515 {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+stock isBike(vehicleid) {
+	new modelid = GetVehicleModel(vehicleid);
+	
+	switch(modelid) {
+		case 0 .. 399: {
+			return 0;
+		}
+		case 448: {
+			return 1;
+		}
+		case 461 ..  463: {
+			return 1;
+		}
+		case 468: {
+			return 1;
+		}
+		case 471: {
+			return 1;
+		}
+		case 521 .. 523: {
+			return 1;
+		}
+		case 581: {
+			return 1;
+		}
+		case 586: {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+stock isBoat(vehicleid) {
+	new modelid = GetVehicleModel(vehicleid);
+	
+	switch(modelid) {
+		case 0 .. 399: {
+			return 0;
+		}	
+		case 430: {
+			return 1;
+		}
+		case 446: {
+			return 1;
+		}
+		case 452 .. 454: {
+			return 1;
+		}
+		case 472 .. 473: {
+			return 1;
+		}
+		case 484: {
+			return 1;
+		}
+		case 493: {
+			return 1;
+		}
+		case 595: {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+stock isHelicopter(vehicleid) {
+	new modelid = GetVehicleModel(vehicleid);
+	
+	switch(modelid) {
+		case 0 .. 399: {
+			return 0;
+		}
+		case 417: {
+			return 1;
+		}
+		case 425: {
+			return 1;
+		}
+		case 447: {
+			return 1;
+		}
+		case 469: {
+			return 1;
+		}
+		case 487 .. 488 {
+			return 1;
+		}
+		case 497: {
+			return 1;
+		}
+		case 548: {
+			return 1;
+		}
+		case 563: {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+stock isPlane(vehicleid) {
+	new modelid = GetVehicleModel(vehicleid);
+	
+	switch(modelid) {
+		case 0 .. 399: {
+			return 0;
+		}
+		case 460: {
+			return 1;
+		}
+		case 476: {
+			return 1;
+		}
+		case 511 .. 513: {
+			return 1;
+		}
+		case 519 .. 520: {
+			return 1;
+		}
+		case 553 {
+			return 1;
+		}
+		case 577 {
+			return 1;
+		}
+		case 592 .. 593 {
+			return 1;
+		}
+	}
+	return 0;
 }
 
 #endif 

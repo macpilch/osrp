@@ -3,7 +3,7 @@
 	Author: MisterMagik
 	File: fraction_functions.inc
 	Date: 16.09.2022
-	Modified: 18.10.2022
+	Modified: 06.11.2022
 */
 
 #if !defined _FRACTION_FUNCTIONS_
