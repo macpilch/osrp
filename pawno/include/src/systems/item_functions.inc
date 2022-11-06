@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: item_functions.inc
 	Date: 14.08.2022
-	Modified: 02.10.2022
+	Modified: 18.10.2022
 */
 
 #if !defined _ITEM_FUNCTIONS_
@@ -65,7 +65,7 @@ stock addPlayerItem(playerid, itemid) {
 	format(queryStr, sizeof(queryStr), "INSERT INTO `Items` (`UID`, `ID`, `OUID`, `Name`, `Values`, `Used`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d')", iVars[freeId][iUid], iVars[freeId][iId], iVars[freeId][iOUid], iVars[freeId][iName], iVars[freeId][iValues], iVars[freeId][iUsed]);
 	mysql_query(queryStr);
 	
-	if(iVars[freeId][iId] == P_TELEFON) {
+	if(iVars[freeId][iId] == P_TELEFON || iVars[freeId][iId] == P_NKA8110) {
 		new number[7], numberStr[16];
 		
 		for(new i = 0; i < sizeof(number); i++) {
@@ -175,6 +175,17 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				iVars[srvitemid][iUsed] = false;
 			}
 		}
+		case P_CYGARO: {
+			if(!iVars[srvitemid][iUsed]) {
+				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_SMOKE_CIGGY);
+				
+				iVars[srvitemid][iUsed] = true;
+			} else {
+				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
+				
+				iVars[srvitemid][iUsed] = false;
+			}
+		}
 		case P_UBRANIE: {
 			if(!iVars[srvitemid][iUsed]) {
 				SetPlayerSkin(playerid, 21);
@@ -219,7 +230,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				format(str, sizeof(str), "Tel. %d [%d:%d:%d]", pVars[playerid][pTelNum], h, m, d);
 				
 				strcat(mainStr, "{FFFFFF}1\tZadzwoñ do kontaktu lub firmy\n2\tWyœlij SMS do kontaktu\n10\tUsuñ kontakt\n");
-				format(mainStr, sizeof(mainStr), "3\tWybierz numer\n4\tWyœlij vCard\n5\tWycisz telefon\n7\tWy³¹cz\n(By wys³aæ SMS: /p %s [numer] [tekst])", itemNames[itemid]);
+				format(mainStr, sizeof(mainStr), "%s3\tWybierz numer\n4\tWyœlij vCard\n5\tWycisz telefon\n7\tWy³¹cz\n(By wys³aæ SMS: /p %s [numer] [tekst])", mainStr, itemNames[itemid]);
 				ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
 			}
 		}
@@ -260,7 +271,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				iVars[srvitemid][iUsed] = false;
 			}
 		}
-		case P_CHEESBURG, P_FRYTKI, P_GRVBURGER, P_HAMBGRG, P_HOTDOG, P_KEBAB, P_LODY, P_LODYWKBK, P_LONGER, P_NACHOSZS, P_NALESNIKI,
+		case P_CHEESBURG, P_FRYTKI, P_GRVBURGER, P_HAMBGRG, P_HOTDOG, P_KEBAB, P_LODY, P_LODYWKBK, P_LONGER, P_NACHOSZS, P_NALESNIK, P_NALESNIKI,
 			 P_PACZEK, P_PACZEKAFRO, P_PACZEKZLT, P_SUSHI: {
 			iVars[srvitemid][iUsed] = true;
 			

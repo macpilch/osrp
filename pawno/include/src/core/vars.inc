@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 02.10.2022
+	Modified: 18.10.2022
 */
 
 #if !defined _VARS_

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle.inc
 	Date: 29.07.2022
-	Modified: 02.10.2022
+	Modified: 18.10.2022
 */
 
 #if !defined _VEHICLE_

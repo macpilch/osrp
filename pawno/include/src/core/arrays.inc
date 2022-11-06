@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: arrays.inc
 	Date: 25.07.2022
-	Modified: 02.10.2022
+	Modified: 18.10.2022
 */
 
 #if !defined _ARRAYS_
@@ -75,11 +75,11 @@ new charSur[][CharSurName] = {
 };
 
 new itemNames[][] = {
-	"Rolki", "Piwo", "Wino", "Sprunk", "Teczka", "Ubranie", "Telefon", "Kostka", "Pistolet", "Desert Deagle", "Shotgun", "M4",
-	"Cheeseburger", "Coca-Cola", "Cuba Libre", "Frytki", "Grove Burger", "Hamburger",
-	"Herbata", "Hot Dog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Longer",
-	"Nachos z serem", "Naleœniki", "P¹czek", "P¹czek Afro", "P¹czek Z³otawy",
-	"Sushi", "Woda Mineralna", "Discman", "RadioParty", "CD", "Nokia 8110"
+	"Rolki", "Piwo", "Wino", "Sprunk", "Teczka", "Cygaro", "Ubranie", "Telefon", "Kostka",
+	"Pistolet", "Desert Deagle", "Shotgun", "M4", "Cheeseburger", "Coca-Cola", "Cuba Libre",
+	"Frytki", "Grove Burger", "Hamburger", "Herbata", "Hot Dog", "Kawa", "Kebab", "Lody",
+	"Lody w kubku", "Longer", "Nachos z serem", "Naleœnik", "Naleœniki", "P¹czek", "P¹czek Afro",
+	"P¹czek Z³otawy", "Sushi", "Woda Mineralna", "Discman", "RadioParty", "CD", "Nokia 8110"
 };
 
 new VehicleNames[212][] = {

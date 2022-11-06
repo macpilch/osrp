@@ -3,7 +3,7 @@
 	Author: MisterMagik
 	File: fraction.inc
 	Date: 05.09.2022
-	Modified: 02.10.2022
+	Modified: 18.10.2022
 */
 
 #if !defined _FRACTION_
@@ -23,7 +23,8 @@ enum FractionData {
 	fType, // 0 - publiczne, 1 - przestepcze, 2 - prawo jazdy, 3 - biznesy
 	fMembers,
 	fVehicles,
-	fMoney
+	fMoney,
+	fCash
 };
 
 #endif 

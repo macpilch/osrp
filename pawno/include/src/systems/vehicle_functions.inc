@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_functions.inc
 	Date: 29.07.2022
-	Modified: 02.10.2022
+	Modified: 18.10.2022
 */
 
 #if !defined _VEHICLE_FUNCTIONS_
@@ -65,17 +65,19 @@ stock getVehicleIdForPlayer(vehicleid) {
 }
 
 stock resetVehicleValues(playerid) {
-	new vehid = actualVehicle[playerid];
-	
-	DestroyVehicle(vVars[vehid][vId]);
-	DestroyDynamic3DTextLabel(vVars[vehid][vDesc]);
-	DestroyDynamicMapIcon(vehMapIcon[vehid]);
-	DestroyDynamicCP(vehCP[vehid]);
-	
-	vehCP[vehid] = -1;
-	vehMapIcon[vehid] = -1;
-	actualVehicle[playerid] = INVALID_VEHICLE_ID;
-	vVars[vehid][vSpawned] = false;
+	foreach(new i : vehItter) {
+		if(vVars[i][vOUid] == playerid) {
+			DestroyVehicle(vVars[i][vId]);
+			DestroyDynamic3DTextLabel(vVars[i][vDesc]);
+			DestroyDynamicMapIcon(vehMapIcon[i]);
+			DestroyDynamicCP(vehCP[i]);
+			
+			vehCP[i] = -1;
+			vehMapIcon[i] = -1;
+			actualVehicle[playerid] = INVALID_VEHICLE_ID;
+			vVars[i][vSpawned] = false;
+		}
+	}
 	return 1;
 }
 
@@ -279,6 +281,15 @@ stock setPlayerVehDamage(playerid) {
 stock vehicleNonEngine(vehicleid) {
 	switch(GetVehicleModel(vehicleid)) {
 		case 509, 481, 510: {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+stock isVehicleInUse(vehicleid) {
+	foreach(new i : Player) {
+		if(IsPlayerInVehicle(i, vehicleid)) {
 			return 1;
 		}
 	}

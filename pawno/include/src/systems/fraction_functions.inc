@@ -3,7 +3,7 @@
 	Author: MisterMagik
 	File: fraction_functions.inc
 	Date: 16.09.2022
-	Modified: 02.10.2022
+	Modified: 18.10.2022
 */
 
 #if !defined _FRACTION_FUNCTIONS_
@@ -22,10 +22,10 @@ stock initFractionValues(){
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iis[32]ii", fVars[i][fUid], fVars[i][fOUid], fVars[i][fName], fVars[i][fType], fVars[i][fMembers]);
+		sscanf(queryStr, "p<|>iis[32]iii", fVars[i][fUid], fVars[i][fOUid], fVars[i][fName], fVars[i][fType], fVars[i][fMembers], fVars[i][fCash]);
 		
 		Iter_Add(fractionItter, i);
-		printf("[DEBUG] Id: %d, Uid: %d, OUid: %d, Name: %s, Type: %d, Members: %d", i, fVars[i][fUid], fVars[i][fOUid], fVars[i][fName], fVars[i][fType], fVars[i][fMembers]);
+		printf("[DEBUG] Id: %d, Uid: %d, OUid: %d, Name: %s, Type: %d, Members: %d, Cash: %d", i, fVars[i][fUid], fVars[i][fOUid], fVars[i][fName], fVars[i][fType], fVars[i][fMembers], fVars[i][fCash]);
 	}
 	
 	mysql_free_result();
@@ -46,6 +46,7 @@ stock createNewFraction(playerid, type, name[]) {
 	format(fVars[freeId][fName], 32, name);
 	fVars[freeId][fUid] = pVars[playerid][pUid];
 	pVars[playerid][pFraction] = freeId;
+	fVars[freeId][fCash] = 0;
 	
 	switch(type) {
 		case F_PUBLIC: {

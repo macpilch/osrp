@@ -3,28 +3,28 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
-	Modified: 11.10.2022
+	Modified: 18.10.2022
 */
 
 #if !defined _PLAYER_FUNCTIONS_
 #define _PLAYER_FUNCTIONS_
 
 Callback:hideDoorInfo(playerid) {
-	for(new i = 0; i < sizeof(doorInfo); i++) {
+	for(new i = 0; i < 3; i++) {
 		TextDrawHideForPlayer(playerid, doorInfo[playerid][i]);
 	}	
 	return 1;
 }
 
 Callback:hideVehicleSpawn(playerid) {
-	for(new i = 0; i < sizeof(vehicleSpawn); i++) {
+	for(new i = 0; i < 2; i++) {
 		TextDrawHideForPlayer(playerid, vehicleSpawn[playerid][i]);
 	}
 	return 1;
 }
 
 Callback:hideVehicleStats(playerid) {
-	for(new i = 0; i < sizeof(vehicleStats); i++) {
+	for(new i = 0; i < 2; i++) {
 		TextDrawSetString(vehicleStats[playerid][i], NULL);
 		TextDrawHideForPlayer(playerid, vehicleStats[playerid][i]);
 	}
@@ -32,7 +32,7 @@ Callback:hideVehicleStats(playerid) {
 }
 
 Callback:hideHelpInfo(playerid) {
-	for(new i = 0; i < sizeof(helpInfo); i++) {
+	for(new i = 0; i < 2; i++) {
 		TextDrawHideForPlayer(playerid, helpInfo[playerid][i]);
 	}
 	return 1;
@@ -58,7 +58,7 @@ Callback:healthDamage(playerid) {
 }
 
 Callback:hideOOCWarning(playerid) {
-	for(new i = 0; i < sizeof(oocWarning); i++) {
+	for(new i = 0; i < 2; i++) {
 		TextDrawHideForPlayer(playerid, oocWarning[playerid][i]);
 	}
 	return 1;
@@ -66,7 +66,7 @@ Callback:hideOOCWarning(playerid) {
 
 Callback:hideFirstHoursInfo() {
 	foreach(new i : Player) { // bedzie chowalo wszystkim graczom
-		for(new j = 0; j < sizeof(firstHoursInfo); j++) {
+		for(new j = 0; j < 3; j++) {
 			TextDrawHideForPlayer(i, firstHoursInfo[j]);
 		}
 	}
@@ -571,14 +571,14 @@ stock loadPlayerValues(playerid) {
 	StopAudioStreamForPlayer(playerid);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `Rank`, `IP`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `VW`, `INT`, `Hp`, `Ap`, `Skin`, `Money`, `Bank`, `Bw`, `Aj`, `DriverLicense`, `TelNum`, `Frac0`, `Frac1`, `Frac2`, `Frac3`, `Frac4`, `Traveled`, `X`, `Y`, `Z`, `Desc` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `IP`, `Rank`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `VW`, `INT`, `Skin`, `LastSkin`, `Money`, `Bank`, `Bw`, `Aj`, `DriverLicense`, `TelNum`, `Group`, `Frac0`, `Traveled`, `X`, `Y`, `Z`, `Desc` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	mysql_store_result();
 	
 	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>iiis[24]iiiiiiiffiiiiiiiiiiiiffffs[128]", pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pRank], pVars[playerid][pIp], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw],
-	pVars[playerid][pInt], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pTelNum], pVars[playerid][pFraction][0], pVars[playerid][pFraction][1], pVars[playerid][pFraction][2],
-	pVars[playerid][pFraction][3], pVars[playerid][pFraction][4], pVars[playerid][pDriverLicense], pVars[playerid][pTraveled], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], charDesc);
+	sscanf(queryStr, "p<|>iis[16]iiiiiiffiiiiiiiiiis[128]iffffs[128]", pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pIp], pVars[playerid][pRank], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp],
+	pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pTelNum], pVars[playerid][pGroup], pVars[playerid][pFraction], pVars[playerid][pTraveled], pVars[playerid][pX],
+	pVars[playerid][pY], pVars[playerid][pZ], charDesc);
 	mysql_free_result();
 	
 	UpdateDynamic3DTextLabelText(pVars[playerid][pCharDesc], COLOR_PURPLE, charDesc);
@@ -644,6 +644,7 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pAj] = 0;
 	pVars[playerid][pAl] = 0;
 	pVars[playerid][pDriverLicense] = 0;
+	pVars[playerid][pFraction] = 0;
 	pVars[playerid][pGov] = 0;
 	pVars[playerid][pHotel] = 0;
 	pVars[playerid][pIdCard] = 0;
@@ -674,10 +675,6 @@ stock setPlayerDefaultValues(playerid) {
 	isDizzines[playerid] = false;
 	usedTelephone[playerid] = false;
 	drivingCourse[playerid] = false;
-	
-	for(new i = 0; i < 5; i++) {
-		pVars[playerid][pFraction][i] = 0;
-	}
 	
 	for(new i = 0; i < sizeof(chatMessages); i++) {
 		chatMessages[playerid][i] = true;
@@ -714,6 +711,7 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pAj] = 0;
 	pVars[playerid][pAl] = 0;
 	pVars[playerid][pDriverLicense] = 0;
+	pVars[playerid][pFraction] = 0;
 	pVars[playerid][pGov] = 0;
 	pVars[playerid][pHotel] = 0;
 	pVars[playerid][pIdCard] = 0;
@@ -745,10 +743,6 @@ stock resetPlayerValues(playerid) {
 	usedTelephone[playerid] = false;
 	drivingCourse[playerid] = false;
 	
-	for(new i = 0; i < 5; i++) {
-		pVars[playerid][pFraction][i] = 0;
-	}
-	
 	for(new i = 0; i < sizeof(chatMessages); i++) {
 		chatMessages[playerid][i] = false;
 	}	
@@ -762,9 +756,9 @@ stock savePlayerValues(playerid) {
 	pVars[playerid][pInt] = GetPlayerInterior(playerid);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `VW` = '%d', `INT` = '%d', `Hp` = '%f', `Ap` = '%f', `Skin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `TelNum` = '%d', `Frac0` = '%d', `Frac1` = '%d', `Frac2` = '%d', `Frac3` = '%d', `Frac4` = '%d', `DriverLicense` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'",
-	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pTelNum], pVars[playerid][pFraction][0], pVars[playerid][pFraction][1], pVars[playerid][pFraction][2],
-	pVars[playerid][pFraction][3], pVars[playerid][pFraction][4], pVars[playerid][pDriverLicense], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `Hp` = '%f', `Ap` = '%f', `VW` = '%d', `INT` = '%d', `Skin` = '%d', `LastSkin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `DriverLicense` = '%d', `TelNum` = '%d', `Group` = '%s', `Frac0` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'",
+	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pTelNum],
+	pVars[playerid][pGroup], pVars[playerid][pFraction], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	return 1;
 }
@@ -835,11 +829,9 @@ stock checkFractionSrvIdForPlayer(playerid) {
 	new fracId;
 	
 	foreach(new i : fractionItter) {
-		for(new j = 0; j < 5; j++) {
-			if(fVars[i][fUid] == pVars[playerid][pFraction][j]) {
-				fracId = i;
-				break;
-			}
+		if(fVars[i][fUid] == pVars[playerid][pFraction]) {
+			fracId = i;
+			break;
 		}
 	}
 	return fracId;

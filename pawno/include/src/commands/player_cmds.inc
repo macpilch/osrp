@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 13.10.2022
+	Modified: 18.10.2022
 */
 
 #if !defined _PLAYER_CMDS_
@@ -83,6 +83,13 @@ CMD:pokaz(playerid, params[]) {
 	
 	if(!IsPlayerConnected(pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie odnaleziono takiego gracza.");
+	}
+	return 1;
+}
+
+CMD:podaj(playerid, params[]) {
+	if(!isPlayerDuty[playerid]) {
+		return SendClientMessage(playerid, COLOR_GRAY, "U¿yj /duty, aby wejœæ na s³u¿bê grupy, z której chcesz coœ podaæ.");
 	}
 	return 1;
 }
@@ -234,6 +241,8 @@ CMD:pay(playerid, params[]) {
 	GivePlayerMoneyEx(playerid, -money);
 	GivePlayerMoneyEx(pId, money);
 	
+	format(str, sizeof(str), "Podano %s $%d. Pamiêtaj, by p³aciæ w Dolarach, u¿yj /pay [Gracz] [Iloœæ].", pVars[pId][pCharName], money);
+	SendClientMessage(playerid, COLOR_WHITE, str);
 	format(str, sizeof(str), "Otrzymujesz $%d od %s. Mo¿esz podawaæ gotówkê za pomoc¹ /pay [Gracz] [Iloœæ].", money, pVars[playerid][pCharName]);
 	SendClientMessage(pId, COLOR_WHITE, str);
 	
@@ -244,6 +253,10 @@ CMD:pay(playerid, params[]) {
 }
 
 CMD:login(playerid, params[]) {
+	if(usedCmdLogin[playerid]) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Musisz odczekaæ minutê od zalogowania, aby siê wylogowaæ.");
+	}
+	
 	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER || GetPlayerState(playerid) == PLAYER_STATE_PASSENGER) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Musisz byæ pieszo, by siê wylogowaæ.");
 	}
@@ -258,6 +271,7 @@ CMD:login(playerid, params[]) {
 	savePlayerValues(playerid);
 	setPlayerDefaultValues(playerid);
 	setPlayerCamerasView(playerid);
+	SetTimerEx("refreshCmds", 60000, false, "ii", playerid, 0);
 	
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", pVars[playerid][pCharName]);
@@ -563,7 +577,22 @@ CMD:v(playerid, params[]) {
 }
 
 CMD:g(playerid, params[]) {
+	if(pVars[playerid][pFraction] < 1) {
+		return 1;
+	}
+	
 	if(!showFracsInfo[playerid]) {
+		new tmpFracId = checkFractionSrvIdForPlayer(playerid);
+		new tmp[32];
+		
+		format(tmp, sizeof(tmp), "~b~1  ~w~%s (%d)", fVars[tmpFracId][fName], fVars[tmpFracId][fUid]);
+		TextDrawSetString(fractionsInfo[playerid][1], tmp);
+		
+		if(isPlayerDuty[playerid] && pVars[playerid][pDuty]) {
+			format(tmp, sizeof(tmp), "~w~%dm duty", pVars[playerid][pDuty]);
+			TextDrawSetString(fractionsInfo[playerid][2], tmp);
+		}
+		
 		for(new i = 0; i < 15; i++) {
 			TextDrawShowForPlayer(playerid, fractionsInfo[playerid][i]);
 		}
@@ -595,7 +624,7 @@ CMD:zamknij(playerid, params[]) {
 }
 
 CMD:przeszukaj(playerid, params[]) {
-	new pId;
+	new pId, i;
 	new str[256];
 	new tmpIVars[MAX_ITEMS][2];
 	
@@ -608,28 +637,22 @@ CMD:przeszukaj(playerid, params[]) {
 	mysql_query(queryStr);
 	mysql_store_result();
 	
-	/*format(queryStr, sizeof(queryStr), "SELECT COUNT(`ID`) FROM `Items` WHERE `UID` = '%d' AND `Name` = '%s'", pVars[pId][pUid], tmpIVars[i][1]);
-	mysql_query(queryStr);
-	mysql_store_result();
-		
-	itemCount = mysql_fetch_int();
-	*/
-	
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "* %s przeszuka³ %s.", pVars[playerid][pCharName], pVars[pId][pCharName]);
-	sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
-	
-	new i, itemCount;
-	
-	while(mysql_fetch_row(queryStr, "|")) {		
+	while(mysql_fetch_row(queryStr, "|")) {
 		sscanf(queryStr, "p<|>is[32]", tmpIVars[i][0], tmpIVars[i][1]);
-		format(str, sizeof(str), "%s\n{FFFFFF}%d\t%dx\t%s", str, tmpIVars[i][0], itemCount, tmpIVars[i][1]);
+		format(str, sizeof(str), "%s\n{FFFFFF}%d\t0x\t%s", str, tmpIVars[i][0], tmpIVars[i][1]);
 		
 		i++;
 	}
 	
 	mysql_free_result();
 	ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_LIST, "Przedmioty", str, "OK", "Zamknij");
+	
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "~n~~n~~n~~n~~n~~n~~n~~y~Gotowka ~h~~y~%s~r~: ~w~$%d", pVars[pId][pCharName], pVars[pId][pMoney]);
+	GameTextForPlayer(playerid, mainStr, 10000, 3);
+	
+	format(mainStr, sizeof(mainStr), "* %s przeszuka³ %s.", pVars[playerid][pCharName], pVars[pId][pCharName]);
+	sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 	return 1;
 }
 
@@ -700,6 +723,21 @@ CMD:bankomat(playerid) {
 	return 1;
 }
 
+CMD:wyrzuc(playerid, params[]) {
+	new pId;
+	
+	if(sscanf(params, "i", pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /wyrzuc [ID gracza]");
+	}
+	
+	RemovePlayerFromVehicle(pId);
+	
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "~h~~g~%s wyrzuca cie z~n~~y~pojazdu.");
+	GameTextForPlayer(pId, mainStr, 5000, 3);
+	return 1;
+}
+
 CMD:dajprawojazdy(playerid, params[]) {
 	new playerToGive; // Id gracza, ktory ma dostac prawo jazdy
 	new fracId = checkFractionSrvIdForPlayer(playerid);
@@ -732,19 +770,18 @@ CMD:duty(playerid) {
 	
 	mainStr[0] = EOS;
 	
-	for(new i = 0; i < 5; i++) {
-		if(pVars[playerid][pFraction][i] != 0) {
-			if(isPlayerDuty[playerid]) {
-				format(mainStr, sizeof(mainStr), "~w~Schodzisz ze sluzby~n~%s", fVars[fracId][fName]);
-				GameTextForPlayer(playerid, mainStr, 5000, 3);
-				
-				isPlayerDuty[playerid] = false;
-			} else {
-				format(mainStr, sizeof(mainStr), "~w~Wchodzisz na sluzbe~n~%s", fVars[fracId][fName]);
-				GameTextForPlayer(playerid, mainStr, 5000, 3);
+	if(pVars[playerid][pFraction] != 0) {
+		if(isPlayerDuty[playerid]) {
+			format(mainStr, sizeof(mainStr), "~w~Schodzisz ze sluzby~n~%s", fVars[fracId][fName]);
+			GameTextForPlayer(playerid, mainStr, 5000, 3);
 			
-				isPlayerDuty[playerid] = true;
-			}
+			pVars[playerid][pDuty] = 0;
+			isPlayerDuty[playerid] = false;
+		} else {
+			format(mainStr, sizeof(mainStr), "~w~Wchodzisz na sluzbe~n~%s", fVars[fracId][fName]);
+			GameTextForPlayer(playerid, mainStr, 5000, 3);
+			
+			isPlayerDuty[playerid] = true;
 		}
 	}
 	return 1;

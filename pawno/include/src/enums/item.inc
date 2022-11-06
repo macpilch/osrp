@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 29.08.2022
-	Modified: 02.10.2022
+	Modified: 18.10.2022
 */
 
 #if !defined _ITEM_
@@ -15,6 +15,7 @@ enum {
 	P_WINO,
 	P_SPRUNK,
 	P_TECZKA,
+	P_CYGARO,
 	P_UBRANIE,
 	P_TELEFON,
 	P_KOSTKA,
@@ -36,6 +37,7 @@ enum {
 	P_LODYWKBK,
 	P_LONGER,
 	P_NACHOSZS,
+	P_NALESNIK,
 	P_NALESNIKI,
 	P_PACZEK,
 	P_PACZEKAFRO,

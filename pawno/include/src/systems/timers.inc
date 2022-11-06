@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 02.10.2022
+	Modified: 18.10.2022
 */
 
 #if !defined _TIMERS_
@@ -170,6 +170,10 @@ Timer:globalTimer[1000]() {
 			if(pVars[i][pSeconds] == 60) {
 				pVars[i][pMinutes]++;
 				pVars[i][pSeconds] = 0;
+				
+				if(isPlayerDuty[i]) {
+					pVars[i][pDuty]++;
+				}
 			}
 			
 			if(pVars[i][pMinutes] == 60) {
