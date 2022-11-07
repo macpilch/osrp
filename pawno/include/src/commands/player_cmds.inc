@@ -848,7 +848,7 @@ CMD:naprawsilnik(playerid, params[]) {
 			if(IsPlayerInRangeOfPoint(playerid, 5.0, x, y, z)) {
 				if(IsPlayerInAnyVehicle(toPlayerId)) {
 					vVars[vehid][vEngineHp] = 320.0;
-					SetVehicleHealth(vehid, vVars[vehid][vEngineHp]);
+					SetVehicleHealth(vVars[actualVehicle[toPlayerId]][vId], vVars[vehid][vEngineHp]);
 				} else {
 					SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz musi znajdowac sie w pojezdzie.");
 				}
@@ -877,8 +877,8 @@ CMD:naprawkaroserie(playerid, params[]) {
 			
 			if(IsPlayerInRangeOfPoint(playerid, 5.0, x, y, z)) {
 				if(IsPlayerInAnyVehicle(toPlayerId)) {
-					RepairVehicle(vehid);
-					SetVehicleHealth(actualVehicle[toPlayerId], vVars[vehid][vEngineHp]);
+					RepairVehicle(vVars[actualVehicle[toPlayerId]][vId]);
+					SetVehicleHealth(vVars[actualVehicle[toPlayerId]][vId], vVars[vehid][vEngineHp]);
 				} else {
 					SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz musi znajdowac sie w pojezdzie.");
 				}
@@ -900,4 +900,29 @@ CMD:frakcja(playerid) { // panel frakcji
 	return 1;
 }
 
+CMD:cennik(playerid, params[]) {
+	new fracId = checkFractionSrvIdForPlayer(playerid);
+	new toPlayerId;
+	mainStr[0] = EOS;
+	if(isPlayerDuty[playerid]) {
+		if(sscanf(params, "i", toPlayerId)) {
+			
+			return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: U¿ycie komendy /cennik [Id gracza].");
+		}
+		
+		if(strfind(fVars[fracId][fName], "Mechanik", false) != -1) {
+			new priceForVehHp; // priceForVehVisualHp
+			priceForVehHp = getPriceForRepairVehicle(vVars[actualVehicle[toPlayerId]][vId]);
+			format(mainStr, sizeof(mainStr), "Naprawa silnika\t$%i\nNaprawa karoserii\t$0\nZmiana koloru", priceForVehHp);
+			ShowPlayerDialog(toPlayerId, DIALOG_SHOW_PRICE_LIST_MECHANIC, DIALOG_STYLE_LIST, "Cennik", mainStr, "Wybierz", "Anuluj");
+		}
+			
+	}
+	else {
+		return 1;
+	}
+	
+	
+	return 1;
+}
 #endif 

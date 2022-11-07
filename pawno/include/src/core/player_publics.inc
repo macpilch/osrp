@@ -1327,6 +1327,34 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				}
 			}
 		}
+		
+		case DIALOG_SHOW_PRICE_LIST_MECHANIC: {
+			if(!response) {
+				return 1;
+			}
+			
+			switch(listitem) {
+				case 0: {
+					mainStr[0] = EOS;
+					new money, fixMoney;
+					money = GetPlayerMoney(playerid);
+					fixMoney = getPriceForRepairVehicle(vVars[actualVehicle[playerid]][vId]);
+					if(money >= fixMoney) {
+						GivePlayerMoney(playerid, -getPriceForRepairVehicle(vVars[actualVehicle[playerid]][vId]));
+					
+						format(mainStr, sizeof(mainStr), "{00FF00}[MECHANIK]{FFFFFF}: Naprawiono pojazd za $%i.", fixMoney);
+						SendClientMessage(playerid, COLOR_WHITE, mainStr);
+						SetVehicleHealth(vVars[actualVehicle[playerid]][vId], 1000);
+					}
+					else {
+						format(mainStr, sizeof(mainStr), "{FF0000}[MECHANIK]{FFFFFF}: Nie staæ Ciê na naprawê pojazdu.");
+						SendClientMessage(playerid, COLOR_WHITE, mainStr);
+					}
+					
+					
+				}
+			}
+		}
 	}
 	return 1;
 }
