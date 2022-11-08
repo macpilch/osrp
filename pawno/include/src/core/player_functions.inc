@@ -31,6 +31,13 @@ Callback:hideVehicleStats(playerid) {
 	return 1;
 }
 
+Callback:hideUsedRollersInfo(playerid) {
+	for(new i = 0; i < 2; i++) {
+		TextDrawHideForPlayer(playerid, usedRollersInfo[playerid][i]);
+	}
+	return 1;
+}
+
 Callback:hideHelpInfo(playerid) {
 	for(new i = 0; i < 2; i++) {
 		TextDrawHideForPlayer(playerid, helpInfo[playerid][i]);
@@ -562,6 +569,27 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawSetShadow(fractionsInfo[playerid][14], 0);
 	TextDrawSetOutline(fractionsInfo[playerid][14], 0);
 	TextDrawFont(fractionsInfo[playerid][14], 0);
+	
+	usedRollersInfo[playerid][0] = TextDrawCreate(490.541625, 285.249969, "~w~Zacznij sprintowac, aby jezdzic~n~na rolkach.~n~~n~Uzyj przedmiotu ponownie (/p~n~rolki), aby je zdjac.");
+	TextDrawLetterSize(usedRollersInfo[playerid][0], 0.306632, 1.378332);
+	TextDrawAlignment(usedRollersInfo[playerid][0], 2);
+	TextDrawColor(usedRollersInfo[playerid][0], -1);
+	TextDrawSetShadow(usedRollersInfo[playerid][0], 0);
+	TextDrawSetOutline(usedRollersInfo[playerid][0], 1);
+	TextDrawBackgroundColor(usedRollersInfo[playerid][0], 255);
+	TextDrawFont(usedRollersInfo[playerid][0], 1);
+	TextDrawSetProportional(usedRollersInfo[playerid][0], 1);
+
+	usedRollersInfo[playerid][1] = TextDrawCreate(585.777465, 285.000000, "_");
+	TextDrawLetterSize(usedRollersInfo[playerid][1], 0.000000, 6.942590);
+	TextDrawTextSize(usedRollersInfo[playerid][1], 400.459747, 0.000000);
+	TextDrawAlignment(usedRollersInfo[playerid][1], 1);
+	TextDrawColor(usedRollersInfo[playerid][1], 0);
+	TextDrawUseBox(usedRollersInfo[playerid][1], 1);
+	TextDrawBoxColor(usedRollersInfo[playerid][1], 51);
+	TextDrawSetShadow(usedRollersInfo[playerid][1], 0);
+	TextDrawSetOutline(usedRollersInfo[playerid][1], 0);
+	TextDrawFont(usedRollersInfo[playerid][1], 0);
 	return 1;
 }
 

@@ -126,6 +126,12 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 	switch(itemid) {
 		case P_ROLKI: {
 			if(!iVars[srvitemid][iUsed]) {
+				for(new i = 0; i < 2; i++) {
+					TextDrawShowForPlayer(playerid, usedRollersInfo[playerid][i]);
+				}
+				
+				SetTimerEx("hideUsedRollersInfo", 5000, false, "i", playerid);
+			
 				format(mainStr, sizeof(mainStr), "* %s zak³ada rolki.", pVars[playerid][pCharName]);
 				sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 			
