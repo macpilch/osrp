@@ -831,63 +831,68 @@ CMD:telefon(playerid, params[]) {
 }*/
 
 CMD:naprawsilnik(playerid, params[]) {
-	new fracId = checkFractionSrvIdForPlayer(playerid);
-	new toPlayerId, Float: x, Float: y, Float: z;
-	
-	if(sscanf(params, "i", toPlayerId)) {
-		return SendClientMessage(playerid, COLOR_WHITE, "Uzycie komendy /Naprawsilnik [Id gracza].");
-	}
-	new vehid = actualVehicle[toPlayerId];
-	if(strfind(fVars[fracId][fName], "Mechanik", false) != -1) {
-		if(isPlayerDuty[playerid]) {
-			SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz.");
-			GetPlayerPos(playerid, x, y, z);
-			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "actualVehicle[%d] = %d", toPlayerId, actualVehicle[toPlayerId]);
-			SendClientMessage(playerid, COLOR_WHITE, mainStr);
-			if(IsPlayerInRangeOfPoint(playerid, 5.0, x, y, z)) {
-				if(IsPlayerInAnyVehicle(toPlayerId)) {
-					vVars[vehid][vEngineHp] = 320.0;
-					SetVehicleHealth(vehid, vVars[vehid][vEngineHp]);
-				} else {
-					SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz musi znajdowac sie w pojezdzie.");
-				}
+	if(casualJob[playerid][PART_TIME_JOB_MECHANIC]) {
+		
+		new toPlayerId, Float: x, Float: y, Float: z;
+		
+		if(sscanf(params, "i", toPlayerId)) {
+			return SendClientMessage(playerid, COLOR_WHITE, "Uzycie komendy /Naprawsilnik [Id gracza].");
+		}
+		new vehid = actualVehicle[toPlayerId];
+		
+			
+		SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz.");
+		GetPlayerPos(playerid, x, y, z);
+		mainStr[0] = EOS;
+		format(mainStr, sizeof(mainStr), "actualVehicle[%d] = %d", toPlayerId, actualVehicle[toPlayerId]);
+		SendClientMessage(playerid, COLOR_WHITE, mainStr);
+		if(IsPlayerInRangeOfPoint(playerid, 5.0, x, y, z)) {
+			if(IsPlayerInAnyVehicle(toPlayerId)) {
+				vVars[vehid][vEngineHp] = 320.0;
+				SetVehicleHealth(vVars[actualVehicle[toPlayerId]][vId], vVars[vehid][vEngineHp]);
 			} else {
-				SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Jestes za daleko od gracza.");
+				SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz musi znajdowac sie w pojezdzie.");
 			}
 		} else {
-			SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Nie jestes na sluzbie.");
+			SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Jestes za daleko od gracza.");
 		}
+			
+		
+	} 
+	else {
+		
 	}
 	return 1;
 }
 
 CMD:naprawkaroserie(playerid, params[]) {
-	new fracId = checkFractionSrvIdForPlayer(playerid);
-	new toPlayerId, Float: x, Float: y, Float: z;
-	
-	if(sscanf(params, "i", toPlayerId)) {
-		return SendClientMessage(playerid, COLOR_WHITE, "Uzycie komendy /Naprawkaroserie [Id gracza].");
-	}
-	new vehid = actualVehicle[toPlayerId];
-	if(strfind(fVars[fracId][fName], "Mechanik", false) != -1) {
-		if(isPlayerDuty[playerid]) {
-			SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz.");
-			GetPlayerPos(playerid, x, y, z);
+	if(casualJob[playerid][PART_TIME_JOB_MECHANIC]) {
+		new toPlayerId, Float: x, Float: y, Float: z;
+		
+		if(sscanf(params, "i", toPlayerId)) {
+			return SendClientMessage(playerid, COLOR_WHITE, "Uzycie komendy /Naprawkaroserie [Id gracza].");
+		}
+		new vehid = actualVehicle[toPlayerId];
+		
 			
-			if(IsPlayerInRangeOfPoint(playerid, 5.0, x, y, z)) {
-				if(IsPlayerInAnyVehicle(toPlayerId)) {
-					RepairVehicle(vehid);
-					SetVehicleHealth(actualVehicle[toPlayerId], vVars[vehid][vEngineHp]);
-				} else {
-					SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz musi znajdowac sie w pojezdzie.");
-				}
+		SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz.");
+		GetPlayerPos(playerid, x, y, z);
+				
+		if(IsPlayerInRangeOfPoint(playerid, 5.0, x, y, z)) {
+			if(IsPlayerInAnyVehicle(toPlayerId)) {
+				RepairVehicle(vVars[actualVehicle[toPlayerId]][vId]);
+				SetVehicleHealth(vVars[actualVehicle[toPlayerId]][vId], vVars[vehid][vEngineHp]);
 			} else {
-				SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Jestes za daleko od gracza.");
+				SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz musi znajdowac sie w pojezdzie.");
 			}
 		} else {
-			SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Nie jestes na sluzbie.");
+			SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Jestes za daleko od gracza.");
 		}
+			
+		
+	}
+	else {
+		
 	}
 	
 	return 1;
@@ -900,4 +905,65 @@ CMD:frakcja(playerid) { // panel frakcji
 	return 1;
 }
 
+CMD:cennik(playerid, params[]) {
+	if(casualJob[playerid][PART_TIME_JOB_MECHANIC]) {
+		
+		new toPlayerId;
+		mainStr[0] = EOS;
+		if(sscanf(params, "i", toPlayerId)) {
+				
+			return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Uøycie komendy /cennik [Id gracza].");
+		}
+		
+		if(IsPlayerInAnyVehicle(toPlayerId)) {
+			new priceForVehHp; // priceForVehVisualHp
+			priceForVehHp = getPriceForRepairVehicle(vVars[actualVehicle[toPlayerId]][vId]);
+			format(mainStr, sizeof(mainStr), "Naprawa silnika\t$%i\nNaprawa karoserii\t$0\nZmiana koloru", priceForVehHp);
+			ShowPlayerDialog(toPlayerId, DIALOG_SHOW_PRICE_LIST_MECHANIC, DIALOG_STYLE_LIST, "Cennik", mainStr, "Wybierz", "Anuluj");
+		}
+		else {
+			return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Gracz musi byc w pojeüdzie.");
+		}
+	
+		
+	}
+	else {
+		
+	}
+	
+	return 1;
+}
+
+CMD:wybierzzlecenie(playerid) {
+	new vehicleid;
+	if(casualJob[playerid][PART_TIME_JOB_DELIVERY]) {
+		if(IsPlayerInAnyVehicle(playerid)) {
+			vehicleid = GetPlayerVehicleID(playerid);
+			
+			if(isCar(vehicleid)) {
+				//ShowPlayerDialog(playerid);
+			}
+			else {
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[Praca]{FFFFFF}: Musisz byc w odpowiednim pojeüdzie.");
+			}
+		}
+	}
+	else {
+		return 1;
+	}
+	
+	if(casualJob[playerid][PART_TIME_JOB_TRUCK]) {
+		if(IsPlayerInAnyVehicle(playerid)) {
+			vehicleid = GetPlayerVehicleID(playerid);
+			
+			if(isTruck(vehicleid)) {
+				//ShowPlayerDialog(playerid);
+			}
+			else {
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[Praca]{FFFFFF}: Musisz byc w odpowiednim pojeüdzie.");
+			}
+		}
+	}
+	return 1;
+}
 #endif 

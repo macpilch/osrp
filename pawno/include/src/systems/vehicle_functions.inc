@@ -370,7 +370,7 @@ stock isCar(vehicleid) {
 		case 436: {
 			return 1;
 		}
-		case 438 .. 439 {
+		case 438 .. 439: {
 			return 1;
 		}
 		case 442: {
@@ -465,13 +465,13 @@ stock isTruck(vehicleid) {
 	new modelid = GetVehicleModel(vehicleid);
 	
 	switch (modelid) {
-		case 0 .. 399 {
+		case 0 .. 399: {
 			return 0;
 		}
 		case 403: {
 			return 1;
 		}
-		case 514 .. 515 {
+		case 514 .. 515: {
 			return 1;
 		}
 	}
@@ -609,4 +609,23 @@ stock isPlane(vehicleid) {
 	return 0;
 }
 
+stock getPriceForRepairVehicle(vehicleid) {
+	new Float: actualVehHp, Float: fullVehHp = 1000, Float: toRepairVehHp, Float: fix = 2.75, Float: money;
+	GetVehicleHealth(vehicleid, actualVehHp);
+	toRepairVehHp = fullVehHp - actualVehHp;
+	
+	money = toRepairVehHp * fix;
+	
+	return floatround(money);
+}
+/*
+stock getPriceForRepairVehicleVisual(vehicleid) {
+	new Float: actualVehHp, Float: fullVehHp = 1000, Float: toRepairVehHp, Float: fix = 2.75, money;
+	toRepairVehHp = fullVehHp - GetVehicleHealth(vehicleid, actualVehHp);
+	
+	money = toRepairVehHp * fix;
+	
+	return round(money);
+}
+*/
 #endif 

@@ -596,7 +596,7 @@ stock createPlayerTextDraws(playerid) {
 stock loadPlayerValues(playerid) {
 	new charDesc[128];
 	
-	StopAudioStreamForPlayer(playerid);
+	PlayerPlaySound(playerid, 0, 0.0, 0.0, 0.0);
 	
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `IP`, `Rank`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `VW`, `INT`, `Skin`, `LastSkin`, `Money`, `Bank`, `Bw`, `Aj`, `DriverLicense`, `TelNum`, `Group`, `Frac0`, `Traveled`, `X`, `Y`, `Z`, `Desc` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
