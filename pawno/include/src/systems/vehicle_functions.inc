@@ -370,7 +370,7 @@ stock isCar(vehicleid) {
 		case 436: {
 			return 1;
 		}
-		case 438 .. 439 {
+		case 438 .. 439: {
 			return 1;
 		}
 		case 442: {
@@ -465,13 +465,13 @@ stock isTruck(vehicleid) {
 	new modelid = GetVehicleModel(vehicleid);
 	
 	switch (modelid) {
-		case 0 .. 399 {
+		case 0 .. 399: {
 			return 0;
 		}
 		case 403: {
 			return 1;
 		}
-		case 514 .. 515 {
+		case 514 .. 515: {
 			return 1;
 		}
 	}

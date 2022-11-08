@@ -541,4 +541,24 @@ CMD:ustawskin(playerid, params[]) {
 	return 1;
 }
 
+CMD:dajprace(playerid, params[]) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+		new toPlayerGive, type, partTimeJob;
+		
+		if(sscanf(params, "iii", toPlayerGive, type, partTimeJob)) {
+			return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[ADMIN]{FFFFFF}: UŸycie komendy /dajprace [Id gracza] [Typ 0-dorywcze 1- frakcja] [Id pracy].");
+		}
+		
+		for(new i = 0; i < MAX_PART_TIME_JOBS; i++) {
+			casualJob[toPlayerGive][i] = false;
+		}
+		
+		casualJob[toPlayerGive][partTimeJob] = true;
+	}
+	else {
+		return 0;
+	}
+	return 1;
+}
+
 #endif 
