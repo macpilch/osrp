@@ -916,9 +916,10 @@ CMD:cennik(playerid, params[]) {
 		}
 		
 		if(IsPlayerInAnyVehicle(toPlayerId)) {
-			new priceForVehHp; // priceForVehVisualHp
+			new priceForVehHp, priceForVehVisual; // priceForVehVisualHp
 			priceForVehHp = getPriceForRepairVehicle(vVars[actualVehicle[toPlayerId]][vId]);
-			format(mainStr, sizeof(mainStr), "Naprawa silnika\t$%i\nNaprawa karoserii\t$0\nZmiana koloru", priceForVehHp);
+			priceForVehVisual = getPriceForRepairVehicleVisual(vVars[actualVehicle[toPlayerId]][vId]);
+			format(mainStr, sizeof(mainStr), "Naprawa silnika\t$%i\nNaprawa karoserii\t$%i\nZmiana koloru", priceForVehHp, priceForVehVisual);
 			ShowPlayerDialog(toPlayerId, DIALOG_SHOW_PRICE_LIST_MECHANIC, DIALOG_STYLE_LIST, "Cennik", mainStr, "Wybierz", "Anuluj");
 		}
 		else {

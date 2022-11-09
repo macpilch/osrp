@@ -1335,16 +1335,24 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			switch(listitem) {
 				case 0: {
+					
 					mainStr[0] = EOS;
 					new money, fixMoney;
 					money = GetPlayerMoney(playerid);
 					fixMoney = getPriceForRepairVehicle(vVars[actualVehicle[playerid]][vId]);
 					if(money >= fixMoney) {
-						GivePlayerMoney(playerid, -getPriceForRepairVehicle(vVars[actualVehicle[playerid]][vId]));
+						if(fixMoney == 0) {
+							format(mainStr, sizeof(mainStr), "{00FF00}[MECHANIK]{FFFFFF}: Pojazd jest sprawny.", fixMoney);
+							SendClientMessage(playerid, COLOR_WHITE, mainStr);
+						}
+						else {
+							GivePlayerMoney(playerid, -getPriceForRepairVehicle(vVars[actualVehicle[playerid]][vId]));
 					
-						format(mainStr, sizeof(mainStr), "{00FF00}[MECHANIK]{FFFFFF}: Naprawiono pojazd za $%i.", fixMoney);
-						SendClientMessage(playerid, COLOR_WHITE, mainStr);
-						SetVehicleHealth(vVars[actualVehicle[playerid]][vId], 1000);
+							format(mainStr, sizeof(mainStr), "{00FF00}[MECHANIK]{FFFFFF}: Naprawiono pojazd za $%i.", fixMoney);
+							SendClientMessage(playerid, COLOR_WHITE, mainStr);
+							SetVehicleHealth(vVars[actualVehicle[playerid]][vId], 1000);
+						}
+						
 					}
 					else {
 						format(mainStr, sizeof(mainStr), "{FF0000}[MECHANIK]{FFFFFF}: Nie staæ Ciê na naprawê pojazdu.");
@@ -1352,6 +1360,34 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					}
 					
 					
+				}
+				
+				case 1: {
+					
+					mainStr[0] = EOS;
+					new money, fixMoney;
+					money = GetPlayerMoney(playerid);
+					fixMoney = getPriceForRepairVehicleVisual(vVars[actualVehicle[playerid]][vId]);
+					if(money >= fixMoney) {
+						if(fixMoney == 0) {
+							format(mainStr, sizeof(mainStr), "{00FF00}[MECHANIK]{FFFFFF}: Pojazd jest sprawny.", fixMoney);
+							SendClientMessage(playerid, COLOR_WHITE, mainStr);
+						}
+						else {
+							GivePlayerMoney(playerid, -getPriceForRepairVehicleVisual(vVars[actualVehicle[playerid]][vId]));
+					
+							format(mainStr, sizeof(mainStr), "{00FF00}[MECHANIK]{FFFFFF}: Naprawiono pojazd za $%i.", fixMoney);
+							SendClientMessage(playerid, COLOR_WHITE, mainStr);
+							GetVehicleHealth(vVars[actualVehicle[playerid]][vId], vVars[actualVehicle[playerid]][vEngineHp]);
+							RepairVehicle(vVars[actualVehicle[playerid]][vId]);
+							SetVehicleHealth(vVars[actualVehicle[playerid]][vId], vVars[actualVehicle[playerid]][vEngineHp]);
+						}
+						
+					}
+					else {
+						format(mainStr, sizeof(mainStr), "{FF0000}[MECHANIK]{FFFFFF}: Nie staæ Ciê na naprawê pojazdu.");
+						SendClientMessage(playerid, COLOR_WHITE, mainStr);
+					}
 				}
 			}
 		}
