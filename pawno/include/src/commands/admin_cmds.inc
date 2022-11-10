@@ -549,11 +549,11 @@ CMD:dajprace(playerid, params[]) {
 			return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[ADMIN]{FFFFFF}: UŸycie komendy /dajprace [Id gracza] [Typ 0-dorywcze 1- frakcja] [Id pracy].");
 		}
 		
-		for(new i = 0; i < MAX_PART_TIME_JOBS; i++) {
-			casualJob[toPlayerGive][i] = false;
-		}
 		
-		casualJob[toPlayerGive][partTimeJob] = true;
+		casualJob[toPlayerGive] = partTimeJob;
+		
+		pVars[toPlayerGive][pCasualJob] = partTimeJob;
+		
 	}
 	else {
 		return 0;

@@ -831,7 +831,7 @@ CMD:telefon(playerid, params[]) {
 }*/
 
 CMD:naprawsilnik(playerid, params[]) {
-	if(casualJob[playerid][PART_TIME_JOB_MECHANIC]) {
+	if(casualJob[playerid] == PART_TIME_JOB_MECHANIC) {
 		
 		new toPlayerId, Float: x, Float: y, Float: z;
 		
@@ -866,7 +866,7 @@ CMD:naprawsilnik(playerid, params[]) {
 }
 
 CMD:naprawkaroserie(playerid, params[]) {
-	if(casualJob[playerid][PART_TIME_JOB_MECHANIC]) {
+	if(casualJob[playerid] == PART_TIME_JOB_MECHANIC) {
 		new toPlayerId, Float: x, Float: y, Float: z;
 		
 		if(sscanf(params, "i", toPlayerId)) {
@@ -906,7 +906,7 @@ CMD:frakcja(playerid) { // panel frakcji
 }
 
 CMD:cennik(playerid, params[]) {
-	if(casualJob[playerid][PART_TIME_JOB_MECHANIC]) {
+	if(casualJob[playerid] == PART_TIME_JOB_MECHANIC) {
 		
 		new toPlayerId;
 		mainStr[0] = EOS;
@@ -919,7 +919,7 @@ CMD:cennik(playerid, params[]) {
 			new priceForVehHp, priceForVehVisual; // priceForVehVisualHp
 			priceForVehHp = getPriceForRepairVehicle(vVars[actualVehicle[toPlayerId]][vId]);
 			priceForVehVisual = getPriceForRepairVehicleVisual(vVars[actualVehicle[toPlayerId]][vId]);
-			format(mainStr, sizeof(mainStr), "Naprawa silnika\t$%i\nNaprawa karoserii\t$%i\nZmiana koloru", priceForVehHp, priceForVehVisual);
+			format(mainStr, sizeof(mainStr), "Naprawa silnika \t$%i\nNaprawa karoserii\t$%i\nZmiana koloru", priceForVehHp, priceForVehVisual);
 			ShowPlayerDialog(toPlayerId, DIALOG_SHOW_PRICE_LIST_MECHANIC, DIALOG_STYLE_LIST, "Cennik", mainStr, "Wybierz", "Anuluj");
 		}
 		else {
@@ -937,7 +937,7 @@ CMD:cennik(playerid, params[]) {
 
 CMD:wybierzzlecenie(playerid) {
 	new vehicleid;
-	if(casualJob[playerid][PART_TIME_JOB_DELIVERY]) {
+	if(casualJob[playerid] == PART_TIME_JOB_DELIVERY) {
 		if(IsPlayerInAnyVehicle(playerid)) {
 			vehicleid = GetPlayerVehicleID(playerid);
 			
@@ -953,7 +953,7 @@ CMD:wybierzzlecenie(playerid) {
 		return 1;
 	}
 	
-	if(casualJob[playerid][PART_TIME_JOB_TRUCK]) {
+	if(casualJob[playerid] == PART_TIME_JOB_TRUCK) {
 		if(IsPlayerInAnyVehicle(playerid)) {
 			vehicleid = GetPlayerVehicleID(playerid);
 			

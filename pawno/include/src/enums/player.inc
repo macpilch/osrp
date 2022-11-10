@@ -68,6 +68,7 @@ enum PlayerData {
 	pTelNum,
 	pBankAcc,
 	pGroup[128],
+	pCasualJob,
 	pFraction,
 	pDuty,
 	Float:pTraveled,
