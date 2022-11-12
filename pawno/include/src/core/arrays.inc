@@ -28,9 +28,6 @@ new cVars[MAX_CASHPOINTS][CashpointData];
 //Object system
 stock oVars[MAX_OBJECTS][ObjectData];
 
-//part time job
-new casualJob[MAX_PLAYERS];
-
 new Float:startCameraPos[][] = {
 	{2485.5459,-1656.8232,13.3414}
 };
@@ -79,10 +76,11 @@ new charSur[][CharSurName] = {
 
 new itemNames[][] = {
 	"Rolki", "Piwo", "Wino", "Sprunk", "Teczka", "Cygaro", "Ubranie", "Telefon", "Kostka",
-	"Pistolet", "Desert Deagle", "Shotgun", "M4", "Cheeseburger", "Coca-Cola", "Cuba Libre",
-	"Frytki", "Grove Burger", "Hamburger", "Herbata", "Hot Dog", "Kawa", "Kebab", "Lody",
-	"Lody w kubku", "Longer", "Nachos z serem", "Naleœnik", "Naleœniki", "P¹czek", "P¹czek Afro",
-	"P¹czek Z³otawy", "Sushi", "Woda Mineralna", "Discman", "RadioParty", "CD", "Nokia 8110"
+	"Kamizelka", "Pistolet", "Desert Deagle", "Shotgun", "M4", "Cheeseburger", "Coca-Cola", 
+	"Cuba Libre", "Frytki", "Grove Burger", "Hamburger", "Herbata", "Hot Dog", "Kawa", "Kebab",
+	"Lody", "Lody w kubku", "Longer", "Nachos z serem", "Naleœnik", "Naleœniki", "P¹czek", 
+	"P¹czek Afro", "P¹czek Z³otawy", "Sushi", "Woda Mineralna", "Discman", "RadioParty", "CD", 
+	"Nokia 8110"
 };
 
 new VehicleNames[212][] = {
@@ -340,4 +338,17 @@ new Float:petrolStations[MAX_PETROL_STATIONS][4]={
 };
 */
 
+/* Do zapisywania pozycji znaczników pracy kuriera
+new Float:checkpointDeliveryPos[MAX_DELIVERY_CHECKPOINTS][3] = {
+
+
+};
+
+//Do zapisywania pozycji znaczników pracy kuriera
+new Float:checkpointTruckPos[MAX_TRUCK_CHECKPOINTS][3] = {
+
+
+};
+
+*/
 #endif 

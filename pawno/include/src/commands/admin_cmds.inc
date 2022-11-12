@@ -190,7 +190,44 @@ CMD:givehealth(playerid, params[]) {
 	}
 	return 1;
 }
-
+/* Komenda do dawania pancerza, do poprawy gdy bedzie item kamizelki
+CMD:givearmour(playerid, params[]) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+		if(isAdminDuty[playerid]) {
+			new toPlayerid, hp; // id player to give armour
+			
+			if(sscanf(params, "ii", toPlayerid, hp)) {
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawnie u¿ycie komendy to /givearmour [Id gracza][iloœæ pancerza].");
+			}
+			
+			pVars[toPlayerid][pHp] = hp;
+			
+			SetPlayerArmour(toPlayerid, pVars[toPlayerid][pHp]);
+			
+			mainStr[0] = EOS;
+			
+			foreach(new i : Player) {
+				if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
+					if(isAdminDuty[i]) {
+						if(toPlayerid == playerid) {
+							format(mainStr, sizeof(mainStr), "%s do³adowa³ sobie ¿ycie.", pVars[playerid][pCharName]);
+							SendClientMessage(i, COLOR_WHITE, mainStr);
+						}
+					}
+				}
+			}
+			
+			format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{00FF00}: Otrzymales zdrowie od admina %s", pVars[playerid][pAccName]);
+			SendClientMessage(toPlayerid, COLOR_WHITE, mainStr);
+			format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{00FF00}: Dales zdrowie graczowi %s", pVars[toPlayerid][pCharName2]);
+			SendClientMessage(playerid, COLOR_WHITE, mainStr);
+		} 
+	} else {
+		return 0;
+	}
+	return 1;
+}
+*/
 CMD:freezeplayer(playerid, params[]) {
 	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
 		if(isAdminDuty[playerid]) {
