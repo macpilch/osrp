@@ -377,6 +377,64 @@ CMD:o(playerid, params[]) {
 				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
 			}
 		}
+	} else if(strfind(type, "dowod", true) != -1) {
+		new str[64], tmpFracId = checkFractionSrvIdForPlayer(playerid);
+		
+		if(fVars[tmpFracId][fType] == F_PUBLIC) {
+			mainStr[0] = EOS;
+			offerType[playerid] = offerType[pId] = 2;
+			
+			GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
+			
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Dowod osobisty\n\nKoszt: $%d. Czy akceptujesz tÍ ofertÍ?", offerParams[pId]);
+			
+			if(offerParams[pId] > 0) {
+				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+			} else {
+				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+			}			
+		}
+	} else if(strfind(type, "prawko", true) != -1) {
+		new str[64], tmpFracId = checkFractionSrvIdForPlayer(playerid);
+		
+		if(pVars[pId][pTraveled] < 5.0) {
+			return GameTextForPlayer(playerid, "~r~Ten gracz nie ukonczyl kursu.", 5000, 3);
+		}
+		
+		if(fVars[tmpFracId][fType] == F_PUBLIC) {
+			mainStr[0] = EOS;
+			offerType[playerid] = offerType[pId] = 3;
+			
+			GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
+			
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Prawo jazdy\n\nKoszt: $%d. Czy akceptujesz tÍ ofertÍ?", offerParams[pId]);
+			
+			if(offerParams[pId] > 0) {
+				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+			} else {
+				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+			}			
+		}
+	} else if(strfind(type, "podatek", true) != -1) {
+		new str[64], tmpFracId = checkFractionSrvIdForPlayer(playerid);
+		
+		if(fVars[tmpFracId][fType] == F_PUBLIC) {
+			mainStr[0] = EOS;
+			offerType[playerid] = offerType[pId] = 4;
+			
+			GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
+			
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaplacenie podatku budynku\n\nKoszt: $%d. Czy akceptujesz tÍ ofertÍ?", offerParams[pId]);
+			
+			if(offerParams[pId] > 0) {
+				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+			} else {
+				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+			}			
+		}		
 	}
 	return 1;
 }
@@ -696,6 +754,12 @@ CMD:raport(playerid, params[]) {
 
 CMD:pasy(playerid, params[]) {
 	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER || GetPlayerState(playerid) == PLAYER_STATE_PASSENGER) {
+		new vehid = actualVehicle[playerid];
+		
+		if(vVars[vehid][vModelId] == ) {
+			return GameTextForPlayer(playerid, "~y~Ten pojazd nie ma pasow.", 5000, 3);
+		}
+		
 		if(!hasBelts[playerid]) {
 			GameTextForPlayer(playerid, "~w~Pasy ~g~zapiete", 5000, 6);
 		
@@ -733,22 +797,21 @@ CMD:wyrzuc(playerid, params[]) {
 	RemovePlayerFromVehicle(pId);
 	
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "~h~~g~%s wyrzuca cie z~n~~y~pojazdu.");
+	format(mainStr, sizeof(mainStr), "~h~~g~%s wyrzuca cie z~n~~y~pojazdu.", pVars[playerid][pCharName]);
 	GameTextForPlayer(pId, mainStr, 5000, 3);
 	return 1;
 }
 
 CMD:dajprawojazdy(playerid, params[]) {
 	new playerToGive; // Id gracza, ktory ma dostac prawo jazdy
-	new str[32];
 	new fracId = checkFractionSrvIdForPlayer(playerid);
+	new str[2];
 	
 	mainStr[0] = EOS;
 	
 	if(strfind(fVars[fracId][fName], "Urzad Miasta Los Santos", false) != -1) {
-		
 		if(isPlayerDuty[playerid]) {
-			if(sscanf(params, "is[1]", playerToGive, str)) {
+			if(sscanf(params, "s[2]i", str, playerToGive)) {
 				return SendClientMessage(playerid, COLOR_WHITE, "Uøycie komendy /dajprawojazdy [A|B|C] [Id gracza].");
 			}
 			
@@ -763,9 +826,7 @@ CMD:dajprawojazdy(playerid, params[]) {
 				SendClientMessage(playerid, COLOR_WHITE, mainStr);
 				format(mainStr, sizeof(mainStr), "[Urzad]: Otrzymales prawo jazdy A.");
 				SendClientMessage(playerToGive, COLOR_WHITE, mainStr);
-				
-			}
-			else if(strfind(str, "B", true) != -1) {
+			} else if(strfind(str, "B", true) != -1) {
 				format(mainStr, sizeof(mainStr), "[Frakcja]: Dales prawo jazdy B %s.", pVars[playerToGive][pCharName]);
 				//Narazie pDriverLicense, pozniej bedzie pDriverLicenseB
 				pVars[playerToGive][pDriverLicense] = 1;
@@ -773,8 +834,7 @@ CMD:dajprawojazdy(playerid, params[]) {
 				SendClientMessage(playerid, COLOR_WHITE, mainStr);
 				format(mainStr, sizeof(mainStr), "[Urzad]: Otrzymales prawo jazdy B.");
 				SendClientMessage(playerToGive, COLOR_WHITE, mainStr);
-			}
-			else if(strfind(str, "C", true) != -1) {
+			} else if(strfind(str, "C", true) != -1) {
 				format(mainStr, sizeof(mainStr), "[Frakcja]: Dales prawo jazdy C %s.", pVars[playerToGive][pCharName]);
 			//	pVars[playerToGive][pDriverLicenseC] = 1;
 				
@@ -782,7 +842,6 @@ CMD:dajprawojazdy(playerid, params[]) {
 				format(mainStr, sizeof(mainStr), "[Urzad]: Otrzymales prawo jazdy C.");
 				SendClientMessage(playerToGive, COLOR_WHITE, mainStr);
 			}
-			
 		}
 	}
 	return 1;
@@ -832,23 +891,25 @@ CMD:telefon(playerid, params[]) {
 
 CMD:naprawsilnik(playerid, params[]) {
 	if(casualJob[playerid][PART_TIME_JOB_MECHANIC]) {
-		
-		new toPlayerId, Float: x, Float: y, Float: z;
+		new toPlayerId, Float:x, Float:y, Float:z;
 		
 		if(sscanf(params, "i", toPlayerId)) {
 			return SendClientMessage(playerid, COLOR_WHITE, "Uzycie komendy /Naprawsilnik [Id gracza].");
 		}
+		
 		new vehid = actualVehicle[toPlayerId];
 		
-			
 		SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz.");
 		GetPlayerPos(playerid, x, y, z);
+		
 		mainStr[0] = EOS;
 		format(mainStr, sizeof(mainStr), "actualVehicle[%d] = %d", toPlayerId, actualVehicle[toPlayerId]);
 		SendClientMessage(playerid, COLOR_WHITE, mainStr);
+		
 		if(IsPlayerInRangeOfPoint(playerid, 5.0, x, y, z)) {
 			if(IsPlayerInAnyVehicle(toPlayerId)) {
 				vVars[vehid][vEngineHp] = 320.0;
+				
 				SetVehicleHealth(vVars[actualVehicle[toPlayerId]][vId], vVars[vehid][vEngineHp]);
 			} else {
 				SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz musi znajdowac sie w pojezdzie.");
@@ -856,28 +917,25 @@ CMD:naprawsilnik(playerid, params[]) {
 		} else {
 			SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Jestes za daleko od gracza.");
 		}
-			
-		
-	} 
-	else {
-		
+	} else {
+		return 0;
 	}
 	return 1;
 }
 
 CMD:naprawkaroserie(playerid, params[]) {
 	if(casualJob[playerid][PART_TIME_JOB_MECHANIC]) {
-		new toPlayerId, Float: x, Float: y, Float: z;
+		new toPlayerId, Float:x, Float:y, Float:z;
 		
 		if(sscanf(params, "i", toPlayerId)) {
 			return SendClientMessage(playerid, COLOR_WHITE, "Uzycie komendy /Naprawkaroserie [Id gracza].");
 		}
+		
 		new vehid = actualVehicle[toPlayerId];
 		
-			
 		SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Gracz.");
 		GetPlayerPos(playerid, x, y, z);
-				
+		
 		if(IsPlayerInRangeOfPoint(playerid, 5.0, x, y, z)) {
 			if(IsPlayerInAnyVehicle(toPlayerId)) {
 				RepairVehicle(vVars[actualVehicle[toPlayerId]][vId]);
@@ -888,13 +946,9 @@ CMD:naprawkaroserie(playerid, params[]) {
 		} else {
 			SendClientMessage(playerid, COLOR_WHITE, "[Mechanik]: Jestes za daleko od gracza.");
 		}
-			
-		
+	} else {
+		return 0;
 	}
-	else {
-		
-	}
-	
 	return 1;
 }
 
@@ -907,63 +961,54 @@ CMD:frakcja(playerid) { // panel frakcji
 
 CMD:cennik(playerid, params[]) {
 	if(casualJob[playerid][PART_TIME_JOB_MECHANIC]) {
-		
 		new toPlayerId;
+		
 		mainStr[0] = EOS;
 		if(sscanf(params, "i", toPlayerId)) {
-				
 			return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Uøycie komendy /cennik [Id gracza].");
 		}
 		
 		if(IsPlayerInAnyVehicle(toPlayerId)) {
 			new priceForVehHp; // priceForVehVisualHp
+			
 			priceForVehHp = getPriceForRepairVehicle(vVars[actualVehicle[toPlayerId]][vId]);
+			
 			format(mainStr, sizeof(mainStr), "Naprawa silnika\t$%i\nNaprawa karoserii\t$0\nZmiana koloru", priceForVehHp);
 			ShowPlayerDialog(toPlayerId, DIALOG_SHOW_PRICE_LIST_MECHANIC, DIALOG_STYLE_LIST, "Cennik", mainStr, "Wybierz", "Anuluj");
-		}
-		else {
+		} else {
 			return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Gracz musi byc w pojeüdzie.");
 		}
-	
-		
+	} else {
+		return 0;
 	}
-	else {
-		
-	}
-	
 	return 1;
 }
 
 CMD:wybierzzlecenie(playerid) {
 	new vehicleid;
+	
 	if(casualJob[playerid][PART_TIME_JOB_DELIVERY]) {
 		if(IsPlayerInAnyVehicle(playerid)) {
 			vehicleid = GetPlayerVehicleID(playerid);
 			
 			if(isCar(vehicleid)) {
 				//ShowPlayerDialog(playerid);
-			}
-			else {
+			} else {
 				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[Praca]{FFFFFF}: Musisz byc w odpowiednim pojeüdzie.");
 			}
 		}
-	}
-	else {
-		return 1;
-	}
-	
-	if(casualJob[playerid][PART_TIME_JOB_TRUCK]) {
+	} else if(casualJob[playerid][PART_TIME_JOB_TRUCK]) {
 		if(IsPlayerInAnyVehicle(playerid)) {
 			vehicleid = GetPlayerVehicleID(playerid);
 			
 			if(isTruck(vehicleid)) {
 				//ShowPlayerDialog(playerid);
-			}
-			else {
+			} else {
 				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[Praca]{FFFFFF}: Musisz byc w odpowiednim pojeüdzie.");
 			}
 		}
 	}
 	return 1;
 }
+
 #endif 

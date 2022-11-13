@@ -45,7 +45,7 @@ stock searchPlayerCashpoint(playerid) {
 			pVars[playerid][pBank] = mysql_fetch_int();
 			mysql_free_result();
 			
-			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tStan konta (%d)\n2\tWyp³aæ pieni¹dze\n3\tWp³aæ pieni¹dze", pVars[playerid][pBank]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tStan konta (%d)\n2\tWyp³aæ pieni¹dze\n3\tWp³aæ pieni¹dze\n4\tDokonaj przelewu\n5\tSp³aæ d³ug ($0)", pVars[playerid][pBank]);
 			ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT, DIALOG_STYLE_LIST, "Bankomat", mainStr, "OK", "Anuluj");
 			
 			actualCashpoint[playerid] = i;

@@ -554,8 +554,7 @@ CMD:dajprace(playerid, params[]) {
 		}
 		
 		casualJob[toPlayerGive][partTimeJob] = true;
-	}
-	else {
+	} else {
 		return 0;
 	}
 	return 1;

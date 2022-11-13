@@ -29,7 +29,7 @@ new cVars[MAX_CASHPOINTS][CashpointData];
 stock oVars[MAX_OBJECTS][ObjectData];
 
 //part time job
-new bool: casualJob[MAX_PLAYERS][MAX_PART_TIME_JOBS];
+new bool:casualJob[MAX_PLAYERS][MAX_PART_TIME_JOBS];
 
 new Float:startCameraPos[][] = {
 	{2485.5459,-1656.8232,13.3414}

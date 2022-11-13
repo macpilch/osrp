@@ -162,10 +162,13 @@ sampCallback:OnPlayerDeath(playerid, killerid, reason) {
 }
 
 sampCallback:OnPlayerText(playerid, text[]) {
-	new textStr[256];
+	new textStr[256], fracChatIC[4], fracChatOOC[4];
+	new tmpFracId = checkFractionSrvIdForPlayer(playerid);
 	
 	mainStr[0] = EOS;
 	format(textStr, sizeof(textStr), "%s", text);
+	format(fracChatIC, sizeof(fracChatIC), "!%d", fVars[tmpFracId][fUid]);
+	format(fracChatOOC, sizeof(fracChatOOC), "@%d", fVars[tmpFracId][fUid]);
 	
 	if(strfind(textStr, "!!", false) != -1) {
 		format(mainStr, sizeof(mainStr), "%s krzyczy: %s", pVars[playerid][pCharName], textStr);
@@ -237,9 +240,9 @@ sampCallback:OnPlayerText(playerid, text[]) {
 				}
 			}
 		}
-	} else if(strfind(textStr, "@1", true) == 0) {
+	} else if(strfind(textStr, fracChatOOC, true) == 0) {
 		if(!isBW[playerid]) {
-			new str[256], tmpFracId = checkFractionSrvIdForPlayer(playerid);
+			new str[256];
 			
 			if(pVars[playerid][pFraction] > 0 && isPlayerDuty[playerid]) {
 				strmid(str, textStr, 2, strlen(textStr));
@@ -256,8 +259,8 @@ sampCallback:OnPlayerText(playerid, text[]) {
 		} else {
 			GameTextForPlayer(playerid, "~r~Nie podczas BW.", 4000, 3);
 		}
-	} else if(strfind(textStr, "!1", true) == 0) {
-		new str[256], tmpFracId = checkFractionSrvIdForPlayer(playerid);
+	} else if(strfind(textStr, fracChatIC, true) == 0) {
+		new str[256];
 		
 		if(pVars[playerid][pFraction] > 0 && isPlayerDuty[playerid]) {
 			strmid(str, textStr, 2, strlen(textStr));
@@ -431,18 +434,22 @@ sampCallback:OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	if((newkeys & KEY_JUMP) && (newkeys & KEY_WALK)) {
 		new tmpDoorId = pVars[playerid][pDoors], vw = GetPlayerVirtualWorld(playerid), int = GetPlayerInterior(playerid);
 		
-		if(dVars[tmpDoorId][dVw] != vw && dVars[tmpDoorId][dInt] != int) {
-			if(IsPlayerInRangeOfPoint(playerid, 3.0, dVars[tmpDoorId][dEnterX], dVars[tmpDoorId][dEnterY], dVars[tmpDoorId][dEnterZ])) {
-				SetPlayerPos(playerid, dVars[tmpDoorId][dExitX], dVars[tmpDoorId][dExitY], dVars[tmpDoorId][dExitZ]);
-				SetPlayerVirtualWorld(playerid, dVars[tmpDoorId][dVw]);
-				SetPlayerInterior(playerid, dVars[tmpDoorId][dInt]);
+		if(dVars[tmpDoorId][dOpen]) {
+			if(dVars[tmpDoorId][dVw] != vw && dVars[tmpDoorId][dInt] != int) {
+				if(IsPlayerInRangeOfPoint(playerid, 3.0, dVars[tmpDoorId][dEnterX], dVars[tmpDoorId][dEnterY], dVars[tmpDoorId][dEnterZ])) {
+					SetPlayerPos(playerid, dVars[tmpDoorId][dExitX], dVars[tmpDoorId][dExitY], dVars[tmpDoorId][dExitZ]);
+					SetPlayerVirtualWorld(playerid, dVars[tmpDoorId][dVw]);
+					SetPlayerInterior(playerid, dVars[tmpDoorId][dInt]);
+				}
+			} else {
+				if(IsPlayerInRangeOfPoint(playerid, 3.0, dVars[tmpDoorId][dExitX], dVars[tmpDoorId][dExitY], dVars[tmpDoorId][dExitZ])) {
+					SetPlayerPos(playerid, dVars[tmpDoorId][dEnterX], dVars[tmpDoorId][dEnterY], dVars[tmpDoorId][dEnterZ]);
+					SetPlayerVirtualWorld(playerid, 0);
+					SetPlayerInterior(playerid, 0);
+				}
 			}
 		} else {
-			if(IsPlayerInRangeOfPoint(playerid, 3.0, dVars[tmpDoorId][dExitX], dVars[tmpDoorId][dExitY], dVars[tmpDoorId][dExitZ])) {
-				SetPlayerPos(playerid, dVars[tmpDoorId][dEnterX], dVars[tmpDoorId][dEnterY], dVars[tmpDoorId][dEnterZ]);
-				SetPlayerVirtualWorld(playerid, 0);
-				SetPlayerInterior(playerid, 0);
-			}
+			GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~h~~r~Drzwi sa zamkniete.", 3000, 3);
 		}
 	}
 	
@@ -968,12 +975,12 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					searchPlayerCashpoint(playerid);
 				}
 				case 1: {
-					strcat(mainStr, "Ile pieniêdzy pragniesz wp³aciæ na konto?");
-					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_IN, DIALOG_STYLE_INPUT, "Bank", mainStr, "Wp³aæ", "Anuluj");
-				}
-				case 2: {
 					strcat(mainStr, "Ile pieniêdzy pragniesz wyp³aciæ z konta?");
 					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_OUT, DIALOG_STYLE_INPUT, "Bank", mainStr, "Wyp³aæ", "Anuluj");
+				}
+				case 2: {
+					strcat(mainStr, "Ile pieniêdzy pragniesz wp³aciæ na konto?");
+					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_IN, DIALOG_STYLE_INPUT, "Bank", mainStr, "Wp³aæ", "Anuluj");
 				}
 			}
 		}
@@ -1052,6 +1059,15 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					case 1: {
 						pVars[playerid][pDriverLicense] = 0;
 					}
+					case 2: {
+						pVars[playerid][pIdCard] = 0;
+					}
+					case 3: {
+						pVars[playerid][pDriverLicense] = 0;
+					}
+					case 4: {
+						
+					}
 				}
 				return GameTextForPlayer(playerid, mainStr, 4000, 3);
 			}
@@ -1063,6 +1079,9 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					case 0: {
 						GivePlayerMoneyEx(playerid, -offerParams[playerid]);
 						fVars[tmpFracId][fCash] += offerParams[playerid];
+					}
+					case 1: {
+						GameTextForPlayer(playerid, "~w~-~r~$10", 5000, 6);
 					}
 				}
 			}
@@ -1090,6 +1109,19 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					
 					SendClientMessage(playerid, COLOR_WHITE, "Zaakceptowano naukê jazdy. Mo¿esz wsi¹œæ do pojazdu gdy znajduje siê w nim instruktor.");
 				}
+				case 2: {
+					pVars[playerid][pIdCard] = 1;
+					
+					SendClientMessage(playerid, COLOR_WHITE, "Jesteœ teraz zameldowany(a) w tym mieœcie. U¿yj /pokaz dowod [Gracz], by pokazaæ komuœ dowód.");
+				}
+				case 3: {
+					pVars[playerid][pDriverLicense] = 1;
+					
+					SendClientMessage(playerid, COLOR_WHITE, "Gratulacje, otrzymujesz prawko! U¿yj /pokaz prawko [Gracz], aby je komuœ pokazaæ.");
+				}
+				case 4: {
+					GameTextForPlayer(offerFrom[playerid], "~h~~h~~g~Budynek zostal oplacony.", 5000, 3);
+				}
 			}
 		}
 		case DIALOG_SHOW_OFFER_PAY: {
@@ -1111,6 +1143,15 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					}
 					case 1: {
 						pVars[playerid][pDriverLicense] = 0;
+					}
+					case 2: {
+						pVars[playerid][pIdCard] = 0;
+					}
+					case 3: {
+						pVars[playerid][pDriverLicense] = 0;
+					}
+					case 4: {
+						
 					}
 				}
 				return GameTextForPlayer(playerid, mainStr, 4000, 3);				
@@ -1335,23 +1376,23 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			switch(listitem) {
 				case 0: {
-					mainStr[0] = EOS;
 					new money, fixMoney;
+					
+					mainStr[0] = EOS;
 					money = GetPlayerMoney(playerid);
 					fixMoney = getPriceForRepairVehicle(vVars[actualVehicle[playerid]][vId]);
+					
 					if(money >= fixMoney) {
 						GivePlayerMoney(playerid, -getPriceForRepairVehicle(vVars[actualVehicle[playerid]][vId]));
 					
-						format(mainStr, sizeof(mainStr), "{00FF00}[MECHANIK]{FFFFFF}: Naprawiono pojazd za $%i.", fixMoney);
+						format(mainStr, sizeof(mainStr), "{00FF00}[MECHANIK]{FFFFFF}: Naprawiono pojazd za $%d.", fixMoney);
 						SendClientMessage(playerid, COLOR_WHITE, mainStr);
+						
 						SetVehicleHealth(vVars[actualVehicle[playerid]][vId], 1000);
-					}
-					else {
+					} else {
 						format(mainStr, sizeof(mainStr), "{FF0000}[MECHANIK]{FFFFFF}: Nie staæ Ciê na naprawê pojazdu.");
 						SendClientMessage(playerid, COLOR_WHITE, mainStr);
 					}
-					
-					
 				}
 			}
 		}

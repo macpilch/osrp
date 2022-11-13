@@ -134,18 +134,64 @@ Callback:refreshCmds(playerid, cmd) {
 */
 stock sendDistanceMessage(playerid, Float:range, str[], color, color2, color3, color4) {
 	new Float:x, Float:y, Float:z;
+	new tmpStr[128], tmpStr2[64];
 	
 	GetPlayerPos(playerid, x, y, z);
 	
+	if(strlen(str) > 95) {
+		strmid(tmpStr, str, 0, 94);
+		strmid(tmpStr2, str, 95, strlen(str));
+	}
+	
 	foreach(new i : Player) {
 		if(IsPlayerInRangeOfPoint(i, range / 4, x, y, z)) {
-			SendClientMessage(i, color, str);
+			if(strlen(str) > 95) {
+				new str1[256], str2[32];
+				
+				format(str1, sizeof(str1), "%s...", tmpStr);
+				SendClientMessage(i, color, str1);
+				
+				format(str2, sizeof(str2), "... %s", tmpStr2);
+				SendClientMessage(i, color, str2);
+			} else {
+				SendClientMessage(i, color, str);
+			}
 		} else if(IsPlayerInRangeOfPoint(i, range / 3, x, y, z)) {
-			SendClientMessage(i, color2, str);
+			if(strlen(str) > 95) {
+				new str1[256], str2[32];
+				
+				format(str1, sizeof(str1), "%s...", tmpStr);
+				SendClientMessage(i, color, str1);
+				
+				format(str2, sizeof(str2), "... %s", tmpStr2);
+				SendClientMessage(i, color2, str2);
+			} else {
+				SendClientMessage(i, color2, str);
+			}
 		} else if(IsPlayerInRangeOfPoint(i, range / 2, x, y, z)) {
-			SendClientMessage(i, color3, str);
+			if(strlen(str) > 95) {
+				new str1[256], str2[32];
+				
+				format(str1, sizeof(str1), "%s...", tmpStr);
+				SendClientMessage(i, color, str1);
+				
+				format(str2, sizeof(str2), "... %s", tmpStr2);
+				SendClientMessage(i, color3, str2);
+			} else {
+				SendClientMessage(i, color3, str);
+			}
 		} else if(IsPlayerInRangeOfPoint(i, range, x, y, z)) {
-			SendClientMessage(i, color4, str);
+			if(strlen(str) > 95) {
+				new str1[256], str2[32];
+				
+				format(str1, sizeof(str1), "%s...", tmpStr);
+				SendClientMessage(i, color, str1);
+				
+				format(str2, sizeof(str2), "... %s", tmpStr2);
+				SendClientMessage(i, color4, str2);
+			} else {
+				SendClientMessage(i, color4, str);
+			}
 		}
 	}
 	return 1;
@@ -268,7 +314,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawBackgroundColor(vehicleFuelStatus[playerid][1], -2139094785);
 	TextDrawFont(vehicleFuelStatus[playerid][1], 0);
 
-	vehicleFuelStatus[playerid][2] = TextDrawCreate(596.085083, 59.833312, "_");
+	vehicleFuelStatus[playerid][2] = TextDrawCreate(596.085083 - 40, 59.833312, "_");
 	TextDrawLetterSize(vehicleFuelStatus[playerid][2], 0.000000, -0.115186);
 	TextDrawTextSize(vehicleFuelStatus[playerid][2], 548.981140, 0.000000);
 	TextDrawAlignment(vehicleFuelStatus[playerid][2], 1);

@@ -55,7 +55,7 @@ stock searchPlayerBusStop(playerid) {
 	return 1;
 }
 
-stock showAllBusStops(playerid, id) {
+static stock showAllBusStops(playerid, id) {
 	new tempStr[512];
 	
 	mainStr[0] = EOS;

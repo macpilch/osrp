@@ -294,7 +294,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 	return 1;
 }
 
-stock loadItemWeaponAmmo(srvitemid) {
+static stock loadItemWeaponAmmo(srvitemid) {
 	new ammo;
 	
 	queryStr[0] = EOS;
@@ -307,7 +307,7 @@ stock loadItemWeaponAmmo(srvitemid) {
 	return ammo;
 }
 
-stock saveItemWeaponAmmo(srvitemid) {
+static stock saveItemWeaponAmmo(srvitemid) {
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "UPDATE `Items` SET `Values` = '%d' WHERE `ID` = '%d'", iVars[srvitemid][iValues], iVars[srvitemid][iId]);
 	mysql_query(queryStr);

@@ -610,12 +610,12 @@ stock isPlane(vehicleid) {
 }
 
 stock getPriceForRepairVehicle(vehicleid) {
-	new Float: actualVehHp, Float: fullVehHp = 1000, Float: toRepairVehHp, Float: fix = 2.75, Float: money;
+	new Float:actualVehHp, Float:fullVehHp = 1000, Float:toRepairVehHp, Float:fix = 2.75, Float:money;
+	
 	GetVehicleHealth(vehicleid, actualVehHp);
+	
 	toRepairVehHp = fullVehHp - actualVehHp;
-	
 	money = toRepairVehHp * fix;
-	
 	return floatround(money);
 }
 /*
@@ -628,4 +628,5 @@ stock getPriceForRepairVehicleVisual(vehicleid) {
 	return round(money);
 }
 */
+
 #endif 

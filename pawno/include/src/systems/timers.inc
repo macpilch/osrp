@@ -261,6 +261,16 @@ Timer:globalTimer[1000]() {
 					}
 				}
 			}
+			
+			if(vVars[j][vModelId] == 509 || vVars[j][vModelId] == 481 || vVars[j][vModelId] == 510) {
+				if(IsPlayerInVehicle(i, vVars[j][vId])) {
+					if(getVehicleSpeed(i) > 60.0) {
+						GameTextForPlayer(i, "~r~Nie mozesz jechac tak szybko tym~n~pojazdem.", 5000, 3);
+						
+						SetVehicleVelocity(vVars[j][vId], 0.0, 0.0, 0.0);
+					}
+				}
+			}
 		}
 	}
 	
