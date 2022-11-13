@@ -81,8 +81,16 @@ stock addPlayerItem(playerid, itemid) {
 		mysql_query(queryStr);
 	}
 	
-	if(iVars[freeId][iId] > 7 && iVars[freeId][iId] < 12) {
+	if(iVars[freeId][iId] >= P_COLT && iVars[freeId][iId] <= P_M4) {
 		iVars[freeId][iValues] = 50;
+		
+		queryStr[0] = EOS;
+		format(queryStr, sizeof(queryStr), "UPDATE `Items` SET `Values` = '%d' WHERE `ID` = '%d'", iVars[freeId][iValues], iVars[freeId][iId]);
+		mysql_query(queryStr);
+	}
+	
+	if(iVars[freeId][iId] == P_KAMIZELKA) {
+		iVars[freeId][iValues] = 100;
 		
 		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "UPDATE `Items` SET `Values` = '%d' WHERE `ID` = '%d'", iVars[freeId][iValues], iVars[freeId][iId]);
@@ -245,6 +253,22 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 		
 			format(mainStr, sizeof(mainStr), "* %s wylosowa³ liczbê %d (z 1-6) u¿ywaj¹c Kostka. *", pVars[playerid][pCharName], randNum);
 			sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+		}
+		case P_KAMIZELKA: {
+				if(!iVars[srvitemid][iUsed]) {
+					SetPlayerArmour(playerid, iVars[srvitemid][iValues]);
+					format(mainStr, sizeof(mainStr), "* %s zak³ada %s.", pVars[playerid][pCharName], itemNames[itemid]);
+					sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+					
+					iVars[srvitemid][iUsed] = true;
+				} else {
+					format(mainStr, sizeof(mainStr), "* %s zdejmuje %s.", pVars[playerid][pCharName], itemNames[itemid]);
+					sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+					
+					iVars[srvitemid][iUsed] = false;
+					saveItemWeaponAmmo(srvitemid);
+					SetPlayerArmour(playerid, 0);
+				}
 		}
 		case P_COLT, P_DEAGLE, P_SHOTGUN, P_M4: {
 			if(!iVars[srvitemid][iUsed]) {

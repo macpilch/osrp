@@ -26,6 +26,8 @@ new playerContacts[MAX_PLAYERS][10];
 new telEnterNumber[MAX_PLAYERS];
 new vehCP[MAX_VEHICLES];
 new vehMapIcon[MAX_VEHICLES];
+//part time job
+new casualJob[MAX_PLAYERS];
 
 // type - bool
 new bool:isSpawned[MAX_PLAYERS];

@@ -1383,12 +1383,43 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					fixMoney = getPriceForRepairVehicle(vVars[actualVehicle[playerid]][vId]);
 					
 					if(money >= fixMoney) {
-						GivePlayerMoney(playerid, -getPriceForRepairVehicle(vVars[actualVehicle[playerid]][vId]));
+						if(fixMoney == 0) {
+							format(mainStr, sizeof(mainStr), "{00FF00}[MECHANIK]{FFFFFF}: Pojazd jest sprawny.", fixMoney);
+							SendClientMessage(playerid, COLOR_WHITE, mainStr);
+						} else {
+							GivePlayerMoney(playerid, -getPriceForRepairVehicle(vVars[actualVehicle[playerid]][vId]));
 					
-						format(mainStr, sizeof(mainStr), "{00FF00}[MECHANIK]{FFFFFF}: Naprawiono pojazd za $%d.", fixMoney);
-						SendClientMessage(playerid, COLOR_WHITE, mainStr);
+							format(mainStr, sizeof(mainStr), "{00FF00}[MECHANIK]{FFFFFF}: Naprawiono pojazd za $%d.", fixMoney);
+							SendClientMessage(playerid, COLOR_WHITE, mainStr);
 						
-						SetVehicleHealth(vVars[actualVehicle[playerid]][vId], 1000);
+							SetVehicleHealth(vVars[actualVehicle[playerid]][vId], 1000);
+						}
+					} else {
+						format(mainStr, sizeof(mainStr), "{FF0000}[MECHANIK]{FFFFFF}: Nie staæ Ciê na naprawê pojazdu.");
+						SendClientMessage(playerid, COLOR_WHITE, mainStr);
+					}
+				}
+				case 1: {
+					new money, fixMoney;
+					
+					mainStr[0] = EOS;
+					money = GetPlayerMoney(playerid);
+					fixMoney = getPriceForRepairVehicleVisual(vVars[actualVehicle[playerid]][vId]);
+					
+					if(money >= fixMoney) {
+						if(fixMoney == 0) {
+							format(mainStr, sizeof(mainStr), "{00FF00}[MECHANIK]{FFFFFF}: Pojazd jest sprawny.", fixMoney);
+							SendClientMessage(playerid, COLOR_WHITE, mainStr);
+						} else {
+							GivePlayerMoney(playerid, -getPriceForRepairVehicleVisual(vVars[actualVehicle[playerid]][vId]));
+					
+							format(mainStr, sizeof(mainStr), "{00FF00}[MECHANIK]{FFFFFF}: Naprawiono pojazd za $%i.", fixMoney);
+							SendClientMessage(playerid, COLOR_WHITE, mainStr);
+							
+							GetVehicleHealth(vVars[actualVehicle[playerid]][vId], vVars[actualVehicle[playerid]][vEngineHp]);
+							RepairVehicle(vVars[actualVehicle[playerid]][vId]);
+							SetVehicleHealth(vVars[actualVehicle[playerid]][vId], vVars[actualVehicle[playerid]][vEngineHp]);
+						}
 					} else {
 						format(mainStr, sizeof(mainStr), "{FF0000}[MECHANIK]{FFFFFF}: Nie staæ Ciê na naprawê pojazdu.");
 						SendClientMessage(playerid, COLOR_WHITE, mainStr);
@@ -1412,26 +1443,7 @@ sampCallback:OnPlayerRequestSpawn(playerid) {
 sampCallback:OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ) {
 	new srvItemId = checkSrvItemIdForPlayer(playerid);
 	
-	if((iVars[srvItemId][iId] > 7 && iVars[srvItemId][iId] < 12) && iVars[srvItemId][iUsed]) {
-		if(!iVars[srvItemId][iValues]) {
-			iVars[srvItemId][iValues] = 0;
-			
-			switch(iVars[srvItemId][iId]) {
-				case 8: {
-					GivePlayerWeapon(playerid, 22, iVars[srvItemId][iValues]);
-				}
-				case 9: {
-					GivePlayerWeapon(playerid, 24, iVars[srvItemId][iValues]);
-				}
-				case 10: {
-					GivePlayerWeapon(playerid, 25, iVars[srvItemId][iValues]);
-				}
-				case 11: {
-					GivePlayerWeapon(playerid, 31, iVars[srvItemId][iValues]);
-				}
-			}
-		}
-	
+	if((iVars[srvItemId][iId] >= P_COLT && iVars[srvItemId][iId] <= P_M4) && iVars[srvItemId][iUsed]) {
 		iVars[srvItemId][iValues]--;
 	}
 	return 1;

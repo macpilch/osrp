@@ -190,7 +190,44 @@ CMD:givehealth(playerid, params[]) {
 	}
 	return 1;
 }
-
+/* Komenda do dawania pancerza, do poprawy gdy bedzie item kamizelki
+CMD:givearmour(playerid, params[]) {
+	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+		if(isAdminDuty[playerid]) {
+			new toPlayerid, hp; // id player to give armour
+			
+			if(sscanf(params, "ii", toPlayerid, hp)) {
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawnie u¿ycie komendy to /givearmour [Id gracza][iloœæ pancerza].");
+			}
+			
+			pVars[toPlayerid][pHp] = hp;
+			
+			SetPlayerArmour(toPlayerid, pVars[toPlayerid][pHp]);
+			
+			mainStr[0] = EOS;
+			
+			foreach(new i : Player) {
+				if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
+					if(isAdminDuty[i]) {
+						if(toPlayerid == playerid) {
+							format(mainStr, sizeof(mainStr), "%s do³adowa³ sobie ¿ycie.", pVars[playerid][pCharName]);
+							SendClientMessage(i, COLOR_WHITE, mainStr);
+						}
+					}
+				}
+			}
+			
+			format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{00FF00}: Otrzymales zdrowie od admina %s", pVars[playerid][pAccName]);
+			SendClientMessage(toPlayerid, COLOR_WHITE, mainStr);
+			format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{00FF00}: Dales zdrowie graczowi %s", pVars[toPlayerid][pCharName2]);
+			SendClientMessage(playerid, COLOR_WHITE, mainStr);
+		} 
+	} else {
+		return 0;
+	}
+	return 1;
+}
+*/
 CMD:freezeplayer(playerid, params[]) {
 	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
 		if(isAdminDuty[playerid]) {
@@ -520,19 +557,22 @@ CMD:createnumberplayer(playerid, params[]) {
 
 CMD:ustawskin(playerid, params[]) {
 	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
-		new toPlayerGive, skinid;
-		mainStr[0] = EOS;
-		if(sscanf(params, "ii", skinid, toPlayerGive)) {
-			return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /ustawskin [Id skina] [Id gracza].");
+		if(isAdminDuty[playerid]) {
+			new toPlayerGive, skinid;
+			mainStr[0] = EOS;
+			if(sscanf(params, "ii", skinid, toPlayerGive)) {
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawne u¿ycie komendy /ustawskin [Id skina] [Id gracza].");
+			}
+			
+			pVars[toPlayerGive][pSkin] = skinid;
+			SetPlayerSkin(toPlayerGive, pVars[toPlayerGive][pSkin]);
+			format(mainStr, sizeof(mainStr), "{00FF00}[ADMIN]{FFFFFF}: Ustawiono skina graczowi %s.", pVars[toPlayerGive][pCharName]);
+			SendClientMessage(playerid, COLOR_WHITE, mainStr);
+			
+			format(mainStr, sizeof(mainStr), "{00FF00}[ADMIN]{FFFFFF}: Ustawiono Ci skina przez admina %s.", pVars[playerid][pAccName]);
+			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 		}
 		
-		pVars[toPlayerGive][pSkin] = skinid;
-		SetPlayerSkin(toPlayerGive, pVars[toPlayerGive][pSkin]);
-		format(mainStr, sizeof(mainStr), "{00FF00}[ADMIN]{FFFFFF}: Ustawiono skina graczowi %s.", pVars[toPlayerGive][pCharName]);
-		SendClientMessage(playerid, COLOR_WHITE, mainStr);
-		
-		format(mainStr, sizeof(mainStr), "{00FF00}[ADMIN]{FFFFFF}: Ustawiono Ci skina przez admina %s.", pVars[playerid][pAccName]);
-		SendClientMessage(playerid, COLOR_WHITE, mainStr);
 		
 	}
 	else {
@@ -543,17 +583,19 @@ CMD:ustawskin(playerid, params[]) {
 
 CMD:dajprace(playerid, params[]) {
 	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
-		new toPlayerGive, type, partTimeJob;
-		
-		if(sscanf(params, "iii", toPlayerGive, type, partTimeJob)) {
-			return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[ADMIN]{FFFFFF}: UŸycie komendy /dajprace [Id gracza] [Typ 0-dorywcze 1- frakcja] [Id pracy].");
+		if(isAdminDuty[playerid]) {
+			
+			new toPlayerGive, type, partTimeJob;
+			
+			if(sscanf(params, "iii", toPlayerGive, type, partTimeJob)) {
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[ADMIN]{FFFFFF}: UŸycie komendy /dajprace [Id gracza] [Typ 0-dorywcze 1- frakcja] [Id pracy].");
+			}
+			
+			
+			casualJob[toPlayerGive] = partTimeJob;
+			
+			pVars[toPlayerGive][pCasualJob] = partTimeJob;
 		}
-		
-		for(new i = 0; i < MAX_PART_TIME_JOBS; i++) {
-			casualJob[toPlayerGive][i] = false;
-		}
-		
-		casualJob[toPlayerGive][partTimeJob] = true;
 	} else {
 		return 0;
 	}

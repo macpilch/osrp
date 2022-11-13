@@ -83,6 +83,7 @@
 
 // part time jobs
 #define MAX_PART_TIME_JOBS 3
+#define INVALID_PART_TIME_JOB -1
 #define PART_TIME_JOB_MECHANIC 0
 #define PART_TIME_JOB_DELIVERY 1
 #define PART_TIME_JOB_TRUCK 2

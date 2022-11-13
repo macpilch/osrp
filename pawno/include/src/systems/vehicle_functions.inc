@@ -618,6 +618,16 @@ stock getPriceForRepairVehicle(vehicleid) {
 	money = toRepairVehHp * fix;
 	return floatround(money);
 }
+
+stock getPriceForRepairVehicleVisual(vehicleid) {
+	new Float: actualVehHp, Float: fullVehHp = 1000, Float: toRepairVehHp, Float: fix = 2.75, Float: money;
+	GetVehicleHealth(vehicleid, actualVehHp);
+	toRepairVehHp = fullVehHp - actualVehHp;
+	
+	money = ((toRepairVehHp * fix)/4) * 5;
+	
+	return floatround(money);
+}
 /*
 stock getPriceForRepairVehicleVisual(vehicleid) {
 	new Float: actualVehHp, Float: fullVehHp = 1000, Float: toRepairVehHp, Float: fix = 2.75, money;
