@@ -13,7 +13,7 @@ stock initDoorValues() {
 	queryStr[0] = EOS;
 	
 	for(new i = 0; i < MAX_DOORS; i++) {
-		format(queryStr, sizeof(queryStr), "SELECT `UID`, `IDEnt`, `IDExt`, `OUID`, `Name`, `EnterX`, `EnterY`, `EnterZ`, `ExitX`, `ExitY`, `ExitZ`, `Open`, `VW`, `INT` FROM `Doors` WHERE `UID` = '%d'", i + 1);
+		format(queryStr, sizeof(queryStr), "SELECT `UID`, `IDEnt`, `IDExt`, `OUID`, `Name`, `EnterX`, `EnterY`, `EnterZ`, `ExitX`, `ExitY`, `ExitZ`, `Open`, `VW`, `INT`, `Type` FROM `Doors` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
 		mysql_store_result();
 		
@@ -22,8 +22,8 @@ stock initDoorValues() {
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iiiis[32]ffffffiii", dVars[i][dUid], dVars[i][dPickupEnt], dVars[i][dPickupExt], dVars[i][dOUid], dVars[i][dName], dVars[i][dEnterX], dVars[i][dEnterY], dVars[i][dEnterZ],
-		dVars[i][dExitX], dVars[i][dExitY], dVars[i][dExitZ], dVars[i][dOpen], dVars[i][dVw], dVars[i][dInt]);
+		sscanf(queryStr, "p<|>iiiis[32]ffffffiiii", dVars[i][dUid], dVars[i][dPickupEnt], dVars[i][dPickupExt], dVars[i][dOUid], dVars[i][dName], dVars[i][dEnterX], dVars[i][dEnterY], dVars[i][dEnterZ],
+		dVars[i][dExitX], dVars[i][dExitY], dVars[i][dExitZ], dVars[i][dOpen], dVars[i][dVw], dVars[i][dInt], dVars[i][dType]);
 		Iter_Add(doorItter, i);
 		
 		dVars[i][dPickupEnt] = CreateDynamicPickup(1239, 2, dVars[i][dEnterX], dVars[i][dEnterY], dVars[i][dEnterZ], 0, 0, -1, 50.0, -1, 0);

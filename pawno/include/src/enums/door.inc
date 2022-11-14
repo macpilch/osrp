@@ -9,6 +9,12 @@
 #if !defined _DOOR_
 #define _DOOR_
 
+enum {
+	D_PUBLIC = 0,
+	D_BUSSI,
+	D_HOTEL
+};
+
 enum DoorData {
 	dUid,
 	dOUid,
@@ -24,7 +30,8 @@ enum DoorData {
 	bool:dOpen,
 	bool:dTax,
 	dVw,
-	dInt
+	dInt,
+	dType
 };
 
 #endif 

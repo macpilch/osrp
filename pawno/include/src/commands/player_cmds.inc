@@ -773,6 +773,27 @@ CMD:pasy(playerid, params[]) {
 	return 1;
 }
 
+CMD:pokoj(playerid, params[]) {
+	new tmpDoorId = pVars[playerid][pDoors];
+
+	if(dVars[tmpDoorId][dType] == D_HOTEL) {
+		if(!pVars[playerid][pHotel]) {
+			mainStr[0] = EOS;
+			
+			strcat(mainStr, "Je¿eli wynajmiesz tu pokój, raz na 24h, z Twojego\nkonta bêdzie");
+			strcat(mainStr, "pobierana op³ata $10.\n\nPrzez pierwsze 10 godzin gry hotele s¹ darmowe.");
+			ShowPlayerDialog(playerid, DIALOG_SHOW_HOTEL_OPTS, DIALOG_STYLE_MSGBOX, "Zameldowanie w hotelu", mainStr, "Wynajmij", "Anuluj");
+		} else {
+			SetPlayerInterior(playerid, 1);
+			SetPlayerPos(playerid, 2216.12, -1076.30, 1050.48);
+			SetPlayerVirtualWorld(playerid, random(1000));
+			
+			GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~w~[LALT+SPACJA] ~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);			
+		}
+	}
+	return 1;
+}
+
 CMD:tankuj(playerid, params[]) {
 	searchGasPumps(playerid);
 	return 1;

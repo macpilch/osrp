@@ -80,6 +80,13 @@ Callback:hideFirstHoursInfo() {
 	return 1;
 }
 
+Callback:hideHotelInfo(playerid) {
+	for(new i = 0; i < 3; i++) {
+		TextDrawHideForPlayer(playerid, hotelInfo[playerid][i]);
+	}
+	return 1;
+}
+
 Callback:bwTimer(playerid) {
 	if((pVars[playerid][pBw] / 60) > 0) {
 		format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", ((pVars[playerid][pBw] / 60) <= 1) ? 1 : (pVars[playerid][pBw] / 60)); // int powinien uciac na same minuty
@@ -636,6 +643,37 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawSetShadow(usedRollersInfo[playerid][1], 0);
 	TextDrawSetOutline(usedRollersInfo[playerid][1], 0);
 	TextDrawFont(usedRollersInfo[playerid][1], 0);
+	
+	hotelInfo[playerid][0] = TextDrawCreate(584.371948, 284.416687, "_");
+	TextDrawLetterSize(hotelInfo[playerid][0], 0.000000, 11.165732);
+	TextDrawTextSize(hotelInfo[playerid][0], 398.585662, 0.000000);
+	TextDrawAlignment(hotelInfo[playerid][0], 1);
+	TextDrawColor(hotelInfo[playerid][0], 0);
+	TextDrawUseBox(hotelInfo[playerid][0], 1);
+	TextDrawBoxColor(hotelInfo[playerid][0], 102);
+	TextDrawSetShadow(hotelInfo[playerid][0], 0);
+	TextDrawSetOutline(hotelInfo[playerid][0], 0);
+	TextDrawFont(hotelInfo[playerid][0], 0);
+
+	hotelInfo[playerid][1] = TextDrawCreate(489.136169, 283.500091, "~w~Wpisz /pokoj, aby wynajac pokoj~n~lub do niego wejsc. Jesli~n~zechcesz sie wymeldowac, uzyj~n~/pokoj wymelduj.");
+	TextDrawLetterSize(hotelInfo[playerid][1], 0.305695, 1.349167);
+	TextDrawAlignment(hotelInfo[playerid][1], 2);
+	TextDrawColor(hotelInfo[playerid][1], -1);
+	TextDrawSetShadow(hotelInfo[playerid][1], 0);
+	TextDrawSetOutline(hotelInfo[playerid][1], 1);
+	TextDrawBackgroundColor(hotelInfo[playerid][1], 255);
+	TextDrawFont(hotelInfo[playerid][1], 1);
+	TextDrawSetProportional(hotelInfo[playerid][1], 1);
+
+	hotelInfo[playerid][2] = TextDrawCreate(491.479095, 344.750000, "~y~Dzienny koszt: 10 USD~n~~n~(pierwsze 10h gry darmowy)");
+	TextDrawLetterSize(hotelInfo[playerid][2], 0.319282, 1.407499);
+	TextDrawAlignment(hotelInfo[playerid][2], 2);
+	TextDrawColor(hotelInfo[playerid][2], -1);
+	TextDrawSetShadow(hotelInfo[playerid][2], 0);
+	TextDrawSetOutline(hotelInfo[playerid][2], 1);
+	TextDrawBackgroundColor(hotelInfo[playerid][2], 255);
+	TextDrawFont(hotelInfo[playerid][2], 1);
+	TextDrawSetProportional(hotelInfo[playerid][2], 1);
 	return 1;
 }
 
@@ -645,13 +683,13 @@ stock loadPlayerValues(playerid) {
 	PlayerPlaySound(playerid, 0, 0.0, 0.0, 0.0);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `IP`, `Rank`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `VW`, `INT`, `Skin`, `LastSkin`, `Money`, `Bank`, `Bw`, `Aj`, `DriverLicense`, `TelNum`, `Group`, `CasualJob`, `Frac0`, `Traveled`, `X`, `Y`, `Z`, `Desc` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "SELECT `GUID`, `CharId`, `IP`, `Rank`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `Hp`, `Ap`, `VW`, `INT`, `Skin`, `LastSkin`, `Money`, `Bank`, `Bw`, `Aj`, `DriverLicense`, `Hotel`, `IdCard`, `TelNum`, `Group`, `CasualJob`, `Frac0`, `Traveled`, `X`, `Y`, `Z`, `Desc` FROM `Players` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	mysql_store_result();
 	
 	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>iis[16]iiiiiiffiiiiiiiiiis[128]iiffffs[128]", pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pIp], pVars[playerid][pRank], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp],
-	pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pTelNum], pVars[playerid][pGroup], pVars[playerid][pCasualJob], pVars[playerid][pFraction], pVars[playerid][pTraveled], pVars[playerid][pX],
+	sscanf(queryStr, "p<|>iis[16]iiiiiiffiiiiiiiiiiiis[128]iiffffs[128]", pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pIp], pVars[playerid][pRank], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pVw], pVars[playerid][pInt],
+	pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pHotel], pVars[playerid][pIdCard], pVars[playerid][pTelNum], pVars[playerid][pGroup], pVars[playerid][pCasualJob], pVars[playerid][pFraction], pVars[playerid][pTraveled], pVars[playerid][pX],
 	pVars[playerid][pY], pVars[playerid][pZ], charDesc);
 	mysql_free_result();
 	

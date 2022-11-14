@@ -440,6 +440,14 @@ sampCallback:OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 					SetPlayerPos(playerid, dVars[tmpDoorId][dExitX], dVars[tmpDoorId][dExitY], dVars[tmpDoorId][dExitZ]);
 					SetPlayerVirtualWorld(playerid, dVars[tmpDoorId][dVw]);
 					SetPlayerInterior(playerid, dVars[tmpDoorId][dInt]);
+					
+					if(dVars[tmpDoorId][dType] == D_HOTEL && !pVars[playerid][pHotel]) {
+						for(new i = 0; i < 3; i++) {
+							TextDrawShowForPlayer(playerid, hotelInfo[playerid][i]);
+						}
+						
+						SetTimerEx("hideHotelInfo", 6000, false, "i", playerid);
+					}
 				}
 			} else {
 				if(IsPlayerInRangeOfPoint(playerid, 3.0, dVars[tmpDoorId][dExitX], dVars[tmpDoorId][dExitY], dVars[tmpDoorId][dExitZ])) {
@@ -450,6 +458,14 @@ sampCallback:OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			}
 		} else {
 			GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~h~~r~Drzwi sa zamkniete.", 3000, 3);
+		}
+		
+		if(pVars[playerid][pHotel] && IsPlayerInRangeOfPoint(playerid, 5.0, 2216.12, -1076.30, 1050.48)) {
+			if(pVars[playerid][pVw] == vw && pVars[playerid][pInt] == int) {
+				SetPlayerPos(playerid, dVars[tmpDoorId][dExitX], dVars[tmpDoorId][dExitY], dVars[tmpDoorId][dExitZ]);
+				SetPlayerVirtualWorld(playerid, dVars[tmpDoorId][dVw]);
+				SetPlayerInterior(playerid, dVars[tmpDoorId][dInt]);
+			}
 		}
 	}
 	
@@ -1426,6 +1442,35 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					}
 				}
 			}
+		}
+		case DIALOG_SHOW_HOTEL_OPTS: {
+			if(!response) {
+				return 1;
+			}
+			
+			new Float:x, Float:y, Float:z;
+			
+			SetPlayerInterior(playerid, 1);
+			SetPlayerPos(playerid, 2216.12,-1076.30,1050.48);
+			SetPlayerVirtualWorld(playerid, random(1000));
+			GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~w~[LALT+SPACJA] ~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
+			
+			GetPlayerPos(playerid, x, y, z);
+			
+			pVars[playerid][pHotel] = 1;
+			pVars[playerid][pVw] = GetPlayerVirtualWorld(playerid);
+			pVars[playerid][pInt] = GetPlayerInterior(playerid);
+			pVars[playerid][pX] = x;
+			pVars[playerid][pY] = y;
+			pVars[playerid][pZ] = z;
+			
+			mainStr[0] = EOS;
+			strcat(mainStr, "Od teraz Twoja postaæ bêdzie siê spawnowa³a w tym hotelu.\n");
+			strcat(mainStr, "Je¿eli zostaniesz zaproszony(a) do jakiegoœ domu,\n");
+			strcat(mainStr, "bêdziesz musia³(a) siê st¹d wymeldowaæ.\n\n");
+			strcat(mainStr, "U¿yj /pokoj, by wchodziæ do pokoju.\n");
+			strcat(mainStr, "U¿yj /pokoj wymelduj, by przestaæ siê tu spawnowaæ.");
+			ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 		}
 	}
 	return 1;

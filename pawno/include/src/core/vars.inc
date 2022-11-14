@@ -66,6 +66,7 @@ new Text:doorInfo[MAX_PLAYERS][3];
 new Text:telephoneCall[MAX_PLAYERS][2];
 new Text:fractionsInfo[MAX_PLAYERS][15];
 new Text:usedRollersInfo[MAX_PLAYERS][2];
+new Text:hotelInfo[MAX_PLAYERS][3];
 
 // type - Iterator
 new Iterator:vehItter<MAX_VEHICLES>;
