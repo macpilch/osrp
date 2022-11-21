@@ -26,7 +26,6 @@ enum DoorData {
 	Float:dExitY,
 	Float:dExitZ,
 	dPickupEnt,
-	dPickupExt,
 	bool:dOpen,
 	bool:dTax,
 	dVw,

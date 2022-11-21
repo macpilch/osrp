@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 06.11.2022
+	Modified: 21.11.2022
 */
 
 #if !defined _VARS_
@@ -22,6 +22,7 @@ new offerFrom[MAX_PLAYERS]; // Przechowuje id osoby ktora wyslala oferte
 new offerFor[MAX_PLAYERS]; // Przechowuje id osoby ktora otrzymala oferte
 new offerParams[MAX_PLAYERS];
 new offerType[MAX_PLAYERS];
+new useItemId[MAX_PLAYERS];
 new playerContacts[MAX_PLAYERS][10];
 new telEnterNumber[MAX_PLAYERS];
 new vehCP[MAX_VEHICLES];
@@ -47,6 +48,7 @@ new bool:usedTelephone[MAX_PLAYERS];
 new bool:chatMessages[MAX_PLAYERS][2]; // 0 - PM, 1 - Grupowe
 new bool:drivingCourse[MAX_PLAYERS];
 new bool:showFracsInfo[MAX_PLAYERS];
+new bool:insidedHotel[MAX_PLAYERS];
 
 // type - MySQL
 new MySQL:hMySQL;

@@ -12,7 +12,7 @@
 new tmpName[24];
 new mainStr[1024];
 new timerStr[512]; // stworzona na potrzeby timers.inc
-new queryStr[512];
+new queryStr[1024];
 
 new pVars[MAX_PLAYERS][PlayerData];
 new vVars[MAX_VEHICLES][VehicleData];

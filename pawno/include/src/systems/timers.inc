@@ -272,6 +272,10 @@ Timer:globalTimer[1000]() {
 				}
 			}
 		}
+		
+		if(insidedHotel[i] && pVars[i][pHotel] && IsPlayerInRangeOfPoint(i, 5.0, 2216.12, -1076.30, 1050.48)) {
+			GameTextForPlayer(i, "~n~~n~~n~~n~~n~~w~[LALT+SPACJA] ~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
+		}
 	}
 	
 	saveServerValues();
@@ -333,6 +337,31 @@ Timer:giveFreeMoneyTimer[590000]() {
 			
 			SetTimer("hideFirstHoursInfo", 8000, false);
 		}
+	}
+}
+
+Timer:getMoneyForHotelTimer[60000]() {
+	new h, m, s;
+	new numChars;
+	
+	gettime(h, m, s);
+	queryStr[0] = EOS;
+	
+	if(h == 14) {
+		format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `Players`");
+		mysql_query(queryStr);
+		mysql_store_result();
+		
+		if(mysql_num_rows()) {
+			numChars = mysql_fetch_int();
+			
+			for(new i = 0; i < numChars; i++) {
+				format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Bank` = `Bank` - 10 WHERE `Hotel` = 1 AND `UID` = '%d'", i + 1);
+				mysql_query(queryStr);
+			}
+		}
+		
+		mysql_free_result();
 	}
 }
 

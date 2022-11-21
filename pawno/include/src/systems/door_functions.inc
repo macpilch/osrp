@@ -13,7 +13,7 @@ stock initDoorValues() {
 	queryStr[0] = EOS;
 	
 	for(new i = 0; i < MAX_DOORS; i++) {
-		format(queryStr, sizeof(queryStr), "SELECT `UID`, `IDEnt`, `IDExt`, `OUID`, `Name`, `EnterX`, `EnterY`, `EnterZ`, `ExitX`, `ExitY`, `ExitZ`, `Open`, `VW`, `INT`, `Type` FROM `Doors` WHERE `UID` = '%d'", i + 1);
+		format(queryStr, sizeof(queryStr), "SELECT `UID`, `IDEnt`, `OUID`, `Name`, `EnterX`, `EnterY`, `EnterZ`, `ExitX`, `ExitY`, `ExitZ`, `Open`, `VW`, `INT`, `Type` FROM `Doors` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
 		mysql_store_result();
 		
@@ -22,7 +22,7 @@ stock initDoorValues() {
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iiiis[32]ffffffiiii", dVars[i][dUid], dVars[i][dPickupEnt], dVars[i][dPickupExt], dVars[i][dOUid], dVars[i][dName], dVars[i][dEnterX], dVars[i][dEnterY], dVars[i][dEnterZ],
+		sscanf(queryStr, "p<|>iiis[32]ffffffiiii", dVars[i][dUid], dVars[i][dPickupEnt], dVars[i][dOUid], dVars[i][dName], dVars[i][dEnterX], dVars[i][dEnterY], dVars[i][dEnterZ],
 		dVars[i][dExitX], dVars[i][dExitY], dVars[i][dExitZ], dVars[i][dOpen], dVars[i][dVw], dVars[i][dInt], dVars[i][dType]);
 		Iter_Add(doorItter, i);
 		
@@ -37,8 +37,8 @@ stock saveDoorValues() {
 	queryStr[0] = EOS;
 	
 	foreach(new i : doorItter) {
-		format(queryStr, sizeof(queryStr), "UPDATE `Doors` SET `IDEnt` = '%d', `IDExt` = '%d', `OUID` = '%d', `Name` = '%s', `Open` = '%d', `VW` = '%d', `INT` = '%d' WHERE `UID` = '%d'", 
-		dVars[i][dPickupEnt], dVars[i][dPickupExt], dVars[i][dOUid], dVars[i][dName], dVars[i][dOpen], dVars[i][dVw], dVars[i][dInt], i + 1);
+		format(queryStr, sizeof(queryStr), "UPDATE `Doors` SET `IDEnt` = '%d', `OUID` = '%d', `Name` = '%s', `Open` = '%d', `VW` = '%d', `INT` = '%d' WHERE `UID` = '%d'", 
+		dVars[i][dPickupEnt], dVars[i][dOUid], dVars[i][dName], dVars[i][dOpen], dVars[i][dVw], dVars[i][dInt], i + 1);
 		mysql_query(queryStr);
 	}
 	return 1;

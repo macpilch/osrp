@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 06.11.2022
+	Modified: 21.11.2022
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -460,11 +460,13 @@ sampCallback:OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~h~~r~Drzwi sa zamkniete.", 3000, 3);
 		}
 		
-		if(pVars[playerid][pHotel] && IsPlayerInRangeOfPoint(playerid, 5.0, 2216.12, -1076.30, 1050.48)) {
+		if(insidedHotel[playerid] && pVars[playerid][pHotel] && IsPlayerInRangeOfPoint(playerid, 5.0, 2216.12, -1076.30, 1050.48)) {
 			if(pVars[playerid][pVw] == vw && pVars[playerid][pInt] == int) {
 				SetPlayerPos(playerid, dVars[tmpDoorId][dExitX], dVars[tmpDoorId][dExitY], dVars[tmpDoorId][dExitZ]);
 				SetPlayerVirtualWorld(playerid, dVars[tmpDoorId][dVw]);
 				SetPlayerInterior(playerid, dVars[tmpDoorId][dInt]);
+				
+				insidedHotel[playerid] = false;
 			}
 		}
 	}
@@ -479,7 +481,7 @@ sampCallback:OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 	new tmpDoorId, vw = GetPlayerVirtualWorld(playerid), int = GetPlayerInterior(playerid);
 	
 	foreach(new i : doorItter) {
-		if(dVars[i][dPickupEnt] == pickupid || dVars[i][dPickupExt] == pickupid) {
+		if(dVars[i][dPickupEnt] == pickupid) {
 			tmpDoorId = i;
 			break;
 		}
@@ -489,9 +491,11 @@ sampCallback:OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 	
 	if(dVars[tmpDoorId][dVw] != vw && dVars[tmpDoorId][dInt] != int) {
 		TextDrawSetString(doorInfo[playerid][0], dVars[tmpDoorId][dName]);
-		
+	
 		if(!dVars[tmpDoorId][dOpen]) {
 			TextDrawSetString(doorInfo[playerid][1], "~y~Drzwi sa zamkniete.");
+		} else {
+			TextDrawSetString(doorInfo[playerid][1], "~y~Aby wejsc, wcisnij jednoczesnie~n~~w~LALT i SPACE.");
 		}
 		
 		for(new i = 0; i < 3; i++) {
@@ -908,7 +912,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				
 				if(pVars[playerid][pMoney] >= money) {
 					format(mainStr, sizeof(mainStr), "[Stacja paliw]: Zatankowano %d litrow paliwa za $%d. %0.1f", fuel, money, vVars[vehid][vFuelTank]);
-					format(mainStr, sizeof(mainStr), "[Stacja paliw]: Zatankowano %i litrow paliwa za $%i.", fuel, money);
 					
 					GivePlayerMoney(playerid, -money);
 					vVars[vehid][vFuel] += float(fuel);
@@ -920,14 +923,23 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			}
 		}
 		case DIALOG_SHOW_ITEMS: {
+			new tmpUid, itemid;
+			
 			if(!response) {
+				tmpUid = strval(inputtext);
+				
+				foreach(new i : itemItter) {
+					if(tmpUid == iVars[i][iUid]) {
+						useItemId[playerid] = i;
+						break;
+					}
+				}
+			
 				mainStr[0] = EOS;
 				strcat(mainStr, "{FFFFFF}10\tOd³ó¿ na ziemiê\n11\tDaj za darmo graczowi...\n12\tSprzedaj graczowi...\n13\tW³ó¿ do torby...\n");
 				strcat(mainStr, "14\tSchowaj do szafy\n15\tDodaj do craftingu");
 				return ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_MORE, DIALOG_STYLE_LIST, "Menu przedmiotu", mainStr, "OK", "Anuluj");
 			}
-			
-			new tmpUid, tmpItemId, itemid;
 			
 			if(!listitem) {
 				return 1;
@@ -937,20 +949,61 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			foreach(new i : itemItter) {
 				if(tmpUid == iVars[i][iUid]) {
-					tmpItemId = i;
+					useItemId[playerid] = i;
 					break;
 				}
 			}
 			
-			itemid = iVars[tmpItemId][iId];
-			enableItemProperties(playerid, tmpItemId, itemid);
+			itemid = iVars[useItemId[playerid]][iId];
+			enableItemProperties(playerid, useItemId[playerid], itemid);
 		}
 		case DIALOG_SHOW_ITEMS_MORE: {
 			if(!response) {
 				return showDialogItems(playerid);
 			}
 			
+			switch(listitem) {
+				case 1: {
+					new Float:x, Float:y, Float:z;
+					new countPlayers;
+					
+					mainStr[0] = EOS;
+					GetPlayerPos(playerid, x, y, z);
+					
+					foreach(new i : Player) {
+						if(IsPlayerInRangeOfPoint(i, 5.0, x, y, z)) {
+							format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, i, pVars[i][pCharName]);
+							
+							countPlayers++;
+						}
+					}
+					
+					if(!countPlayers) {
+						return GameTextForPlayer(playerid, "~r~Brak osob w poblizu.", 5000, 3);
+					}
+					
+					ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_GIVE, DIALOG_STYLE_LIST, "Osoby w pobli¿u", mainStr, "OK", "Anuluj");
+				}
+			}
+		}
+		case DIALOG_SHOW_ITEMS_GIVE: {
+			if(!response) {
+				return 1;
+			}
 			
+			new pId, str[64];
+			
+			mainStr[0] = EOS;
+			pId = strval(inputtext);
+			offerFrom[pId] = playerid;
+			offerFor[playerid] = pId;
+			offerType[playerid] = offerType[pId] = 5;
+			
+			GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
+			
+			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Podanie przedmiotu\n\nKoszt: $0. Czy akceptujesz tê ofertê?");
+			ShowPlayerDialog(pId, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
 		}
 		case DIALOG_SHOW_BUS_STOPS: {
 			if(!response) {
@@ -1084,6 +1137,9 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					case 4: {
 						
 					}
+					case 5: {
+						
+					}
 				}
 				return GameTextForPlayer(playerid, mainStr, 4000, 3);
 			}
@@ -1137,6 +1193,14 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				}
 				case 4: {
 					GameTextForPlayer(offerFrom[playerid], "~h~~h~~g~Budynek zostal oplacony.", 5000, 3);
+				}
+				case 5: {
+					addPlayerItem(playerid, iVars[useItemId[offerFrom[playerid]]][iId]);
+					removePlayerItem(useItemId[offerFrom[playerid]]);
+				
+					mainStr[0] = EOS;
+					format(mainStr, sizeof(mainStr), "* %s podaje przedmiot %s.", pVars[offerFrom[playerid]][pCharName], pVars[playerid][pCharName]);
+					sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 				}
 			}
 		}
@@ -1449,15 +1513,16 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			}
 			
 			new Float:x, Float:y, Float:z;
+			new str[128];
 			
 			SetPlayerInterior(playerid, 1);
 			SetPlayerPos(playerid, 2216.12,-1076.30,1050.48);
 			SetPlayerVirtualWorld(playerid, random(1000));
-			GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~w~[LALT+SPACJA] ~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
 			
 			GetPlayerPos(playerid, x, y, z);
 			
 			pVars[playerid][pHotel] = 1;
+			insidedHotel[playerid] = true;
 			pVars[playerid][pVw] = GetPlayerVirtualWorld(playerid);
 			pVars[playerid][pInt] = GetPlayerInterior(playerid);
 			pVars[playerid][pX] = x;
@@ -1471,6 +1536,9 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			strcat(mainStr, "U¿yj /pokoj, by wchodziæ do pokoju.\n");
 			strcat(mainStr, "U¿yj /pokoj wymelduj, by przestaæ siê tu spawnowaæ.");
 			ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+			
+			format(str, sizeof(str), "* %s otrzyma³ klucze do swojego pokoju od recepcjonisty.", pVars[playerid][pCharName]);
+			sendDistanceMessage(playerid, 30.0, str, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		}
 	}
 	return 1;

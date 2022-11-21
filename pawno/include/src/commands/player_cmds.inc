@@ -774,9 +774,13 @@ CMD:pasy(playerid, params[]) {
 }
 
 CMD:pokoj(playerid, params[]) {
+	if(insidedHotel[playerid]) {
+		return GameTextForPlayer(playerid, "~g~Znajdujesz sie juz w hotelu.", 5000, 3);
+	}
+	
 	new tmpDoorId = pVars[playerid][pDoors];
-
-	if(dVars[tmpDoorId][dType] == D_HOTEL) {
+	
+	if(dVars[tmpDoorId][dType] == D_HOTEL && pVars[playerid][pVw] != 0 && pVars[playerid][pInt] != 0) {
 		if(!pVars[playerid][pHotel]) {
 			mainStr[0] = EOS;
 			
@@ -787,8 +791,8 @@ CMD:pokoj(playerid, params[]) {
 			SetPlayerInterior(playerid, 1);
 			SetPlayerPos(playerid, 2216.12, -1076.30, 1050.48);
 			SetPlayerVirtualWorld(playerid, random(1000));
-			
-			GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~w~[LALT+SPACJA] ~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);			
+
+			insidedHotel[playerid] = true;			
 		}
 	}
 	return 1;
