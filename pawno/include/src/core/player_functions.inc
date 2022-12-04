@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 24.07.2022
-	Modified: 06.11.2022
+	Modified: 04.12.2022
 */
 
 #if !defined _PLAYER_FUNCTIONS_
@@ -952,6 +952,60 @@ stock checkFractionSrvIdForPlayer(playerid) {
 		}
 	}
 	return fracId;
+}
+
+stock sendOfferToPlayer(playerid, id, params, type) {
+	new str[64];
+	
+	mainStr[0] = EOS;
+	offerFrom[id] = playerid;
+	offerFor[playerid] = id;
+	offerType[playerid] = offerType[id] = type;
+	offerParams[playerid] = offerParams[id] = params;
+	
+	GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
+	
+	switch(type) {
+		case 0: {
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[pVars[id][pFraction]][fName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", fVars[pVars[id][pFraction]][fUid], fVars[pVars[id][pFraction]][fName], offerParams[playerid]);			
+		}
+		case 1: {
+			new tmpFracId = checkFractionSrvIdForPlayer(playerid);
+		
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Lekcja prowadzenia pojazdu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id]);			
+		}
+		case 2: {
+			new tmpFracId = checkFractionSrvIdForPlayer(playerid);
+		
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Dowod osobisty\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id]);			
+		}
+		case 3: {
+			new tmpFracId = checkFractionSrvIdForPlayer(playerid);
+			
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Prawo jazdy\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id]);
+		}
+		case 4: {
+			new tmpFracId = checkFractionSrvIdForPlayer(playerid);
+		
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaplacenie podatku budynku\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id]);		
+		}
+		case 5: {
+			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Zakup przedmiotu: %s\n\nKoszt: $0. Czy akceptujesz tê ofertê?", iVars[useItemId[offerFrom[playerid]]][iName]);			
+		}
+	}
+	
+	if(offerParams[id] > 0) {
+		ShowPlayerDialog(id, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+	} else {
+		ShowPlayerDialog(id, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+	}
+	return 1;
 }
 
 // return: void

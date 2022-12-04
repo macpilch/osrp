@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: admin_cmds.inc
 	Date: 04.08.2022
-	Modified: 06.11.2022
+	Modified: 04.12.2022
 */
 
 #if !defined _ADMIN_CMDS_

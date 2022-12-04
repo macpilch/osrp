@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_publics.inc
 	Date: 29.07.2022
-	Modified: 18.10.2022
+	Modified: 04.12.2022
 */
 
 #if !defined _VEHICLE_PUBLICS_

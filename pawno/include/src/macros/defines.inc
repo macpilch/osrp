@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 06.11.2022
+	Modified: 04.12.2022
 */
 
 #if !defined _DEFINES_
@@ -50,9 +50,9 @@
 		forward %0(%1); public %0(%1)
 
 #define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "server_909"
-#define MYSQL_PASS "5maid7xhnc"
-#define MYSQL_DB "server_909_srv"
+#define MYSQL_USER "root"
+#define MYSQL_PASS "1234"
+#define MYSQL_DB "samp"
 
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_GRAY 0xCDC9C9FF
@@ -93,7 +93,7 @@
 #define VEHICLE_FUEL_TANK_MEDIUM 40
 #define VEHICLE_FUEL_TANK_LARGE 60 
 
-//Number plate
+// Number plate
 #define VEHICLE_NUMBER_PLATE_NULL ""
 
 forward Float:getVehicleFuel(srvvehid);

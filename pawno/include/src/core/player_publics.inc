@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 21.11.2022
+	Modified: 04.12.2022
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -410,7 +410,7 @@ sampCallback:OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) {
 			new srvItemId = checkSrvItemIdForPlayer(playerid), weaponid = GetPlayerWeapon(playerid);
 			
-			if(iVars[srvItemId][iId] > 7 && iVars[srvItemId][iId] < 12) {
+			if(iVars[srvItemId][iId] >= P_COLT && iVars[srvItemId][iId] <= P_M4) {
 				if(weaponid == 22 || weaponid == 24 || weaponid == 25 || weaponid == 31) {
 					SetPlayerDrunkLevel(playerid, 8000);
 				}
@@ -911,12 +911,12 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				money = fuel * playerFuelPrice[playerid];
 				
 				if(pVars[playerid][pMoney] >= money) {
-					format(mainStr, sizeof(mainStr), "[Stacja paliw]: Zatankowano %d litrow paliwa za $%d. %0.1f", fuel, money, vVars[vehid][vFuelTank]);
+					//format(mainStr, sizeof(mainStr), "[Stacja paliw]: Zatankowano %d litrow paliwa za $%d. %0.1f", fuel, money, vVars[vehid][vFuelTank]);
+					format(mainStr, sizeof(mainStr), "** Pojazd %s zosta³ zatankowany. **", VehicleNames[vVars[actualVehicle[playerid]][vModelId]]);
+					SendClientMessage(playerid, COLOR_PURPLE, mainStr);
 					
 					GivePlayerMoney(playerid, -money);
 					vVars[vehid][vFuel] += float(fuel);
-					
-					SendClientMessage(playerid, COLOR_WHITE, mainStr);
 				} else {
 					SendClientMessage(playerid, COLOR_WHITE, "[Stacja paliw]: Nie posiadasz wystarczajacej ilosci gotowki.");
 				}	
@@ -971,6 +971,10 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					GetPlayerPos(playerid, x, y, z);
 					
 					foreach(new i : Player) {
+						if(i == playerid) {
+							continue;
+						}
+					
 						if(IsPlayerInRangeOfPoint(i, 5.0, x, y, z)) {
 							format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, i, pVars[i][pCharName]);
 							
@@ -984,6 +988,9 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					
 					ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_GIVE, DIALOG_STYLE_LIST, "Osoby w pobli¿u", mainStr, "OK", "Anuluj");
 				}
+				case 2: {
+					
+				}
 			}
 		}
 		case DIALOG_SHOW_ITEMS_GIVE: {
@@ -991,19 +998,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return 1;
 			}
 			
-			new pId, str[64];
-			
-			mainStr[0] = EOS;
-			pId = strval(inputtext);
-			offerFrom[pId] = playerid;
-			offerFor[playerid] = pId;
-			offerType[playerid] = offerType[pId] = 5;
-			
-			GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
-			
-			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Podanie przedmiotu\n\nKoszt: $0. Czy akceptujesz tê ofertê?");
-			ShowPlayerDialog(pId, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
+			sendOfferToPlayer(playerid, strval(inputtext), 0, 5);
 		}
 		case DIALOG_SHOW_BUS_STOPS: {
 			if(!response) {
@@ -1195,9 +1190,12 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					GameTextForPlayer(offerFrom[playerid], "~h~~h~~g~Budynek zostal oplacony.", 5000, 3);
 				}
 				case 5: {
-					addPlayerItem(playerid, iVars[useItemId[offerFrom[playerid]]][iId]);
-					removePlayerItem(useItemId[offerFrom[playerid]]);
-				
+					iVars[useItemId[offerFrom[playerid]]][iOUid] = playerid;
+					
+					queryStr[0] = EOS;
+					format(queryStr, sizeof(queryStr), "UPDATE `Items` SET `OUID` = '%d' WHERE `OUID` = '%d' AND `UID` = '%d'", pVars[playerid][pUid], pVars[offerFrom[playerid]][pUid], iVars[useItemId[offerFrom[playerid]]][iUid]);
+					mysql_query(queryStr);
+					
 					mainStr[0] = EOS;
 					format(mainStr, sizeof(mainStr), "* %s podaje przedmiot %s.", pVars[offerFrom[playerid]][pCharName], pVars[playerid][pCharName]);
 					sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
@@ -1250,7 +1248,6 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			}
 			
 			new tmpFracId, pId = offerFor[playerid];
-			new str[64];
 			
 			foreach(new i : fractionItter) {
 				if(!strcmp(inputtext, fVars[i][fName], false)) {
@@ -1263,20 +1260,8 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return GameTextForPlayer(playerid, "~r~Ten gracz nalezy juz do tej frakcji.", 5000, 3);
 			}
 			
-			mainStr[0] = EOS;
-			GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
-			
-			offerType[playerid] = offerType[pId] = 0;
-			pVars[pId][pFraction] = fVars[tmpFracId][fUid];
-			
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", fVars[tmpFracId][fUid], fVars[tmpFracId][fName], offerParams[playerid]);
-			
-			if(offerParams[pId] > 0) {
-				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
-			} else {
-				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
-			}
+			pVars[pId][pFraction] = tmpFracId;
+			sendOfferToPlayer(playerid, pId, offerParams[playerid], 0);
 		}
 		case DIALOG_SHOW_TELEPHONE_MENU: {
 			if(!response) {
@@ -1328,30 +1313,145 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return 1;
 			}
 			
-			if(listitem < 4) {
+			switch(listitem) {
+				case 0: {
+					new servicesName[][] = {
+						"Rzad", "Nauka jazdy"
+					};
+					new k, count;
+					
+					mainStr[0] = EOS;
+					foreach(new i : Player) {
+						foreach(new j : fractionItter) {
+							if(isPlayerDuty[i] && fVars[j][fType] == k) {
+								count++;
+							} else if(isPlayerDuty[i] && fVars[j][fType] != k) {
+								count = 0;
+							}
+							
+							format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t(%d pracuj¹cych osób)\t%s", mainStr, fVars[j][fType], count, servicesName[k]);
+							
+							k++;
+						}
+					}
+					
+					ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_SERVICES, DIALOG_STYLE_LIST, "Serwisy specjalne", mainStr, "Zadzwoñ", "Anuluj");
+				}
+				case 1: {
+					
+				}
+				case 2: {
+					
+				}
+				case 3: {
+					return 1;
+				}
+				default: {
+					new tmpNum, pId;
+					
+					tmpNum = strval(inputtext);
+					pId = checkPhoneOwnerIdFromNumber(tmpNum);
+					telEnterNumber[playerid] = tmpNum;
+					telEnterNumber[pId] = pVars[playerid][pTelNum];
+					
+					ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 0, 0, 0, 1, 1);
+					PlayerPlaySound(playerid, 3600, 0.0, 0.0, 0.0);
+					
+					mainStr[0] = EOS;
+					format(mainStr, sizeof(mainStr), "~w~Ktos do Ciebie dzwoni!~n~~y~Numer: %d~n~~n~~y~~h~Wejdz do menu telefonu,~n~~w~by odebrac lub odrzucic~n~polaczenie", pVars[playerid][pTelNum]);
+					TextDrawSetString(telephoneCall[pId][0], mainStr);
+					
+					for(new i = 0; i < sizeof(telephoneCall); i++) {
+						TextDrawShowForPlayer(pId, telephoneCall[pId][i]);
+					}
+					
+					format(mainStr, sizeof(mainStr), "** Dzwoni telefon %s. **", pVars[pId][pCharName]);
+					sendDistanceMessage(pId, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);		
+				}
+			}
+		}
+		case DIALOG_SHOW_TELEPHONE_SERVICES: {
+			if(!response) {
 				return 1;
 			}
 			
-			new tmpNum, pId;
-			
-			tmpNum = strval(inputtext);
-			pId = checkPhoneOwnerIdFromNumber(tmpNum);
-			telEnterNumber[playerid] = tmpNum;
-			telEnterNumber[pId] = pVars[playerid][pTelNum];
-			
-			ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 0, 0, 0, 1, 1);
-			PlayerPlaySound(playerid, 3600, 0.0, 0.0, 0.0);
+			new fracType = strval(inputtext);
+			new count;
 			
 			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "~w~Ktos do Ciebie dzwoni!~n~~y~Numer: %d~n~~n~~y~~h~Wejdz do menu telefonu,~n~~w~by odebrac lub odrzucic~n~polaczenie", pVars[playerid][pTelNum]);
-			TextDrawSetString(telephoneCall[pId][0], mainStr);
-			
-			for(new i = 0; i < sizeof(telephoneCall); i++) {
-				TextDrawShowForPlayer(pId, telephoneCall[pId][i]);
+			switch(fracType) {
+				case 0: {
+					
+				}
+				case 2: {
+					strcat(mainStr, "{FFFFFF}Ka¿da grupa typu Nauka jazdy...\n--\n");
+					
+					foreach(new i : Player) {
+						foreach(new j : fractionItter) {
+							if(fVars[j][fType] == F_DRVRLIC) {
+								if(!strcmp(pVars[i][pGroup], fVars[j][fName]) && isPlayerDuty[i]) {
+									count++;
+								}
+							
+								format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, fVars[j][fUid], count, fVars[j][fName]);
+							}
+						}
+					}
+					
+					ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_GROUPS, DIALOG_STYLE_LIST, "Dostêpne grupy", mainStr, "Wybierz", "Anuluj");
+				}
 			}
 			
-			format(mainStr, sizeof(mainStr), "** Dzwoni telefon %s. **", pVars[pId][pCharName]);
-			sendDistanceMessage(pId, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+			SendClientMessage(playerid, COLOR_WHITE, "{FFFF00}Automat (telefon): Witamy. Gdzie chce siê Pan/Pani dodzwoniæ?");
+		}
+		case DIALOG_SHOW_TELEPHONE_GROUPS: {
+			if(!response) {
+				return 1;
+			}
+			
+			new fracUid = strval(inputtext);
+			
+			mainStr[0] = EOS;
+			foreach(new i : fractionItter) {
+				if(fVars[i][fUid] == fracUid) {
+					telEnterFrac[playerid] = i;
+					break;
+				}
+			}
+			
+			strcat(mainStr, "Dodzwonili siê Pañstwo do automatycznej centrali.\nProsimy z³o¿yæ zamówienie oraz podaæ miejsce pobytu.");
+			ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_SERVICES_ORDER, DIALOG_STYLE_INPUT, "Serwisy specjalne", mainStr, "Dalej", "Roz³¹cz");
+			
+			format(mainStr, sizeof(mainStr), "%s (telefon): %s.", pVars[playerid][pCharName], fVars[telEnterFrac[playerid]][fName]);
+			sendDistanceMessage(playerid, 20.0, mainStr, COLOR_WHITE, COLOR_GRAY, COLOR_MEDGRAY, COLOR_DARKGRAY);
+			
+			SendClientMessage(playerid, COLOR_WHITE, "{FFFF00}Automat (telefon): Proszê o podanie miejsca pobytu oraz treœci ¿¹dania.");
+		}
+		case DIALOG_SHOW_TELEPHONE_SERVICES_ORDER: {
+			if(!response) {
+				
+			}
+			
+			mainStr[0] = EOS;
+			
+			foreach(new i : Player) {
+				if(pVars[i][pFraction] == telEnterFrac[playerid] && isPlayerDuty[i]) {
+					format(mainStr, sizeof(mainStr), "** ¯¹danie od numeru %d (( %s )): **\n** %s **", pVars[playerid][pTelNum], pVars[playerid][pCharName], inputtext);
+					SendClientMessage(i, COLOR_WHITE, mainStr);
+				}
+			}
+			
+			usedTelephone[playerid] = false;
+			telEnterNumber[playerid] = 0;
+			telEnterFrac[playerid] = -1;
+			
+			ApplyAnimation(playerid, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
+			GameTextForPlayer(playerid, "~r~Rozmowa zakonczona.", 5000, 3);
+			
+			format(mainStr, sizeof(mainStr), "%s (telefon): %s", pVars[playerid][pCharName], inputtext);
+			sendDistanceMessage(playerid, 20.0, mainStr, COLOR_WHITE, COLOR_GRAY, COLOR_MEDGRAY, COLOR_DARKGRAY);
+			
+			SendClientMessage(playerid, COLOR_WHITE, "{FFFF00}Automat (telefon): Przyjmujemy zg³oszenie. Prosimy czekaæ, a¿ zg³osi siê do Pañstwa pracownik.");			
 		}
 		case DIALOG_TELEPHONE_ENTER_NUMBER: {
 			if(!response) {
@@ -1556,7 +1656,7 @@ sampCallback:OnPlayerRequestSpawn(playerid) {
 sampCallback:OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ) {
 	new srvItemId = checkSrvItemIdForPlayer(playerid);
 	
-	if((iVars[srvItemId][iId] >= P_COLT && iVars[srvItemId][iId] <= P_M4) && iVars[srvItemId][iUsed]) {
+	if(iVars[srvItemId][iId] >= P_COLT && iVars[srvItemId][iId] <= P_M4) {
 		iVars[srvItemId][iValues]--;
 	}
 	return 1;

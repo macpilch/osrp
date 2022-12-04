@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 21.11.2022
+	Modified: 04.12.2022
 */
 
 #if !defined _VARS_
@@ -25,6 +25,7 @@ new offerType[MAX_PLAYERS];
 new useItemId[MAX_PLAYERS];
 new playerContacts[MAX_PLAYERS][10];
 new telEnterNumber[MAX_PLAYERS];
+new telEnterFrac[MAX_PLAYERS];
 new vehCP[MAX_VEHICLES];
 new vehMapIcon[MAX_VEHICLES];
 //part time job

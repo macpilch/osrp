@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 24.07.2022
-	Modified: 06.11.2022
+	Modified: 04.12.2022
 */
 
 #if !defined _PLAYER_
@@ -52,7 +52,6 @@ enum PlayerData {
 	//pDriverLicenseB
 	//pDriverLicenseC
 	//pPilotLicense
-	
 	//lub 
 	//pDriverLicense[] - (1 - A / 2 - B / 3- C / 4 - Pilot)
 	pDriverLicense,

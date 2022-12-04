@@ -3,7 +3,7 @@
 	Author: MisterMagik
 	File: cashpoint.inc
 	Date: 16.09.2022
-	Modified: 06.11.2022
+	Modified: 04.12.2022
 */
 
 #if !defined _CASHPOINT_
@@ -12,6 +12,7 @@
 enum CashpointData {
 	csUid,
 	csName[32],
+	csObject,
 	bool:csIsOpen,
 	Float:csX,
 	Float:csY,

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 06.11.2022
+	Modified: 04.12.2022
 */
 
 #if !defined _TIMERS_
@@ -151,8 +151,7 @@ Timer:globalTimer[1000]() {
 		}
 		
 		if(pVars[i][pHp] <= 3.0 && !isBW[i] && isSpawned[i]) {
-			SetPlayerHealth(i, 2.0);
-			//SetPlayerHealthEx(i, 2.0);
+			SetPlayerHealthEx(i, 2.0);
 			setPlayerBW(i, 3);
 		}
 		
@@ -277,11 +276,13 @@ Timer:globalTimer[1000]() {
 			GameTextForPlayer(i, "~n~~n~~n~~n~~n~~w~[LALT+SPACJA] ~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
 		}
 	}
-	
-	saveServerValues();
+}
+
+Timer:saveAllValues[10000]() {
 	saveVehicleValues();
 	saveItemValues();
 	saveDoorValues();
+	saveServerValues();
 }
 
 Timer:setRealTimeTimer[600000]() {
@@ -294,7 +295,7 @@ Timer:setRealTimeTimer[600000]() {
 	}
 }
 
-Timer:updateWebsiteDateTimer[2000]() {
+Timer:updateWebsiteDateTimer[1900]() {
 	new day, month, year;
 	
 	getdate(year, month, day);
@@ -312,10 +313,10 @@ Timer:townHallBellsTimer[59000]() {
 	foreach(new i : Player) {
 		if(hours != 0 && minutes == 0) {
 			timerStr[0] = EOS;
+			
 			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d razy. **", hours);
 			SendClientMessage(i, COLOR_WHITE, timerStr);
-		}
-		else if(hours == 0) {
+		} else if(hours == 0) {
 			SendClientMessage(i, COLOR_WHITE, "** Dzwony w ratuszu wybi³y pó³noc. **");
 		}
 	}

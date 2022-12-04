@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 06.11.2022
+	Modified: 04.12.2022
 */
 
 #if !defined _PLAYER_CMDS_
@@ -243,7 +243,7 @@ CMD:pay(playerid, params[]) {
 	
 	format(str, sizeof(str), "Podano %s $%d. Pamiêtaj, by p³aciæ w Dolarach, u¿yj /pay [Gracz] [Iloœæ].", pVars[pId][pCharName], money);
 	SendClientMessage(playerid, COLOR_WHITE, str);
-	format(str, sizeof(str), "Otrzymujesz $%d od %s. Mo¿esz podawaæ gotówkê za pomoc¹ /pay [Gracz] [Iloœæ].", money, pVars[playerid][pCharName]);
+	format(str, sizeof(str), "Otrzymujesz $%d od %s.", money, pVars[playerid][pCharName]);
 	SendClientMessage(pId, COLOR_WHITE, str);
 	
 	mainStr[0] = EOS;
@@ -351,89 +351,39 @@ CMD:o(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /o [Us³uga] [Gracz] (Opcjonalne parametry)");
 	}
 	
-	mainStr[0] = EOS;
-	offerFrom[pId] = playerid;
-	offerFor[playerid] = pId;
-	offerParams[pId] = cmdParams;
-	
 	if(strfind(type, "grupa", true) != -1) {
+		mainStr[0] = EOS;
+		offerParams[playerid] = cmdParams;
+		
 		strcat(mainStr, "Wpisz nazwê grupy do, której chcesz zaprosiæ gracza:");
 		ShowPlayerDialog(playerid, DIALOG_OFFER_FRACTION_INVITE, DIALOG_STYLE_INPUT, "Grupa", mainStr, "OK", "Anuluj");
 	} else if(strfind(type, "kurs", true) != -1) {
-		new str[64], tmpFracId = checkFractionSrvIdForPlayer(playerid);
+		new tmpFracId = checkFractionSrvIdForPlayer(playerid);
 		
 		if(fVars[tmpFracId][fType] == F_DRVRLIC) {
-			mainStr[0] = EOS;
-			offerType[playerid] = offerType[pId] = 1;
-			
-			GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
-			
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Lekcja prowadzenia pojazdu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[pId]);
-			
-			if(offerParams[pId] > 0) {
-				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
-			} else {
-				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
-			}
+			sendOfferToPlayer(playerid, pId, cmdParams, 1);
 		}
 	} else if(strfind(type, "dowod", true) != -1) {
-		new str[64], tmpFracId = checkFractionSrvIdForPlayer(playerid);
+		new tmpFracId = checkFractionSrvIdForPlayer(playerid);
 		
 		if(fVars[tmpFracId][fType] == F_PUBLIC) {
-			mainStr[0] = EOS;
-			offerType[playerid] = offerType[pId] = 2;
-			
-			GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
-			
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Dowod osobisty\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[pId]);
-			
-			if(offerParams[pId] > 0) {
-				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
-			} else {
-				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
-			}			
+			sendOfferToPlayer(playerid, pId, cmdParams, 2);
 		}
 	} else if(strfind(type, "prawko", true) != -1) {
-		new str[64], tmpFracId = checkFractionSrvIdForPlayer(playerid);
+		new tmpFracId = checkFractionSrvIdForPlayer(playerid);
 		
 		if(pVars[pId][pTraveled] < 5.0) {
 			return GameTextForPlayer(playerid, "~r~Ten gracz nie ukonczyl kursu.", 5000, 3);
 		}
 		
 		if(fVars[tmpFracId][fType] == F_PUBLIC) {
-			mainStr[0] = EOS;
-			offerType[playerid] = offerType[pId] = 3;
-			
-			GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
-			
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Prawo jazdy\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[pId]);
-			
-			if(offerParams[pId] > 0) {
-				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
-			} else {
-				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
-			}			
+			sendOfferToPlayer(playerid, pId, cmdParams, 3);
 		}
 	} else if(strfind(type, "podatek", true) != -1) {
-		new str[64], tmpFracId = checkFractionSrvIdForPlayer(playerid);
+		new tmpFracId = checkFractionSrvIdForPlayer(playerid);
 		
 		if(fVars[tmpFracId][fType] == F_PUBLIC) {
-			mainStr[0] = EOS;
-			offerType[playerid] = offerType[pId] = 4;
-			
-			GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
-			
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaplacenie podatku budynku\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[pId]);
-			
-			if(offerParams[pId] > 0) {
-				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
-			} else {
-				ShowPlayerDialog(pId, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
-			}			
+			sendOfferToPlayer(playerid, pId, cmdParams, 4);
 		}		
 	}
 	return 1;
@@ -739,10 +689,10 @@ CMD:report(playerid, params[]) {
 	SendClientMessage(playerid, COLOR_WHITE, "{A52A2A}Je¿eli masz jakiœ problem lub proœbê, napisz temat w odpowiednim dziale naszego forum.");
 	SendClientMessage(playerid, COLOR_WHITE, "{A52A2A}Prosimy NIE powtarzaæ raportów. Nie zwiêksza to widocznoœci, a IRYTUJE administracjê.");
 	
-	SendClientMessage(pId, COLOR_WHITE, "{A52A2A}Hej! W³aœnie wys³ano na Ciebie raport. Ca³kiem mo¿liwe, ¿e ");
-	SendClientMessage(pId, COLOR_WHITE, "{A52A2A}");
-	SendClientMessage(pId, COLOR_WHITE, "{A52A2A}");
-	SendClientMessage(pId, COLOR_WHITE, "{A52A2A}");
+	SendClientMessage(pId, COLOR_WHITE, "{A52A2A}Hej! W³aœnie wys³ano na Ciebie raport. Ca³kiem mo¿liwe, ¿e zrobi³eœ(aœ) coœ, co");
+	SendClientMessage(pId, COLOR_WHITE, "{A52A2A}uprzykrzy³o grê innej osobie. Ka¿dy pope³nia b³êdy, ale pamiêtaj, ¿e w tej grze chodzi");
+	SendClientMessage(pId, COLOR_WHITE, "{A52A2A}o czerpanie przyjemnoœci z interakcji z innymi graczami. Zastanów siê, która z twoich");
+	SendClientMessage(pId, COLOR_WHITE, "{A52A2A}czynnoœci ma³o odzwierciedla prawdziwe ¿ycie lub odstaje od gry reszty osób.");
 	SendClientMessage(pId, COLOR_WHITE, "{A52A2A}Czy na pewno masz na uwadze równie¿ innych graczy i ich rozgrywkê?");
 	SendClientMessage(pId, COLOR_WHITE, "{A52A2A}Spokojnie, zawsze weryfikujemy raporty.");
 	return 1;
