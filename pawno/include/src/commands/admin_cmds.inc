@@ -588,7 +588,7 @@ CMD:dajprace(playerid, params[]) {
 			new toPlayerGive, type, partTimeJob;
 			
 			if(sscanf(params, "iii", toPlayerGive, type, partTimeJob)) {
-				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[ADMIN]{FFFFFF}: Uüycie komendy /dajprace [Id gracza] [Typ 0-dorywcze 1- frakcja] [Id pracy].");
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[ADMIN]{FFFFFF}: Uøycie komendy /dajprace [Id gracza] [Typ 0-dorywcze 1- frakcja] [Id pracy].");
 			}
 			
 			
@@ -608,22 +608,30 @@ CMD:naprawpojazd(playerid, params[]) {
 			mainStr[0] = EOS;
 			new toPlayerGive, str[24];
 			if(sscanf(params, "s[24]i", str, toPlayerGive)) {
-				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[ADMIN]{FFFFFF}: Uüycie komendy /naprawpojazd [karoseria/silnik] [Id gracza].");
+				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[ADMIN]{FFFFFF}: Uøycie komendy /naprawpojazd [karoseria/silnik] [Id gracza].");
 			}
-			if(strfind(str, "karoseria", true) != -1){
-				
-				RepairVehicle(vVars[actualVehicle[toPlayerGive]][vId]);
-				SetVehicleHealth(vVars[actualVehicle[toPlayerGive]][vId], vVars[actualVehicle[toPlayerGive]][vEngineHp]);
-				format(mainStr, sizeof(mainStr), "{00FF00}[ADMIN]{FFFFFF}: Naprawiles karoserie pojazdu o ID: %i.", vVars[actualVehicle[toPlayerGive]][vId]);
-				
-			}
-			else if(strfind(str, "silnik", true) != -1) {
-				vVars[actualVehicle[toPlayerGive]][vEngineHp] = 1000.0;
-				SetVehicleHealth(vVars[actualVehicle[toPlayerGive]][vId], vVars[actualVehicle[toPlayerGive]][vEngineHp]);
-				format(mainStr, sizeof(mainStr), "{00FF00}[ADMIN]{FFFFFF}: Naprawiles silnik pojazdu o ID: %i.", vVars[actualVehicle[toPlayerGive]][vId]);
+			
+			if(IsPlayerInAnyVehicle(toPlayerGive)) {
+				if(strfind(str, "karoseria", true) != -1){
+					
+					RepairVehicle(vVars[actualVehicle[toPlayerGive]][vId]);
+					SetVehicleHealth(vVars[actualVehicle[toPlayerGive]][vId], vVars[actualVehicle[toPlayerGive]][vEngineHp]);
+					format(mainStr, sizeof(mainStr), "{00FF00}[ADMIN]{FFFFFF}: Naprawiles karoserie pojazdu o ID: %i.", vVars[actualVehicle[toPlayerGive]][vId]);
+					SendClientMessage(playerid, COLOR_WHITE, mainStr);
+					
+				}
+				else if(strfind(str, "silnik", true) != -1) {
+					vVars[actualVehicle[toPlayerGive]][vEngineHp] = 1000.0;
+					SetVehicleHealth(vVars[actualVehicle[toPlayerGive]][vId], vVars[actualVehicle[toPlayerGive]][vEngineHp]);
+					format(mainStr, sizeof(mainStr), "{00FF00}[ADMIN]{FFFFFF}: Naprawiles silnik pojazdu o ID: %i.", vVars[actualVehicle[toPlayerGive]][vId]);
+					SendClientMessage(playerid, COLOR_WHITE, mainStr);
+				}
+				else {
+					SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[ADMIN]{FFFFFF}: Uøycie komendy /naprawpojazd [karoseria/silnik] [Id gracza].");
+				}
 			}
 			else {
-				SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[ADMIN]{FFFFFF}: Uüycie komendy /naprawpojazd [karoseria/silnik] [Id gracza].");
+				SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[ADMIN]{FFFFFF}: Gracz nie jest w pojeüdzie.");
 			}
 				
 		}
