@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 04.12.2022
+	Modified: 09.12.2022
 */
 
 #if !defined _TIMERS_
@@ -32,7 +32,7 @@ Timer:globalTimer[1000]() {
 					} else {
 						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki, AFK od %02d:%02d, %s)", pVars[i][pCharName], i, pVars[i][pHours], h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 					}			
-				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] < 7 || iVars[srvItemId][iId] > 12)) {
+				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, AFK od %02d:%02d, %s)", pVars[i][pCharName], i, h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 					} else {
@@ -46,7 +46,7 @@ Timer:globalTimer[1000]() {
 					}		
 				}
 			} else if(hasBelts[i]) {
-				if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] < 7 || iVars[srvItemId][iId] > 12)) {
+				if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, AFK od %02d:%02d, pasy)", pVars[i][pCharName], i, h, mins);
 					} else {
@@ -72,7 +72,7 @@ Timer:globalTimer[1000]() {
 					} else {
 						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki, AFK od %02d:%02d)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
 					}
-				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] < 7 || iVars[srvItemId][iId] > 12)) {
+				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, rolki, AFK od %02d:%02d)", pVars[i][pCharName], i, h, mins);
 					} else {
@@ -94,7 +94,7 @@ Timer:globalTimer[1000]() {
 					} else {
 						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki, %s)", pVars[i][pCharName], i, pVars[i][pHours], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 					}				
-				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] < 7 || iVars[srvItemId][iId] > 12)) {
+				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, %s)", pVars[i][pCharName], i, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 					} else {
@@ -108,7 +108,7 @@ Timer:globalTimer[1000]() {
 					}
 				}
 			} else if(hasBelts[i]) {
-				if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] < 7 || iVars[srvItemId][iId] > 12)) {
+				if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, pasy)", pVars[i][pCharName], i);
 					} else {
@@ -134,7 +134,7 @@ Timer:globalTimer[1000]() {
 					} else {
 						format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki)", pVars[i][pCharName], i, pVars[i][pHours]);
 					}
-				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] < 7 || iVars[srvItemId][iId] > 12)) {
+				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity)", pVars[i][pCharName], i);
 					} else {
@@ -150,7 +150,7 @@ Timer:globalTimer[1000]() {
 			}
 		}
 		
-		if(pVars[i][pHp] <= 3.0 && !isBW[i] && isSpawned[i]) {
+		if(pVars[i][pHp] == 1.0 && !isBW[i] && isSpawned[i]) {
 			SetPlayerHealthEx(i, 2.0);
 			setPlayerBW(i, 3);
 		}

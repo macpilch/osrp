@@ -20,7 +20,7 @@ new actualCashpoint[MAX_PLAYERS]; // Zapisuje aktualny bankomat w zasiegu gracza
 new playerFuelPrice[MAX_PLAYERS]; // Do tablicy trafia cena paliwa dla danego gracza podczas uzywania funkcji tankuj
 new offerFrom[MAX_PLAYERS]; // Przechowuje id osoby ktora wyslala oferte
 new offerFor[MAX_PLAYERS]; // Przechowuje id osoby ktora otrzymala oferte
-new offerParams[MAX_PLAYERS];
+new offerParams[MAX_PLAYERS][2]; // 0 - pieni¹dze, 1 - dodatkowe opcje
 new offerType[MAX_PLAYERS];
 new useItemId[MAX_PLAYERS];
 new playerContacts[MAX_PLAYERS][10];

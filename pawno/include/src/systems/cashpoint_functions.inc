@@ -3,7 +3,7 @@
 	Author: MisterMagik
 	File: cashpoint_functions.inc
 	Date: 16.09.2022
-	Modified: 04.12.2022
+	Modified: 22.01.2023
 */
 
 #if !defined _CASHPOINT_FUNCTIONS_
@@ -25,7 +25,7 @@ stock initCashpointValues() {
 		sscanf(queryStr, "p<|>is[32]iiffff", cVars[i][csUid], cVars[i][csName], cVars[i][csObject], cVars[i][csIsOpen], cVars[i][csX], cVars[i][csY], cVars[i][csZ], cVars[i][csDistance]);
 		
 		Iter_Add(cashpointItter, i);
-		cVars[i][csObject] = CreateDynamicObject(2942, cVars[i][csX], cVars[i][csY], cVars[i][csZ] - 0.2, 0.0, 0.0, 0.0, 0, 0, -1, 100.0);
+		cVars[i][csObject] = CreateDynamicObject(2942, cVars[i][csX], cVars[i][csY], cVars[i][csZ] - 0.35, 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
 		printf("[DEBUG] Id: %d,  Name: %s", i, cVars[i][csName]);
 	}
 	
@@ -56,7 +56,7 @@ stock searchPlayerCashpoint(playerid) {
 }
 
 stock createNewCashpoint(playerid, cashpointname[]) {
-	new isOpen, Float:x, Float:y, Float:z, Float:distance;
+	new Float:x, Float:y, Float:z;
 	new freeId;
 	
 	queryStr[0] = EOS;
@@ -67,14 +67,20 @@ stock createNewCashpoint(playerid, cashpointname[]) {
 	freeId = mysql_fetch_int();
 	mysql_free_result();
 	
-	isOpen = 1;
-	distance = 2.0;
-	
 	GetPlayerPos(playerid, x, y, z);
 	Iter_Add(cashpointItter, freeId);
 	
-	format(queryStr, sizeof(queryStr), "INSERT INTO `Cashpoints`(`UID`, `Name`, `IsOpen`, `X`, `Y`, `Z`, `Distance`) VALUES ('%d', '%s', '%d', '%f', '%f', '%f', '%f')", freeId, cashpointname, isOpen, x, y, z, distance);
-	mysql_query(queryStr);		
+	cVars[freeId][csUid] = freeId + 1;
+	format(cVars[freeId][csName], 32, cashpointname);
+	cVars[freeId][csIsOpen] = true;
+	cVars[freeId][csX] = x;
+	cVars[freeId][csY] = y;
+	cVars[freeId][csZ] = z;
+	cVars[freeId][csDistance] = 2.0;
+	cVars[freeId][csObject] = CreateDynamicObject(2942, cVars[freeId][csX], cVars[freeId][csY], cVars[freeId][csZ] - 0.35, 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
+	
+	format(queryStr, sizeof(queryStr), "INSERT INTO `Cashpoints`(`UID`, `Name`, `Object`, `IsOpen`, `X`, `Y`, `Z`, `Distance`) VALUES ('%d', '%s', '%d', '%d', '%f', '%f', '%f', '%f')", cVars[freeId][csUid], cVars[freeId][csName], cVars[freeId][csObject], cVars[freeId][csIsOpen], cVars[freeId][csX], cVars[freeId][csY], cVars[freeId][csZ], cVars[freeId][csDistance]);
+	mysql_query(queryStr);
 	return 1;
 }
 

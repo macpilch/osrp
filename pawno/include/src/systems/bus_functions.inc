@@ -3,7 +3,7 @@
 	Author: MisterMagik
 	File: bus_functions.inc
 	Date: 14.09.2022
-	Modified: 04.12.2022
+	Modified: 24.01.2023
 */
 
 #if !defined _BUS_FUNCTIONS_
@@ -22,7 +22,8 @@ stock initBusStopValues() {
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>is[32]ifff", bVars[i][bsUid], bVars[i][bsName], bVars[i][bsPrice], bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ]);
+		sscanf(queryStr, "p<|>iis[32]ifff", bVars[i][bsUid], bVars[i][bsObject], bVars[i][bsName], bVars[i][bsPrice], bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ]);
+		bVars[i][bsObject] = CreateDynamicObject(1257, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ], 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
 		
 		Iter_Add(busstopItter, i);
 		printf("[DEBUG] Uid: %d,  Name: %s", i + 1, bVars[i][bsName]);
@@ -47,7 +48,12 @@ stock createNewBusStop(playerid, busstopname[]) {
 stock searchPlayerBusStop(playerid) {
 	for(new i = 0; i < MAX_BUS_STOPS; i++) {
 		if(IsPlayerInRangeOfPoint(playerid, 10.0, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ])) {
-			ShowPlayerDialog(playerid, DIALOG_SHOW_BUS_STOPS, DIALOG_STYLE_LIST, bVars[i][bsName], showAllBusStops(playerid, i), "Ok", "Anuluj");
+			new Float:x, Float:y, Float:z;
+			
+			GetPlayerPos(playerid, x, y, z);
+			SetCameraBehindPlayer(playerid);
+			InterpolateCameraLookAt(playerid, x, y, z, x, y, z + 40, 4000, CAMERA_MOVE);
+			InterpolateCameraPos(playerid, x, y, z, x, y, z + 20, 4000, CAMERA_MOVE);
 			
 			actualBusStop[playerid] = i;
 		}
@@ -55,32 +61,9 @@ stock searchPlayerBusStop(playerid) {
 	return 1;
 }
 
-static stock showAllBusStops(playerid, id) {
-	new tempStr[512];
-	
-	mainStr[0] = EOS;
-	
-	foreach(new i : busstopItter) {
-		if(id == i) {
-			format(tempStr, sizeof(tempStr), "(%d) %s (Aktualny)\n", bVars[i][bsUid], bVars[i][bsName]);
-			strcat(mainStr, tempStr);
-			
-			actualBusStop[playerid] = id;
-		}
-		//else if(isnull(bVars[i][bsName])) {
-			
-		//}
-		else {
-			format(tempStr, sizeof(tempStr), "(%d) %s\n", bVars[i][bsUid], bVars[i][bsName]);
-			strcat(mainStr, tempStr);
-		}
-	}
-	return mainStr;
-}
-
 stock teleportToBusStop(playerid, busstopid) {
 	mainStr[0] = EOS;
-		
+	
 	foreach(new i: busstopItter) {
 		if(actualBusStop[playerid] == i) {
 			format(mainStr, sizeof(mainStr), "[Przystanek]: Znajdujesz sie juz na tym przystanku.");

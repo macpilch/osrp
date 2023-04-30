@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 24.07.2022
-	Modified: 04.12.2022
+	Modified: 27.04.2023
 */
 
 #if !defined _PLAYER_PUBLICS_
@@ -15,9 +15,8 @@ sampCallback:OnPlayerConnect(playerid) {
 	PlayerPlaySound(playerid, 1062, 0.0, 0.0, 0.0);
 	
 	new str[64];
-	new callSec = GetTickCount();
 	
-	format(str, sizeof(str), "[LOG] Callback: OnPlayerConnect -- Called! (%d ms).", (GetTickCount() - callSec));
+	format(str, sizeof(str), "[LOG] Callback: OnPlayerConnect -- Called! (%d ms).", GetTickCount());
 	print(str);
 	return 1;
 }
@@ -30,9 +29,8 @@ sampCallback:OnPlayerDisconnect(playerid, reason) {
 	resetVehicleValues(playerid);
 	
 	new str[64];
-	new callSec = GetTickCount();
 	
-	format(str, sizeof(str), "[LOG] Callback: OnPlayerDisconnect -- Called! (%d ms).", (GetTickCount() - callSec));
+	format(str, sizeof(str), "[LOG] Callback: OnPlayerDisconnect -- Called! (%d ms).", GetTickCount());
 	print(str);
 	return 1;
 }
@@ -109,9 +107,8 @@ sampCallback:OnPlayerRequestClass(playerid, classid) {
 	}
 	
 	new str[64];
-	new callSec = GetTickCount();
 	
-	format(str, sizeof(str), "[LOG] Callback: OnPlayerRequestClass -- Called! (%d ms).", (GetTickCount() - callSec));
+	format(str, sizeof(str), "[LOG] Callback: OnPlayerRequestClass -- Called! (%d ms).", GetTickCount());
 	print(str);
 	return 1;
 }
@@ -145,20 +142,18 @@ sampCallback:OnPlayerSpawn(playerid) {
 	isSpawned[playerid] = true;
 	
 	new str[64];
-	new callSec = GetTickCount();
 	
-	format(str, sizeof(str), "[LOG] Callback: OnPlayerSpawn -- Called! (%d ms).", (GetTickCount() - callSec));
+	format(str, sizeof(str), "[LOG] Callback: OnPlayerSpawn -- Called! (%d ms).", GetTickCount());
 	print(str);
 	return 1;
 }
 
 sampCallback:OnPlayerDeath(playerid, killerid, reason) {
 	new str[64];
-	new callSec = GetTickCount();
 	
-	format(str, sizeof(str), "[LOG] Callback: OnPlayerDeath -- Called! (%d ms).", (GetTickCount() - callSec));
+	format(str, sizeof(str), "[LOG] Callback: OnPlayerDeath -- Called! (%d ms).", GetTickCount());
 	print(str);
-	return 1;
+	return 0;
 }
 
 sampCallback:OnPlayerText(playerid, text[]) {
@@ -795,6 +790,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			}
 			
 			new vehid = actualVehicle[playerid];
+			mainStr[0] = EOS;
 			
 			switch(listitem) {
 				case 0: {
@@ -874,10 +870,11 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					
 				}
 				case 8: {
-					
+
 				}
 				case 9: {
-					
+					strcat(mainStr, "Podaj ID gracza, któremu chcesz sprzedaæ pojazd oraz kwotê.\nPrzyk³ad: (12 1600).\n");
+					ShowPlayerDialog(playerid, DIALOG_VEHICLE_SELL_PLAYER, DIALOG_STYLE_INPUT, "Sprzeda¿ pojazdu", mainStr, "OK", "Anuluj");					
 				}
 			}
 		}
@@ -886,10 +883,16 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return 1;
 			}
 			
-			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "{FFFFFF}U¿ywany pojazd: %s\nPrzebieg: %dkm (im wiêkszy, tym wiêksze spalanie)\nSuma napraw: %dhp\nHP:%d");
-			strcat(mainStr, "{FF0000}\tUWAGA! Ta transakcja wymaga podwy¿szonych uprawnieñ.\n\tWpisz \"potwierdzam\" w poni¿szym okienku, inaczej zostanie anulowana.\n");
-			strcat(mainStr, "\tUPEWNIJ SIÊ, ¿e wiesz co akceptujesz!");
+			new pId, price, str[4];
+			
+			sscanf(inputtext, "ii", pId, price);
+			valstr(str, price);
+			
+			if(!IsPlayerConnected(pId)) {
+				return GameTextForPlayer(playerid, "~r~Nie ma takiego gracza.", 5000, 3);
+			}
+			
+			sendOfferToPlayer(playerid, pId, str, 6);
 		}
 		case DIALOG_PETROL_STATION: {
 			new fuel, money, vehid = actualVehicle[playerid];
@@ -998,25 +1001,9 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return 1;
 			}
 			
-			sendOfferToPlayer(playerid, strval(inputtext), 0, 5);
-		}
-		case DIALOG_SHOW_BUS_STOPS: {
-			if(!response) {
-				return 1;
-			}
+			new str[2];
 			
-			/*new tmpUid, tmpBusUid;
-			
-			tmpUid = strval(inputtext);
-			
-			foreach(new i : busstopItter) {
-				if(tmpUid == bVars[i][bsUid]) {
-					tmpBusUid = i;
-					break;
-				}
-			}*/
-			
-			teleportToBusStop(playerid, listitem);
+			sendOfferToPlayer(playerid, strval(inputtext), str, 5);
 		}
 		case DIALOG_SHOW_CASHPOINT: {
 			if(!response) {
@@ -1110,7 +1097,8 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				
 				offerType[playerid] = -1;
 				offerType[offerFor[playerid]] = -1;
-				offerParams[offerFrom[playerid]] = -1;
+				offerParams[offerFrom[playerid]][0] = -1;
+				offerParams[offerFrom[playerid]][1] = -1;
 				offerFor[offerFor[playerid]] = INVALID_PLAYER_ID;
 				offerFor[playerid] = INVALID_PLAYER_ID;
 				offerFrom[offerFrom[playerid]] = INVALID_PLAYER_ID;
@@ -1139,13 +1127,18 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return GameTextForPlayer(playerid, mainStr, 4000, 3);
 			}
 			
-			if(offerParams[playerid] > 0) {
+			if(offerParams[playerid][0] > 0) {
 				new tmpFracId = checkFractionSrvIdForPlayer(offerFrom[playerid]);
 				
 				switch(listitem) {
 					case 0: {
-						GivePlayerMoneyEx(playerid, -offerParams[playerid]);
-						fVars[tmpFracId][fCash] += offerParams[playerid];
+						GivePlayerMoneyEx(playerid, -offerParams[playerid][0]);
+					
+						if(offerType[playerid] == 6) {
+							GivePlayerMoneyEx(offerFrom[playerid], offerParams[playerid][0]);
+						} else {
+							fVars[tmpFracId][fCash] += offerParams[playerid][0];
+						}
 					}
 					case 1: {
 						GameTextForPlayer(playerid, "~w~-~r~$10", 5000, 6);
@@ -1190,7 +1183,7 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					GameTextForPlayer(offerFrom[playerid], "~h~~h~~g~Budynek zostal oplacony.", 5000, 3);
 				}
 				case 5: {
-					iVars[useItemId[offerFrom[playerid]]][iOUid] = playerid;
+					iVars[useItemId[offerFrom[playerid]]][iOUid] = pVars[playerid][pUid];
 					
 					queryStr[0] = EOS;
 					format(queryStr, sizeof(queryStr), "UPDATE `Items` SET `OUID` = '%d' WHERE `OUID` = '%d' AND `UID` = '%d'", pVars[playerid][pUid], pVars[offerFrom[playerid]][pUid], iVars[useItemId[offerFrom[playerid]]][iUid]);
@@ -1199,6 +1192,34 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					mainStr[0] = EOS;
 					format(mainStr, sizeof(mainStr), "* %s podaje przedmiot %s.", pVars[offerFrom[playerid]][pCharName], pVars[playerid][pCharName]);
 					sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+				}
+				case 6: {
+					new vehid = actualVehicle[offerFrom[playerid]];
+					
+					vVars[vehid][vOUid] = pVars[playerid][pUid];
+					
+					queryStr[0] = EOS;
+					format(queryStr, sizeof(queryStr), "UPDATE `Vehicles` SET `OUID` = '%d' WHERE `UID` = '%d' AND `OUID` = '%d'", pVars[playerid][pUid], vVars[vehid][vUid], pVars[offerFrom[playerid]][pUid]);
+					mysql_query(queryStr);
+					
+					mainStr[0] = EOS;
+					strcat(mainStr, "Zakupi³eœ(aœ) u¿ywany pojazd zgodnie z ofert¹.\nJesteœ teraz jego wy³¹cznym w³aœcicielem.\n\nU¿yj /v parkuj, by go przeparkowaæ.");
+					ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+				}
+				case 7: {
+					new vehid;
+				
+					foreach(new i : vehItter) {
+						if(offerParams[offerFrom[playerid]][1] == vVars[i][vUid]) {
+							vehid = i;
+							break;
+						}
+					}
+					
+					format(vVars[vehid][vPlate], 32, "TEST");
+					SetVehicleNumberPlate(vVars[vehid][vId], vVars[vehid][vPlate]);
+					
+					ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Pojazd zosta³ zarejestrowany.", "OK", "");
 				}
 			}
 		}
@@ -1209,7 +1230,8 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				
 				offerType[playerid] = -1;
 				offerType[offerFor[playerid]] = -1;
-				offerParams[offerFrom[playerid]] = -1;
+				offerParams[offerFrom[playerid]][0] = -1;
+				offerParams[offerFrom[playerid]][1] = -1;
 				offerFor[offerFor[playerid]] = INVALID_PLAYER_ID;
 				offerFor[playerid] = INVALID_PLAYER_ID;
 				offerFrom[offerFrom[playerid]] = INVALID_PLAYER_ID;
@@ -1235,10 +1257,16 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return GameTextForPlayer(playerid, mainStr, 4000, 3);				
 			}
 			
+			if(strcmp(inputtext, "potwierdzam", true)) {
+				mainStr[0] = EOS;
+				format(mainStr, sizeof(mainStr), "~y~Oferta %s~n~~w~Odrzucona.", pVars[offerFrom[playerid]][pCharName]);
+				return GameTextForPlayer(playerid, mainStr, 4000, 3);
+			}
+			
 			new str[32];
 			
 			mainStr[0] = EOS;
-			format(str, sizeof(str), "Koszt: %d USD. Jak zap³acisz?", offerParams[playerid]);
+			format(str, sizeof(str), "Koszt: %d USD. Jak zap³acisz?", offerParams[playerid][0]);
 			strcat(mainStr, "{FFFFFF}0\tP³atnoœæ gotówk¹ (USD)");
 			ShowPlayerDialog(playerid, DIALOG_SHOW_OFFER, DIALOG_STYLE_LIST, str, mainStr, "P³aæ", "Anuluj");
 		}
@@ -1256,12 +1284,12 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				}
 			}
 			
-			if(pVars[pId][pFraction] == fVars[tmpFracId][fUid]) {
+			if(pVars[pId][pFraction] == fVars[tmpFracId][fUid] && playerid != pId) {
 				return GameTextForPlayer(playerid, "~r~Ten gracz nalezy juz do tej frakcji.", 5000, 3);
 			}
 			
 			pVars[pId][pFraction] = tmpFracId;
-			sendOfferToPlayer(playerid, pId, offerParams[playerid], 0);
+			sendOfferToPlayer(playerid, pId, offerParams[playerid][0], 0);
 		}
 		case DIALOG_SHOW_TELEPHONE_MENU: {
 			if(!response) {
@@ -1315,10 +1343,10 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			
 			switch(listitem) {
 				case 0: {
+					new k, count;
 					new servicesName[][] = {
 						"Rzad", "Nauka jazdy"
 					};
-					new k, count;
 					
 					mainStr[0] = EOS;
 					foreach(new i : Player) {
@@ -1646,9 +1674,8 @@ sampCallback:OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 
 sampCallback:OnPlayerRequestSpawn(playerid) {
 	new str[64];
-	new callSec = GetTickCount();
 	
-	format(str, sizeof(str), "[LOG] Callback: OnPlayerRequestSpawn -- Called! (%d ms).", (GetTickCount() - callSec));
+	format(str, sizeof(str), "[LOG] Callback: OnPlayerRequestSpawn -- Called! (%d ms).", GetTickCount());
 	print(str);
 	return 0;
 }

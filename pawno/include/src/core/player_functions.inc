@@ -141,60 +141,43 @@ Callback:refreshCmds(playerid, cmd) {
 */
 stock sendDistanceMessage(playerid, Float:range, str[], color, color2, color3, color4) {
 	new Float:x, Float:y, Float:z;
-	new tmpStr[128], tmpStr2[64];
+	new str1[256], str2[32], tmpStr[128], tmpStr2[64];
 	
 	GetPlayerPos(playerid, x, y, z);
 	
 	if(strlen(str) > 95) {
 		strmid(tmpStr, str, 0, 94);
 		strmid(tmpStr2, str, 95, strlen(str));
+		
+		format(str1, sizeof(str1), "%s...", tmpStr);
+		format(str2, sizeof(str2), "... %s", tmpStr2);
 	}
 	
 	foreach(new i : Player) {
 		if(IsPlayerInRangeOfPoint(i, range / 4, x, y, z)) {
 			if(strlen(str) > 95) {
-				new str1[256], str2[32];
-				
-				format(str1, sizeof(str1), "%s...", tmpStr);
 				SendClientMessage(i, color, str1);
-				
-				format(str2, sizeof(str2), "... %s", tmpStr2);
 				SendClientMessage(i, color, str2);
 			} else {
 				SendClientMessage(i, color, str);
 			}
 		} else if(IsPlayerInRangeOfPoint(i, range / 3, x, y, z)) {
 			if(strlen(str) > 95) {
-				new str1[256], str2[32];
-				
-				format(str1, sizeof(str1), "%s...", tmpStr);
 				SendClientMessage(i, color, str1);
-				
-				format(str2, sizeof(str2), "... %s", tmpStr2);
 				SendClientMessage(i, color2, str2);
 			} else {
 				SendClientMessage(i, color2, str);
 			}
 		} else if(IsPlayerInRangeOfPoint(i, range / 2, x, y, z)) {
 			if(strlen(str) > 95) {
-				new str1[256], str2[32];
-				
-				format(str1, sizeof(str1), "%s...", tmpStr);
 				SendClientMessage(i, color, str1);
-				
-				format(str2, sizeof(str2), "... %s", tmpStr2);
 				SendClientMessage(i, color3, str2);
 			} else {
 				SendClientMessage(i, color3, str);
 			}
 		} else if(IsPlayerInRangeOfPoint(i, range, x, y, z)) {
 			if(strlen(str) > 95) {
-				new str1[256], str2[32];
-				
-				format(str1, sizeof(str1), "%s...", tmpStr);
 				SendClientMessage(i, color, str1);
-				
-				format(str2, sizeof(str2), "... %s", tmpStr2);
 				SendClientMessage(i, color4, str2);
 			} else {
 				SendClientMessage(i, color4, str);
@@ -954,53 +937,71 @@ stock checkFractionSrvIdForPlayer(playerid) {
 	return fracId;
 }
 
-stock sendOfferToPlayer(playerid, id, params, type) {
+stock sendOfferToPlayer(playerid, id, params[], type) {
 	new str[64];
 	
 	mainStr[0] = EOS;
 	offerFrom[id] = playerid;
 	offerFor[playerid] = id;
 	offerType[playerid] = offerType[id] = type;
-	offerParams[playerid] = offerParams[id] = params;
+	offerParams[playerid][0] = offerParams[id][0] = params[0];
+	offerParams[playerid][1] = offerParams[id][1] = params[1];
 	
 	GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
 	
 	switch(type) {
 		case 0: {
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[pVars[id][pFraction]][fName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", fVars[pVars[id][pFraction]][fUid], fVars[pVars[id][pFraction]][fName], offerParams[playerid]);			
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", fVars[pVars[id][pFraction]][fUid], fVars[pVars[id][pFraction]][fName], offerParams[playerid][0]);			
 		}
 		case 1: {
 			new tmpFracId = checkFractionSrvIdForPlayer(playerid);
 		
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Lekcja prowadzenia pojazdu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id]);			
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Lekcja prowadzenia pojazdu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);			
 		}
 		case 2: {
 			new tmpFracId = checkFractionSrvIdForPlayer(playerid);
 		
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Dowod osobisty\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id]);			
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Dowod osobisty\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);			
 		}
 		case 3: {
 			new tmpFracId = checkFractionSrvIdForPlayer(playerid);
 			
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Prawo jazdy\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Prawo jazdy\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);
 		}
 		case 4: {
 			new tmpFracId = checkFractionSrvIdForPlayer(playerid);
 		
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaplacenie podatku budynku\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id]);		
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaplacenie podatku budynku\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);		
 		}
 		case 5: {
 			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zakup przedmiotu: %s\n\nKoszt: $0. Czy akceptujesz tê ofertê?", iVars[useItemId[offerFrom[playerid]]][iName]);			
 		}
+		case 6: {
+			new vehid = actualVehicle[playerid];
+			
+			format(str, sizeof(str), "Oferta od %s", pVars[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}U¿ywany pojazd: %s\nPrzebieg: %fkm (im wiêkszy, tym wiêksze spalanie)\nSuma napraw: %dhp\nHP:%d\n\n", VehicleNames[vVars[vehid][vModelId]], vVars[vehid][vMileage], 0, vVars[vehid][vEngineHp]);
+			format(mainStr, sizeof(mainStr), "Koszt: $%d. Czy akceptujesz tê ofertê?\n{FF0000}\tUWAGA! Ta transakcja wymaga podwy¿szonych uprawnieñ.\n\tWpisz \"potwierdzam\" w poni¿szym okienku, inaczej zostanie anulowana.\n", offerParams[id][0]);
+			strcat(mainStr, "\tUPEWNIJ SIÊ, ¿e wiesz co akceptujesz!");
+			return ShowPlayerDialog(id, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_INPUT, str, mainStr, "Tak", "Nie");
+		}
+		case 7: {
+			new tmpFracId = checkFractionSrvIdForPlayer(playerid);
+			
+			SendClientMessage(id, COLOR_WHITE, "UID pojazdu sprawdziæ mo¿na wpisuj¹c /v info, gdy w nim siedzisz.");
+			
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Rejestracja pojazdu o nr seryjnym %d.\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][1], offerParams[id][0]);
+		}
 	}
 	
-	if(offerParams[id] > 0) {
+	if(offerParams[id][0] > 0) {
 		ShowPlayerDialog(id, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");
 	} else {
 		ShowPlayerDialog(id, DIALOG_SHOW_OFFER, DIALOG_STYLE_MSGBOX, str, mainStr, "Tak", "Nie");

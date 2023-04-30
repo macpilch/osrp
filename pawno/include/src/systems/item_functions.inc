@@ -308,7 +308,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			SetPlayerHealthEx(playerid, pVars[playerid][pHp] += random(10) + 5.0);
 			ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 0, 0, 0, 0, 1);
 			removePlayerItem(srvitemid);
-			 
+			
 			format(mainStr, sizeof(mainStr), "* %s spo¿ywa %s.", pVars[playerid][pCharName], itemNames[itemid]);
 			sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 			

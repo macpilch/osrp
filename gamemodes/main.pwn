@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: main.pwn
 	Date: 24.07.2022
-	Modified: 27.09.2022
+	Modified: 27.04.2023
 */
 
 #include <a_samp>
@@ -46,9 +46,8 @@
 
 main() {
 	new str[64];
-	new callSec = GetTickCount();
 	
-	format(str, sizeof(str), "[LOG] Function: main -- Called! (%d ms).", (GetTickCount() - callSec));
+	format(str, sizeof(str), "[LOG] Function: main -- Called! (%d ms).", GetTickCount());
 	print(str);
 	return 1;
 }

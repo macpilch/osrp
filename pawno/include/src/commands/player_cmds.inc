@@ -336,7 +336,19 @@ CMD:opis(playerid, params[]) {
 }
 
 CMD:p(playerid, params[]) {
-	showDialogItems(playerid);
+	new name[24], tmpIId;
+	
+	if(sscanf(params, "s[24]", name)) {
+		return showDialogItems(playerid);
+	} else {
+		foreach(new i : itemItter) {
+			if(strfind(name, iVars[i][iName], true) != -1 && iVars[i][iUid] == pVars[playerid][pUid]) {
+				tmpIId = i;
+			}
+		}
+		
+		enableItemProperties(playerid, tmpIId, iVars[tmpIId][iId]);
+	}
 	return 1;
 }
 
@@ -345,15 +357,16 @@ CMD:u(playerid, params[]) {
 }
 
 CMD:o(playerid, params[]) {
-	new type[16], pId, cmdParams;
+	new type[16], pId, cmdParams[2];
 	
-	if(sscanf(params, "s[16]ii", type, pId, cmdParams)) {
+	if(sscanf(params, "s[16]iii", type, pId, cmdParams[0], cmdParams[1])) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /o [Us³uga] [Gracz] (Opcjonalne parametry)");
 	}
 	
 	if(strfind(type, "grupa", true) != -1) {
 		mainStr[0] = EOS;
-		offerParams[playerid] = cmdParams;
+		offerParams[playerid][0] = cmdParams[0];
+		offerParams[playerid][1] = cmdParams[1];
 		
 		strcat(mainStr, "Wpisz nazwê grupy do, której chcesz zaprosiæ gracza:");
 		ShowPlayerDialog(playerid, DIALOG_OFFER_FRACTION_INVITE, DIALOG_STYLE_INPUT, "Grupa", mainStr, "OK", "Anuluj");
@@ -385,6 +398,12 @@ CMD:o(playerid, params[]) {
 		if(fVars[tmpFracId][fType] == F_PUBLIC) {
 			sendOfferToPlayer(playerid, pId, cmdParams, 4);
 		}		
+	} else if(strfind(type, "rejestracja", true) != -1) {
+		new tmpFracId = checkFractionSrvIdForPlayer(playerid);
+		
+		if(fVars[tmpFracId][fType] == F_PUBLIC) {
+			sendOfferToPlayer(playerid, pId, cmdParams, 7);
+		}
 	}
 	return 1;
 }

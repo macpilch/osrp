@@ -10,6 +10,8 @@
 #define _VEHICLE_PUBLICS_
 
 sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
+	new vehid;
+	
 	if(vehicleid && isVehicleInUse(vehicleid) && pVars[playerid][pDriverLicense] < 1) {
 		ClearAnimations(playerid);
 		
@@ -25,6 +27,25 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		strcat(mainStr, "Musisz najpierw wyrobiæ prawo jazdy.\nDo tego czasu u¿yj budek, by dzwoniæ po taksówki, lub /bus.\n\n");
 		strcat(mainStr, "By wyrobiæ prawko, kup telefon i zadzwoñ do nauki jazdy pod numerem 333.");
 		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+	}
+	
+	foreach(new i : vehItter) {
+		if(vVars[i][vId] == vehicleid) {
+			vehid = i;
+			break;
+		}
+	}
+	
+	if(vehicleid && vVars[vehid][vLock]) {
+		ClearAnimations(playerid);
+		
+		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Pojazd jest zamkniety.~n~~w~/v zamknij", 6000, 3);
+	}
+	
+	if(vehicleid && vVars[vehid][vOUid] != pVars[playerid][pUid]) {
+		ClearAnimations(playerid);
+		
+		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Nie mozesz prowadzic tego~n~pojazdu.", 6000, 3);		
 	}
 	return 1;
 }

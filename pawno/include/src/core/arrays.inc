@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: arrays.inc
 	Date: 25.07.2022
-	Modified: 04.12.2022
+	Modified: 22.01.2023
 */
 
 #if !defined _ARRAYS_
@@ -71,7 +71,16 @@ new charSur[][CharSurName] = {
 	{"Angotto", false}, {"Ankundinov", false}, {"Annibali", false}, {"Anzalmo", false}, {"Aquilino", false}, {"Arca", false}, {"Arcari", false}, {"Arcuni", false},
 	{"Ardizzone", false}, {"Arena", false}, {"Arent", false}, {"Armentano", false}, {"Armocida", false}, {"Armocida", false}, {"Arnold", false}, {"Arrigoni", false},
 	{"Arshan", false}, {"Arshun", false}, {"Artemieva", false}, {"Arti", false}, {"Astengo", false}, {"Astorino", false}, {"Attento", false}, {"Auriemma", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}
+	{"Avellis", false}, {"Bailey", false}, {"Baker", false}, {"Barcellona", false}, {"Bareldo", false}, {"Barillardo", false}, {"Barnes", false}, {"Bartolocci", false},
+	{"Bashier", false}, {"Basile", false}, {"Bastianelli", false}, {"Battaglia", false}, {"Belcastro", false}, {"Bell", false}, {"Belisto", false}, {"Benitez", false}, {"Bennett", false}, {"Berceto", false}, 
+	{"Bernt", false}, {"Bertolini", false}, {"Bertolino", false}, {"Bertucci", false}, {"Bessette", false}, {"Betro", false}, {"Bevilacqua", false}, {"", false}, {"", false}, {"", false}, 
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}
 };
 
 new itemNames[][] = {

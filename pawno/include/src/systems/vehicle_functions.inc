@@ -26,6 +26,7 @@ stock initVehicleValues() {
 		vVars[i][vFuelTank], vVars[i][vLock], vVars[i][vEngine], vVars[i][vEngineHp], vVars[i][vSpawned], vVars[i][vLights], vVars[i][vMileage], vVars[i][vDescInfo], vVars[i][vPlate]);
 		
 		Iter_Add(vehItter, i);
+		SetVehicleNumberPlate(vVars[i][vId], vVars[i][vPlate]);
 		
 		vehCP[i] = -1;
 		vehMapIcon[i] = -1;
