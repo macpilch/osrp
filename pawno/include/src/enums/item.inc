@@ -3,11 +3,11 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 29.08.2022
-	Modified: 04.12.2022
+	Modified: 17.06.2023
 */
 
-#if !defined _ITEM_
-#define _ITEM_
+#if !defined __ITEM_INC__
+#define __ITEM_INC__
 
 enum {
 	P_ROLKI = 0,

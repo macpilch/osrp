@@ -2,12 +2,12 @@
 	Project: SAMP-RP
 	Author: MisterMagik
 	File: busstop.inc
-	Date: 14.09.2022
-	Modified: 24.01.2023
+	Date: 16.09.2022
+	Modified: 17.06.2023
 */
 
-#if !defined _BUSSTOP_
-#define _BUSSTOP_
+#if !defined __BUSSTOP_INC__
+#define __BUSSTOP_INC__
 
 enum BusStopData {
 	bsUid,

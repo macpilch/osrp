@@ -2,12 +2,12 @@
 	Project: SAMP-RP
 	Author: steeZ (macpilch)
 	File: player_functions.inc
-	Date: 24.07.2022
-	Modified: 04.12.2022
+	Date: 25.07.2022
+	Modified: 27.07.2023
 */
 
-#if !defined _PLAYER_FUNCTIONS_
-#define _PLAYER_FUNCTIONS_
+#if !defined __PLAYER_FUNCTIONS_INC__
+#define __PLAYER_FUNCTIONS_INC__
 
 Callback:hideDoorInfo(playerid) {
 	for(new i = 0; i < 3; i++) {
@@ -45,11 +45,13 @@ Callback:hideHelpInfo(playerid) {
 	return 1;
 }
 
+/*
 Callback:setICNameForPlayer(playerid) {
 	SetPlayerName(playerid, pVars[playerid][pCharName2]);
 	GetPlayerName(playerid, pVars[playerid][pCharName2], 24);
 	return 1;
 }
+*/
 
 Callback:healthDamage(playerid) {
 	mainStr[0] = EOS;
@@ -88,12 +90,11 @@ Callback:hideHotelInfo(playerid) {
 }
 
 Callback:bwTimer(playerid) {
-	if((pVars[playerid][pBw] / 60) > 0) {
-		format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", ((pVars[playerid][pBw] / 60) <= 1) ? 1 : (pVars[playerid][pBw] / 60)); // int powinien uciac na same minuty
-		GameTextForPlayer(playerid, mainStr, 4000, 1);
-		
-		TogglePlayerControllable(playerid, 0);
-		ApplyAnimation(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
+	mainStr[0] = EOS;
+
+	if(pVars[playerid][pBw] > 0) {
+		format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", (pVars[playerid][pBw] / 60));
+		GameTextForPlayer(playerid, mainStr, 1000, 1);
 		
 		pVars[playerid][pBw]--;
 		SetTimerEx("bwTimer", 1000, false, "i", playerid);
@@ -101,11 +102,11 @@ Callback:bwTimer(playerid) {
 		pVars[playerid][pBw] = 0;
 		isBW[playerid] = false;
 		
+		ClearAnimations(playerid);
 		SetPlayerHealthEx(playerid, 5.0);
 		SetPlayerDrunkLevel(playerid, 10000);
 		TogglePlayerControllable(playerid, 1);
 		
-		mainStr[0] = EOS;
 		strcat(mainStr, "Ockn¹³eœ(aœ) siê po odniesieniu powa¿nych obra¿eñ.\n");
 		strcat(mainStr, "Krêci Ci siê w g³owie. Udaj siê do apteki, tam Ci z tym pomog¹.");
 		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
@@ -114,8 +115,10 @@ Callback:bwTimer(playerid) {
 }
 
 Callback:setPlayerCamerasView(playerid) {
-	InterpolateCameraPos(playerid, startCameraPos[0][0], startCameraPos[0][1], startCameraPos[0][2], endCameraPos[0][0], endCameraPos[0][1], endCameraPos[0][2], CAMERA_SPEED, CAMERA_CUT);
-	InterpolateCameraLookAt(playerid, startCameraPos[0][0], startCameraPos[0][1], startCameraPos[0][2], endCameraPos[0][0], endCameraPos[0][1], endCameraPos[0][2], CAMERA_SPEED, CAMERA_CUT);
+	new randIndex;// = random(MAX_CAMERAS);
+	
+	InterpolateCameraPos(playerid, startCameraPos[randIndex][0], startCameraPos[randIndex][1], startCameraPos[randIndex][2], endCameraPos[randIndex][0], endCameraPos[randIndex][1], endCameraPos[randIndex][2], CAMERA_SPEED, CAMERA_CUT);
+	InterpolateCameraLookAt(playerid, startCameraPos[randIndex][0], startCameraPos[randIndex][1], startCameraPos[randIndex][2], endCameraPos[randIndex][0], endCameraPos[randIndex][1], endCameraPos[randIndex][2], CAMERA_SPEED, CAMERA_CUT);
 	
 	cameraTimer[playerid] = SetTimerEx("setPlayerCamerasView", 6000, false, "i", playerid);
 	return 1;
@@ -139,9 +142,9 @@ Callback:refreshCmds(playerid, cmd) {
 	tym jest bardziej ciemniejsza.
 	Narazie najprostrza wersja do testow.
 */
-stock sendDistanceMessage(playerid, Float:range, str[], color, color2, color3, color4) {
-	new Float:x, Float:y, Float:z;
+stock sendDistanceMessage(playerid, Float:range, const str[], color1, color2, color3, color4) {
 	new str1[256], str2[32], tmpStr[128], tmpStr2[64];
+	new Float:x, Float:y, Float:z;
 	
 	GetPlayerPos(playerid, x, y, z);
 	
@@ -154,33 +157,35 @@ stock sendDistanceMessage(playerid, Float:range, str[], color, color2, color3, c
 	}
 	
 	foreach(new i : Player) {
-		if(IsPlayerInRangeOfPoint(i, range / 4, x, y, z)) {
-			if(strlen(str) > 95) {
-				SendClientMessage(i, color, str1);
-				SendClientMessage(i, color, str2);
-			} else {
-				SendClientMessage(i, color, str);
-			}
-		} else if(IsPlayerInRangeOfPoint(i, range / 3, x, y, z)) {
-			if(strlen(str) > 95) {
-				SendClientMessage(i, color, str1);
-				SendClientMessage(i, color2, str2);
-			} else {
-				SendClientMessage(i, color2, str);
-			}
-		} else if(IsPlayerInRangeOfPoint(i, range / 2, x, y, z)) {
-			if(strlen(str) > 95) {
-				SendClientMessage(i, color, str1);
-				SendClientMessage(i, color3, str2);
-			} else {
-				SendClientMessage(i, color3, str);
-			}
-		} else if(IsPlayerInRangeOfPoint(i, range, x, y, z)) {
-			if(strlen(str) > 95) {
-				SendClientMessage(i, color, str1);
-				SendClientMessage(i, color4, str2);
-			} else {
-				SendClientMessage(i, color4, str);
+		if(!isBW[i]) {
+			if(IsPlayerInRangeOfPoint(i, range / 4, x, y, z)) {
+				if(strlen(str) > 95) {
+					SendClientMessage(i, color1, str1);
+					SendClientMessage(i, color1, str2);
+				} else {
+					SendClientMessage(i, color1, str);
+				}
+			} else if(IsPlayerInRangeOfPoint(i, range / 3, x, y, z)) {
+				if(strlen(str) > 95) {
+					SendClientMessage(i, color2, str1);
+					SendClientMessage(i, color2, str2);
+				} else {
+					SendClientMessage(i, color2, str);
+				}
+			} else if(IsPlayerInRangeOfPoint(i, range / 2, x, y, z)) {
+				if(strlen(str) > 95) {
+					SendClientMessage(i, color3, str1);
+					SendClientMessage(i, color3, str2);
+				} else {
+					SendClientMessage(i, color3, str);
+				}
+			} else if(IsPlayerInRangeOfPoint(i, range, x, y, z)) {
+				if(strlen(str) > 95) {
+					SendClientMessage(i, color4, str1);
+					SendClientMessage(i, color4, str2);
+				} else {
+					SendClientMessage(i, color4, str);
+				}
 			}
 		}
 	}
@@ -663,8 +668,6 @@ stock createPlayerTextDraws(playerid) {
 stock loadPlayerValues(playerid) {
 	new charDesc[128];
 	
-	PlayerPlaySound(playerid, 0, 0.0, 0.0, 0.0);
-	
 	queryStr[0] = EOS;
 	strcat(queryStr, "SELECT `GUID`, `CharId`, `IP`, `Rank`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `HP`, `AP`, `Bans`, `Kicks`, `Warns`, `VW`, `INT`, `Skin`, `LastSkin`, `Money`, `Bank`, `BW`, `AJ`, `AL`, `DriverLicense`, `PisSkill`, `DglSkill`, `ShtgSkill`, `M4Skill`,");
 	format(queryStr, sizeof(queryStr), "%s`GOV`, `Hotel`, `IdCard`, `Detention`, `PDP`, `TelNum`, `BankAcc`, `Group`, `Frac0`, `CasualJob`, `Traveled`, `Doors`, `Invi`, `ChatStyle`, `Computer`, `WalkAnim`, `Screen`, `X`, `Y`, `Z`, `Desc` FROM `Players` WHERE `CharName` = '%s'", queryStr, pVars[playerid][pCharName]);
@@ -702,6 +705,100 @@ stock loadPlayerContacts(playerid) {
 	}
 	
 	mysql_free_result();
+	return 1;
+}
+
+stock givePlayerPenalty(playerid, victim, type, const reason[]) {
+	new str[256];
+	
+	mainStr[0] = EOS;
+	switch(type) {
+		case PEN_BAN: {			
+			if(playerid == INVALID_PLAYER_ID) {
+				format(str, sizeof(str), "~r~Ban~n~~w~Gracz:     %s~n~Nadajacy: System~n~~y~~h~%s", pVars[victim][pCharName], reason);
+				
+				format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Ban) od System. Powód: %s", reason);
+			} else {
+				format(str, sizeof(str), "~r~Ban~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+				
+				format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Ban) od %s. Powód: %s", pVars[playerid][pCharName], reason);
+			}
+			
+			if(pVars[victim][pDuty] > 0) {
+				pc_cmd_duty(victim, "");
+			}
+			
+			pVars[victim][pBans]++;
+			SetTimerEx("BanPlayer", 2000, false, "is[128]", victim, reason);
+		}
+		case PEN_KICK: {
+			if(playerid == INVALID_PLAYER_ID) {
+				format(str, sizeof(str), "~r~Kick~n~~w~Gracz:     %s~n~Nadajacy: System~n~~y~~h~%s", pVars[victim][pCharName], reason);
+				
+				format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Kick) od System. Powód: %s", reason);
+			} else {
+				format(str, sizeof(str), "~r~Kick~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+				
+				format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Kick) od %s. Powód: %s", pVars[playerid][pCharName], reason);
+			}
+			
+			if(pVars[victim][pDuty] > 0) {
+				pc_cmd_duty(victim, "");
+			}
+			
+			pVars[victim][pKicks]++;
+			SetTimerEx("KickPlayer", 2000, false, "i", victim);
+		}
+		case PEN_ADMJAIL: {
+			if(playerid == INVALID_PLAYER_ID) {
+				format(str, sizeof(str), "~r~AdminJail~n~~w~Gracz:     %s~n~Nadajacy: System~n~~y~~h~%s", pVars[victim][pCharName], reason);
+				
+				format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (AdminJail) od System. Powód: %s", reason);
+			} else {
+				format(str, sizeof(str), "~r~AdminJail~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+				
+				format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (AdminJail) od %s. Powód: %s", pVars[playerid][pCharName], reason);
+			}
+			
+			if(pVars[victim][pDuty] > 0) {
+				pc_cmd_duty(victim, "");
+			}
+		}
+		case PEN_WARN: {
+			if(playerid == INVALID_PLAYER_ID) {
+				format(str, sizeof(str), "~r~Warn~n~~w~Gracz:     %s~n~Nadajacy: System~n~~y~~h~%s", pVars[victim][pCharName], reason);
+				
+				format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Warn) od System. Powód: %s", pVars[playerid][pCharName], reason);
+			} else {
+				format(str, sizeof(str), "~r~Warn~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+				
+				format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Warn) od %s. Powód: %s", pVars[playerid][pCharName], reason);
+			}
+			
+			pVars[victim][pWarns]++;
+		}
+	}
+	
+	SendClientMessage(victim, COLOR_WHITE, mainStr);
+	TextDrawSetString(penalty, str);
+	TextDrawShowForAll(penalty);
+	
+	SetTimer("hidePenalty", 20000, false);
+	return 1;
+}
+
+Callback:BanPlayer(playerid, const reason[]) {
+	BanEx(playerid, reason);
+	return 1;
+}
+
+Callback:KickPlayer(playerid) {
+	Kick(playerid);
+	return 1;
+}
+
+Callback:hidePenalty() {
+	TextDrawHideForAll(penalty);
 	return 1;
 }
 
@@ -774,6 +871,7 @@ stock setPlayerDefaultValues(playerid) {
 	usedTelephone[playerid] = false;
 	drivingCourse[playerid] = false;
 	casualJob[playerid] = INVALID_PART_TIME_JOB;
+	calledCmds[playerid] = 0;
 	
 	for(new i = 0; i < sizeof(chatMessages); i++) {
 		chatMessages[playerid][i] = true;
@@ -842,6 +940,7 @@ stock resetPlayerValues(playerid) {
 	usedTelephone[playerid] = false;
 	drivingCourse[playerid] = false;
 	casualJob[playerid] = INVALID_PART_TIME_JOB;
+	calledCmds[playerid] = 0;
 	
 	for(new i = 0; i < sizeof(chatMessages); i++) {
 		chatMessages[playerid][i] = false;
@@ -870,13 +969,12 @@ stock setPlayerBW(playerid, minutes) {
 		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 	}
 	
-	pVars[playerid][pBw] = (minutes * 60);
+	pVars[playerid][pBw] = minutes * 60;
 	isBW[playerid] = true;
 	
-	format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", (pVars[playerid][pBw] / 60));
-	GameTextForPlayer(playerid, mainStr, 4000, 1);
-	
 	TogglePlayerControllable(playerid, 0);
+	ApplyAnimationEx(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
+	SetPlayerDrunkLevel(playerid, 0);
 	SetTimerEx("bwTimer", 1000, false, "i", playerid);
 	return 1;
 }
@@ -925,16 +1023,16 @@ stock checkPhoneOwnerIdFromNumber(number) {
 	return pId;
 }
 
-stock checkFractionSrvIdForPlayer(playerid) {
-	new fracId;
+stock checkPhoneNumberFromName(name[]) {
+	new number;
 	
-	foreach(new i : fractionItter) {
-		if(fVars[i][fUid] == pVars[playerid][pFraction]) {
-			fracId = i;
+	foreach(new i : Player) {
+		if(!strcmp(pVars[i][pCharName2], name) || !strcmp(pVars[i][pCharName], name)) {
+			number = pVars[i][pTelNum];
 			break;
 		}
 	}
-	return fracId;
+	return number;
 }
 
 stock sendOfferToPlayer(playerid, id, params[], type) {
@@ -955,25 +1053,25 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", fVars[pVars[id][pFraction]][fUid], fVars[pVars[id][pFraction]][fName], offerParams[playerid][0]);			
 		}
 		case 1: {
-			new tmpFracId = checkFractionSrvIdForPlayer(playerid);
+			new tmpFracId = checkServerFractionIdForPlayer(playerid);
 		
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Lekcja prowadzenia pojazdu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);			
 		}
 		case 2: {
-			new tmpFracId = checkFractionSrvIdForPlayer(playerid);
+			new tmpFracId = checkServerFractionIdForPlayer(playerid);
 		
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Dowod osobisty\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);			
 		}
 		case 3: {
-			new tmpFracId = checkFractionSrvIdForPlayer(playerid);
+			new tmpFracId = checkServerFractionIdForPlayer(playerid);
 			
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Prawo jazdy\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);
 		}
 		case 4: {
-			new tmpFracId = checkFractionSrvIdForPlayer(playerid);
+			new tmpFracId = checkServerFractionIdForPlayer(playerid);
 		
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaplacenie podatku budynku\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);		
@@ -992,12 +1090,19 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			return ShowPlayerDialog(id, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_INPUT, str, mainStr, "Tak", "Nie");
 		}
 		case 7: {
-			new tmpFracId = checkFractionSrvIdForPlayer(playerid);
+			new tmpFracId = checkServerFractionIdForPlayer(playerid);
 			
 			SendClientMessage(id, COLOR_WHITE, "UID pojazdu sprawdziæ mo¿na wpisuj¹c /v info, gdy w nim siedzisz.");
 			
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Rejestracja pojazdu o nr seryjnym %d.\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][1], offerParams[id][0]);
+		}
+		case 8: {
+			new vehid = actualVehicle[id];
+			new Float:fuel = 100.0 - (100.0 * vVars[vehid][vFuel] / VEHICLE_FUEL_TANK_MEDIUM);
+			
+			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Zatankowanie pojazdu o %0.1f procent.\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", fuel, offerParams[0]);
 		}
 	}
 	
@@ -1010,10 +1115,21 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 }
 
 // return: void
+stock ApplyAnimationEx(playerid, animlib[], animname[], Float:fDelta, loop, lockx, locky, freeze, time, foresync) {
+	ClearAnimations(playerid);
+	ApplyAnimation(playerid, animlib, animname, fDelta, loop, lockx, locky, freeze, time, foresync);
+}
+
 stock SetPlayerHealthEx(playerid, Float:health) {
 	pVars[playerid][pHp] = health;
 	
 	SetPlayerHealth(playerid, pVars[playerid][pHp]);
+}
+
+stock SetPlayerArmourEx(playerid, Float:armour) {
+	pVars[playerid][pArmor] = armour;
+	
+	SetPlayerArmour(playerid, pVars[playerid][pArmor]);
 }
 
 stock GivePlayerMoneyEx(playerid, money) {

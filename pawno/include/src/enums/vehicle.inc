@@ -3,11 +3,11 @@
 	Author: steeZ (macpilch)
 	File: vehicle.inc
 	Date: 29.07.2022
-	Modified: 04.12.2022
+	Modified: 17.06.2023
 */
 
-#if !defined _VEHICLE_
-#define _VEHICLE_
+#if !defined __VEHICLE_INC__
+#define __VEHICLE_INC__
 
 enum VehicleData {
 	vUid, //id from database	

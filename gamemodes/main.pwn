@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: main.pwn
 	Date: 24.07.2022
-	Modified: 27.04.2023
+	Modified: 28.07.2023
 */
 
 #include <a_samp>
@@ -13,6 +13,8 @@
 #include <sscanf2>
 #include <YSI\y_timers>
 #include <foreach>
+
+#define DEBUG
 
 #include "src\macros\defines"
 #include "src\macros\dialogs"
@@ -30,8 +32,9 @@
 #include "src\core\main_publics"
 #include "src\core\player_publics"
 #include "src\systems\vehicle_publics"
-#include "src\commands\player_cmds"
 #include "src\commands\admin_cmds"
+#include "src\commands\player_cmds"
+#include "src\commands\vehicle_cmds"
 #include "src\core\global_functions"
 #include "src\core\player_functions"
 #include "src\systems\vehicle_functions"
@@ -45,9 +48,7 @@
 #include "src\systems\timers"
 
 main() {
-	new str[64];
-	
-	format(str, sizeof(str), "[LOG] Function: main -- Called! (%d ms).", GetTickCount());
-	print(str);
-	return 1;
+    new callSecs = GetTickCount();
+
+	printf("[LOG]: main -- Called! (%d ms).", GetTickCount() - callSecs);
 }

@@ -3,11 +3,11 @@
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 04.12.2022
+	Modified: 27.07.2023
 */
 
-#if !defined _VARS_
-#define _VARS_
+#if !defined __VARS_INC__
+#define __VARS_INC__
 
 // type - int
 new mySQLConnect;
@@ -30,6 +30,7 @@ new vehCP[MAX_VEHICLES];
 new vehMapIcon[MAX_VEHICLES];
 //part time job
 new casualJob[MAX_PLAYERS];
+new calledCmds[MAX_PLAYERS];
 
 // type - bool
 new bool:isSpawned[MAX_PLAYERS];
@@ -56,6 +57,7 @@ new MySQL:hMySQL;
 
 // type - Text
 new Text:website;
+new Text:penalty;
 new Text:helpInfo[MAX_PLAYERS][2];
 new Text:firstHoursInfo[3];
 new Text:vehicleTips[MAX_PLAYERS][2];

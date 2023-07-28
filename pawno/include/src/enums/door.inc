@@ -3,11 +3,11 @@
 	Author: steeZ (macpilch)
 	File: door.inc
 	Date: 10.09.2022
-	Modified: 04.12.2022
+	Modified: 17.06.2023
 */
 
-#if !defined _DOOR_
-#define _DOOR_
+#if !defined __DOOR_INC__
+#define __DOOR_INC__
 
 enum {
 	D_PUBLIC = 0,

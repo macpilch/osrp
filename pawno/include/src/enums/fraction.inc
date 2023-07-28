@@ -3,11 +3,11 @@
 	Author: MisterMagik
 	File: fraction.inc
 	Date: 05.09.2022
-	Modified: 04.12.2022
+	Modified: 17.06.2023
 */
 
-#if !defined _FRACTION_
-#define _FRACTION_
+#if !defined __FRACTION_INC__
+#define __FRACTION_INC__
 
 enum {
 	F_PUBLIC = 0,
@@ -22,7 +22,7 @@ enum FractionData {
 	fName[32],
 	fType, // 0 - publiczne, 1 - przestepcze, 2 - prawo jazdy, 3 - biznesy
 	fMembers,
-	fVehicles,
+	fVehicle1,
 	fMoney,
 	fCash
 };

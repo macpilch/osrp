@@ -3,11 +3,11 @@
 	Author: MisterMagik
 	File: cashpoint_functions.inc
 	Date: 16.09.2022
-	Modified: 22.01.2023
+	Modified: 17.06.2023
 */
 
-#if !defined _CASHPOINT_FUNCTIONS_
-#define _CASHPOINT_FUNCTIONS_
+#if !defined __CASHPOINT_FUNCTIONS_INC__
+#define __CASHPOINT_FUNCTIONS_INC__
 
 stock initCashpointValues() {
 	queryStr[0] = EOS;
@@ -34,11 +34,9 @@ stock initCashpointValues() {
 }
 
 stock searchPlayerCashpoint(playerid) {
-	mainStr[0] = EOS;
-	queryStr[0] = EOS;
-	
 	foreach(new i : cashpointItter) {
 		if(IsPlayerInRangeOfPoint(playerid, cVars[i][csDistance], cVars[i][csX], cVars[i][csY], cVars[i][csZ])) {
+			queryStr[0] = EOS;
 			format(queryStr, sizeof(queryStr), "SELECT `Bank` FROM `Players` WHERE `UID` = '%d'", pVars[playerid][pUid]);
 			mysql_query(queryStr);
 			mysql_store_result();
@@ -46,6 +44,7 @@ stock searchPlayerCashpoint(playerid) {
 			pVars[playerid][pBank] = mysql_fetch_int();
 			mysql_free_result();
 			
+			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tStan konta (%d)\n2\tWyp³aæ pieni¹dze\n3\tWp³aæ pieni¹dze\n4\tDokonaj przelewu\n5\tSp³aæ d³ug ($0)", pVars[playerid][pBank]);
 			ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT, DIALOG_STYLE_LIST, "Bankomat", mainStr, "OK", "Anuluj");
 			
@@ -79,6 +78,7 @@ stock createNewCashpoint(playerid, cashpointname[]) {
 	cVars[freeId][csDistance] = 2.0;
 	cVars[freeId][csObject] = CreateDynamicObject(2942, cVars[freeId][csX], cVars[freeId][csY], cVars[freeId][csZ] - 0.35, 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
 	
+	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "INSERT INTO `Cashpoints`(`UID`, `Name`, `Object`, `IsOpen`, `X`, `Y`, `Z`, `Distance`) VALUES ('%d', '%s', '%d', '%d', '%f', '%f', '%f', '%f')", cVars[freeId][csUid], cVars[freeId][csName], cVars[freeId][csObject], cVars[freeId][csIsOpen], cVars[freeId][csX], cVars[freeId][csY], cVars[freeId][csZ], cVars[freeId][csDistance]);
 	mysql_query(queryStr);
 	return 1;

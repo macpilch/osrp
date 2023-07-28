@@ -3,17 +3,17 @@
 	Author: steeZ (macpilch)
 	File: item_functions.inc
 	Date: 14.08.2022
-	Modified: 04.12.2022
+	Modified: 27.07.2023
 */
 
-#if !defined _ITEM_FUNCTIONS_
-#define _ITEM_FUNCTIONS_
+#if !defined __ITEM_FUNCTIONS_INC__
+#define __ITEM_FUNCTIONS_INC__
 
 stock initItemValues() {
 	queryStr[0] = EOS;
 	
 	for(new i = 0; i < MAX_ITEMS; i++) {
-		format(queryStr, sizeof(queryStr), "SELECT `UID`, `ID`, `OUID`, `Name`, `Values`, `Used` FROM `Items` WHERE `UID` = '%d'", i + 1);
+		format(queryStr, sizeof(queryStr), "SELECT * FROM `Items` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
 		mysql_store_result();
 		
@@ -62,11 +62,12 @@ stock addPlayerItem(playerid, itemid) {
 	
 	Iter_Add(itemItter, freeId);
 	
+	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "INSERT INTO `Items` (`UID`, `ID`, `OUID`, `Name`, `Values`, `Used`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d')", iVars[freeId][iUid], iVars[freeId][iId], iVars[freeId][iOUid], iVars[freeId][iName], iVars[freeId][iValues], iVars[freeId][iUsed]);
 	mysql_query(queryStr);
 	
 	if(iVars[freeId][iId] == P_TELEFON || iVars[freeId][iId] == P_NKA8110) {
-		new number[7], numberStr[16];
+		new number[7], numberStr[8];
 		
 		for(new i = 0; i < sizeof(number); i++) {
 			number[i] = random(10);
@@ -101,7 +102,6 @@ stock addPlayerItem(playerid, itemid) {
 
 stock removePlayerItem(srvitemid) {
 	queryStr[0] = EOS;
-	
 	format(queryStr, sizeof(queryStr), "DELETE FROM `Items` WHERE `UID` = '%d'", iVars[srvitemid][iUid]);
 	mysql_query(queryStr);
 	
@@ -116,7 +116,7 @@ stock removePlayerItem(srvitemid) {
 	return 1;
 }
 
-stock checkSrvItemIdForPlayer(playerid) {
+stock checkServerItemIdForPlayer(playerid) {
 	new id;
 	
 	foreach(new i : itemItter) {
@@ -255,40 +255,27 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		}
 		case P_KAMIZELKA: {
-				if(!iVars[srvitemid][iUsed]) {
-					SetPlayerArmour(playerid, iVars[srvitemid][iValues]);
-					format(mainStr, sizeof(mainStr), "* %s zak³ada %s.", pVars[playerid][pCharName], itemNames[itemid]);
-					sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
-					
-					iVars[srvitemid][iUsed] = true;
-				} else {
-					format(mainStr, sizeof(mainStr), "* %s zdejmuje %s.", pVars[playerid][pCharName], itemNames[itemid]);
-					sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
-					
-					iVars[srvitemid][iUsed] = false;
-					saveItemWeaponAmmo(srvitemid);
-					SetPlayerArmour(playerid, 0);
-				}
+			if(!iVars[srvitemid][iUsed]) {
+				SetPlayerArmour(playerid, iVars[srvitemid][iValues]);
+				
+				format(mainStr, sizeof(mainStr), "* %s zak³ada %s.", pVars[playerid][pCharName], itemNames[itemid]);
+				sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+				
+				iVars[srvitemid][iUsed] = true;
+			} else {
+				format(mainStr, sizeof(mainStr), "* %s zdejmuje %s.", pVars[playerid][pCharName], itemNames[itemid]);
+				sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+				
+				iVars[srvitemid][iUsed] = false;
+				saveItemWeaponAmmo(srvitemid);
+				SetPlayerArmour(playerid, 0);
+			}
 		}
 		case P_COLT, P_DEAGLE, P_SHOTGUN, P_M4: {
 			if(!iVars[srvitemid][iUsed]) {
-				switch(itemid) {
-					case P_COLT: {
-						GivePlayerWeapon(playerid, 22, loadItemWeaponAmmo(srvitemid));
-					}
-					case P_DEAGLE: {
-						GivePlayerWeapon(playerid, 24, loadItemWeaponAmmo(srvitemid));
-					}
-					case P_SHOTGUN: {
-						GivePlayerWeapon(playerid, 25, loadItemWeaponAmmo(srvitemid));
-					}
-					case P_M4: {
-						GivePlayerWeapon(playerid, 31, loadItemWeaponAmmo(srvitemid));
-					}
-				}
-				
-				format(mainStr, sizeof(mainStr), "* %s wyci¹ga %s.", pVars[playerid][pCharName], itemNames[itemid]);
-				sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+				strcat(mainStr, "Sk¹d wyci¹gasz/dok¹d chowasz broñ (np. \"z kabury\")?\n\n");
+				strcat(mainStr, "Mo¿esz pomin¹æ ten dialog i szybciej u¿ywaæ przedmiotów (/pomoc -> Przedmioty).");
+				ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PARAMETERS, DIALOG_STYLE_INPUT, "Parametry", mainStr, "U¿yj", "Anuluj");
 				
 				iVars[srvitemid][iUsed] = true;
 			} else {
@@ -301,8 +288,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				iVars[srvitemid][iUsed] = false;
 			}
 		}
-		case P_CHEESBURG, P_FRYTKI, P_GRVBURGER, P_HAMBGRG, P_HOTDOG, P_KEBAB, P_LODY, P_LODYWKBK, P_LONGER, P_NACHOSZS, P_NALESNIK, P_NALESNIKI,
-			 P_PACZEK, P_PACZEKAFRO, P_PACZEKZLT, P_SUSHI: {
+		case P_CHEESBURG, P_FRYTKI, P_GRVBURGER, P_HAMBGRG, P_HOTDOG, P_KEBAB, P_LODY, P_LODYWKBK, P_LONGER, P_NACHOSZS, P_NALESNIK, P_NALESNIKI, P_PACZEK, P_PACZEKAFRO, P_PACZEKZLT, P_SUSHI: {
 			iVars[srvitemid][iUsed] = true;
 			
 			SetPlayerHealthEx(playerid, pVars[playerid][pHp] += random(10) + 5.0);
@@ -318,7 +304,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 	return 1;
 }
 
-static stock loadItemWeaponAmmo(srvitemid) {
+stock loadItemWeaponAmmo(srvitemid) {
 	new ammo;
 	
 	queryStr[0] = EOS;
@@ -331,7 +317,7 @@ static stock loadItemWeaponAmmo(srvitemid) {
 	return ammo;
 }
 
-static stock saveItemWeaponAmmo(srvitemid) {
+stock saveItemWeaponAmmo(srvitemid) {
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "UPDATE `Items` SET `Values` = '%d' WHERE `ID` = '%d'", iVars[srvitemid][iValues], iVars[srvitemid][iId]);
 	mysql_query(queryStr);

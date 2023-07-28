@@ -3,17 +3,15 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 09.12.2022
+	Modified: 28.07.2023
 */
 
-#if !defined _TIMERS_
-#define _TIMERS_
+#if !defined __TIMERS_INC__
+#define __TIMERS_INC__
 
-Timer:globalTimer[1000]() {
-	timerStr[0] = EOS;
-	
+task globalTimer[1000]() {
 	foreach(new i : Player) {
-		new srvItemId = checkSrvItemIdForPlayer(i), drunkLevel = GetPlayerDrunkLevel(i);
+		new srvItemId = checkServerItemIdForPlayer(i), drunkLevel = GetPlayerDrunkLevel(i);
 		
 		playerAFKTime[i]++;
 		GetPlayerHealth(i, pVars[i][pHp]);
@@ -26,7 +24,7 @@ Timer:globalTimer[1000]() {
 			}
 			
 			if(isBW[i]) {
-				if(iVars[srvItemId][iId] == P_ROLKI) {
+				if(iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(rolki, AFK od %02d:%02d, %s)", pVars[i][pCharName], i, h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 					} else {
@@ -66,7 +64,7 @@ Timer:globalTimer[1000]() {
 					}
 				}	
 			} else {
-				if(iVars[srvItemId][iId] == P_ROLKI) {
+				if(iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(rolki, AFK od %02d:%02d)", pVars[i][pCharName], i, h, mins);
 					} else {
@@ -88,7 +86,7 @@ Timer:globalTimer[1000]() {
 			}
 		} else {
 			if(isBW[i]) { // by MisterMagik
-				if(iVars[srvItemId][iId] == P_ROLKI) {
+				if(iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(rolki, %s)", pVars[i][pCharName], i, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 					} else {
@@ -128,7 +126,7 @@ Timer:globalTimer[1000]() {
 					}						
 				}
 			} else {
-				if(iVars[srvItemId][iId] == P_ROLKI) {
+				if(iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(rolki)", pVars[i][pCharName], i);
 					} else {
@@ -150,8 +148,8 @@ Timer:globalTimer[1000]() {
 			}
 		}
 		
-		if(pVars[i][pHp] == 1.0 && !isBW[i] && isSpawned[i]) {
-			SetPlayerHealthEx(i, 2.0);
+		if(pVars[i][pHp] <= 5.0 && !isBW[i] && isSpawned[i]) {
+			SetPlayerHealthEx(i, 5.0);
 			setPlayerBW(i, 3);
 		}
 		
@@ -181,28 +179,30 @@ Timer:globalTimer[1000]() {
 			}
 		}
 		
-		if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
-			if(hasBelts[i]) {
-				format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%0.1f~w~ KM~n~~w~Paliwo: ~b~%0.1f~w~ L~n~Pasy: ~g~zapiete", getVehicleSpeed(vVars[actualVehicle[i]][vId]), vVars[actualVehicle[i]][vMileage], vVars[actualVehicle[i]][vFuel]);
-				TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
-				TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
+		if(!isBicycle(vVars[actualVehicle[i]][vModelId])) {
+			if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
+				if(hasBelts[i]) {
+					format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%0.1f~w~ KM~n~~w~Paliwo: ~b~%0.1f~w~ L~n~Pasy: ~g~zapiete", getVehicleSpeed(vVars[actualVehicle[i]][vId]), vVars[actualVehicle[i]][vMileage], vVars[actualVehicle[i]][vFuel]);
+					TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
+					TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
+				} else {
+					format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%0.1f~w~ KM~n~~w~Paliwo: ~b~%0.1f~w~ L~n~Pasy: ~r~odpiete", getVehicleSpeed(vVars[actualVehicle[i]][vId]), vVars[actualVehicle[i]][vMileage], vVars[actualVehicle[i]][vFuel]);
+					TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
+					TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
+				}
+			} else if(GetPlayerState(i) == PLAYER_STATE_PASSENGER) {
+				if(hasBelts[i]) {
+					format(timerStr, sizeof(timerStr), "Pasy: ~g~zapiete");
+					TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
+					TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
+				} else {
+					format(timerStr, sizeof(timerStr), "Pasy: ~r~odpiete");
+					TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
+					TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
+				}	
 			} else {
-				format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%0.1f~w~ KM~n~~w~Paliwo: ~b~%0.1f~w~ L~n~Pasy: ~r~odpiete", getVehicleSpeed(vVars[actualVehicle[i]][vId]), vVars[actualVehicle[i]][vMileage], vVars[actualVehicle[i]][vFuel]);
-				TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
-				TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
+				TextDrawHideForPlayer(i, vehicleSpeedMeter[i][0]);
 			}
-		} else if(GetPlayerState(i) == PLAYER_STATE_PASSENGER) {
-			if(hasBelts[i]) {
-				format(timerStr, sizeof(timerStr), "Pasy: ~g~zapiete");
-				TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
-				TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
-			} else {
-				format(timerStr, sizeof(timerStr), "Pasy: ~r~odpiete");
-				TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
-				TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
-			}	
-		} else {
-			TextDrawHideForPlayer(i, vehicleSpeedMeter[i][0]);
 		}
 		
 		foreach(new j : vehItter) {
@@ -261,7 +261,7 @@ Timer:globalTimer[1000]() {
 				}
 			}
 			
-			if(vVars[j][vModelId] == 509 || vVars[j][vModelId] == 481 || vVars[j][vModelId] == 510) {
+			if(isBicycle(vVars[j][vModelId])) {
 				if(IsPlayerInVehicle(i, vVars[j][vId])) {
 					if(getVehicleSpeed(i) > 60.0) {
 						GameTextForPlayer(i, "~r~Nie mozesz jechac tak szybko tym~n~pojazdem.", 5000, 3);
@@ -278,14 +278,14 @@ Timer:globalTimer[1000]() {
 	}
 }
 
-Timer:saveAllValues[10000]() {
+task saveAllValuesTimer[59000]() {
 	saveVehicleValues();
 	saveItemValues();
 	saveDoorValues();
 	saveServerValues();
 }
 
-Timer:setRealTimeTimer[600000]() {
+task setRealTimeTimer[600000]() {
 	new h, m, s;
 	
 	gettime(h, m, s);
@@ -295,17 +295,21 @@ Timer:setRealTimeTimer[600000]() {
 	}
 }
 
-Timer:updateWebsiteDateTimer[1900]() {
+task updateWebsiteDateTimer[1900]() {
 	new day, month, year;
 	
 	getdate(year, month, day);
 	
 	timerStr[0] = EOS;
+#if defined DEBUG
+	format(timerStr, sizeof(timerStr), "samp-rp.com[debug]:_%d.%d.%d", day, month, year - 2000);
+#else
 	format(timerStr, sizeof(timerStr), "samp-rp.com_:_%d.%d.%d", day, month, year - 2000);
+#endif
 	TextDrawSetString(website, timerStr);
 }
 
-Timer:townHallBellsTimer[59000]() {
+task townHallBellsTimer[59000]() {
 	new hours, minutes, seconds;
 	
 	gettime(hours, minutes, seconds);
@@ -316,8 +320,6 @@ Timer:townHallBellsTimer[59000]() {
 			
 			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d razy. **", hours);
 			SendClientMessage(i, COLOR_WHITE, timerStr);
-		} else if(hours == 0) {
-			SendClientMessage(i, COLOR_WHITE, "** Dzwony w ratuszu wybi³y pó³noc. **");
 		}
 	}
 	
@@ -326,7 +328,7 @@ Timer:townHallBellsTimer[59000]() {
 	}
 }
 
-Timer:giveFreeMoneyTimer[590000]() {
+task giveFreeMoneyTimer[590000]() {
 	foreach(new i : Player) {
 		if(pVars[i][pHours] >= 0 && pVars[i][pHours] <= 1) {
 			GivePlayerMoneyEx(i, 25);
@@ -341,14 +343,13 @@ Timer:giveFreeMoneyTimer[590000]() {
 	}
 }
 
-Timer:getMoneyForHotelTimer[60000]() {
-	new h, m, s;
-	new numChars;
+task getMoneyForHotelTimer[60000]() {
+	new h, m, s, numChars;
 	
 	gettime(h, m, s);
-	queryStr[0] = EOS;
 	
 	if(h == 14) {
+		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `Players`");
 		mysql_query(queryStr);
 		mysql_store_result();

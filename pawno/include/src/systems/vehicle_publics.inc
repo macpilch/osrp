@@ -3,14 +3,18 @@
 	Author: steeZ (macpilch)
 	File: vehicle_publics.inc
 	Date: 29.07.2022
-	Modified: 04.12.2022
+	Modified: 25.07.2023
 */
 
-#if !defined _VEHICLE_PUBLICS_
-#define _VEHICLE_PUBLICS_
+#if !defined __VEHICLE_PUBLICS_INC__
+#define __VEHICLE_PUBLICS_INC__
 
 sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
-	new vehid;
+	new vehid = getServerVehicleIdForPlayer(vehicleid);
+	
+	if(checkPlayerVehicles(playerid)) {
+		actualVehicle[playerid] = vehid;
+	}
 	
 	if(vehicleid && isVehicleInUse(vehicleid) && pVars[playerid][pDriverLicense] < 1) {
 		ClearAnimations(playerid);
@@ -20,7 +24,7 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		SendClientMessage(playerid, COLOR_WHITE, "(!) Zanim bêdzie Ciê staæ, u¿yj /budka, by dzwoniæ po taxi, lub /bus. Prowadziæ mo¿na po przegraniu 10min.");
 	}
 	
-	if(vehicleid && !vehicleNonEngine(vehicleid) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid] && !ispassenger) {
+	if(vehicleid && !isBicycle(GetVehicleModel(vehicleid)) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid] && !ispassenger) {
 		ClearAnimations(playerid);
 		
 		mainStr[0] = EOS;
@@ -29,39 +33,33 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 	}
 	
-	foreach(new i : vehItter) {
-		if(vVars[i][vId] == vehicleid) {
-			vehid = i;
-			break;
-		}
-	}
-	
 	if(vehicleid && vVars[vehid][vLock]) {
 		ClearAnimations(playerid);
-		
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Pojazd jest zamkniety.~n~~w~/v zamknij", 6000, 3);
 	}
 	
-	if(vehicleid && vVars[vehid][vOUid] != pVars[playerid][pUid]) {
+	if(vehicleid && vVars[vehid][vOUid] != pVars[playerid][pUid] && !isVehicleInUse(vehicleid)) {
 		ClearAnimations(playerid);
-		
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Nie mozesz prowadzic tego~n~pojazdu.", 6000, 3);		
 	}
 	return 1;
 }
 
 sampCallback:OnPlayerExitVehicle(playerid, vehicleid) {
+#if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnPlayerExitVehicle");
+#endif
 	return 1;
 }
 
 sampCallback:OnVehicleSpawn(vehicleid) {
-	
 	return 1;
 }
 
 sampCallback:OnVehicleDeath(vehicleid, killerid) {
+#if defined DEBUG
 	SendClientMessage(killerid, COLOR_WHITE, "Witma ! OnVehicleDeath");
+#endif
 	
 	new vehid = actualVehicle[killerid];
 	
@@ -73,25 +71,33 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 }
 
 sampCallback:OnVehicleMod(playerid, vehicleid, componentid) {
+#if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehicleMod");
+#endif
 	return 1;
 }
 
 sampCallback:OnVehiclePaintjob(playerid, vehicleid, paintjobid) {
+#if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehiclePaintjob");
+#endif
 	return 1;
 }
 
 sampCallback:OnVehicleRespray(playerid, vehicleid, color1, color2) {
+#if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehicleRespray");
+#endif
 	return 1;
 }
 
 sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
+#if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehicleDamageStatusUpdate");
+#endif
 	
 	new panels, doors, lights, tires;
-	new damage = setPlayerVehDamage(playerid);
+	new damage = setPlayerVehicleDamage(playerid);
 	
 	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
 	UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
@@ -109,12 +115,16 @@ sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 }
 
 sampCallback:OnVehicleStreamIn(vehicleid, forplayerid) {
+#if defined DEBUG
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamIn");
+#endif
 	return 1;
 }
 
 sampCallback:OnVehicleStreamOut(vehicleid, forplayerid) {
+#if defined DEBUG
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamOut");
+#endif
 	return 1;
 }
 

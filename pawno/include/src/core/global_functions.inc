@@ -3,16 +3,17 @@
 	Author: steeZ (macpilch)
 	File: global_functions.inc
 	Date: 28.07.2022
-	Modified: 04.12.2022
+	Modified: 23.07.2023
 */
 
-#if !defined _GLOBAL_FUNCTIONS_
-#define _GLOBAL_FUNCTIONS_
+#if !defined __GLOBAL_FUNCTIONS_INC__
+#define __GLOBAL_FUNCTIONS_INC__
 
 stock initServerValues() {
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "SELECT `AllAccounts` FROM `Settings`");
 	mysql_query(queryStr);
+	
 	mysql_store_result();
 	
 	allAccounts = mysql_fetch_int();

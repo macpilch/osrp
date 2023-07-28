@@ -3,11 +3,11 @@
 	Author: MisterMagik
 	File: station_functions.inc
 	Date: 11.09.2022
-	Modified: 04.12.2022
+	Modified: 17.06.2023
 */
 
-#if !defined _STATION_FUNCTIONS_
-#define _STATION_FUNCTIONS_
+#if !defined __STATION_FUNCTIONS_INC__
+#define __STATION_FUNCTIONS_INC__
 
 stock initStationValues() {
 	queryStr[0] = EOS;
@@ -50,9 +50,9 @@ stock initGasPumpValues() {
 }
 
 stock searchGasPumps(playerid) {
-	new vehicleid = GetPlayerVehicleID(playerid);
+	new modelid = GetVehicleModel(GetPlayerVehicleID(playerid));
 	
-	if(IsPlayerInAnyVehicle(playerid) && !vehicleNonEngine(vehicleid)) {
+	if(IsPlayerInAnyVehicle(playerid) && !isBicycle(modelid)) {
 		mainStr[0] = EOS;
 		
 		for(new i = 0; i < MAX_PETROL_STATIONS; i++) {

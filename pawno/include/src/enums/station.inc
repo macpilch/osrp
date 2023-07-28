@@ -3,11 +3,11 @@
 	Author: MisterMagik
 	File: station.inc
 	Date: 11.09.2022
-	Modified: 04.12.2022
+	Modified: 17.06.2023
 */
 
-#if !defined _STATION_
-#define _STATION_
+#if !defined __STATION_INC__
+#define __STATION_INC__
 
 enum StationData {
 	sUid,

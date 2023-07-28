@@ -3,11 +3,11 @@
 	Author: MisterMagik
 	File: cashpoint.inc
 	Date: 16.09.2022
-	Modified: 04.12.2022
+	Modified: 17.06.2023
 */
 
-#if !defined _CASHPOINT_
-#define _CASHPOINT_
+#if !defined __CASHPOINT_INC__
+#define __CASHPOINT_INC__
 
 enum CashpointData {
 	csUid,

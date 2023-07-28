@@ -3,11 +3,11 @@
 	Author: steeZ (macpilch)
 	File: arrays.inc
 	Date: 25.07.2022
-	Modified: 22.01.2023
+	Modified: 17.06.2023
 */
 
-#if !defined _ARRAYS_
-#define _ARRAYS_
+#if !defined __ARRAYS_INC__
+#define __ARRAYS_INC__
 
 new tmpName[24];
 new mainStr[1024];
@@ -55,8 +55,8 @@ new charManName[][CharName] = {
 	{"Ronan", false}, {"Rurik", false}, {"Santos", false}, {"Seamus", false}, {"Sergio", false}, {"Serguei", false}, {"Seriozha", false}, {"Shashenka", false},
 	{"Shouhei", false}, {"Slavik", false}, {"Sterling", false}, {"Takahiro", false}, {"Takumi", false}, {"Takuya", false}, {"Tariq", false}, {"Tate", false},
 	{"Tavion", false}, {"Thaddeus", false}, {"Theodore", false}, {"Titus", false}, {"Trevin", false}, {"Tristian", false}, {"Tristin", false}, {"Tsubasa", false},
-	{"Vance", false}, {"Volody", false}, {"Yadiel", false}, {"Yahir", false}, {"Yakov", false}, {"Yuuto", false}, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}
+	{"Vance", false}, {"Volody", false}, {"Yadiel", false}, {"Yahir", false}, {"Yakov", false}, {"Yuuto", false}/*, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}*/
 };
 
 new charWomName[][CharName] = {
@@ -73,14 +73,14 @@ new charSur[][CharSurName] = {
 	{"Arshan", false}, {"Arshun", false}, {"Artemieva", false}, {"Arti", false}, {"Astengo", false}, {"Astorino", false}, {"Attento", false}, {"Auriemma", false},
 	{"Avellis", false}, {"Bailey", false}, {"Baker", false}, {"Barcellona", false}, {"Bareldo", false}, {"Barillardo", false}, {"Barnes", false}, {"Bartolocci", false},
 	{"Bashier", false}, {"Basile", false}, {"Bastianelli", false}, {"Battaglia", false}, {"Belcastro", false}, {"Bell", false}, {"Belisto", false}, {"Benitez", false}, {"Bennett", false}, {"Berceto", false}, 
-	{"Bernt", false}, {"Bertolini", false}, {"Bertolino", false}, {"Bertucci", false}, {"Bessette", false}, {"Betro", false}, {"Bevilacqua", false}, {"", false}, {"", false}, {"", false}, 
+	{"Bernt", false}, {"Bertolini", false}, {"Bertolino", false}, {"Bertucci", false}, {"Bessette", false}, {"Betro", false}, {"Bevilacqua", false}/*, {"", false}, {"", false}, {"", false}, 
 	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
 	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
 	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
 	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
 	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
 	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}*/
 };
 
 new itemNames[][] = {

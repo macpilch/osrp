@@ -3,11 +3,11 @@
 	Author: MisterMagik
 	File: fraction_functions.inc
 	Date: 16.09.2022
-	Modified: 04.12.2022
+	Modified: 17.06.2023
 */
 
-#if !defined _FRACTION_FUNCTIONS_
-#define _FRACTION_FUNCTIONS_
+#if !defined __FRACTION_FUNCTIONS_INC__
+#define __FRACTION_FUNCTIONS_INC__
 
 stock initFractionValues(){
 	queryStr[0] = EOS;
@@ -65,13 +65,28 @@ stock createNewFraction(playerid, type, name[]) {
 	
 	Iter_Add(fractionItter, freeId);
 	
+	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "INSERT INTO `Fractions`(`UID`, `OUID`, `Name`, `Type`) VALUES ('%d', '%d', '%s', '%d')", freeId, pVars[playerid][pUid], name, type);
 	mysql_query(queryStr);
+	
+	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Fraction` = '%d' WHERE `UID` = '%d' AND `GUID` = '%d'", freeId, pVars[playerid][pUid], pVars[playerid][pGuid]);
 	mysql_query(queryStr);
 	
 	printf("[DEBUG] Id: %d, Uid: %d, OUid: %d, Name: %s, Type: %d, Members: %d", freeId, fVars[freeId][fUid], fVars[freeId][fOUid], fVars[freeId][fName], fVars[freeId][fType], fVars[freeId][fMembers]);
 	return 1;
+}
+
+stock checkServerFractionIdForPlayer(playerid) {
+	new fracId;
+	
+	foreach(new i : fractionItter) {
+		if(fVars[i][fUid] == pVars[playerid][pFraction]) {
+			fracId = i;
+			break;
+		}
+	}
+	return fracId;
 }
 
 #endif 

@@ -3,17 +3,17 @@
 	Author: steeZ (macpilch)
 	File: door_functions.inc
 	Date: 10.09.2022
-	Modified: 04.12.2022
+	Modified: 17.06.2023
 */
 
-#if !defined _DOOR_FUNCTIONS_
-#define _DOOR_FUNCTIONS_
+#if !defined __DOOR_FUNCTIONS_INC__
+#define __DOOR_FUNCTIONS_INC__
 
 stock initDoorValues() {
 	queryStr[0] = EOS;
 	
 	for(new i = 0; i < MAX_DOORS; i++) {
-		format(queryStr, sizeof(queryStr), "SELECT `UID`, `IDEnt`, `OUID`, `Name`, `EnterX`, `EnterY`, `EnterZ`, `ExitX`, `ExitY`, `ExitZ`, `Open`, `VW`, `INT`, `Type` FROM `Doors` WHERE `UID` = '%d'", i + 1);
+		format(queryStr, sizeof(queryStr), "SELECT * FROM `Doors` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
 		mysql_store_result();
 		
@@ -65,6 +65,7 @@ stock createNewDoor(playerid, ownerId, doorName[]) {
 	dVars[freeId][dVw] = vw;
 	dVars[freeId][dInt] = int;
 	
+	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "INSERT INTO `Doors`(`UID`, `OUID`, `Name`, `VW`, `INT`) VALUES ('%d', '%d', '%s', '%d', '%d')",
 	dVars[freeId][dUid], dVars[freeId][dOUid], dVars[freeId][dName], dVars[freeId][dVw], dVars[freeId][dInt]);
 	mysql_query(queryStr);

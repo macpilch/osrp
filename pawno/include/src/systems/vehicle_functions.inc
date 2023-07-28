@@ -3,17 +3,17 @@
 	Author: steeZ (macpilch)
 	File: vehicle_functions.inc
 	Date: 29.07.2022
-	Modified: 04.12.2022
+	Modified: 25.07.2023
 */
 
-#if !defined _VEHICLE_FUNCTIONS_
-#define _VEHICLE_FUNCTIONS_
+#if !defined __VEHICLE_FUNCTIONS_INC__
+#define __VEHICLE_FUNCTIONS_INC__
 
 stock initVehicleValues() {	
 	queryStr[0] = EOS;
 	
 	for(new i = 0; i < MAX_VEHICLES; i++) {
-		format(queryStr, sizeof(queryStr), "SELECT `UID`, `ID`, `OUID`, `CharName`, `ModelID`, `Color1`, `Color2`, `X`, `Y`, `Z`, `Fuel`, `FuelTank`, `Lock`, `Engine`, `EngineHealth`, `Spawned`, `Lights`, `Mileage`, `Desc`, `Plate` FROM `Vehicles` WHERE `UID` = '%d'", i + 1);
+		format(queryStr, sizeof(queryStr), "SELECT * FROM `Vehicles` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
 		mysql_store_result();
 		
@@ -31,9 +31,11 @@ stock initVehicleValues() {
 		vehCP[i] = -1;
 		vehMapIcon[i] = -1;
 		
+#if defined DEBUG
 		printf("[DEBUG] Uid: %d, Id: %d, OUid: %d, Charname: %s, ModelId: %d, Color1: %d, Color2: %d, X: %f, Y: %f, Z: %f, Fuel: %f, FuelTank: %f, Lock: %d, Engine: %d, EngineHp: %f, Spawned: %d, Lights: %d, Mileage: %f, Desc: %s, Plate: %s", vVars[i][vUid], vVars[i][vId], vVars[i][vOUid], 
 		vVars[i][vCharName], vVars[i][vModelId], vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vFuel], vVars[i][vFuelTank], vVars[i][vLock], vVars[i][vEngine], vVars[i][vEngineHp], vVars[i][vSpawned], vVars[i][vLights], vVars[i][vMileage], vVars[i][vDescInfo],
 		vVars[i][vPlate]);
+#endif
 	}
 	
 	mysql_free_result();
@@ -53,10 +55,10 @@ stock saveVehicleValues() {
 	return 1;
 }
 
-stock getVehicleIdForPlayer(vehicleid) {
+stock getServerVehicleIdForPlayer(vehicleid) {
 	new vehid;
 	
-	foreach(vehItter, i) {
+	foreach(new i : vehItter) {
 		if(vVars[i][vId] == vehicleid) {
 			vehid = i;
 			break;
@@ -67,7 +69,7 @@ stock getVehicleIdForPlayer(vehicleid) {
 
 stock resetVehicleValues(playerid) {
 	foreach(new i : vehItter) {
-		if(vVars[i][vOUid] == playerid) {
+		if(!strcmp(vVars[i][vCharName], pVars[playerid][pCharName])) {
 			DestroyVehicle(vVars[i][vId]);
 			DestroyDynamic3DTextLabel(vVars[i][vDesc]);
 			DestroyDynamicMapIcon(vehMapIcon[i]);
@@ -82,7 +84,7 @@ stock resetVehicleValues(playerid) {
 	return 1;
 }
 
-stock checkPlayerVehicleId(playerid) {
+stock checkPlayerVehicles(playerid) {
 	foreach(new i : vehItter) {
 		if(!strcmp(vVars[i][vCharName], pVars[playerid][pCharName], false)) {
 			return 1;
@@ -91,29 +93,33 @@ stock checkPlayerVehicleId(playerid) {
 	return 0;
 }
 
-Callback:vehLightsOn(playerid, vehicleid) {
-	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
-		new engine, lights, alarm, doors, bonnet, boot, objective;
-		new vehid = actualVehicle[playerid];
-
-		GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
-		SetVehicleParamsEx(vehicleid, engine, 1, alarm, doors, bonnet, boot, objective);
-		
-		vVars[vehid][vLights] = true;
+Callback:vehicleLightsOn(playerid, vehicleid) {
+	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
+		return 1;
 	}
+	
+	new engine, lights, alarm, doors, bonnet, boot, objective;
+	new vehid = actualVehicle[playerid];
+	
+	GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
+	SetVehicleParamsEx(vehicleid, engine, 1, alarm, doors, bonnet, boot, objective);
+	
+	vVars[vehid][vLights] = true;
 	return 1;
 }
 
-Callback:vehLightsOff(playerid, vehicleid) {
-	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
-		new engine, lights, alarm, doors, bonnet, boot, objective;
-		new vehid = actualVehicle[playerid];
-
-		GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
-		SetVehicleParamsEx(vehicleid, engine, 0, alarm, doors, bonnet, boot, objective);
-		
-		vVars[vehid][vLights] = false;
+Callback:vehicleLightsOff(playerid, vehicleid) {
+	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
+		return 1;
 	}
+	
+	new engine, lights, alarm, doors, bonnet, boot, objective;
+	new vehid = actualVehicle[playerid];
+	
+	GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
+	SetVehicleParamsEx(vehicleid, engine, 0, alarm, doors, bonnet, boot, objective);
+	
+	vVars[vehid][vLights] = false;
 	return 1;
 }
 
@@ -124,9 +130,9 @@ stock vehicleEngineStatus(playerid, vehicleid) {
 		if(getVehicleFuel(vehid) <= 0) {
 			return GameTextForPlayer(playerid, "~r~Brak paliwa w pojezdzie.", 5000, 3);
 		}
-	
+		
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~n~~n~~g~Trwa odpalanie silnika...", 3000, 3);
-		SetTimerEx("vehEngineOn", 3000, false, "ii", playerid, vehicleid);
+		SetTimerEx("vehicleEngineOn", 3000, false, "ii", playerid, vehicleid);
 	} else {
 		new engine, lights, alarm, doors, bonnet, boot, objective;
 
@@ -146,20 +152,22 @@ stock vehicleEngineStatus(playerid, vehicleid) {
 	return 1;
 }
 
-Callback:vehEngineOn(playerid, vehicleid) {
-	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
-		new engine, lights, alarm, doors, bonnet, boot, objective;
-		new vehid = actualVehicle[playerid];
-
-		GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
-		SetVehicleParamsEx(vehicleid, 1, lights, alarm, doors, bonnet, boot, objective);
-		
-		for(new i = 0; i < 3; i++) {
-			TextDrawShowForPlayer(playerid, vehicleFuelStatus[playerid][i]);
-		}
-		
-		vVars[vehid][vEngine] = true;
+Callback:vehicleEngineOn(playerid, vehicleid) {
+	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
+		return 1;
 	}
+	
+	new engine, lights, alarm, doors, bonnet, boot, objective;
+	new vehid = actualVehicle[playerid];
+
+	GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
+	SetVehicleParamsEx(vehicleid, 1, lights, alarm, doors, bonnet, boot, objective);
+	
+	for(new i = 0; i < 3; i++) {
+		TextDrawShowForPlayer(playerid, vehicleFuelStatus[playerid][i]);
+	}
+	
+	vVars[vehid][vEngine] = true;
 	return 1;
 }
 
@@ -172,7 +180,7 @@ stock getVehicleSpeed(vehicleid) {
 	return vehVel;
 }
 
-stock setPlayerVehDamage(playerid) {
+stock setPlayerVehicleDamage(playerid) {
 	new vehicleid = GetPlayerVehicleID(playerid);
 	new speed = getVehicleSpeed(vehicleid);
 	new chancePlayerDizzines;
@@ -183,16 +191,14 @@ stock setPlayerVehDamage(playerid) {
 		case 0 .. 50: {
 			if(hasBelts[playerid]) {
 				return 0;
-			} else {
-				return 1;
 			}
+			return 1;
 		}
 		case 51 .. 79: {
 			if(hasBelts[playerid]) {
 				return 0;
-			} else {
-				return 2;
 			}
+			return 2;
 		}
 		case 80 .. 99: {
 			if(hasBelts[playerid]) {
@@ -202,10 +208,8 @@ stock setPlayerVehDamage(playerid) {
 					isDizzines[playerid] = true;
 					
 					SetPlayerDrunkLevel(playerid, 1000);
-					return 4;
-				} else {
-					return 4;
 				}
+				return 4;
 			}
 		}
 		case 100 .. 139: {
@@ -216,19 +220,15 @@ stock setPlayerVehDamage(playerid) {
 					isDizzines[playerid] = true;
 					
 					SetPlayerDrunkLevel(playerid, 1000);
-					return 3;
-				} else {
-					return 3;
 				}
+				return 3;
 			} else {
 				if(chancePlayerDizzines >= 60) {
 					isDizzines[playerid] = true;
 					
 					SetPlayerDrunkLevel(playerid, 1000);
-					return 6;
-				} else {
-					return 6;
 				}
+				return 6;
 			}
 		}
 		case 140 .. 169: {
@@ -239,19 +239,15 @@ stock setPlayerVehDamage(playerid) {
 					isDizzines[playerid] = true;
 					
 					SetPlayerDrunkLevel(playerid, 1000);
-					return 5;
-				} else {
-					return 5;
 				}
+				return 5;
 			} else {
 				if(chancePlayerDizzines >= 50) {
 					isDizzines[playerid] = true;
 					
 					SetPlayerDrunkLevel(playerid, 10000);
-					return 10;
-				} else {
-					return 10;
 				}
+				return 10;
 			}
 		}
 		case 170 .. 220: {
@@ -262,32 +258,19 @@ stock setPlayerVehDamage(playerid) {
 					isDizzines[playerid] = true;
 					
 					SetPlayerDrunkLevel(playerid, 10000);
-					return 6;
-				} else {
-					return 6;
 				}
+				return 6;
 			} else {
 				if(chancePlayerDizzines >= 20) {
 					isDizzines[playerid] = true;
 					
 					SetPlayerDrunkLevel(playerid, 10000);
-					return 14;
-				} else {
-					return 14;
 				}
+				return 14;
 			}
 		}
 	}
 	return 1;
-}
-
-stock vehicleNonEngine(vehicleid) {
-	switch(GetVehicleModel(vehicleid)) {
-		case 509, 481, 510: {
-			return 1;
-		}
-	}
-	return 0;
 }
 
 stock isVehicleInUse(vehicleid) {
@@ -329,34 +312,26 @@ stock setVehicleFuelTank(srvvehid, fuel_tank_size) {
 stock Float:getVehicleDistance(vehicleid) {
 	new Float:vehicleDistance;
 	
-	vehicleDistance = getVehicleSpeed(vehicleid) * 1000 / 3600 / 1;
+	vehicleDistance = getVehicleSpeed(vehicleid) * (1000 / 3600 / 1);
 	vehicleDistance = vehicleDistance / 1000;
 	return vehicleDistance;
 }
 
-stock isCar(vehicleid) {
-	new modelid = GetVehicleModel(vehicleid);
-	
+stock isCar(modelid) {
 	switch(modelid) {
-		case 0 .. 399: {
-			return 0;
-		}
 		case 400 .. 402: {
 			return 1;
 		}
-		case 404 .. 405: {
+		case 404, 405: {
 			return 1;
-		}	
+		}
 		case 409 .. 412: {
 			return 1;
 		}
 		case 415: {
 			return 1;
 		}
-		case 418 .. 422: {
-			return 1;
-		}
-		case 424: {
+		case 419 .. 422: {
 			return 1;
 		}
 		case 426: {
@@ -365,13 +340,10 @@ stock isCar(vehicleid) {
 		case 429: {
 			return 1;
 		}
-		case 432: {
-			return 1;
-		}
 		case 436: {
 			return 1;
 		}
-		case 438 .. 439: {
+		case 438, 439: {
 			return 1;
 		}
 		case 442: {
@@ -386,37 +358,40 @@ stock isCar(vehicleid) {
 		case 458: {
 			return 1;
 		}
-		case 466 .. 467: {
+		case 466, 467: {
 			return 1;
 		}
 		case 470: {
 			return 1;
 		}
-		case 474 .. 475: {
+		case 474, 475: {
 			return 1;
 		}
 		case 477 .. 480: {
 			return 1;
 		}
-		case 483: {
+		case 491, 492: {
 			return 1;
 		}
-		case 489 .. 492: {
-			return 1;
-		} 
 		case 494 .. 496: {
 			return 1;
 		}
 		case 500: {
 			return 1;
 		}
-		case 502 .. 507: {
+		case 502 .. 504: {
+			return 1;
+		}
+		case 506, 507: {
 			return 1;
 		}
 		case 516 .. 518: {
 			return 1;
 		}
-		case 526 .. 529: {
+		case 526, 527: {
+			return 1;
+		}
+		case 529: {
 			return 1;
 		}
 		case 533 .. 536: {
@@ -427,75 +402,80 @@ stock isCar(vehicleid) {
 		}
 		case 545 .. 547: {
 			return 1;
-		}		
+		}
 		case 549 .. 552: {
 			return 1;
-		}		
-		case 554 .. 555: {
+		}
+		case 554, 555: {
 			return 1;
-		}		
+		}
 		case 558 .. 562: {
 			return 1;
-		}		
+		}
 		case 565 .. 568: {
 			return 1;
 		}
-		case 575 .. 576: {
+		case 575, 576: {
 			return 1;
 		}
-		case 579 .. 580: {
-			return 1;
-		}
-		case 582: {
+		case 579, 580: {
 			return 1;
 		}
 		case 585: {
 			return 1;
 		}
-		case 587 .. 589: {
+		case 587: {
 			return 1;
 		}
-		case 596 .. 605: {
+		case 589: {
+			return 1;
+		}
+		case 596 .. 600: {
+			return 1;
+		}
+		case 602 .. 605: {
 			return 1;
 		}
 	}
 	return 0;
 }
 
-stock isTruck(vehicleid) {
-	new modelid = GetVehicleModel(vehicleid);
-	
-	switch (modelid) {
-		case 0 .. 399: {
-			return 0;
-		}
+stock isTruck(modelid) {
+	switch(modelid) {
 		case 403: {
 			return 1;
 		}
-		case 514 .. 515: {
+		case 414: {
+			return 1;
+		}
+		case 443: {
+			return 1;
+		}
+		case 455, 456: {
+			return 1;
+		}
+		case 499: {
+			return 1;
+		}
+		case 514, 515: {
+			return 1;
+		}
+		case 524, 525: {
 			return 1;
 		}
 	}
 	return 0;
 }
 
-stock isBike(vehicleid) {
-	new modelid = GetVehicleModel(vehicleid);
-	
+stock isBike(modelid) {
 	switch(modelid) {
-		case 0 .. 399: {
-			return 0;
-		}
 		case 448: {
 			return 1;
 		}
-		case 461 ..  463: {
+		case 461 .. 463: {
 			return 1;
 		}
 		case 468: {
-			return 1;
-		}
-		case 471: {
 			return 1;
 		}
 		case 521 .. 523: {
@@ -511,13 +491,20 @@ stock isBike(vehicleid) {
 	return 0;
 }
 
-stock isBoat(vehicleid) {
-	new modelid = GetVehicleModel(vehicleid);
-	
+stock isBicycle(modelid) {
 	switch(modelid) {
-		case 0 .. 399: {
-			return 0;
-		}	
+		case 481: {
+			return 1;
+		}
+		case 509, 510: {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+stock isBoat(modelid) {
+	switch(modelid) {
 		case 430: {
 			return 1;
 		}
@@ -527,7 +514,7 @@ stock isBoat(vehicleid) {
 		case 452 .. 454: {
 			return 1;
 		}
-		case 472 .. 473: {
+		case 472, 473: {
 			return 1;
 		}
 		case 484: {
@@ -543,13 +530,8 @@ stock isBoat(vehicleid) {
 	return 0;
 }
 
-stock isHelicopter(vehicleid) {
-	new modelid = GetVehicleModel(vehicleid);
-	
+stock isHelicopter(modelid) {
 	switch(modelid) {
-		case 0 .. 399: {
-			return 0;
-		}
 		case 417: {
 			return 1;
 		}
@@ -562,10 +544,13 @@ stock isHelicopter(vehicleid) {
 		case 469: {
 			return 1;
 		}
-		case 487 .. 488 {
+		case 487, 488: {
 			return 1;
 		}
 		case 497: {
+			return 1;
+		}
+		case 512, 513: {
 			return 1;
 		}
 		case 548: {
@@ -578,13 +563,8 @@ stock isHelicopter(vehicleid) {
 	return 0;
 }
 
-stock isPlane(vehicleid) {
-	new modelid = GetVehicleModel(vehicleid);
-	
+stock isPlane(modelid) {
 	switch(modelid) {
-		case 0 .. 399: {
-			return 0;
-		}
 		case 460: {
 			return 1;
 		}
@@ -594,16 +574,16 @@ stock isPlane(vehicleid) {
 		case 511 .. 513: {
 			return 1;
 		}
-		case 519 .. 520: {
+		case 519, 520: {
 			return 1;
 		}
-		case 553 {
+		case 553: {
 			return 1;
 		}
-		case 577 {
+		case 577: {
 			return 1;
 		}
-		case 592 .. 593 {
+		case 592, 593: {
 			return 1;
 		}
 	}
@@ -639,5 +619,17 @@ stock getPriceForRepairVehicleVisual(vehicleid) {
 	return round(money);
 }
 */
+
+Callback:addFuelToVehicle(playerid) {
+	new vehid = actualVehicle[playerid];
+	new Float:fuel = VEHICLE_FUEL_TANK_MEDIUM - vVars[vehid][vFuel];
+	
+	vVars[vehid][vFuel] += fuel;
+	
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "* Pojazd %s zosta³ zatankowany. *", VehicleNames[vVars[vehid][vModelId] - 400]);
+	sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+	return 1;
+}
 
 #endif 

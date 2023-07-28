@@ -2,12 +2,12 @@
 	Project: SAMP-RP
 	Author: steeZ (macpilch)
 	File: player.inc
-	Date: 24.07.2022
-	Modified: 04.12.2022
+	Date: 25.07.2022
+	Modified: 17.06.2023
 */
 
-#if !defined _PLAYER_
-#define _PLAYER_
+#if !defined __PLAYER_INC__
+#define __PLAYER_INC__
 
 enum CharName {
 	chName[24],

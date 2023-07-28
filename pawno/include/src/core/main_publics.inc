@@ -3,13 +3,15 @@
 	Author: steeZ (macpilch)
 	File: main_publics.inc
 	Date: 24.07.2022
-	Modified: 04.12.2022
+	Modified: 28.07.2023
 */
 
-#if !defined _MAIN_PUBLICS_
-#define _MAIN_PUBLICS_
+#if !defined __MAIN_PUBLICS_INC__
+#define __MAIN_PUBLICS_INC__
 
-sampCallback:OnGameModeInit() {
+sampCallback:OSRP_OnGameModeInit() {
+	new callSecs = GetTickCount();
+	
 	EnableStuntBonusForAll(0);
 	DisableInteriorEnterExits();
 	ManualVehicleEngineAndLights();
@@ -59,20 +61,24 @@ sampCallback:OnGameModeInit() {
 	TextDrawFont(website, 3);
 	TextDrawSetProportional(website, 1);
 	
-	new str[64];
-	new callSec = GetTickCount();
+	penalty = TextDrawCreate(8.941175, 281.166564, "_");
+	TextDrawLetterSize(penalty, 0.300352, 1.191665);
+	TextDrawAlignment(penalty, 1);
+	TextDrawColor(penalty, -1);
+	TextDrawSetShadow(penalty, 0);
+	TextDrawSetOutline(penalty, 1);
+	TextDrawBackgroundColor(penalty, 255);
+	TextDrawFont(penalty, 1);
+	TextDrawSetProportional(penalty, 1);
 	
-	format(str, sizeof(str), "[LOG] Callback: OnGameModeInit -- Called! (%d ms).", (GetTickCount() - callSec));
-	print(str);
+	printf("[LOG]: OnGameModeInit -- Called! (%d ms).", GetTickCount() - callSecs);
 	return 1;
 }
 
-sampCallback:OnGameModeExit() {
-	new str[64];
-	new callSec = GetTickCount();
+sampCallback:OSRP_OnGameModeExit() {
+	new callSecs = GetTickCount();
 	
-	format(str, sizeof(str), "[LOG] Callback: OnGameModeExit -- Called! (%d ms).", (GetTickCount() - callSec));
-	print(str);
+	printf("[LOG]: OnGameModeExit -- Called! (%d ms).", GetTickCount() - callSecs);
 	return 1;
 }
 

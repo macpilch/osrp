@@ -2,12 +2,12 @@
 	Project: SAMP-RP
 	Author: MisterMagik
 	File: bus_functions.inc
-	Date: 14.09.2022
-	Modified: 24.01.2023
+	Date: 16.09.2022
+	Modified: 17.06.2023
 */
 
-#if !defined _BUS_FUNCTIONS_
-#define _BUS_FUNCTIONS_
+#if !defined __BUS_FUNCTIONS_INC__
+#define __BUS_FUNCTIONS_INC__
 
 stock initBusStopValues() {
 	queryStr[0] = EOS;
@@ -37,9 +37,10 @@ stock createNewBusStop(playerid, busstopname[]) {
 	new price, Float:x, Float:y, Float:z;
 	
 	price = 1;
-	queryStr[0] = EOS;
 	
 	GetPlayerPos(playerid, x, y, z);
+	
+	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "INSERT INTO `BusStops`(`Name`, `Price`, `X`, `Y`, `Z`) VALUES ('%s', '%d', '%f', '%f', '%f')", busstopname, price, x, y, z);
 	mysql_query(queryStr);
 	return 1;
