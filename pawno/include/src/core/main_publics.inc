@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: main_publics.inc
 	Date: 24.07.2022
-	Modified: 28.07.2023
+	Modified: 30.07.2023
 */
 
 #if !defined __MAIN_PUBLICS_INC__
@@ -39,7 +39,7 @@ sampCallback:OSRP_OnGameModeInit() {
 	initGasPumpValues();
 	initBusStopValues();
 	initCashpointValues();
-	initFractionValues();
+	initGroupValues();
 	
 	for(new i = 0; i < MAX_PLAYERS; i++) {
 		pVars[i][p3dInfo] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 0.15, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);

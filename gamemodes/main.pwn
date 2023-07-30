@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: main.pwn
 	Date: 24.07.2022
-	Modified: 28.07.2023
+	Modified: 30.07.2023
 */
 
 #include <a_samp>
@@ -20,7 +20,7 @@
 #include "src\macros\dialogs"
 #include "src\enums\player"
 #include "src\enums\vehicle"
-#include "src\enums\fraction"
+#include "src\enums\group"
 #include "src\enums\item"
 #include "src\enums\door"
 #include "src\enums\busstop"
@@ -43,7 +43,7 @@
 #include "src\systems\bus_functions"
 #include "src\systems\cashpoint_functions"
 #include "src\systems\station_functions"
-#include "src\systems\fraction_functions"
+#include "src\systems\group_functions"
 #include "src\systems\object_functions"
 #include "src\systems\timers"
 
@@ -52,3 +52,4 @@ main() {
 
 	printf("[LOG]: main -- Called! (%d ms).", GetTickCount() - callSecs);
 }
+

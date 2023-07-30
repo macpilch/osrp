@@ -98,8 +98,7 @@ Callback:vehicleLightsOn(playerid, vehicleid) {
 		return 1;
 	}
 	
-	new engine, lights, alarm, doors, bonnet, boot, objective;
-	new vehid = actualVehicle[playerid];
+	new engine, lights, alarm, doors, bonnet, boot, objective, vehid = actualVehicle[playerid];
 	
 	GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
 	SetVehicleParamsEx(vehicleid, engine, 1, alarm, doors, bonnet, boot, objective);
@@ -113,8 +112,7 @@ Callback:vehicleLightsOff(playerid, vehicleid) {
 		return 1;
 	}
 	
-	new engine, lights, alarm, doors, bonnet, boot, objective;
-	new vehid = actualVehicle[playerid];
+	new engine, lights, alarm, doors, bonnet, boot, objective, vehid = actualVehicle[playerid];
 	
 	GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
 	SetVehicleParamsEx(vehicleid, engine, 0, alarm, doors, bonnet, boot, objective);
@@ -157,8 +155,7 @@ Callback:vehicleEngineOn(playerid, vehicleid) {
 		return 1;
 	}
 	
-	new engine, lights, alarm, doors, bonnet, boot, objective;
-	new vehid = actualVehicle[playerid];
+	new engine, lights, alarm, doors, bonnet, boot, objective, vehid = actualVehicle[playerid];
 
 	GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
 	SetVehicleParamsEx(vehicleid, 1, lights, alarm, doors, bonnet, boot, objective);
@@ -172,7 +169,8 @@ Callback:vehicleEngineOn(playerid, vehicleid) {
 }
 
 stock getVehicleSpeed(vehicleid) {
-	new Float:vehPos[3], vehVel;
+	new Float:vehPos[3];
+	new vehVel;
 	
 	GetVehicleVelocity(vehicleid, vehPos[0], vehPos[1], vehPos[2]);
 	
@@ -181,9 +179,7 @@ stock getVehicleSpeed(vehicleid) {
 }
 
 stock setPlayerVehicleDamage(playerid) {
-	new vehicleid = GetPlayerVehicleID(playerid);
-	new speed = getVehicleSpeed(vehicleid);
-	new chancePlayerDizzines;
+	new vehicleid = GetPlayerVehicleID(playerid), speed = getVehicleSpeed(vehicleid), chancePlayerDizzines;
 	
 	vVars[actualVehicle[playerid]][vEngineHp] -= speed / 1.5;
 	

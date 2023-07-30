@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 25.07.2022
-	Modified: 27.07.2023
+	Modified: 30.07.2023
 */
 
 #if !defined __PLAYER_FUNCTIONS_INC__
@@ -729,7 +729,7 @@ stock givePlayerPenalty(playerid, victim, type, const reason[]) {
 			}
 			
 			pVars[victim][pBans]++;
-			SetTimerEx("BanPlayer", 2000, false, "is[128]", victim, reason);
+			SetTimerEx("BanPlayer", 500, false, "is[128]", victim, reason);
 		}
 		case PEN_KICK: {
 			if(playerid == INVALID_PLAYER_ID) {
@@ -747,7 +747,7 @@ stock givePlayerPenalty(playerid, victim, type, const reason[]) {
 			}
 			
 			pVars[victim][pKicks]++;
-			SetTimerEx("KickPlayer", 2000, false, "i", victim);
+			SetTimerEx("KickPlayer", 500, false, "i", victim);
 		}
 		case PEN_ADMJAIL: {
 			if(playerid == INVALID_PLAYER_ID) {
@@ -761,7 +761,7 @@ stock givePlayerPenalty(playerid, victim, type, const reason[]) {
 			}
 			
 			if(pVars[victim][pDuty] > 0) {
-				pc_cmd_duty(victim, "");
+				pc_cmd_duty(victim, victim);
 			}
 		}
 		case PEN_WARN: {
@@ -998,7 +998,8 @@ stock getPlayerStrengthPower(playerid) {
 }
 
 stock checkPhoneOwnerFromNumber(number) {
-	new pId, charName[24];
+	new pId;
+	new charName[24];
 	
 	foreach(new i : Player) {
 		if(pVars[i][pTelNum] == number) {
@@ -1049,52 +1050,66 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 	
 	switch(type) {
 		case 0: {
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[pVars[id][pFraction]][fName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", fVars[pVars[id][pFraction]][fUid], fVars[pVars[id][pFraction]][fName], offerParams[playerid][0]);			
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[pVars[id][pFraction]][gName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", gVars[pVars[id][pFraction]][gUid], gVars[pVars[id][pFraction]][gName], offerParams[playerid][0]);			
 		}
 		case 1: {
-			new tmpFracId = checkServerFractionIdForPlayer(playerid);
+			new tmpGrpId = checkServerGroupIdForPlayer(playerid);
 		
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[tmpGrpId][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Lekcja prowadzenia pojazdu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);			
 		}
 		case 2: {
-			new tmpFracId = checkServerFractionIdForPlayer(playerid);
+			new tmpGrpId = checkServerGroupIdForPlayer(playerid);
 		
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[tmpGrpId][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Dowod osobisty\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);			
 		}
 		case 3: {
-			new tmpFracId = checkServerFractionIdForPlayer(playerid);
+			new tmpGrpId = checkServerGroupIdForPlayer(playerid);
 			
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[tmpGrpId][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Prawo jazdy\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);
 		}
 		case 4: {
-			new tmpFracId = checkServerFractionIdForPlayer(playerid);
+			new tmpGrpId = checkServerGroupIdForPlayer(playerid);
 		
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[tmpGrpId][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaplacenie podatku budynku\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);		
 		}
 		case 5: {
 			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Zakup przedmiotu: %s\n\nKoszt: $0. Czy akceptujesz tê ofertê?", iVars[useItemId[offerFrom[playerid]]][iName]);			
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Zakup przedmiotu: %s\n\nKoszt: $0. Czy akceptujesz tê ofertê?", iVars[choosedItem[offerFrom[playerid]]][iName]);			
 		}
 		case 6: {
 			new vehid = actualVehicle[playerid];
 			
-			format(str, sizeof(str), "Oferta od %s", pVars[playerid][pCharName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}U¿ywany pojazd: %s\nPrzebieg: %fkm (im wiêkszy, tym wiêksze spalanie)\nSuma napraw: %dhp\nHP:%d\n\n", VehicleNames[vVars[vehid][vModelId]], vVars[vehid][vMileage], 0, vVars[vehid][vEngineHp]);
+			format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~9:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
+			vVars[vehid][vUid], vVars[vehid][vOUid], vVars[vehid][vModelId], vVars[vehid][vId], vVars[vehid][vColor1], vVars[vehid][vColor2], vVars[vehid][vEngineHp]);
+			TextDrawSetString(vehicleStats[id][0], mainStr);
+			
+			format(str, sizeof(str), "~b~Przebieg~w~: %0.1fkm ~b~Paliwo~w~: %0.1f", vVars[vehid][vMileage], vVars[vehid][vFuel]);
+			TextDrawSetString(vehicleStats[id][1], str);
+			
+			for(new i = 0; i < 2; i++) {
+				TextDrawShowForPlayer(id, vehicleStats[id][i]);
+			}
+			
+			SetTimerEx("hideVehicleStats", 15000, false, "i", id);
+			
+			mainStr[0] = EOS;
+			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}U¿ywany pojazd: %s\nPrzebieg: %dkm (im wiêkszy, tym wiêksze spalanie)\nSuma napraw: %dhp (po przekroczeniu 11500.0 nie mo¿na dalej naprawiaæ)\nHP: %d\n\n", VehicleNames[vVars[vehid][vModelId] - 400], vVars[vehid][vMileage], 0, vVars[vehid][vEngineHp]);
 			format(mainStr, sizeof(mainStr), "Koszt: $%d. Czy akceptujesz tê ofertê?\n{FF0000}\tUWAGA! Ta transakcja wymaga podwy¿szonych uprawnieñ.\n\tWpisz \"potwierdzam\" w poni¿szym okienku, inaczej zostanie anulowana.\n", offerParams[id][0]);
 			strcat(mainStr, "\tUPEWNIJ SIÊ, ¿e wiesz co akceptujesz!");
 			return ShowPlayerDialog(id, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_INPUT, str, mainStr, "Tak", "Nie");
 		}
 		case 7: {
-			new tmpFracId = checkServerFractionIdForPlayer(playerid);
+			new tmpGrpId = checkServerGroupIdForPlayer(playerid);
 			
 			SendClientMessage(id, COLOR_WHITE, "UID pojazdu sprawdziæ mo¿na wpisuj¹c /v info, gdy w nim siedzisz.");
 			
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], fVars[tmpFracId][fName]);
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[tmpGrpId][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Rejestracja pojazdu o nr seryjnym %d.\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][1], offerParams[id][0]);
 		}
 		case 8: {

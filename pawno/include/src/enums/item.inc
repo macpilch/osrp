@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 29.08.2022
-	Modified: 17.06.2023
+	Modified: 29.07.2023
 */
 
 #if !defined __ITEM_INC__
@@ -57,7 +57,11 @@ enum ItemData {
 	iOUid,
 	iName[32],
 	iValues,
-	bool:iUsed
+	Float:iPosX,
+	Float:iPosY,
+	Float:iPosZ,
+	bool:iUsed,
+	bool:iOnFloor
 };
 
 #endif 

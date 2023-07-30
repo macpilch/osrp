@@ -3,7 +3,7 @@
 	Author: MisterMagik
 	File: cashpoint_functions.inc
 	Date: 16.09.2022
-	Modified: 17.06.2023
+	Modified: 30.07.2023
 */
 
 #if !defined __CASHPOINT_FUNCTIONS_INC__
@@ -55,8 +55,8 @@ stock searchPlayerCashpoint(playerid) {
 }
 
 stock createNewCashpoint(playerid, cashpointname[]) {
-	new Float:x, Float:y, Float:z;
 	new freeId;
+	new Float:x, Float:y, Float:z;
 	
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `Cashpoints`");

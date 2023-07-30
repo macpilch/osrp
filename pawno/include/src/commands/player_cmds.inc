@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 27.07.2023
+	Modified: 30.07.2023
 */
 
 #if !defined __PLAYER_CMDS_INC__
@@ -53,6 +53,10 @@ CMD:w(playerid, params[]) {
 	return 1;
 }
 
+CMD:pm(playerid, params[]) {
+	return pc_cmd_w(playerid, params);
+}
+
 CMD:re(playerid, params[]) {
 	return 1;
 }
@@ -100,6 +104,18 @@ CMD:podaj(playerid, params[]) {
 	if(!isPlayerDuty[playerid]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "U¿yj /duty, aby wejœæ na s³u¿bê grupy, z której chcesz coœ podaæ.");
 	}
+	
+	new pId, pieces, uId;
+	
+	if(sscanf(params, "iii", pId, pieces, uId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /podaj [Gracz] {Iloœæ} {UID produktu} - umo¿liwia sprzedanie graczom produktów z menu grupy.");
+	}
+	
+	
+	return 1;
+}
+
+CMD:cennik(playerid, params[]) {
 	return 1;
 }
 
@@ -205,7 +221,7 @@ CMD:sprobuj(playerid, params[]) {
 }
 
 CMD:me(playerid, params[]) {
-	new str[256], str2[64];
+	new str[256], str2[128];
 	new randomTips[][] = {
 		"[Akcja] - komenda s³u¿y do opisywania OBSERWOWALNYCH czynnoœci postaci.",
 		"wyci¹ga kluczyki - poprawne u¿ycie komendy.",
@@ -386,41 +402,67 @@ CMD:o(playerid, params[]) {
 	}
 	
 	if(strfind(type, "kurs", true) != -1) {
-		new tmpFracId = checkServerFractionIdForPlayer(playerid);
+		new tmpGrpId = checkServerGroupIdForPlayer(playerid);
 		
-		if(fVars[tmpFracId][fType] == F_DRVRLIC) {
+		if(gVars[tmpGrpId][gType] == G_DRVRLIC) {
 			sendOfferToPlayer(playerid, pId, cmdParams, 1);
 		}
 	} else if(strfind(type, "dowod", true) != -1) {
-		new tmpFracId = checkServerFractionIdForPlayer(playerid);
+		new tmpGrpId = checkServerGroupIdForPlayer(playerid);
 		
-		if(fVars[tmpFracId][fType] == F_PUBLIC) {
+		if(gVars[tmpGrpId][gType] == G_PUBLIC) {
 			sendOfferToPlayer(playerid, pId, cmdParams, 2);
 		}
 	} else if(strfind(type, "prawko", true) != -1) {
-		new tmpFracId = checkServerFractionIdForPlayer(playerid);
+		new tmpGrpId = checkServerGroupIdForPlayer(playerid);
 		
 		if(pVars[pId][pTraveled] < 5.0) {
 			return GameTextForPlayer(playerid, "~r~Ten gracz nie ukonczyl kursu.", 5000, 3);
 		}
 		
-		if(fVars[tmpFracId][fType] == F_PUBLIC) {
+		if(gVars[tmpGrpId][gType] == G_PUBLIC) {
 			sendOfferToPlayer(playerid, pId, cmdParams, 3);
 		}
 	} else if(strfind(type, "podatek", true) != -1) {
-		new tmpFracId = checkServerFractionIdForPlayer(playerid);
+		new tmpGrpId = checkServerGroupIdForPlayer(playerid);
 		
-		if(fVars[tmpFracId][fType] == F_PUBLIC) {
+		if(gVars[tmpGrpId][gType] == G_PUBLIC) {
 			sendOfferToPlayer(playerid, pId, cmdParams, 4);
 		}		
 	} else if(strfind(type, "rejestracja", true) != -1) {
-		new tmpFracId = checkServerFractionIdForPlayer(playerid);
+		new tmpGrpId = checkServerGroupIdForPlayer(playerid);
 		
-		if(fVars[tmpFracId][fType] == F_PUBLIC) {
+		if(gVars[tmpGrpId][gType] == G_PUBLIC) {
 			sendOfferToPlayer(playerid, pId, cmdParams, 7);
 		}
 	} else if(strfind(type, "paliwo", true) != -1) {
 		sendOfferToPlayer(playerid, pId, cmdParams, 8);
+	}
+	return 1;
+}
+
+CMD:smiercpostaci(playerid, params[]) {
+	if(!isBW[playerid]) {
+		SendClientMessage(playerid, COLOR_GRAY, "Aby uœmerciæ (zablokowaæ) postaæ, musi ona byc nieprzytomna (BW).");
+		SendClientMessage(playerid, COLOR_GRAY, "Je¿eli jesteœ liderem grupy przestêpczej, mo¿esz u¿yæ /smiercpostaci [Gracz].");
+	}
+	
+	static bool:secondUsed;
+	
+	if(!secondUsed) {
+		SendClientMessage(playerid, COLOR_WHITE, "Ta komenda spowoduje œmieræ i ZABLOKOWANIE TEJ POSTACI. Czy na pewno chcesz j¹ zabiæ?");
+		SendClientMessage(playerid, COLOR_WHITE, "Gdy wpiszesz /smiercpostaci ponownie, utracisz dostêp do tej postaci i jej maj¹tku.");
+	
+		secondUsed = true;
+	} else {
+		mainStr[0] = EOS;
+		format(mainStr, sizeof(mainStr), "* %s umiera. Jego cia³o pozostaje na ziemi, wraz z przedmiotami, które mia³ przy sobie. *", pVars[playerid][pCharName]);
+		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+		
+		SendClientMessage(playerid, COLOR_WHITE, "> Szkoda, ¿e Twoja postaæ umar³a. Koniecznie za³ó¿ now¹, by kontynuowaæ przygody :)");
+		
+		pc_cmd_login(playerid, "");
+		secondUsed = false;
 	}
 	return 1;
 }
@@ -454,10 +496,10 @@ CMD:g(playerid, params[]) {
 	
 	if(sscanf(params, "s[8]", type)) {
 		if(!showFracsInfo[playerid]) {
-			new tmpFracId = checkServerFractionIdForPlayer(playerid);
+			new tmpGrpId = checkServerGroupIdForPlayer(playerid);
 			new tmp[32];
 			
-			format(tmp, sizeof(tmp), "~b~1  ~w~%s (%d)", fVars[tmpFracId][fName], fVars[tmpFracId][fUid]);
+			format(tmp, sizeof(tmp), "~b~1  ~w~%s (%d)", gVars[tmpGrpId][gName], gVars[tmpGrpId][gUid]);
 			TextDrawSetString(fractionsInfo[playerid][1], tmp);
 			
 			if(isPlayerDuty[playerid] && pVars[playerid][pDuty]) {
@@ -483,7 +525,8 @@ CMD:g(playerid, params[]) {
 		}
 	} else {
 		if(strfind(type, "zapros", true) != -1) {
-			new pId, cmdParams[2];
+			new pId;
+			new cmdParams[2];
 			
 			if(sscanf(params, "s[8]i", type, pId)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /g [Zapros] [ID Gracza]");
@@ -491,6 +534,9 @@ CMD:g(playerid, params[]) {
 			
 			pVars[pId][pFraction] = pVars[playerid][pFraction];
 			sendOfferToPlayer(playerid, pId, cmdParams, 0);
+		} else {
+			SendClientMessage(playerid, COLOR_GRAY, "Tip: /g 5 [info/z/zadania/v/zapros/wypros/wplac/wyplac/magazyn/online/gps/db]");
+			SendClientMessage(playerid, COLOR_GRAY, "Taka podkomenda nie istnieje lub nie masz do niej uprawnieñ.");
 		}
 	}
 	return 1;
@@ -647,10 +693,10 @@ CMD:wyrzuc(playerid, params[]) {
 
 CMD:dajprawojazdy(playerid, params[]) {
 	new playerToGive; // Id gracza, ktory ma dostac prawo jazdy
-	new fracId = checkServerFractionIdForPlayer(playerid);
+	new grpId = checkServerGroupIdForPlayer(playerid);
 	new str[2];
 	
-	if(strfind(fVars[fracId][fName], "Urzad Miasta Los Santos", false) != -1) {
+	if(strfind(gVars[grpId][gName], "Urzad Miasta Los Santos", false) != -1) {
 		if(isPlayerDuty[playerid]) {
 			if(sscanf(params, "s[2]i", str, playerToGive)) {
 				return SendClientMessage(playerid, COLOR_WHITE, "U¿ycie komendy /dajprawojazdy [A|B|C] [Id gracza].");
@@ -698,19 +744,19 @@ CMD:dajprawojazdy(playerid, params[]) {
 }
 
 CMD:duty(playerid) {
-	new fracId = checkServerFractionIdForPlayer(playerid);
+	new grpId = checkServerGroupIdForPlayer(playerid);
 	
 	if(pVars[playerid][pFraction] != 0) {
 		if(isPlayerDuty[playerid]) {
 			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "~w~Schodzisz ze sluzby~n~%s", fVars[fracId][fName]);
+			format(mainStr, sizeof(mainStr), "~w~Schodzisz ze sluzby~n~%s", gVars[grpId][gName]);
 			GameTextForPlayer(playerid, mainStr, 5000, 3);
 			
 			pVars[playerid][pDuty] = 0;
 			isPlayerDuty[playerid] = false;
 		} else {
 			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "~w~Wchodzisz na sluzbe~n~%s", fVars[fracId][fName]);
+			format(mainStr, sizeof(mainStr), "~w~Wchodzisz na sluzbe~n~%s", gVars[grpId][gName]);
 			GameTextForPlayer(playerid, mainStr, 5000, 3);
 			
 			isPlayerDuty[playerid] = true;

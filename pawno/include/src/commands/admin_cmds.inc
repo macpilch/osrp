@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: admin_cmds.inc
 	Date: 04.08.2022
-	Modified: 28.07.2023
+	Modified: 30.07.2023
 */
 
 #if !defined __ADMIN_CMDS_INC__
@@ -18,7 +18,8 @@ CMD:ban(playerid, params[]) {
 		return 1;
 	}
 	
-	new pId, reason[128];
+	new pId;
+	new reason[128];
 	
 	if(sscanf(params, "is[128]", pId, reason)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ban [ID] [Powód]");
@@ -37,7 +38,8 @@ CMD:kick(playerid, params[]) {
 		return 1;
 	}
 	
-	new pId, reason[128];
+	new pId;
+	new reason[128];
 	
 	if(sscanf(params, "is[128]", pId, reason)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /kick [ID] [Powód]");
@@ -56,7 +58,8 @@ CMD:warn(playerid, params[]) {
 		return 1;
 	}
 	
-	new pId, reason[128];
+	new pId;
+	new reason[128];
 	
 	if(sscanf(params, "is[128]", pId, reason)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /warn [ID] [Powód]");
@@ -75,7 +78,8 @@ CMD:aj(playerid, params[]) {
 		return 1;
 	}
 	
-	new pId, reason[128];
+	new pId;
+	new reason[128];
 	
 	if(sscanf(params, "is[128]", pId, reason)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /aj [ID] [Powód]");
@@ -207,8 +211,8 @@ CMD:tt(playerid, params[]) {
 		return 1;
 	}
 	
-	new Float:x, Float:y, Float:z;
 	new pId;
+	new Float:x, Float:y, Float:z;
 	
 	if(sscanf(params, "i", pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /tt [ID]");
@@ -584,10 +588,7 @@ CMD:giveitem(playerid, params[]) {
 	}
 	
 	addPlayerItem(pId, itemid);
-	
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "* %s da³(a) Ci przedmiot %s.", pVars[playerid][pCharName], itemNames[itemid]);
-	SendClientMessage(pId, COLOR_WHITE, mainStr);
+	SendClientMessage(pId, COLOR_WHITE, "{33AA33}Dosta³eœ przedmiot od administracji.");
 	
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "Da³eœ(aœ) przedmiot %s graczowi %s.", itemNames[itemid], pVars[pId][pCharName]);
@@ -653,7 +654,7 @@ CMD:createcashpoint(playerid, params[]) {
 	return 1;
 }
 
-CMD:createfraction(playerid, params[]) {
+CMD:creategroup(playerid, params[]) {
 	if(pVars[playerid][pRank] < SUPPORT_RANK) {
 		return 0;
 	}
@@ -666,10 +667,10 @@ CMD:createfraction(playerid, params[]) {
 	new type;
 	
 	if(sscanf(params, "s[32]i", name)) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /createfraction [Nazwa frakcji] [Rodzaj]");
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /creategroup [Nazwa grupy] [Rodzaj]");
 	}
 	
-	createNewFraction(playerid, type, name);
+	createNewGroup(playerid, type, name);
 	return 1;
 }
 

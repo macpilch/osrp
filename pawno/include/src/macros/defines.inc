@@ -3,15 +3,11 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 27.07.2023
+	Modified: 30.07.2023
 */
 
 #if !defined __DEFINES_INC__
 #define __DEFINES_INC__
-
-#if !defined isnull
-	#define isnull(%1) ((!(%1[0])) || (((%1[0]) == '\1') && (!(%1[1]))))
-#endif
 
 #define HOLDING(%0) \
 	((newkeys & (%0)) == (%0))
@@ -39,7 +35,7 @@
 #define MAX_PETROL_STATIONS 10
 #define MAX_BUS_STOPS 10
 #define MAX_CASHPOINTS 10
-#define MAX_FRACTIONS 10
+#define MAX_GROUPS 4
 #define MAX_CAMERAS 2
 #define MAX_OBJECTS 10
 
@@ -51,9 +47,9 @@
 		forward %0(%1); public %0(%1)
 
 #define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "root"
-#define MYSQL_PASS "1234"
-#define MYSQL_DB "samp"
+#define MYSQL_USER "server_821"
+#define MYSQL_PASS "o3vd12gs9y"
+#define MYSQL_DB "server_821_srv"
 
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_GRAY 0xCDC9C9FF

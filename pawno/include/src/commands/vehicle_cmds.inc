@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_cmds.inc
 	Date: 25.07.2023
-	Modified: 25.07.2023
+	Modified: 30.07.2023
 */
 
 #if !defined __VEHICLE_CMDS_INC__
@@ -77,8 +77,8 @@ CMD:v(playerid, params[]) {
 			strcat(mainStr, "Zaleca siê jego respawn, aby zachowaæ zmiany.");
 			ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 		} else if(strfind(opt, "z", true) == 0 || strfind(opt, "zamknij", true) != -1) {
-			new Float:x, Float:y, Float:z;
 			new vehid = actualVehicle[playerid];
+			new Float:x, Float:y, Float:z;
 			
 			if(vehid == INVALID_VEHICLE_ID) {
 				return 1;
@@ -127,8 +127,8 @@ CMD:v(playerid, params[]) {
 			
 			SetTimerEx("hideVehicleStats", 15000, false, "i", playerid);
 		} else if(strfind(opt, "namierz", true) != -1) {
-			new Float:x, Float:y, Float:z;
 			new vehid = actualVehicle[playerid];
+			new Float:x, Float:y, Float:z;
 		
 			if(vehid == INVALID_VEHICLE_ID) {
 				return 1;
@@ -275,6 +275,7 @@ CMD:naprawkaroserie(playerid, params[]) {
 	return 1;
 }
 
+/*
 CMD:cennik(playerid, params[]) {
 	if(casualJob[playerid] != PART_TIME_JOB_MECHANIC) {
 		return 1;
@@ -305,5 +306,6 @@ CMD:cennik(playerid, params[]) {
 	}
 	return 1;
 }
+*/
 
 #endif 

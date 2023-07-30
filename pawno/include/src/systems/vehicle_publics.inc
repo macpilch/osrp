@@ -96,8 +96,7 @@ sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehicleDamageStatusUpdate");
 #endif
 	
-	new panels, doors, lights, tires;
-	new damage = setPlayerVehicleDamage(playerid);
+	new panels, doors, lights, tires, damage = setPlayerVehicleDamage(playerid);
 	
 	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
 	UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, tires);

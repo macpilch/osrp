@@ -3,7 +3,7 @@
 	Author: MisterMagik
 	File: bus_functions.inc
 	Date: 16.09.2022
-	Modified: 17.06.2023
+	Modified: 30.07.2023
 */
 
 #if !defined __BUS_FUNCTIONS_INC__
@@ -34,7 +34,8 @@ stock initBusStopValues() {
 }
 
 stock createNewBusStop(playerid, busstopname[]) {
-	new price, Float:x, Float:y, Float:z;
+	new price;
+	new Float:x, Float:y, Float:z;
 	
 	price = 1;
 	

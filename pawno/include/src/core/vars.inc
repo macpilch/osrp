@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 27.07.2023
+	Modified: 30.07.2023
 */
 
 #if !defined __VARS_INC__
@@ -22,7 +22,7 @@ new offerFrom[MAX_PLAYERS]; // Przechowuje id osoby ktora wyslala oferte
 new offerFor[MAX_PLAYERS]; // Przechowuje id osoby ktora otrzymala oferte
 new offerParams[MAX_PLAYERS][2]; // 0 - pieni¹dze, 1 - dodatkowe opcje
 new offerType[MAX_PLAYERS];
-new useItemId[MAX_PLAYERS];
+new choosedItem[MAX_PLAYERS];
 new playerContacts[MAX_PLAYERS][10];
 new telEnterNumber[MAX_PLAYERS];
 new telEnterFrac[MAX_PLAYERS];
@@ -31,6 +31,8 @@ new vehMapIcon[MAX_VEHICLES];
 //part time job
 new casualJob[MAX_PLAYERS];
 new calledCmds[MAX_PLAYERS];
+new calledSecsCmds[MAX_PLAYERS];
+new exitedVehicleSec[MAX_PLAYERS];
 
 // type - bool
 new bool:isSpawned[MAX_PLAYERS];
@@ -79,6 +81,6 @@ new Iterator:itemItter<MAX_ITEMS>;
 new Iterator:doorItter<MAX_DOORS>;
 new Iterator:busstopItter<MAX_BUS_STOPS>;
 new Iterator:cashpointItter<MAX_CASHPOINTS>;
-new Iterator:fractionItter<MAX_FRACTIONS>;
+new Iterator:groupItter<MAX_GROUPS>;
 
 #endif 

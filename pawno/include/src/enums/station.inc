@@ -22,12 +22,12 @@ enum StationData {
 };
 
 enum GasPumpData {
-	gUid,
-	gSId,
-	Float:gX,
-	Float:gY,
-	Float:gZ,
-	Float:gDistance
+	gsUid,
+	gsSId,
+	Float:gsX,
+	Float:gsY,
+	Float:gsZ,
+	Float:gsDistance
 };
 
 #endif 

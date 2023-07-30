@@ -42,7 +42,7 @@ stock initGasPumpValues() {
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iiffff", gVars[i][gUid], gVars[i][gSId], gVars[i][gX], gVars[i][gY], gVars[i][gZ], gVars[i][gDistance]);
+		sscanf(queryStr, "p<|>iiffff", gsVars[i][gsUid], gsVars[i][gsSId], gsVars[i][gsX], gsVars[i][gsY], gsVars[i][gsZ], gsVars[i][gsDistance]);
 	}
 	
 	mysql_free_result();
@@ -60,8 +60,8 @@ stock searchGasPumps(playerid) {
 				playerFuelPrice[playerid] = sVars[i][sPrice];
 				
 				for(new y = 0; y < MAX_GAS_PUMPS; y++) {
-					if(gVars[y][gSId] == sVars[i][sUid]) {
-						if(IsPlayerInRangeOfPoint(playerid, gVars[y][gDistance], gVars[y][gX], gVars[y][gY], gVars[y][gZ])) {
+					if(gsVars[y][gsSId] == sVars[i][sUid]) {
+						if(IsPlayerInRangeOfPoint(playerid, gsVars[y][gsDistance], gsVars[y][gsX], gsVars[y][gsY], gsVars[y][gsZ])) {
 							format(mainStr, sizeof(mainStr), "Cena: $%i/L\nWpisz ilosc litrow paliwa do zatankowania: ", sVars[i][sPrice]);
 							ShowPlayerDialog(playerid, DIALOG_PETROL_STATION, DIALOG_STYLE_INPUT, sVars[i][sName], mainStr, "Tankuj", "Anuluj");
 						}

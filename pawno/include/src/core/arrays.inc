@@ -3,25 +3,25 @@
 	Author: steeZ (macpilch)
 	File: arrays.inc
 	Date: 25.07.2022
-	Modified: 17.06.2023
+	Modified: 30.07.2023
 */
 
 #if !defined __ARRAYS_INC__
 #define __ARRAYS_INC__
 
-new tmpName[24];
 new mainStr[1024];
-new timerStr[512]; // stworzona na potrzeby timers.inc
 new queryStr[1024];
+new timerStr[512]; // stworzona na potrzeby timers.inc
+new tmpName[24];
 
 new pVars[MAX_PLAYERS][PlayerData];
 new vVars[MAX_VEHICLES][VehicleData];
 new iVars[MAX_ITEMS][ItemData];
 new sVars[MAX_PETROL_STATIONS][StationData];
-new gVars[MAX_GAS_PUMPS][GasPumpData];
+new gsVars[MAX_GAS_PUMPS][GasPumpData];
 //Bus stops system
 new bVars[MAX_BUS_STOPS][BusStopData];
-new fVars[MAX_FRACTIONS][FractionData];
+new gVars[MAX_GROUPS][GroupData];
 new dVars[MAX_DOORS][DoorData];
 //Cashpoints system 
 new cVars[MAX_CASHPOINTS][CashpointData];
@@ -360,4 +360,5 @@ new Float:checkpointTruckPos[MAX_TRUCK_CHECKPOINTS][3] = {
 };
 
 */
+
 #endif 
