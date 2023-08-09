@@ -1,9 +1,9 @@
 /*
-	Project: SAMP-RP
+	Project: OSRP
 	Author: steeZ (macpilch)
 	File: main.pwn
 	Date: 24.07.2022
-	Modified: 30.07.2023
+	Modified: 07.08.2023
 */
 
 #include <a_samp>

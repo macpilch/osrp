@@ -1,22 +1,23 @@
 /*
-	Project: SAMP-RP
+	Project: OSRP
 	Author: steeZ (macpilch)
 	File: vehicle_publics.inc
 	Date: 29.07.2022
-	Modified: 25.07.2023
+	Modified: 07.08.2023
 */
 
-#if !defined __VEHICLE_PUBLICS_INC__
+#if defined __VEHICLE_PUBLICS_INC__
+	#endinput
+#endif
 #define __VEHICLE_PUBLICS_INC__
+#pragma library osrp
 
 sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
-	new vehid = getServerVehicleIdForPlayer(vehicleid);
+	new srvVehId = getServerVehicleIdForPlayer(vehicleid);
 	
-	if(checkPlayerVehicles(playerid)) {
-		actualVehicle[playerid] = vehid;
-	}
+	actualVehicle[playerid] = srvVehId;
 	
-	if(vehicleid && isVehicleInUse(vehicleid) && pVars[playerid][pDriverLicense] < 1) {
+	/*if(isVehicleInUse(vehicleid) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid]) {
 		ClearAnimations(playerid);
 		
 		SendClientMessage(playerid, COLOR_WHITE, "(!) Pamiêtaj, to RolePlay. Swój pojazd musisz kupiæ lub wypo¿yczyæ.");
@@ -24,7 +25,7 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		SendClientMessage(playerid, COLOR_WHITE, "(!) Zanim bêdzie Ciê staæ, u¿yj /budka, by dzwoniæ po taxi, lub /bus. Prowadziæ mo¿na po przegraniu 10min.");
 	}
 	
-	if(vehicleid && !isBicycle(GetVehicleModel(vehicleid)) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid] && !ispassenger) {
+	if(!isBicycle(GetVehicleModel(vehicleid)) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid] && !ispassenger) {
 		ClearAnimations(playerid);
 		
 		mainStr[0] = EOS;
@@ -33,15 +34,15 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 	}
 	
-	if(vehicleid && vVars[vehid][vLock]) {
+	if(vVars[srvVehId][vLock]) {
 		ClearAnimations(playerid);
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Pojazd jest zamkniety.~n~~w~/v zamknij", 6000, 3);
 	}
 	
-	if(vehicleid && vVars[vehid][vOUid] != pVars[playerid][pUid] && !isVehicleInUse(vehicleid)) {
+	if(vVars[srvVehId][vOUid] != pVars[playerid][pUid] && !isVehicleInUse(vehicleid) && pVars[playerid][pDriverLicense] && !drivingCourse[playerid]) {
 		ClearAnimations(playerid);
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Nie mozesz prowadzic tego~n~pojazdu.", 6000, 3);		
-	}
+	}*/
 	return 1;
 }
 
@@ -61,11 +62,12 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 	SendClientMessage(killerid, COLOR_WHITE, "Witma ! OnVehicleDeath");
 #endif
 	
-	new vehid = actualVehicle[killerid];
+	new srvVehId = actualVehicle[killerid];
 	
 	DestroyVehicle(vehicleid);
-	vVars[vehid][vSpawned] = false;
-	vVars[vehid][vEngine] = false;
+	vVars[srvVehId][vSpawned] = false;
+	vVars[srvVehId][vEngine] = false;
+	vVars[srvVehId][vLights] = false;
 	GameTextForPlayer(killerid, "Pojazd zostanie odspawnowany.", 5000, 3);
 	return 1;
 }
@@ -126,5 +128,3 @@ sampCallback:OnVehicleStreamOut(vehicleid, forplayerid) {
 #endif
 	return 1;
 }
-
-#endif 

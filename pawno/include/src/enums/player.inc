@@ -1,13 +1,16 @@
 /*
-	Project: SAMP-RP
+	Project: OSRP
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 25.07.2022
-	Modified: 17.06.2023
+	Modified: 07.08.2023
 */
 
-#if !defined __PLAYER_INC__
+#if defined __PLAYER_INC__
+	#endinput
+#endif
 #define __PLAYER_INC__
+#pragma library osrp
 
 enum CharName {
 	chName[24],
@@ -28,6 +31,7 @@ enum PlayerData {
 	pCharName2[24],
 	pPass[32],
 	pIp[16],
+	pBlocked,
 	pRank, // for ranks
 	pSex,
 	pStrength,
@@ -48,12 +52,6 @@ enum PlayerData {
 	pBw,
 	pAj,
 	pAl,
-	//pDriverLicenseA
-	//pDriverLicenseB
-	//pDriverLicenseC
-	//pPilotLicense
-	//lub 
-	//pDriverLicense[] - (1 - A / 2 - B / 3- C / 4 - Pilot)
 	pDriverLicense,
 	pPisSkill,
 	pDglSkill,
@@ -66,8 +64,8 @@ enum PlayerData {
 	pPdp,
 	pTelNum,
 	pBankAcc,
-	pGroup[128],
-	pFraction,
+	pGroupDesc[128],
+	pGroup,
 	pCasualJob,
 	pDuty,
 	Float:pTraveled,
@@ -83,5 +81,3 @@ enum PlayerData {
 	Text3D:p3dInfo,
 	Text3D:pCharDesc
 };
-
-#endif 

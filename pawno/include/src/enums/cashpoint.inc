@@ -1,13 +1,16 @@
 /*
-	Project: SAMP-RP
+	Project: OSRP
 	Author: MisterMagik
 	File: cashpoint.inc
 	Date: 16.09.2022
-	Modified: 17.06.2023
+	Modified: 07.08.2023
 */
 
-#if !defined __CASHPOINT_INC__
+#if defined __CASHPOINT_INC__
+	#endinput
+#endif
 #define __CASHPOINT_INC__
+#pragma library osrp
 
 enum CashpointData {
 	csUid,
@@ -19,5 +22,3 @@ enum CashpointData {
 	Float:csZ,
 	Float:csDistance
 };
-
-#endif 

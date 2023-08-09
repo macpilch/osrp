@@ -1,14 +1,17 @@
 /*
-	Project: SAMP-RP
+	Project: OSRP
 	Author: MisterMagik
 			steeZ (macpilch)
 	File: group.inc
 	Date: 05.09.2022
-	Modified: 29.07.2023
+	Modified: 07.08.2023
 */
 
-#if !defined __GROUP_INC__
+#if defined __GROUP_INC__
+	#endinput
+#endif
 #define __GROUP_INC__
+#pragma library osrp
 
 enum {
 	G_PUBLIC = 0,
@@ -21,15 +24,15 @@ enum GroupData {
 	gUid,
 	gOUid,
 	gName[32],
-	gType, // 0 - publiczne, 1 - przestepcze, 2 - prawo jazdy, 3 - biznesy
+	gTag[8],
+	gType,
 	gMembers,
 	gVehicle1,
 	gVehsLimit,
 	gMoney,
 	gDoors,
 	gFlags,
+	gColor,
 	bool:gChatOOC,
 	bool:gChatIC
 };
-
-#endif 

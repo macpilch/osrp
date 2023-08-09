@@ -1,13 +1,16 @@
 /*
-	Project: SAMP-RP
+	Project: OSRP
 	Author: steeZ (macpilch)
 	File: door.inc
 	Date: 10.09.2022
-	Modified: 17.06.2023
+	Modified: 07.08.2023
 */
 
-#if !defined __DOOR_INC__
+#if defined __DOOR_INC__
+	#endinput
+#endif
 #define __DOOR_INC__
+#pragma library osrp
 
 enum {
 	D_PUBLIC = 0,
@@ -25,12 +28,10 @@ enum DoorData {
 	Float:dExitX,
 	Float:dExitY,
 	Float:dExitZ,
-	dPickupEnt,
+	dPickup,
 	bool:dOpen,
 	bool:dTax,
 	dVw,
 	dInt,
 	dType
 };
-
-#endif 

@@ -1,13 +1,16 @@
 /*
-	Project: SAMP-RP
+	Project: OSRP
 	Author: steeZ (macpilch)
 	File: vehicle.inc
 	Date: 29.07.2022
-	Modified: 17.06.2023
+	Modified: 07.08.2023
 */
 
-#if !defined __VEHICLE_INC__
+#if defined __VEHICLE_INC__
+	#endinput
+#endif
 #define __VEHICLE_INC__
+#pragma library osrp
 
 enum VehicleData {
 	vUid, //id from database	
@@ -20,8 +23,7 @@ enum VehicleData {
 	Float:vX,
 	Float:vY,
 	Float:vZ,
-	Float:vFuel, 
-	Float:vFuelTank,
+	Float:vFuel,
 	bool:vLock,
 	bool:vEngine,
 	Float:vEngineHp, // Stan silnika
@@ -32,5 +34,3 @@ enum VehicleData {
 	vDescInfo[64],
 	vPlate[32]
 };
-
-#endif 

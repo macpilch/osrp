@@ -1,13 +1,16 @@
 /*
-	Project: SAMP-RP
+	Project: OSRP
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 30.07.2023
+	Modified: 07.08.2023
 */
 
-#if !defined __VARS_INC__
+#if defined __VARS_INC__
+	#endinput
+#endif
 #define __VARS_INC__
+#pragma library osrp
 
 // type - int
 new mySQLConnect;
@@ -25,11 +28,13 @@ new offerType[MAX_PLAYERS];
 new choosedItem[MAX_PLAYERS];
 new playerContacts[MAX_PLAYERS][10];
 new telEnterNumber[MAX_PLAYERS];
-new telEnterFrac[MAX_PLAYERS];
+new telEnterGroup[MAX_PLAYERS];
+new lastPmId[MAX_PLAYERS];
 new vehCP[MAX_VEHICLES];
 new vehMapIcon[MAX_VEHICLES];
 //part time job
 new casualJob[MAX_PLAYERS];
+new casualJobPickup;
 new calledCmds[MAX_PLAYERS];
 new calledSecsCmds[MAX_PLAYERS];
 new exitedVehicleSec[MAX_PLAYERS];
@@ -42,25 +47,32 @@ new bool:isPlayerDuty[MAX_PLAYERS];
 new	bool:isSpectating[MAX_PLAYERS];
 new	bool:isGodMode[MAX_PLAYERS];
 new	bool:isBW[MAX_PLAYERS];
+new bool:isFreeze[MAX_PLAYERS];
 stock bool:isInBus[MAX_PLAYERS];
 new bool:usedCmdLogin[MAX_PLAYERS];
 new bool:usedCmdReport[MAX_PLAYERS];
 new bool:hasBelts[MAX_PLAYERS];
 stock bool:hasBank[MAX_PLAYERS];
+new bool:isScrimmage[MAX_PLAYERS];
 new bool:isDizzines[MAX_PLAYERS];
 new bool:usedTelephone[MAX_PLAYERS];
 new bool:chatMessages[MAX_PLAYERS][2]; // 0 - PM, 1 - Grupowe
 new bool:drivingCourse[MAX_PLAYERS];
-new bool:showFracsInfo[MAX_PLAYERS];
+new bool:showGroupsInfo[MAX_PLAYERS];
 new bool:insidedHotel[MAX_PLAYERS];
+new bool:blockOOC[MAX_PLAYERS];
 
 // type - MySQL
 new MySQL:hMySQL;
+
+new Text3D:exit3dInfo[MAX_PLAYERS];
 
 // type - Text
 new Text:website;
 new Text:penalty;
 new Text:helpInfo[MAX_PLAYERS][2];
+new Text:itemTips[MAX_PLAYERS][2];
+new Text:scrimmageTips[MAX_PLAYERS][5];
 new Text:firstHoursInfo[3];
 new Text:vehicleTips[MAX_PLAYERS][2];
 new Text:vehicleStats[MAX_PLAYERS][2];
@@ -71,7 +83,7 @@ new Text:oocWarning[MAX_PLAYERS][2];
 new Text:damageRedScreen[MAX_PLAYERS];
 new Text:doorInfo[MAX_PLAYERS][3];
 new Text:telephoneCall[MAX_PLAYERS][2];
-new Text:fractionsInfo[MAX_PLAYERS][15];
+new Text:groupsInfo[MAX_PLAYERS][15];
 new Text:usedRollersInfo[MAX_PLAYERS][2];
 new Text:hotelInfo[MAX_PLAYERS][3];
 
@@ -82,5 +94,3 @@ new Iterator:doorItter<MAX_DOORS>;
 new Iterator:busstopItter<MAX_BUS_STOPS>;
 new Iterator:cashpointItter<MAX_CASHPOINTS>;
 new Iterator:groupItter<MAX_GROUPS>;
-
-#endif 

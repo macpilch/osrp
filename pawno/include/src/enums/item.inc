@@ -1,13 +1,16 @@
 /*
-	Project: SAMP-RP
+	Project: OSRP
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 29.08.2022
-	Modified: 29.07.2023
+	Modified: 07.08.2023
 */
 
-#if !defined __ITEM_INC__
+#if defined __ITEM_INC__
+	#endinput
+#endif
 #define __ITEM_INC__
+#pragma library osrp
 
 enum {
 	P_ROLKI = 0,
@@ -18,6 +21,7 @@ enum {
 	P_CYGARO,
 	P_UBRANIE,
 	P_TELEFON,
+	P_MASKA,
 	P_KOSTKA,
 	P_KAMIZELKA,
 	P_COLT,
@@ -25,6 +29,7 @@ enum {
 	P_SHOTGUN,
 	P_M4,
 	P_CHEESBURG,
+	P_ZAPIEK,
 	P_COCACOLA,
 	P_CUBALIBRE,
 	P_FRYTKI,
@@ -61,7 +66,5 @@ enum ItemData {
 	Float:iPosY,
 	Float:iPosZ,
 	bool:iUsed,
-	bool:iOnFloor
+	iPlace
 };
-
-#endif 

@@ -1,13 +1,16 @@
 /*
-	Project: SAMP-RP
+	Project: OSRP
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 30.07.2023
+	Modified: 07.08.2023
 */
 
-#if !defined __DEFINES_INC__
+#if defined __DEFINES_INC__
+	#endinput
+#endif
 #define __DEFINES_INC__
+#pragma library osrp
 
 #define HOLDING(%0) \
 	((newkeys & (%0)) == (%0))
@@ -47,12 +50,15 @@
 		forward %0(%1); public %0(%1)
 
 #define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "server_821"
-#define MYSQL_PASS "o3vd12gs9y"
-#define MYSQL_DB "server_821_srv"
+#define MYSQL_USER "server_763"
+#define MYSQL_PASS "po8z10knv3"
+#define MYSQL_DB "server_763_osrp"
 
 #define COLOR_WHITE 0xFFFFFFFF
-#define COLOR_GRAY 0xCDC9C9FF
+#define COLOR_RED 0xFF0000FF
+#define COLOR_YELLOW 0xFFFF00FF
+#define COLOR_GREEN 0x33AA33FF
+#define COLOR_GRAY 0xAFAFAFFF
 #define COLOR_MEDGRAY 0x8B8B83FF
 #define COLOR_DARKGRAY 0x696969FF
 #define COLOR_PURPLE 0xBA55D3FF
@@ -64,6 +70,10 @@
 #define MAN_SEX 0
 #define WOMAN_SEX 1
 
+#define MSG_CHAT 0
+#define MSG_ME 1
+#define MSG_DO 2
+
 #define DEFAULT_POS_X 837.8678
 #define DEFAULT_POS_Y -1344.6394
 #define DEFAULT_POS_Z 7.1719
@@ -74,6 +84,14 @@
 #define PEN_KICK 1
 #define PEN_ADMJAIL 2
 #define PEN_WARN 3
+#define PEN_BLCKACC 4
+
+#define INVALID_OFFER_TYPE -1
+
+
+#define ITEM_PLACE_PLAYER 0
+#define ITEM_PLACE_FLOOR 1
+#define ITEM_PLACE_BAG 2
 
 // admin ranks
 #define HEADADMIN_RANK 4
@@ -84,22 +102,19 @@
 #define BANNED_PLAYER_RANK -1
 
 // part time jobs
-#define MAX_PART_TIME_JOBS 3
+#define MAX_PART_TIME_JOBS 2
 #define INVALID_PART_TIME_JOB -1
 #define PART_TIME_JOB_MECHANIC 0
-#define PART_TIME_JOB_DELIVERY 1
-#define PART_TIME_JOB_TRUCK 2
+#define PART_TIME_JOB_COURIER 1
 
 // fuel tanks
+#define INVALID_SERVER_VEHICLE_ID -1
 #define VEHICLE_FUEL_TANK_SMALL 20
 #define VEHICLE_FUEL_TANK_MEDIUM 40
 #define VEHICLE_FUEL_TANK_LARGE 60
 
 // Number plate
 #define VEHICLE_NUMBER_PLATE_NULL ""
-
-forward Float:getVehicleFuel(srvvehid);
-forward Float:getVehicleFuelTank(srvvehid);
 
 // Callbacki servera
 #define OSRP_OnGameModeInit OnGameModeInit
@@ -126,25 +141,3 @@ forward Float:getVehicleFuelTank(srvvehid);
 #define OSRP_OnPlayerUpdate OnPlayerUpdate
 #define OSRP_OnPlayerClickMap OnPlayerClickMap
 #define OSRP_OnPlayerClickPlayer OnPlayerClickPlayer
-
-enum Flags {
-	FL_NONE = 0x00000000,
-	FL_SPAWNED = 0x00000001,
-	FL_HASLOGGED = 0x00000002,
-	FL_ADMINDUTY = 0x00000004,
-	FL_PLAYERDUTY = 0x00000008,
-	FL_SPECTATING = 0x00000016,
-	FL_GODMODE = 0x00000032,
-	FL_ISBW = 0x00000064,
-	FL_USEDCMDLOGIN = 0x00000128,
-	FL_USEDCMDREPORT = 0x00000256,
-	FL_HASBELTS = 0x00000512,
-	FL_ISDIZZINES = 0x00001024,
-	FL_USEDTELEPHONE = 0x00002048,
-	FL_CHATMESSAGES = 0x00003072,
-	FL_DRIVINGCOURSE = 0x00004096,
-	FL_SHOWFRACSINFO = 0x00005120,
-	FL_INSIDEDHOTEL = 0x00006144
-};
-
-#endif 

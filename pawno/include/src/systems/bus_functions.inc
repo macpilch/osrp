@@ -1,20 +1,24 @@
 /*
-	Project: SAMP-RP
+	Project: OSRP
 	Author: MisterMagik
 	File: bus_functions.inc
 	Date: 16.09.2022
-	Modified: 30.07.2023
+	Modified: 07.08.2023
 */
 
-#if !defined __BUS_FUNCTIONS_INC__
+#if defined __BUS_FUNCTIONS_INC__
+	#endinput
+#endif
 #define __BUS_FUNCTIONS_INC__
+#pragma library osrp
 
 stock initBusStopValues() {
 	queryStr[0] = EOS;
-
+	
 	for(new i = 0; i < MAX_BUS_STOPS; i++) {
-		format(queryStr, sizeof(queryStr), "SELECT * FROM `BusStops` WHERE `UID` = '%d'", i + 1);
+		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_BusStops` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
+		
 		mysql_store_result();
 		
 		if(!mysql_num_rows()) {
@@ -34,28 +38,24 @@ stock initBusStopValues() {
 }
 
 stock createNewBusStop(playerid, busstopname[]) {
-	new price;
-	new Float:x, Float:y, Float:z;
+	new price = 1;
 	
-	price = 1;
-	
-	GetPlayerPos(playerid, x, y, z);
+	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `BusStops`(`Name`, `Price`, `X`, `Y`, `Z`) VALUES ('%s', '%d', '%f', '%f', '%f')", busstopname, price, x, y, z);
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_BusStops`(`Name`, `Price`, `X`, `Y`, `Z`) VALUES ('%s', '%d', '%f', '%f', '%f')", busstopname, price, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	mysql_query(queryStr);
 	return 1;
 }
 
 stock searchPlayerBusStop(playerid) {
 	for(new i = 0; i < MAX_BUS_STOPS; i++) {
-		if(IsPlayerInRangeOfPoint(playerid, 10.0, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ])) {
-			new Float:x, Float:y, Float:z;
-			
-			GetPlayerPos(playerid, x, y, z);
+		if(playerToPoint(playerid, 10.0, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ])) {
+			GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);	
 			SetCameraBehindPlayer(playerid);
-			InterpolateCameraLookAt(playerid, x, y, z, x, y, z + 40, 4000, CAMERA_MOVE);
-			InterpolateCameraPos(playerid, x, y, z, x, y, z + 20, 4000, CAMERA_MOVE);
+			
+			InterpolateCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 40, 4000, CAMERA_MOVE);
+			InterpolateCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 20, 4000, CAMERA_MOVE);
 			
 			actualBusStop[playerid] = i;
 		}
@@ -73,11 +73,10 @@ stock teleportToBusStop(playerid, busstopid) {
 		} else if(busstopid == i) {
 			format(mainStr, sizeof(mainStr), "[Przystanek]: Znajdujesz sie na przystanku nr.%d %s", bVars[i][bsUid], bVars[i][bsName]);
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);
+			
 			SetPlayerPos(playerid, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ]);
 			
 			actualBusStop[playerid] = -1;
 		}
 	}
 }
-
-#endif 

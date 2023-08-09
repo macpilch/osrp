@@ -1,20 +1,24 @@
 /*
-	Project: SAMP-RP
+	Project: OSRP
 	Author: MisterMagik
 	File: cashpoint_functions.inc
 	Date: 16.09.2022
-	Modified: 30.07.2023
+	Modified: 07.08.2023
 */
 
-#if !defined __CASHPOINT_FUNCTIONS_INC__
+#if defined __CASHPOINT_FUNCTIONS_INC__
+	#endinput
+#endif
 #define __CASHPOINT_FUNCTIONS_INC__
+#pragma library osrp
 
 stock initCashpointValues() {
 	queryStr[0] = EOS;
 	
 	for(new i = 0; i < MAX_CASHPOINTS; i++) {
-		format(queryStr, sizeof(queryStr), "SELECT * FROM `Cashpoints` WHERE `UID` = '%d'", i + 1);
+		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Cashpoints` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
+		
 		mysql_store_result();
 		
 		if(!mysql_num_rows()) {
@@ -35,10 +39,11 @@ stock initCashpointValues() {
 
 stock searchPlayerCashpoint(playerid) {
 	foreach(new i : cashpointItter) {
-		if(IsPlayerInRangeOfPoint(playerid, cVars[i][csDistance], cVars[i][csX], cVars[i][csY], cVars[i][csZ])) {
+		if(playerToPoint(playerid, cVars[i][csDistance], cVars[i][csX], cVars[i][csY], cVars[i][csZ])) {
 			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "SELECT `Bank` FROM `Players` WHERE `UID` = '%d'", pVars[playerid][pUid]);
+			format(queryStr, sizeof(queryStr), "SELECT `Bank` FROM `osrp_Players` WHERE `UID` = '%d'", pVars[playerid][pUid]);
 			mysql_query(queryStr);
+			
 			mysql_store_result();
 			
 			pVars[playerid][pBank] = mysql_fetch_int();
@@ -56,45 +61,30 @@ stock searchPlayerCashpoint(playerid) {
 
 stock createNewCashpoint(playerid, cashpointname[]) {
 	new freeId;
-	new Float:x, Float:y, Float:z;
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `Cashpoints`");
+	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Cashpoints`");
 	mysql_query(queryStr);
+	
 	mysql_store_result();
 	
 	freeId = mysql_fetch_int();
 	mysql_free_result();
 	
-	GetPlayerPos(playerid, x, y, z);
+	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	Iter_Add(cashpointItter, freeId);
 	
 	cVars[freeId][csUid] = freeId + 1;
 	format(cVars[freeId][csName], 32, cashpointname);
 	cVars[freeId][csIsOpen] = true;
-	cVars[freeId][csX] = x;
-	cVars[freeId][csY] = y;
-	cVars[freeId][csZ] = z;
+	cVars[freeId][csX] = pVars[playerid][pX];
+	cVars[freeId][csY] = pVars[playerid][pY];
+	cVars[freeId][csZ] = pVars[playerid][pZ];
 	cVars[freeId][csDistance] = 2.0;
 	cVars[freeId][csObject] = CreateDynamicObject(2942, cVars[freeId][csX], cVars[freeId][csY], cVars[freeId][csZ] - 0.35, 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `Cashpoints`(`UID`, `Name`, `Object`, `IsOpen`, `X`, `Y`, `Z`, `Distance`) VALUES ('%d', '%s', '%d', '%d', '%f', '%f', '%f', '%f')", cVars[freeId][csUid], cVars[freeId][csName], cVars[freeId][csObject], cVars[freeId][csIsOpen], cVars[freeId][csX], cVars[freeId][csY], cVars[freeId][csZ], cVars[freeId][csDistance]);
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Cashpoints`(`UID`, `Name`, `Object`, `IsOpen`, `X`, `Y`, `Z`, `Distance`) VALUES ('%d', '%s', '%d', '%d', '%f', '%f', '%f', '%f')", cVars[freeId][csUid], cVars[freeId][csName], cVars[freeId][csObject], cVars[freeId][csIsOpen], cVars[freeId][csX], cVars[freeId][csY], cVars[freeId][csZ], cVars[freeId][csDistance]);
 	mysql_query(queryStr);
 	return 1;
 }
-
-stock createNumber(playerid) {
-	new number[6], numberStr[16];
-	
-	for(new i = 0; i < sizeof(number); i++) {
-		number[i] = random(10);
-		
-		format(numberStr, sizeof(numberStr), "%s%d", numberStr, number[i]);
-	}
-	
-	printf("[DEBUG] Name: %s, Number: %s", pVars[playerid][pCharName], numberStr);
-	return 1;
-}
-
-#endif 

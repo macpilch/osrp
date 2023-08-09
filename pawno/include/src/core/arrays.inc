@@ -1,13 +1,16 @@
 /*
-	Project: SAMP-RP
+	Project: OSRP
 	Author: steeZ (macpilch)
 	File: arrays.inc
 	Date: 25.07.2022
-	Modified: 30.07.2023
+	Modified: 07.08.2023
 */
 
-#if !defined __ARRAYS_INC__
+#if defined __ARRAYS_INC__
+	#endinput
+#endif
 #define __ARRAYS_INC__
+#pragma library osrp
 
 new mainStr[1024];
 new queryStr[1024];
@@ -73,23 +76,40 @@ new charSur[][CharSurName] = {
 	{"Arshan", false}, {"Arshun", false}, {"Artemieva", false}, {"Arti", false}, {"Astengo", false}, {"Astorino", false}, {"Attento", false}, {"Auriemma", false},
 	{"Avellis", false}, {"Bailey", false}, {"Baker", false}, {"Barcellona", false}, {"Bareldo", false}, {"Barillardo", false}, {"Barnes", false}, {"Bartolocci", false},
 	{"Bashier", false}, {"Basile", false}, {"Bastianelli", false}, {"Battaglia", false}, {"Belcastro", false}, {"Bell", false}, {"Belisto", false}, {"Benitez", false}, {"Bennett", false}, {"Berceto", false}, 
-	{"Bernt", false}, {"Bertolini", false}, {"Bertolino", false}, {"Bertucci", false}, {"Bessette", false}, {"Betro", false}, {"Bevilacqua", false}/*, {"", false}, {"", false}, {"", false}, 
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, 
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}*/
+	{"Bernt", false}, {"Bertolini", false}, {"Bertolino", false}, {"Bertucci", false}, {"Bessette", false}, {"Betro", false}, {"Bevilacqua", false}, {"", false}, {"", false}, {"", false}, 
+	{"Bilinskii", false}, {"Biocchetti", false}, {"Bisceglia", false}, {"Bleiwas", false}, {"Bocaletti", false}, {"Bonadio", false}, {"Bonanno", false}, {"Bondar", false}, {"Bono", false}, {"Borenstein", false}, 
+	{"Borgese", false}, {"Bosco", false}, {"Bracchi", false}, {"Brando", false}, {"Brilio", false}, {"Bruno", false}, {"Bruzzini", false}, {"Buccemi", false}, {"Buccieri", false}, {"Buffone", false}, 
+	{"Calantini", false}, {"Calarco", false}, {"Calidori", false}, {"Calise", false}, {"Camarda", false}, {"Camerota", false}, {"Caminiti", false}, {"Camisso", false}, {"Campbell", false}, {"Campes", false}, 
+	{"Canciamilla", false}, {"Canino", false}, {"Cariati", false}, {"Carnavale", false}, {"Carotenuto", false}, {"Carpino", false}, {"Carrasco", false}, {"Carrocci", false}, {"Carroccio", false}, {"Cartolano", false}, 
+	{"Caruso", false}, {"Carvajal", false}, {"Casabura", false}, {"Casagrande", false}, {"Casazza", false}, {"Casteilian", false}, {"Castillo", false}, {"Castrogiovanni", false}, {"Catalano", false}, {"Catoia", false}, 
+	{"Cauterruccio", false}, {"Cavallaro", false}, {"Centrella", false}, {"Cernigliaro", false}, {"Cervelli", false}, {"Cesario", false}, {"Chapman", false}, {"Chille", false}, {"Chiovaro", false}, {"Chiricosta", false}, 
+	{"Cipollini", false}, {"Cirillo", false}, {"Citriniti", false}, {"Ciurro", false}, {"Civile", false}, {"Civitella", false}, {"Ciark", false}, {"Ciemente", false}, {"Colannino", false}, {"Coletti", false},
+	{"Collins", false}, {"Conchin", false}, {"Conficoni", false}, {"Conforto", false}, {"Conti", false}, {"Cornelio", false}, {"Corulla", false}, {"Costa", false}, {"Costanza", false}, {"Costanzo", false},
+	{"Cotone", false}, {"Cottone", false}, {"Cottone", false}, {"Covelli", false}, {"Cozzi", false}, {"Crescento", false}, {"Cricenti", false}, {"Crivaro", false}, {"Crivello", false}, {"Cruzzola", false},
+	{"Cuiccio", false}, {"Cupi", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
+	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}
 };
 
 new itemNames[][] = {
 	"Rolki", "Piwo", "Wino", "Sprunk", "Teczka", "Cygaro", "Ubranie", "Telefon", "Kostka",
-	"Kamizelka", "Pistolet", "Desert Deagle", "Shotgun", "M4", "Cheeseburger", "Coca-Cola", 
-	"Cuba Libre", "Frytki", "Grove Burger", "Hamburger", "Herbata", "Hot Dog", "Kawa", "Kebab",
-	"Lody", "Lody w kubku", "Longer", "Nachos z serem", "Naleœnik", "Naleœniki", "P¹czek", 
-	"P¹czek Afro", "P¹czek Z³otawy", "Sushi", "Woda Mineralna", "Discman", "RadioParty", "CD", 
-	"Nokia 8110"
+	"Maska", "Kamizelka", "Pistolet", "Desert Deagle", "Shotgun", "M4", "Cheeseburger",
+	"Zapiekanka", "Coca-Cola", "Cuba Libre", "Frytki", "Grove Burger", "Hamburger", "Herbata",
+	"Hot Dog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Longer", "Nachos z serem", "Naleœnik",
+	"Naleœniki", "P¹czek", "P¹czek Afro", "P¹czek Z³otawy", "Sushi", "Woda Mineralna", "Discman",
+	"RadioParty", "CD", "Nokia 8110", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik", "Maska samochodowa"
 };
 
 new VehicleNames[212][] = {
@@ -289,9 +309,9 @@ new VehicleNames[212][] = {
 	"Dodo",
 	"RC Cam",
 	"Launch",
-	"Police Car",
-	"Police Car",
-	"Police Car",
+	"LSPD",
+	"SFPD",
+	"LVPD",
 	"Police Ranger",
 	"Picador",
 	"S.W.A.T. Van",
@@ -360,5 +380,3 @@ new Float:checkpointTruckPos[MAX_TRUCK_CHECKPOINTS][3] = {
 };
 
 */
-
-#endif 

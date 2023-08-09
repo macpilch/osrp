@@ -580,17 +580,17 @@ _Y_HOOKS_STATIC stock Hooks_GetAllHooks(const name[], hooks[128], idx, &namelen)
 	new
 		len = strlen(name) + 1,
 		count,
-		tmpName[64];
+		tmpName2[64];
 	while ((idx = AMX_GetPublicEntryPrefix(idx, hooks[count], _A<@yH_>)))
 	{
-		AMX_GetStringFromEntry(hooks[count], tmpName),
-		len = strlen(tmpName),
-		strunpack(tmpName, tmpName),
-		Hooks_IsolateName(tmpName),
-		Hooks_MakeLongName(tmpName);
+		AMX_GetStringFromEntry(hooks[count], tmpName2),
+		len = strlen(tmpName2),
+		strunpack(tmpName2, tmpName2),
+		Hooks_IsolateName(tmpName2),
+		Hooks_MakeLongName(tmpName2);
 		// Check if the fully expanded name is the name.
-		P:6("Hooks_GetAllHooks found: %s ?= %s %d", name, tmpName, idx);
-		if (!strcmp(tmpName, name))
+		P:6("Hooks_GetAllHooks found: %s ?= %s %d", name, tmpName2, idx);
+		if (!strcmp(tmpName2, name))
 		{
 			Hooks_InvalidateName(hooks[count]);
 			// Record how much consecutive space we have to play with in the
@@ -1051,11 +1051,11 @@ _Y_HOOKS_STATIC Hooks_ComparePublics(idx0, idx1)
 				// Swap them over.
 				new
 					tmpFunc = AMX_Read(idx0),
-					tmpName = AMX_Read(idx0 + 4);
+					tmpName2 = AMX_Read(idx0 + 4);
 				AMX_Write(idx0, AMX_Read(idx1));
 				AMX_Write(idx0 + 4, AMX_Read(idx1 + 4));
 				AMX_Write(idx1, tmpFunc);
-				AMX_Write(idx1 + 4, tmpName);
+				AMX_Write(idx1 + 4, tmpName2);
 				return;
 			}
 			case 1:

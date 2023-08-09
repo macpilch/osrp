@@ -1,13 +1,16 @@
 /*
-	Project: SAMP-RP
+	Project: OSRP
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 25.07.2022
-	Modified: 30.07.2023
+	Modified: 07.08.2023
 */
 
-#if !defined __PLAYER_FUNCTIONS_INC__
+#if defined __PLAYER_FUNCTIONS_INC__
+	#endinput
+#endif
 #define __PLAYER_FUNCTIONS_INC__
+#pragma library osrp
 
 Callback:hideDoorInfo(playerid) {
 	for(new i = 0; i < 3; i++) {
@@ -45,13 +48,11 @@ Callback:hideHelpInfo(playerid) {
 	return 1;
 }
 
-/*
 Callback:setICNameForPlayer(playerid) {
 	SetPlayerName(playerid, pVars[playerid][pCharName2]);
 	GetPlayerName(playerid, pVars[playerid][pCharName2], 24);
 	return 1;
 }
-*/
 
 Callback:healthDamage(playerid) {
 	mainStr[0] = EOS;
@@ -89,6 +90,34 @@ Callback:hideHotelInfo(playerid) {
 	return 1;
 }
 
+Callback:hideItemTips(playerid) {
+	for(new i = 0; i < 2; i++) {
+		TextDrawHideForPlayer(playerid, itemTips[playerid][i]);
+	}
+	return 1;
+}
+
+Callback:hideScrimmageTips(playerid, numid) {
+	switch(numid) {
+		case 0: {
+			TextDrawHideForPlayer(playerid, scrimmageTips[playerid][0]);
+		}
+		case 1: {
+			TextDrawHideForPlayer(playerid, scrimmageTips[playerid][1]);
+		}
+		case 2: {
+			TextDrawHideForPlayer(playerid, scrimmageTips[playerid][2]);
+		}
+		case 3: {
+			TextDrawHideForPlayer(playerid, scrimmageTips[playerid][3]);
+		}
+		case 4: {
+			TextDrawHideForPlayer(playerid, scrimmageTips[playerid][4]);
+		}
+	}
+	return 1;
+}
+
 Callback:bwTimer(playerid) {
 	mainStr[0] = EOS;
 
@@ -103,7 +132,7 @@ Callback:bwTimer(playerid) {
 		isBW[playerid] = false;
 		
 		ClearAnimations(playerid);
-		SetPlayerHealthEx(playerid, 5.0);
+		setPlayerHealthEx(playerid, 5.0);
 		SetPlayerDrunkLevel(playerid, 10000);
 		TogglePlayerControllable(playerid, 1);
 		
@@ -142,44 +171,54 @@ Callback:refreshCmds(playerid, cmd) {
 	tym jest bardziej ciemniejsza.
 	Narazie najprostrza wersja do testow.
 */
-stock sendDistanceMessage(playerid, Float:range, const str[], color1, color2, color3, color4) {
+stock sendDistanceMessage(playerid, Float:range, const str[], type, color1, color2, color3, color4) {
 	new str1[256], str2[32], tmpStr[128], tmpStr2[64];
-	new Float:x, Float:y, Float:z;
 	
-	GetPlayerPos(playerid, x, y, z);
+	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	
 	if(strlen(str) > 95) {
 		strmid(tmpStr, str, 0, 94);
 		strmid(tmpStr2, str, 95, strlen(str));
 		
 		format(str1, sizeof(str1), "%s...", tmpStr);
-		format(str2, sizeof(str2), "... %s", tmpStr2);
+		
+		switch(type) {
+			case MSG_CHAT: {
+				format(str2, sizeof(str2), "... %s", tmpStr2);
+			}
+			case MSG_ME: {
+				format(str2, sizeof(str2), "** ... %s", tmpStr2);
+			}
+			case MSG_DO: {
+				format(str2, sizeof(str2), "** ... %s (( %s ))", tmpStr2, pVars[playerid][pCharName]);
+			}
+		}
 	}
 	
 	foreach(new i : Player) {
 		if(!isBW[i]) {
-			if(IsPlayerInRangeOfPoint(i, range / 4, x, y, z)) {
+			if(playerToPoint(i, range / 4, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
 				if(strlen(str) > 95) {
 					SendClientMessage(i, color1, str1);
 					SendClientMessage(i, color1, str2);
 				} else {
 					SendClientMessage(i, color1, str);
 				}
-			} else if(IsPlayerInRangeOfPoint(i, range / 3, x, y, z)) {
+			} else if(playerToPoint(i, range / 3, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
 				if(strlen(str) > 95) {
 					SendClientMessage(i, color2, str1);
 					SendClientMessage(i, color2, str2);
 				} else {
 					SendClientMessage(i, color2, str);
 				}
-			} else if(IsPlayerInRangeOfPoint(i, range / 2, x, y, z)) {
+			} else if(playerToPoint(i, range / 2, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
 				if(strlen(str) > 95) {
 					SendClientMessage(i, color3, str1);
 					SendClientMessage(i, color3, str2);
 				} else {
 					SendClientMessage(i, color3, str);
 				}
-			} else if(IsPlayerInRangeOfPoint(i, range, x, y, z)) {
+			} else if(playerToPoint(i, range, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
 				if(strlen(str) > 95) {
 					SendClientMessage(i, color4, str1);
 					SendClientMessage(i, color4, str2);
@@ -214,6 +253,76 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawSetOutline(helpInfo[playerid][1], 1);
 	TextDrawFont(helpInfo[playerid][1], 0);
 	
+	itemTips[playerid][0] = TextDrawCreate(311.533660, 346.499847, "Istnieje szybsza metoda na uzywanie przedmiotow. Skrot:~n~~b~~h~~h~~h~/p [Czesc nazwy przedmiotu] [opcjonalnie parametry]");
+	TextDrawLetterSize(itemTips[playerid][0], 0.245764, 1.284998);
+	TextDrawAlignment(itemTips[playerid][0], 2);
+	TextDrawColor(itemTips[playerid][0], -1);
+	TextDrawSetShadow(itemTips[playerid][0], 0);
+	TextDrawSetOutline(itemTips[playerid][0], 1);
+	TextDrawBackgroundColor(itemTips[playerid][0], 51);
+	TextDrawFont(itemTips[playerid][0], 1);
+	TextDrawSetProportional(itemTips[playerid][0], 1);
+
+	itemTips[playerid][1] = TextDrawCreate(217.882431, 379.166534, "~y~Przyklady: ~y~~h~/p rolki    /p deagle z kabury.");
+	TextDrawLetterSize(itemTips[playerid][1], 0.251882, 1.098330);
+	TextDrawAlignment(itemTips[playerid][1], 1);
+	TextDrawColor(itemTips[playerid][1], -1);
+	TextDrawSetShadow(itemTips[playerid][1], 0);
+	TextDrawSetOutline(itemTips[playerid][1], 1);
+	TextDrawBackgroundColor(itemTips[playerid][1], 51);
+	TextDrawFont(itemTips[playerid][1], 1);
+	TextDrawSetProportional(itemTips[playerid][1], 1);
+	
+	scrimmageTips[playerid][0] = TextDrawCreate(317.647064, 341.833251, "Dopoki nie odpowiesz kontratakiem, ten gracz nie moze Cie skrzywdzic.");
+	TextDrawLetterSize(scrimmageTips[playerid][0], 0.276353, 1.250000);
+	TextDrawAlignment(scrimmageTips[playerid][0], 2);
+	TextDrawColor(scrimmageTips[playerid][0], -1);
+	TextDrawSetShadow(scrimmageTips[playerid][0], 0);
+	TextDrawSetOutline(scrimmageTips[playerid][0], 1);
+	TextDrawBackgroundColor(scrimmageTips[playerid][0], 51);
+	TextDrawFont(scrimmageTips[playerid][0], 1);
+	TextDrawSetProportional(scrimmageTips[playerid][0], 1);
+	
+	scrimmageTips[playerid][1] = TextDrawCreate(319.530059, 352.333496, "Zignoruj go, jezeli to zadymiarz - to zabezpieczenie przed DM-em.~n~Aby wdac sie w bojke zacznij ~r~kontratak.");
+	TextDrawLetterSize(scrimmageTips[playerid][1], 0.279176, 1.273332);
+	TextDrawAlignment(scrimmageTips[playerid][1], 2);
+	TextDrawColor(scrimmageTips[playerid][1], -1);
+	TextDrawSetShadow(scrimmageTips[playerid][1], 0);
+	TextDrawSetOutline(scrimmageTips[playerid][1], 1);
+	TextDrawBackgroundColor(scrimmageTips[playerid][1], 51);
+	TextDrawFont(scrimmageTips[playerid][1], 1);
+	TextDrawSetProportional(scrimmageTips[playerid][1], 1);
+	
+	scrimmageTips[playerid][2] = TextDrawCreate(305.882507, 341.833221, "Wykonales(as) ~r~kontratak~w~. Od teraz trwa miedzy wami bojka.");
+	TextDrawLetterSize(scrimmageTips[playerid][2], 0.266470, 1.168332);
+	TextDrawAlignment(scrimmageTips[playerid][2], 2);
+	TextDrawColor(scrimmageTips[playerid][2], -1);
+	TextDrawSetShadow(scrimmageTips[playerid][2], 0);
+	TextDrawSetOutline(scrimmageTips[playerid][2], 1);
+	TextDrawBackgroundColor(scrimmageTips[playerid][2], 51);
+	TextDrawFont(scrimmageTips[playerid][2], 1);
+	TextDrawSetProportional(scrimmageTips[playerid][2], 1);
+	
+	scrimmageTips[playerid][3] = TextDrawCreate(305.882507, 341.833221, "Gracz wykonal ~r~kontratak~w~. Od teraz trwa miedzy wami bojka.");
+	TextDrawLetterSize(scrimmageTips[playerid][3], 0.266470, 1.168332);
+	TextDrawAlignment(scrimmageTips[playerid][3], 2);
+	TextDrawColor(scrimmageTips[playerid][3], -1);
+	TextDrawSetShadow(scrimmageTips[playerid][3], 0);
+	TextDrawSetOutline(scrimmageTips[playerid][3], 1);
+	TextDrawBackgroundColor(scrimmageTips[playerid][3], 51);
+	TextDrawFont(scrimmageTips[playerid][3], 1);
+	TextDrawSetProportional(scrimmageTips[playerid][3], 1);
+	
+	scrimmageTips[playerid][4] = TextDrawCreate(297.411590, 331.916595, "Nie nie jestes w stanie skrzywdzic gracza w tym miejscu,~n~dopoki nie odpowie on kontratakiem w celu rozpoczecia bojki.");
+	TextDrawLetterSize(scrimmageTips[playerid][4], 0.241999, 1.232500);
+	TextDrawAlignment(scrimmageTips[playerid][4], 2);
+	TextDrawColor(scrimmageTips[playerid][4], -1);
+	TextDrawSetShadow(scrimmageTips[playerid][4], 0);
+	TextDrawSetOutline(scrimmageTips[playerid][4], 1);
+	TextDrawBackgroundColor(scrimmageTips[playerid][4], 51);
+	TextDrawFont(scrimmageTips[playerid][4], 1);
+	TextDrawSetProportional(scrimmageTips[playerid][4], 1);
+	
 	firstHoursInfo[0] = TextDrawCreate(489.136047, 285.833221, "~w~Jako nowy gracz, co 10 minut~n~gry otrzymujesz $25 na~n~");
 	TextDrawLetterSize(firstHoursInfo[0], 0.305226, 1.273333);
 	TextDrawAlignment(firstHoursInfo[0], 2);
@@ -223,8 +332,8 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawBackgroundColor(firstHoursInfo[0], 255);
 	TextDrawFont(firstHoursInfo[0], 1);
 	TextDrawSetProportional(firstHoursInfo[0], 1);
-
-	firstHoursInfo[1] = TextDrawCreate(453.996887, 309.750000, "~w~pierwsze wydatki.");
+	
+	firstHoursInfo[1] = TextDrawCreate(453.996887, 309.750000, "~w~pierwsze wydatki. Zatrudnij sie~n~w jakims biznesie, by zarabiac~n~wieksze pieniadze.");
 	TextDrawLetterSize(firstHoursInfo[1], 0.304289, 1.232499);
 	TextDrawAlignment(firstHoursInfo[1], 2);
 	TextDrawColor(firstHoursInfo[1], -1);
@@ -233,7 +342,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawBackgroundColor(firstHoursInfo[1], 255);
 	TextDrawFont(firstHoursInfo[1], 1);
 	TextDrawSetProportional(firstHoursInfo[1], 1);
-
+	
 	firstHoursInfo[2] = TextDrawCreate(581.560852, 285.583374, "_");
 	TextDrawLetterSize(firstHoursInfo[2], 0.000000, 7.525923);
 	TextDrawTextSize(firstHoursInfo[2], 399.991180, 0.000000);
@@ -447,169 +556,169 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawSetOutline(telephoneCall[playerid][1], 1);
 	TextDrawFont(telephoneCall[playerid][1], 0);
 	
-	fractionsInfo[playerid][0] = TextDrawCreate(111.039489, 138.833312, "~>~  ~w~Grupy");
-	TextDrawLetterSize(fractionsInfo[playerid][0], 0.431259, 1.804166);
-	TextDrawAlignment(fractionsInfo[playerid][0], 2);
-	TextDrawColor(fractionsInfo[playerid][0], -1);
-	TextDrawSetShadow(fractionsInfo[playerid][0], 0);
-	TextDrawSetOutline(fractionsInfo[playerid][0], 0);
-	TextDrawBackgroundColor(fractionsInfo[playerid][0], 255);
-	TextDrawFont(fractionsInfo[playerid][0], 1);
-	TextDrawSetProportional(fractionsInfo[playerid][0], 1);
-	TextDrawSetSelectable(fractionsInfo[playerid][0], 1);
+	groupsInfo[playerid][0] = TextDrawCreate(111.039489, 138.833312, "~>~  ~w~Grupy");
+	TextDrawLetterSize(groupsInfo[playerid][0], 0.431259, 1.804166);
+	TextDrawAlignment(groupsInfo[playerid][0], 2);
+	TextDrawColor(groupsInfo[playerid][0], -1);
+	TextDrawSetShadow(groupsInfo[playerid][0], 0);
+	TextDrawSetOutline(groupsInfo[playerid][0], 0);
+	TextDrawBackgroundColor(groupsInfo[playerid][0], 255);
+	TextDrawFont(groupsInfo[playerid][0], 1);
+	TextDrawSetProportional(groupsInfo[playerid][0], 1);
+	TextDrawSetSelectable(groupsInfo[playerid][0], 1);
 
-	fractionsInfo[playerid][1] = TextDrawCreate(50.600326, 169.166702, "~b~1  ~w~Test (0)");
-	TextDrawLetterSize(fractionsInfo[playerid][1], 0.412518, 1.541666);
-	TextDrawAlignment(fractionsInfo[playerid][1], 1);
-	TextDrawColor(fractionsInfo[playerid][1], -1);
-	TextDrawSetShadow(fractionsInfo[playerid][1], 0);
-	TextDrawSetOutline(fractionsInfo[playerid][1], 1);
-	TextDrawBackgroundColor(fractionsInfo[playerid][1], 51);
-	TextDrawFont(fractionsInfo[playerid][1], 1);
-	TextDrawSetProportional(fractionsInfo[playerid][1], 1);
+	groupsInfo[playerid][1] = TextDrawCreate(50.600326, 169.166702, "~b~1  ~w~Test (0)");
+	TextDrawLetterSize(groupsInfo[playerid][1], 0.412518, 1.541666);
+	TextDrawAlignment(groupsInfo[playerid][1], 1);
+	TextDrawColor(groupsInfo[playerid][1], -1);
+	TextDrawSetShadow(groupsInfo[playerid][1], 0);
+	TextDrawSetOutline(groupsInfo[playerid][1], 1);
+	TextDrawBackgroundColor(groupsInfo[playerid][1], 51);
+	TextDrawFont(groupsInfo[playerid][1], 1);
+	TextDrawSetProportional(groupsInfo[playerid][1], 1);
 
-	fractionsInfo[playerid][2] = TextDrawCreate(245.973648, 171.500061, "~w~Sluzba");
-	TextDrawLetterSize(fractionsInfo[playerid][2], 0.309911, 1.133332);
-	TextDrawAlignment(fractionsInfo[playerid][2], 1);
-	TextDrawColor(fractionsInfo[playerid][2], -1);
-	TextDrawSetShadow(fractionsInfo[playerid][2], 0);
-	TextDrawSetOutline(fractionsInfo[playerid][2], 1);
-	TextDrawBackgroundColor(fractionsInfo[playerid][2], 51);
-	TextDrawFont(fractionsInfo[playerid][2], 1);
-	TextDrawSetProportional(fractionsInfo[playerid][2], 1);
-	TextDrawSetSelectable(fractionsInfo[playerid][2], 1);
+	groupsInfo[playerid][2] = TextDrawCreate(245.973648, 171.500061, "~w~Sluzba");
+	TextDrawLetterSize(groupsInfo[playerid][2], 0.309911, 1.133332);
+	TextDrawAlignment(groupsInfo[playerid][2], 1);
+	TextDrawColor(groupsInfo[playerid][2], -1);
+	TextDrawSetShadow(groupsInfo[playerid][2], 0);
+	TextDrawSetOutline(groupsInfo[playerid][2], 1);
+	TextDrawBackgroundColor(groupsInfo[playerid][2], 51);
+	TextDrawFont(groupsInfo[playerid][2], 1);
+	TextDrawSetProportional(groupsInfo[playerid][2], 1);
+	TextDrawSetSelectable(groupsInfo[playerid][2], 1);
 
-	fractionsInfo[playerid][3] = TextDrawCreate(310.160919, 171.500030, "~w~Info");
-	TextDrawLetterSize(fractionsInfo[playerid][3], 0.319282, 1.162498);
-	TextDrawAlignment(fractionsInfo[playerid][3], 1);
-	TextDrawColor(fractionsInfo[playerid][3], -1);
-	TextDrawSetShadow(fractionsInfo[playerid][3], 0);
-	TextDrawSetOutline(fractionsInfo[playerid][3], 1);
-	TextDrawBackgroundColor(fractionsInfo[playerid][3], 51);
-	TextDrawFont(fractionsInfo[playerid][3], 1);
-	TextDrawSetProportional(fractionsInfo[playerid][3], 1);
-	TextDrawSetSelectable(fractionsInfo[playerid][3], 1);
+	groupsInfo[playerid][3] = TextDrawCreate(310.160919, 171.500030, "~w~Info");
+	TextDrawLetterSize(groupsInfo[playerid][3], 0.319282, 1.162498);
+	TextDrawAlignment(groupsInfo[playerid][3], 1);
+	TextDrawColor(groupsInfo[playerid][3], -1);
+	TextDrawSetShadow(groupsInfo[playerid][3], 0);
+	TextDrawSetOutline(groupsInfo[playerid][3], 1);
+	TextDrawBackgroundColor(groupsInfo[playerid][3], 51);
+	TextDrawFont(groupsInfo[playerid][3], 1);
+	TextDrawSetProportional(groupsInfo[playerid][3], 1);
+	TextDrawSetSelectable(groupsInfo[playerid][3], 1);
 
-	fractionsInfo[playerid][4] = TextDrawCreate(357.950378, 171.500000, "~w~Magazyn");
-	TextDrawLetterSize(fractionsInfo[playerid][4], 0.292108, 1.080832);
-	TextDrawAlignment(fractionsInfo[playerid][4], 1);
-	TextDrawColor(fractionsInfo[playerid][4], -1);
-	TextDrawSetShadow(fractionsInfo[playerid][4], 0);
-	TextDrawSetOutline(fractionsInfo[playerid][4], 1);
-	TextDrawBackgroundColor(fractionsInfo[playerid][4], 51);
-	TextDrawFont(fractionsInfo[playerid][4], 1);
-	TextDrawSetProportional(fractionsInfo[playerid][4], 1);
-	TextDrawSetSelectable(fractionsInfo[playerid][4], 1);
+	groupsInfo[playerid][4] = TextDrawCreate(357.950378, 171.500000, "~w~Magazyn");
+	TextDrawLetterSize(groupsInfo[playerid][4], 0.292108, 1.080832);
+	TextDrawAlignment(groupsInfo[playerid][4], 1);
+	TextDrawColor(groupsInfo[playerid][4], -1);
+	TextDrawSetShadow(groupsInfo[playerid][4], 0);
+	TextDrawSetOutline(groupsInfo[playerid][4], 1);
+	TextDrawBackgroundColor(groupsInfo[playerid][4], 51);
+	TextDrawFont(groupsInfo[playerid][4], 1);
+	TextDrawSetProportional(groupsInfo[playerid][4], 1);
+	TextDrawSetSelectable(groupsInfo[playerid][4], 1);
 
-	fractionsInfo[playerid][5] = TextDrawCreate(430.102355, 171.499984, "~w~Online");
-	TextDrawLetterSize(fractionsInfo[playerid][5], 0.277583, 1.150831);
-	TextDrawAlignment(fractionsInfo[playerid][5], 1);
-	TextDrawColor(fractionsInfo[playerid][5], -1);
-	TextDrawSetShadow(fractionsInfo[playerid][5], 0);
-	TextDrawSetOutline(fractionsInfo[playerid][5], 1);
-	TextDrawBackgroundColor(fractionsInfo[playerid][5], 51);
-	TextDrawFont(fractionsInfo[playerid][5], 1);
-	TextDrawSetProportional(fractionsInfo[playerid][5], 1);
-	TextDrawSetSelectable(fractionsInfo[playerid][5], 1);
+	groupsInfo[playerid][5] = TextDrawCreate(430.102355, 171.499984, "~w~Online");
+	TextDrawLetterSize(groupsInfo[playerid][5], 0.277583, 1.150831);
+	TextDrawAlignment(groupsInfo[playerid][5], 1);
+	TextDrawColor(groupsInfo[playerid][5], -1);
+	TextDrawSetShadow(groupsInfo[playerid][5], 0);
+	TextDrawSetOutline(groupsInfo[playerid][5], 1);
+	TextDrawBackgroundColor(groupsInfo[playerid][5], 51);
+	TextDrawFont(groupsInfo[playerid][5], 1);
+	TextDrawSetProportional(groupsInfo[playerid][5], 1);
+	TextDrawSetSelectable(groupsInfo[playerid][5], 1);
 
-	fractionsInfo[playerid][6] = TextDrawCreate(486.325042, 172.083374, "~w~Zadania");
-	TextDrawLetterSize(fractionsInfo[playerid][6], 0.291639, 1.086666);
-	TextDrawAlignment(fractionsInfo[playerid][6], 1);
-	TextDrawColor(fractionsInfo[playerid][6], -1);
-	TextDrawSetShadow(fractionsInfo[playerid][6], 0);
-	TextDrawSetOutline(fractionsInfo[playerid][6], 1);
-	TextDrawBackgroundColor(fractionsInfo[playerid][6], 51);
-	TextDrawFont(fractionsInfo[playerid][6], 1);
-	TextDrawSetProportional(fractionsInfo[playerid][6], 1);
-	TextDrawSetSelectable(fractionsInfo[playerid][6], 1);
+	groupsInfo[playerid][6] = TextDrawCreate(486.325042, 172.083374, "~w~Zadania");
+	TextDrawLetterSize(groupsInfo[playerid][6], 0.291639, 1.086666);
+	TextDrawAlignment(groupsInfo[playerid][6], 1);
+	TextDrawColor(groupsInfo[playerid][6], -1);
+	TextDrawSetShadow(groupsInfo[playerid][6], 0);
+	TextDrawSetOutline(groupsInfo[playerid][6], 1);
+	TextDrawBackgroundColor(groupsInfo[playerid][6], 51);
+	TextDrawFont(groupsInfo[playerid][6], 1);
+	TextDrawSetProportional(groupsInfo[playerid][6], 1);
+	TextDrawSetSelectable(groupsInfo[playerid][6], 1);
 
-	fractionsInfo[playerid][7] = TextDrawCreate(552.855102, 172.083465, "~w~Pojazdy");
-	TextDrawLetterSize(fractionsInfo[playerid][7], 0.300072, 1.057498);
-	TextDrawAlignment(fractionsInfo[playerid][7], 1);
-	TextDrawColor(fractionsInfo[playerid][7], -1);
-	TextDrawSetShadow(fractionsInfo[playerid][7], 0);
-	TextDrawSetOutline(fractionsInfo[playerid][7], 1);
-	TextDrawBackgroundColor(fractionsInfo[playerid][7], 51);
-	TextDrawFont(fractionsInfo[playerid][7], 1);
-	TextDrawSetProportional(fractionsInfo[playerid][7], 1);
-	TextDrawSetSelectable(fractionsInfo[playerid][7], 1);
+	groupsInfo[playerid][7] = TextDrawCreate(552.855102, 172.083465, "~w~Pojazdy");
+	TextDrawLetterSize(groupsInfo[playerid][7], 0.300072, 1.057498);
+	TextDrawAlignment(groupsInfo[playerid][7], 1);
+	TextDrawColor(groupsInfo[playerid][7], -1);
+	TextDrawSetShadow(groupsInfo[playerid][7], 0);
+	TextDrawSetOutline(groupsInfo[playerid][7], 1);
+	TextDrawBackgroundColor(groupsInfo[playerid][7], 51);
+	TextDrawFont(groupsInfo[playerid][7], 1);
+	TextDrawSetProportional(groupsInfo[playerid][7], 1);
+	TextDrawSetSelectable(groupsInfo[playerid][7], 1);
 
-	fractionsInfo[playerid][8] = TextDrawCreate(293.420227, 170.083343, "_");
-	TextDrawLetterSize(fractionsInfo[playerid][8], 0.000000, 1.562961);
-	TextDrawTextSize(fractionsInfo[playerid][8], 232.729141, 0.000000);
-	TextDrawAlignment(fractionsInfo[playerid][8], 1);
-	TextDrawColor(fractionsInfo[playerid][8], 0);
-	TextDrawUseBox(fractionsInfo[playerid][8], 1);
-	TextDrawBoxColor(fractionsInfo[playerid][8], 102);
-	TextDrawSetShadow(fractionsInfo[playerid][8], 0);
-	TextDrawSetOutline(fractionsInfo[playerid][8], 0);
-	TextDrawFont(fractionsInfo[playerid][8], 0);
+	groupsInfo[playerid][8] = TextDrawCreate(293.420227, 170.083343, "_");
+	TextDrawLetterSize(groupsInfo[playerid][8], 0.000000, 1.562961);
+	TextDrawTextSize(groupsInfo[playerid][8], 232.729141, 0.000000);
+	TextDrawAlignment(groupsInfo[playerid][8], 1);
+	TextDrawColor(groupsInfo[playerid][8], 0);
+	TextDrawUseBox(groupsInfo[playerid][8], 1);
+	TextDrawBoxColor(groupsInfo[playerid][8], 102);
+	TextDrawSetShadow(groupsInfo[playerid][8], 0);
+	TextDrawSetOutline(groupsInfo[playerid][8], 0);
+	TextDrawFont(groupsInfo[playerid][8], 0);
 
-	fractionsInfo[playerid][9] = TextDrawCreate(350.579772, 169.500000, "_");
-	TextDrawLetterSize(fractionsInfo[playerid][9], 0.000000, 1.562961);
-	TextDrawTextSize(fractionsInfo[playerid][9], 295.979492, 0.000000);
-	TextDrawAlignment(fractionsInfo[playerid][9], 1);
-	TextDrawColor(fractionsInfo[playerid][9], 0);
-	TextDrawUseBox(fractionsInfo[playerid][9], 1);
-	TextDrawBoxColor(fractionsInfo[playerid][9], 102);
-	TextDrawSetShadow(fractionsInfo[playerid][9], 0);
-	TextDrawSetOutline(fractionsInfo[playerid][9], 0);
-	TextDrawFont(fractionsInfo[playerid][9], 0);
+	groupsInfo[playerid][9] = TextDrawCreate(350.579772, 169.500000, "_");
+	TextDrawLetterSize(groupsInfo[playerid][9], 0.000000, 1.562961);
+	TextDrawTextSize(groupsInfo[playerid][9], 295.979492, 0.000000);
+	TextDrawAlignment(groupsInfo[playerid][9], 1);
+	TextDrawColor(groupsInfo[playerid][9], 0);
+	TextDrawUseBox(groupsInfo[playerid][9], 1);
+	TextDrawBoxColor(groupsInfo[playerid][9], 102);
+	TextDrawSetShadow(groupsInfo[playerid][9], 0);
+	TextDrawSetOutline(groupsInfo[playerid][9], 0);
+	TextDrawFont(groupsInfo[playerid][9], 0);
 
-	fractionsInfo[playerid][10] = TextDrawCreate(415.704254, 168.916656, "_");
-	TextDrawLetterSize(fractionsInfo[playerid][10], 0.000000, 1.757409);
-	TextDrawTextSize(fractionsInfo[playerid][10], 349.859436, 0.000000);
-	TextDrawAlignment(fractionsInfo[playerid][10], 1);
-	TextDrawColor(fractionsInfo[playerid][10], 0);
-	TextDrawUseBox(fractionsInfo[playerid][10], 1);
-	TextDrawBoxColor(fractionsInfo[playerid][10], 102);
-	TextDrawSetShadow(fractionsInfo[playerid][10], 0);
-	TextDrawSetOutline(fractionsInfo[playerid][10], 0);
-	TextDrawFont(fractionsInfo[playerid][10], 0);
+	groupsInfo[playerid][10] = TextDrawCreate(415.704254, 168.916656, "_");
+	TextDrawLetterSize(groupsInfo[playerid][10], 0.000000, 1.757409);
+	TextDrawTextSize(groupsInfo[playerid][10], 349.859436, 0.000000);
+	TextDrawAlignment(groupsInfo[playerid][10], 1);
+	TextDrawColor(groupsInfo[playerid][10], 0);
+	TextDrawUseBox(groupsInfo[playerid][10], 1);
+	TextDrawBoxColor(groupsInfo[playerid][10], 102);
+	TextDrawSetShadow(groupsInfo[playerid][10], 0);
+	TextDrawSetOutline(groupsInfo[playerid][10], 0);
+	TextDrawFont(groupsInfo[playerid][10], 0);
 
-	fractionsInfo[playerid][11] = TextDrawCreate(474.737915, 169.500000, "_");
-	TextDrawLetterSize(fractionsInfo[playerid][11], 0.000000, 1.692593);
-	TextDrawTextSize(fractionsInfo[playerid][11], 419.200592, 0.000000);
-	TextDrawAlignment(fractionsInfo[playerid][11], 1);
-	TextDrawColor(fractionsInfo[playerid][11], 0);
-	TextDrawUseBox(fractionsInfo[playerid][11], 1);
-	TextDrawBoxColor(fractionsInfo[playerid][11], 102);
-	TextDrawSetShadow(fractionsInfo[playerid][11], 0);
-	TextDrawSetOutline(fractionsInfo[playerid][11], 0);
-	TextDrawFont(fractionsInfo[playerid][11], 0);
+	groupsInfo[playerid][11] = TextDrawCreate(474.737915, 169.500000, "_");
+	TextDrawLetterSize(groupsInfo[playerid][11], 0.000000, 1.692593);
+	TextDrawTextSize(groupsInfo[playerid][11], 419.200592, 0.000000);
+	TextDrawAlignment(groupsInfo[playerid][11], 1);
+	TextDrawColor(groupsInfo[playerid][11], 0);
+	TextDrawUseBox(groupsInfo[playerid][11], 1);
+	TextDrawBoxColor(groupsInfo[playerid][11], 102);
+	TextDrawSetShadow(groupsInfo[playerid][11], 0);
+	TextDrawSetOutline(groupsInfo[playerid][11], 0);
+	TextDrawFont(groupsInfo[playerid][11], 0);
 
-	fractionsInfo[playerid][12] = TextDrawCreate(537.519775, 169.500000, "_");
-	TextDrawLetterSize(fractionsInfo[playerid][12], 0.000000, 1.692593);
-	TextDrawTextSize(fractionsInfo[playerid][12], 477.765747, 0.000000);
-	TextDrawAlignment(fractionsInfo[playerid][12], 1);
-	TextDrawColor(fractionsInfo[playerid][12], 0);
-	TextDrawUseBox(fractionsInfo[playerid][12], 1);
-	TextDrawBoxColor(fractionsInfo[playerid][12], 102);
-	TextDrawSetShadow(fractionsInfo[playerid][12], 0);
-	TextDrawSetOutline(fractionsInfo[playerid][12], 0);
-	TextDrawFont(fractionsInfo[playerid][12], 0);
+	groupsInfo[playerid][12] = TextDrawCreate(537.519775, 169.500000, "_");
+	TextDrawLetterSize(groupsInfo[playerid][12], 0.000000, 1.692593);
+	TextDrawTextSize(groupsInfo[playerid][12], 477.765747, 0.000000);
+	TextDrawAlignment(groupsInfo[playerid][12], 1);
+	TextDrawColor(groupsInfo[playerid][12], 0);
+	TextDrawUseBox(groupsInfo[playerid][12], 1);
+	TextDrawBoxColor(groupsInfo[playerid][12], 102);
+	TextDrawSetShadow(groupsInfo[playerid][12], 0);
+	TextDrawSetOutline(groupsInfo[playerid][12], 0);
+	TextDrawFont(groupsInfo[playerid][12], 0);
 
-	fractionsInfo[playerid][13] = TextDrawCreate(608.266479, 169.500000, "_");
-	TextDrawLetterSize(fractionsInfo[playerid][13], 0.000000, 1.692593);
-	TextDrawTextSize(fractionsInfo[playerid][13], 541.016113, 0.000000);
-	TextDrawAlignment(fractionsInfo[playerid][13], 1);
-	TextDrawColor(fractionsInfo[playerid][13], 0);
-	TextDrawUseBox(fractionsInfo[playerid][13], 1);
-	TextDrawBoxColor(fractionsInfo[playerid][13], 102);
-	TextDrawSetShadow(fractionsInfo[playerid][13], 0);
-	TextDrawSetOutline(fractionsInfo[playerid][13], 0);
-	TextDrawFont(fractionsInfo[playerid][13], 0);
+	groupsInfo[playerid][13] = TextDrawCreate(608.266479, 169.500000, "_");
+	TextDrawLetterSize(groupsInfo[playerid][13], 0.000000, 1.692593);
+	TextDrawTextSize(groupsInfo[playerid][13], 541.016113, 0.000000);
+	TextDrawAlignment(groupsInfo[playerid][13], 1);
+	TextDrawColor(groupsInfo[playerid][13], 0);
+	TextDrawUseBox(groupsInfo[playerid][13], 1);
+	TextDrawBoxColor(groupsInfo[playerid][13], 102);
+	TextDrawSetShadow(groupsInfo[playerid][13], 0);
+	TextDrawSetOutline(groupsInfo[playerid][13], 0);
+	TextDrawFont(groupsInfo[playerid][13], 0);
 
-	fractionsInfo[playerid][14] = TextDrawCreate(611.077636, 167.166656, "_");
-	TextDrawLetterSize(fractionsInfo[playerid][14], 0.000000, 2.146298);
-	TextDrawTextSize(fractionsInfo[playerid][14], 45.320640, 0.000000);
-	TextDrawAlignment(fractionsInfo[playerid][14], 1);
-	TextDrawColor(fractionsInfo[playerid][14], 0);
-	TextDrawUseBox(fractionsInfo[playerid][14], 1);
-	TextDrawBoxColor(fractionsInfo[playerid][14], 102);
-	TextDrawSetShadow(fractionsInfo[playerid][14], 0);
-	TextDrawSetOutline(fractionsInfo[playerid][14], 0);
-	TextDrawFont(fractionsInfo[playerid][14], 0);
+	groupsInfo[playerid][14] = TextDrawCreate(611.077636, 167.166656, "_");
+	TextDrawLetterSize(groupsInfo[playerid][14], 0.000000, 2.146298);
+	TextDrawTextSize(groupsInfo[playerid][14], 45.320640, 0.000000);
+	TextDrawAlignment(groupsInfo[playerid][14], 1);
+	TextDrawColor(groupsInfo[playerid][14], 0);
+	TextDrawUseBox(groupsInfo[playerid][14], 1);
+	TextDrawBoxColor(groupsInfo[playerid][14], 102);
+	TextDrawSetShadow(groupsInfo[playerid][14], 0);
+	TextDrawSetOutline(groupsInfo[playerid][14], 0);
+	TextDrawFont(groupsInfo[playerid][14], 0);
 	
 	usedRollersInfo[playerid][0] = TextDrawCreate(490.541625, 285.249969, "~w~Zacznij sprintowac, aby jezdzic~n~na rolkach.~n~~n~Uzyj przedmiotu ponownie (/p~n~rolki), aby je zdjac.");
 	TextDrawLetterSize(usedRollersInfo[playerid][0], 0.306632, 1.378332);
@@ -668,28 +777,31 @@ stock createPlayerTextDraws(playerid) {
 stock loadPlayerValues(playerid) {
 	new charDesc[128];
 	
+	PlayerPlaySound(playerid, 0, 0.0, 0.0, 0.0);
+	
 	queryStr[0] = EOS;
 	strcat(queryStr, "SELECT `GUID`, `CharId`, `IP`, `Rank`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `HP`, `AP`, `Bans`, `Kicks`, `Warns`, `VW`, `INT`, `Skin`, `LastSkin`, `Money`, `Bank`, `BW`, `AJ`, `AL`, `DriverLicense`, `PisSkill`, `DglSkill`, `ShtgSkill`, `M4Skill`,");
-	format(queryStr, sizeof(queryStr), "%s`GOV`, `Hotel`, `IdCard`, `Detention`, `PDP`, `TelNum`, `BankAcc`, `Group`, `Frac0`, `CasualJob`, `Traveled`, `Doors`, `Invi`, `ChatStyle`, `Computer`, `WalkAnim`, `Screen`, `X`, `Y`, `Z`, `Desc` FROM `Players` WHERE `CharName` = '%s'", queryStr, pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "%s`GOV`, `Hotel`, `IdCard`, `Detention`, `PDP`, `TelNum`, `BankAcc`, `GroupDesc`, `Group`, `CasualJob`, `Traveled`, `Doors`, `Invi`, `ChatStyle`, `Computer`, `WalkAnim`, `Screen`, `X`, `Y`, `Z`, `Desc` FROM `osrp_Players` WHERE `CharName` = '%s'", queryStr, pVars[playerid][pCharName]);
 	mysql_query(queryStr);
+	
 	mysql_store_result();
 	
 	mysql_fetch_row(queryStr, "|");
 	sscanf(queryStr, "p<|>iis[16]iiiiiiffiiiiiiiiiiiiiiiiiiiiiiiis[128]iifiiiiiifffs[128]", pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pIp], pVars[playerid][pRank], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds],
 	pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pBans], pVars[playerid][pKicks], pVars[playerid][pWarns], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pAl],
 	pVars[playerid][pDriverLicense], pVars[playerid][pPisSkill], pVars[playerid][pDglSkill], pVars[playerid][pShtgSkill], pVars[playerid][pM4Skill], pVars[playerid][pGov], pVars[playerid][pHotel], pVars[playerid][pIdCard], pVars[playerid][pDetention], pVars[playerid][pPdp], pVars[playerid][pTelNum], pVars[playerid][pBankAcc],
-	pVars[playerid][pGroup], pVars[playerid][pFraction], pVars[playerid][pCasualJob], pVars[playerid][pTraveled], pVars[playerid][pDoors], pVars[playerid][pInvi], pVars[playerid][pChatStyle], pVars[playerid][pComputer], pVars[playerid][pWalkAnim], pVars[playerid][pScreen], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], charDesc);
+	pVars[playerid][pGroupDesc], pVars[playerid][pGroup], pVars[playerid][pCasualJob], pVars[playerid][pTraveled], pVars[playerid][pDoors], pVars[playerid][pInvi], pVars[playerid][pChatStyle], pVars[playerid][pComputer], pVars[playerid][pWalkAnim], pVars[playerid][pScreen], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], charDesc);
 	mysql_free_result();
 	
-	loadCasualJob(playerid);
 	UpdateDynamic3DTextLabelText(pVars[playerid][pCharDesc], COLOR_PURPLE, charDesc);
 	return 1;
 }
 
 stock loadPlayerContacts(playerid) {
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `Number` FROM `Contacts` WHERE `UID` = '%d'", pVars[playerid][pUid]);
+	format(queryStr, sizeof(queryStr), "SELECT `Number` FROM `osrp_Contacts` WHERE `UID` = '%d'", pVars[playerid][pUid]);
 	mysql_query(queryStr);
+	
 	mysql_store_result();
 	
 	if(!mysql_num_rows()) {
@@ -725,11 +837,11 @@ stock givePlayerPenalty(playerid, victim, type, const reason[]) {
 			}
 			
 			if(pVars[victim][pDuty] > 0) {
-				pc_cmd_duty(victim, "");
+				pc_cmd_duty(victim);
 			}
 			
 			pVars[victim][pBans]++;
-			SetTimerEx("BanPlayer", 500, false, "is[128]", victim, reason);
+			SetTimerEx("kickPlayer", 500, false, "i", victim);
 		}
 		case PEN_KICK: {
 			if(playerid == INVALID_PLAYER_ID) {
@@ -743,11 +855,11 @@ stock givePlayerPenalty(playerid, victim, type, const reason[]) {
 			}
 			
 			if(pVars[victim][pDuty] > 0) {
-				pc_cmd_duty(victim, "");
+				pc_cmd_duty(victim);
 			}
 			
 			pVars[victim][pKicks]++;
-			SetTimerEx("KickPlayer", 500, false, "i", victim);
+			SetTimerEx("kickPlayer", 500, false, "i", victim);
 		}
 		case PEN_ADMJAIL: {
 			if(playerid == INVALID_PLAYER_ID) {
@@ -761,7 +873,7 @@ stock givePlayerPenalty(playerid, victim, type, const reason[]) {
 			}
 			
 			if(pVars[victim][pDuty] > 0) {
-				pc_cmd_duty(victim, victim);
+				pc_cmd_duty(victim);
 			}
 		}
 		case PEN_WARN: {
@@ -777,6 +889,11 @@ stock givePlayerPenalty(playerid, victim, type, const reason[]) {
 			
 			pVars[victim][pWarns]++;
 		}
+		case PEN_BLCKACC: {
+			format(str, sizeof(str), "~r~Blokada konta~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+			
+			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada konta) od %s. Powód: %s", pVars[playerid][pCharName], reason);		
+		}
 	}
 	
 	SendClientMessage(victim, COLOR_WHITE, mainStr);
@@ -787,12 +904,7 @@ stock givePlayerPenalty(playerid, victim, type, const reason[]) {
 	return 1;
 }
 
-Callback:BanPlayer(playerid, const reason[]) {
-	BanEx(playerid, reason);
-	return 1;
-}
-
-Callback:KickPlayer(playerid) {
+Callback:kickPlayer(playerid) {
 	Kick(playerid);
 	return 1;
 }
@@ -820,7 +932,7 @@ stock setPlayerDefaultValues(playerid) {
 	
 	ResetPlayerMoney(playerid);
 	ResetPlayerWeapons(playerid);
-	format(pVars[playerid][pGroup], 32, NULL);
+	format(pVars[playerid][pGroupDesc], 128, NULL);
 	
 	pVars[playerid][pRank] = 0;
 	pVars[playerid][pSex] = MAN_SEX;
@@ -839,7 +951,7 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pAj] = 0;
 	pVars[playerid][pAl] = 0;
 	pVars[playerid][pDriverLicense] = 0;
-	pVars[playerid][pFraction] = 0;
+	pVars[playerid][pGroup] = 0;
 	pVars[playerid][pGov] = 0;
 	pVars[playerid][pHotel] = 0;
 	pVars[playerid][pIdCard] = 0;
@@ -889,7 +1001,7 @@ stock resetPlayerValues(playerid) {
 	format(pVars[playerid][pCharName2], 24, "%s", NULL);
 	format(pVars[playerid][pPass], 32, "%s", NULL);
 	format(pVars[playerid][pIp], 16, "%s", NULL);
-	format(pVars[playerid][pGroup], 32, NULL);
+	format(pVars[playerid][pGroupDesc], 128, NULL);
 
 	pVars[playerid][pRank] = 0;
 	pVars[playerid][pSex] = 0;
@@ -908,7 +1020,7 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pAj] = 0;
 	pVars[playerid][pAl] = 0;
 	pVars[playerid][pDriverLicense] = 0;
-	pVars[playerid][pFraction] = 0;
+	pVars[playerid][pGroup] = 0;
 	pVars[playerid][pGov] = 0;
 	pVars[playerid][pHotel] = 0;
 	pVars[playerid][pIdCard] = 0;
@@ -955,9 +1067,9 @@ stock savePlayerValues(playerid) {
 	pVars[playerid][pInt] = GetPlayerInterior(playerid);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `HP` = '%f', `AP` = '%f', `VW` = '%d', `INT` = '%d', `Skin` = '%d', `LastSkin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `DriverLicense` = '%d', `Hotel` = '%d', `TelNum` = '%d', `Group` = '%s', `CasualJob` = '%d', `Frac0` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'",
-	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pHotel], pVars[playerid][pTelNum], pVars[playerid][pGroup],
-	pVars[playerid][pCasualJob], pVars[playerid][pFraction], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pCharName]);
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `HP` = '%f', `AP` = '%f', `VW` = '%d', `INT` = '%d', `Skin` = '%d', `LastSkin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `DriverLicense` = '%d', `Hotel` = '%d', `TelNum` = '%d', `GroupDesc` = '%s', `CasualJob` = '%d', `Group` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'",
+	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pHotel], pVars[playerid][pTelNum], pVars[playerid][pGroupDesc],
+	pVars[playerid][pCasualJob], pVars[playerid][pGroup], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	return 1;
 }
@@ -966,16 +1078,28 @@ stock setPlayerBW(playerid, minutes) {
 	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER || GetPlayerState(playerid) == PLAYER_STATE_PASSENGER) {
 		mainStr[0] = EOS;
 		format(mainStr, sizeof(mainStr), "* %s %s siê w g³owê i %s przytomnoœæ.", pVars[playerid][pCharName], pVars[playerid][pSex] ? ("uderzy³a") : ("uderzy³"), pVars[playerid][pSex] ? ("straci³a") : ("straci³"));
-		sendDistanceMessage(playerid, 30.0, mainStr, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+		sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 	}
 	
 	pVars[playerid][pBw] = minutes * 60;
 	isBW[playerid] = true;
 	
 	TogglePlayerControllable(playerid, 0);
-	ApplyAnimationEx(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
+	applyAnimationEx(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
 	SetPlayerDrunkLevel(playerid, 0);
 	SetTimerEx("bwTimer", 1000, false, "i", playerid);
+	return 1;
+}
+
+stock setPlayerAJ(playerid, minutes) {
+	pVars[playerid][pAj] = minutes * 60;
+	
+	
+	return 1;
+}
+
+stock setPlayerDetention(playerid, minutes) {
+	SendClientMessage(playerid, COLOR_WHITE, "Przetrzymanie %s koñczy siê.");
 	return 1;
 }
 
@@ -997,7 +1121,7 @@ stock getPlayerStrengthPower(playerid) {
 	return 0;
 }
 
-stock checkPhoneOwnerFromNumber(number) {
+stock getPhoneOwnerFromNumber(number) {
 	new pId;
 	new charName[24];
 	
@@ -1012,7 +1136,7 @@ stock checkPhoneOwnerFromNumber(number) {
 	return charName;
 }
 
-stock checkPhoneOwnerIdFromNumber(number) {
+stock getPhoneOwnerIdFromNumber(number) {
 	new pId;
 	
 	foreach(new i : Player) {
@@ -1024,7 +1148,7 @@ stock checkPhoneOwnerIdFromNumber(number) {
 	return pId;
 }
 
-stock checkPhoneNumberFromName(name[]) {
+stock getPhoneNumberFromName(name[]) {
 	new number;
 	
 	foreach(new i : Player) {
@@ -1050,31 +1174,31 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 	
 	switch(type) {
 		case 0: {
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[pVars[id][pFraction]][gName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", gVars[pVars[id][pFraction]][gUid], gVars[pVars[id][pFraction]][gName], offerParams[playerid][0]);			
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[pVars[id][pGroup]][gName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", gVars[pVars[id][pGroup]][gUid], gVars[pVars[id][pGroup]][gName], offerParams[playerid][0]);			
 		}
 		case 1: {
-			new tmpGrpId = checkServerGroupIdForPlayer(playerid);
-		
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[tmpGrpId][gName]);
+			new srvGrpId = getServerGroupIdForPlayer(playerid);
+			
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[srvGrpId][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Lekcja prowadzenia pojazdu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);			
 		}
 		case 2: {
-			new tmpGrpId = checkServerGroupIdForPlayer(playerid);
+			new srvGrpId = getServerGroupIdForPlayer(playerid);
 		
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[tmpGrpId][gName]);
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[srvGrpId][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Dowod osobisty\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);			
 		}
 		case 3: {
-			new tmpGrpId = checkServerGroupIdForPlayer(playerid);
+			new srvGrpId = getServerGroupIdForPlayer(playerid);
 			
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[tmpGrpId][gName]);
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[srvGrpId][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Prawo jazdy\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);
 		}
 		case 4: {
-			new tmpGrpId = checkServerGroupIdForPlayer(playerid);
+			new srvGrpId = getServerGroupIdForPlayer(playerid);
 		
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[tmpGrpId][gName]);
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[srvGrpId][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaplacenie podatku budynku\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);		
 		}
 		case 5: {
@@ -1082,13 +1206,13 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zakup przedmiotu: %s\n\nKoszt: $0. Czy akceptujesz tê ofertê?", iVars[choosedItem[offerFrom[playerid]]][iName]);			
 		}
 		case 6: {
-			new vehid = actualVehicle[playerid];
+			new srvVehId = actualVehicle[playerid];
 			
 			format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~9:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
-			vVars[vehid][vUid], vVars[vehid][vOUid], vVars[vehid][vModelId], vVars[vehid][vId], vVars[vehid][vColor1], vVars[vehid][vColor2], vVars[vehid][vEngineHp]);
+			vVars[srvVehId][vUid], vVars[srvVehId][vOUid], vVars[srvVehId][vModelId], vVars[srvVehId][vId], vVars[srvVehId][vColor1], vVars[srvVehId][vColor2], vVars[srvVehId][vEngineHp]);
 			TextDrawSetString(vehicleStats[id][0], mainStr);
 			
-			format(str, sizeof(str), "~b~Przebieg~w~: %0.1fkm ~b~Paliwo~w~: %0.1f", vVars[vehid][vMileage], vVars[vehid][vFuel]);
+			format(str, sizeof(str), "~b~Przebieg~w~: %0.1fkm ~b~Paliwo~w~: %0.1f", vVars[srvVehId][vMileage], vVars[srvVehId][vFuel]);
 			TextDrawSetString(vehicleStats[id][1], str);
 			
 			for(new i = 0; i < 2; i++) {
@@ -1099,25 +1223,41 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			
 			mainStr[0] = EOS;
 			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}U¿ywany pojazd: %s\nPrzebieg: %dkm (im wiêkszy, tym wiêksze spalanie)\nSuma napraw: %dhp (po przekroczeniu 11500.0 nie mo¿na dalej naprawiaæ)\nHP: %d\n\n", VehicleNames[vVars[vehid][vModelId] - 400], vVars[vehid][vMileage], 0, vVars[vehid][vEngineHp]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}U¿ywany pojazd: %s\nPrzebieg: %dkm (im wiêkszy, tym wiêksze spalanie)\nSuma napraw: %dhp (po przekroczeniu 11500.0 nie mo¿na dalej naprawiaæ)\nHP: %d\n\n", VehicleNames[vVars[srvVehId][vModelId] - 400], vVars[srvVehId][vMileage], 0, vVars[srvVehId][vEngineHp]);
 			format(mainStr, sizeof(mainStr), "Koszt: $%d. Czy akceptujesz tê ofertê?\n{FF0000}\tUWAGA! Ta transakcja wymaga podwy¿szonych uprawnieñ.\n\tWpisz \"potwierdzam\" w poni¿szym okienku, inaczej zostanie anulowana.\n", offerParams[id][0]);
 			strcat(mainStr, "\tUPEWNIJ SIÊ, ¿e wiesz co akceptujesz!");
 			return ShowPlayerDialog(id, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_INPUT, str, mainStr, "Tak", "Nie");
 		}
 		case 7: {
-			new tmpGrpId = checkServerGroupIdForPlayer(playerid);
+			new srvGrpId = getServerGroupIdForPlayer(playerid);
 			
 			SendClientMessage(id, COLOR_WHITE, "UID pojazdu sprawdziæ mo¿na wpisuj¹c /v info, gdy w nim siedzisz.");
 			
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[tmpGrpId][gName]);
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[srvGrpId][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Rejestracja pojazdu o nr seryjnym %d.\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][1], offerParams[id][0]);
 		}
 		case 8: {
-			new vehid = actualVehicle[id];
-			new Float:fuel = 100.0 - (100.0 * vVars[vehid][vFuel] / VEHICLE_FUEL_TANK_MEDIUM);
+			new srvVehId = actualVehicle[id];
+			new Float:fuel = 100.0 - (100.0 * vVars[srvVehId][vFuel] / VEHICLE_FUEL_TANK_MEDIUM);
 			
 			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zatankowanie pojazdu o %0.1f procent.\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", fuel, offerParams[0]);
+		}
+		case 9: {
+			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Wizytówka vCard do telefonu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[0]);
+			
+			mainStr[0] = EOS;
+			format(mainStr, sizeof(mainStr), "* %s bierze do rêki telefon i wysy³a vCard.", pVars[playerid][pCharName]);
+			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+		}
+		case 10: {
+			new srvGrpId = getServerGroupIdForPlayer(playerid);
+			
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[srvGrpId][gName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Przetrzymanie na %d minut\n\nKoszt: $%d. Czy akceptujesz tê ofertê?\n\n", offerParams[1], offerParams[0]);
+			format(mainStr, sizeof(mainStr), "\t{FF0000}UWAGA! Ta transakcja wymaga podwy¿szonych uprawnieñ.\nWpisz \"potwierdzam\" w poni¿szym okienku, inaczej zostanie anulowane.\nUPEWNIJ SIÊ, ¿e wiesz co akceptujesz!");
+			return ShowPlayerDialog(id, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_INPUT, str, mainStr, "Tak", "Nie");
 		}
 	}
 	
@@ -1129,33 +1269,60 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 	return 1;
 }
 
+stock setPlayerHexName(playerid) {
+	
+}
+
 // return: void
-stock ApplyAnimationEx(playerid, animlib[], animname[], Float:fDelta, loop, lockx, locky, freeze, time, foresync) {
+stock applyAnimationEx(playerid, animlib[], animname[], Float:fDelta, loop, lockx, locky, freeze, time, foresync) {
 	ClearAnimations(playerid);
 	ApplyAnimation(playerid, animlib, animname, fDelta, loop, lockx, locky, freeze, time, foresync);
 }
 
-stock SetPlayerHealthEx(playerid, Float:health) {
+stock setPlayerHealthEx(playerid, Float:health) {
 	pVars[playerid][pHp] = health;
 	
 	SetPlayerHealth(playerid, pVars[playerid][pHp]);
 }
 
-stock SetPlayerArmourEx(playerid, Float:armour) {
+stock setPlayerArmourEx(playerid, Float:armour) {
 	pVars[playerid][pArmor] = armour;
 	
 	SetPlayerArmour(playerid, pVars[playerid][pArmor]);
 }
 
-stock GivePlayerMoneyEx(playerid, money) {
+stock givePlayerMoneyEx(playerid, money) {
 	ResetPlayerMoney(playerid);
 	
 	pVars[playerid][pMoney] += money;
 	GivePlayerMoney(playerid, pVars[playerid][pMoney]);
 }
 
-stock loadCasualJob(playerid) {
-	casualJob[playerid] = pVars[playerid][pCasualJob];
+stock createNumber(playerid) {
+	new number[6], numberStr[16];
+	
+	for(new i = 0; i < sizeof(number); i++) {
+		number[i] = random(10);
+		
+		format(numberStr, sizeof(numberStr), "%s%d", numberStr, number[i]);
+	}
+	
+	printf("[DEBUG] Name: %s, Number: %s", pVars[playerid][pCharName], numberStr);
+	return 1;
 }
 
-#endif 
+stock playerToPoint(playerid, Float:radius, Float:x, Float:y, Float:z) {
+	new Float:oldposx, Float:oldposy, Float:oldposz;
+	new Float:tempposx, Float:tempposy, Float:tempposz;
+	
+	GetPlayerPos(playerid, oldposx, oldposy, oldposz);
+	
+	tempposx = (oldposx -x);
+	tempposy = (oldposy -y);
+	tempposz = (oldposz -z);
+	
+	if(((tempposx < radius) && (tempposx > -radius)) && ((tempposy < radius) && (tempposy > -radius)) && ((tempposz < radius) && (tempposz > -radius))) {
+		return 1;
+	}
+	return 0;
+}

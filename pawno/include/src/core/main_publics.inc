@@ -1,13 +1,16 @@
 /*
-	Project: SAMP-RP
+	Project: OSRP
 	Author: steeZ (macpilch)
 	File: main_publics.inc
 	Date: 24.07.2022
-	Modified: 30.07.2023
+	Modified: 07.08.2023
 */
 
-#if !defined __MAIN_PUBLICS_INC__
+#if defined __MAIN_PUBLICS_INC__
+	#endinput
+#endif
 #define __MAIN_PUBLICS_INC__
+#pragma library osrp
 
 sampCallback:OSRP_OnGameModeInit() {
 	new callSecs = GetTickCount();
@@ -20,7 +23,7 @@ sampCallback:OSRP_OnGameModeInit() {
 	SetWeather(10);
 	SetWorldTime(20);
 	SetGravity(0.008);
-	SetGameModeText("samp-rp.com (macpilch)");
+	SetGameModeText("osrp.com (macpilch)");
 	
 	hMySQL = mysql_init(LOG_ONLY_ERRORS, 1);
 	mySQLConnect = mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB, hMySQL, 1);
@@ -81,5 +84,3 @@ sampCallback:OSRP_OnGameModeExit() {
 	printf("[LOG]: OnGameModeExit -- Called! (%d ms).", GetTickCount() - callSecs);
 	return 1;
 }
-
-#endif 

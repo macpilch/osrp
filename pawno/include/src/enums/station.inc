@@ -1,13 +1,16 @@
 /*
-	Project: SAMP-RP
+	Project: OSRP
 	Author: MisterMagik
 	File: station.inc
 	Date: 11.09.2022
-	Modified: 17.06.2023
+	Modified: 07.08.2023
 */
 
-#if !defined __STATION_INC__
+#if defined __STATION_INC__
+	#endinput
+#endif
 #define __STATION_INC__
+#pragma library osrp
 
 enum StationData {
 	sUid,
@@ -29,5 +32,3 @@ enum GasPumpData {
 	Float:gsZ,
 	Float:gsDistance
 };
-
-#endif 
