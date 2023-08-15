@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_cmds.inc
 	Date: 25.07.2023
-	Modified: 07.08.2023
+	Modified: 15.08.2023
 */
 
 #if defined __VEHICLE_CMDS_INC__
@@ -48,7 +48,7 @@ CMD:v(playerid, params[]) {
 			
 			while(mysql_fetch_row(queryStr, "|")) {
 				sscanf(queryStr, "p<|>ii", tmpVVars[i][UID], tmpVVars[i][ModelID]);
-				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, tmpVVars[i][UID], VehicleNames[tmpVVars[i][ModelID] - 400]);
+				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d  %s", mainStr, tmpVVars[i][UID], VehicleNames[tmpVVars[i][ModelID] - 400]);
 				
 				i++;
 			}
@@ -204,14 +204,14 @@ CMD:pasy(playerid, params[]) {
 		return GameTextForPlayer(playerid, "~y~Ten pojazd nie ma pasow.", 5000, 3);
 	}
 	
-	if(!hasBelts[playerid]) {
+	if(hasBelts[playerid] & FL_NONE) {
 		GameTextForPlayer(playerid, "~w~Pasy ~g~zapiete", 5000, 6);
 		
-		hasBelts[playerid] = true;
+		hasBelts[playerid] |= FL_BELTS;
 	} else {
 		GameTextForPlayer(playerid, "~w~Pasy ~r~odpiete", 5000, 6);
 		
-		hasBelts[playerid] = false;
+		hasBelts[playerid] &= ~FL_BELTS;
 	}
 	return 1;
 }

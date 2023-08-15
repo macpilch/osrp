@@ -17,7 +17,8 @@ enum {
 	G_PUBLIC = 0,
 	G_CRIMINAL,
 	G_DRVRLIC,
-	G_BUSSIN
+	G_BUSSIN,
+	G_TAXI
 };
 
 enum GroupData {
@@ -27,9 +28,9 @@ enum GroupData {
 	gTag[8],
 	gType,
 	gMembers,
-	gVehicle1,
 	gVehsLimit,
 	gMoney,
+	gPayDay,
 	gDoors,
 	gFlags,
 	gColor,

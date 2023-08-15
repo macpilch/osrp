@@ -26,9 +26,9 @@ task globalTimer[1000]() {
 				gettime(h, mins, secs);
 			}
 			
-			if(isBW[i]) {
+			if(isBW[i] & FL_BW) {
 				if(iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(rolki, AFK od %02d:%02d, %s)\n[%s]", pVars[i][pCharName], i, h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
 						} else {
@@ -41,8 +41,8 @@ task globalTimer[1000]() {
 							format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki, AFK od %02d:%02d, %s)", pVars[i][pCharName], i, pVars[i][pHours], h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 						}						
 					}
-				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && (isDizzines[i] & FL_NONE) && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, AFK od %02d:%02d, %s)\n[%s]", pVars[i][pCharName], i, h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
 						} else {
@@ -56,7 +56,7 @@ task globalTimer[1000]() {
 						}						
 					}
 				} else if(pVars[i][pStrength] > 3000) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(%dj, AFK od %02d:%02d, %s)\n[%s]", pVars[i][pCharName], i, pVars[i][pStrength], h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
 						} else {
@@ -70,7 +70,7 @@ task globalTimer[1000]() {
 						}						
 					}					
 				} else {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d, %s)\n[%s]", pVars[i][pCharName], i, h, mins, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
 						} else {
@@ -84,9 +84,9 @@ task globalTimer[1000]() {
 						}						
 					}
 				}
-			} else if(hasBelts[i]) {
-				if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+			} else if(hasBelts[i] & FL_BELTS) {
+				if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && (isDizzines[i] & FL_NONE) && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, AFK od %02d:%02d, pasy)\n[%s]", pVars[i][pCharName], i, h, mins, gVars[srvGrpId][gName]);
 						} else {
@@ -100,7 +100,7 @@ task globalTimer[1000]() {
 						}						
 					}
 				} else if(pVars[i][pStrength] > 3000) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d, %dj, pasy)\n[%s]", pVars[i][pCharName], i, h, mins, pVars[i][pStrength], gVars[srvGrpId][gName]);
 						} else {
@@ -114,7 +114,7 @@ task globalTimer[1000]() {
 						}						
 					}
 				} else {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d, pasy)\n[%s]", pVars[i][pCharName], i, h, mins, gVars[srvGrpId][gName]);
 						} else {
@@ -129,7 +129,7 @@ task globalTimer[1000]() {
 					}
 				}
 			} else if(pVars[i][pDetention] > 0) {
-				if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
+				if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && (isDizzines[i] & FL_NONE) && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, przetrzymywany, AFK od %02d:%02d)", pVars[i][pCharName], i, h, mins);
 					} else {
@@ -144,7 +144,7 @@ task globalTimer[1000]() {
 				}
 			} else if(pVars[i][pStrength] > 3000) {
 				if(iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(%dj, AFK od %02d:%02d, rolki)\n[%s]", pVars[i][pCharName], i, pVars[i][pStrength], h, mins, gVars[srvGrpId][gName]);
 						} else {
@@ -158,7 +158,7 @@ task globalTimer[1000]() {
 						}						
 					}
 				} else {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(%dj, AFK od %02d:%02d)\n[%s]", pVars[i][pCharName], i, pVars[i][pStrength], h, mins, gVars[srvGrpId][gName]);
 						} else {
@@ -174,7 +174,7 @@ task globalTimer[1000]() {
 				}
 			} else {
 				if(iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(rolki, AFK od %02d:%02d)\n[%s]", pVars[i][pCharName], i, h, mins, gVars[srvGrpId][gName]);
 						} else {
@@ -187,8 +187,8 @@ task globalTimer[1000]() {
 							format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki, AFK od %02d:%02d)", pVars[i][pCharName], i, pVars[i][pHours], h, mins);
 						}						
 					}
-				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && (isDizzines[i] & FL_NONE) && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, rolki, AFK od %02d:%02d)\n[%s]", pVars[i][pCharName], i, h, mins, gVars[srvGrpId][gName]);
 						} else {
@@ -202,7 +202,7 @@ task globalTimer[1000]() {
 						}						
 					}
 				} else {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(AFK od %02d:%02d)\n[%s]", pVars[i][pCharName], i, h, mins, gVars[srvGrpId][gName]);
 						} else {
@@ -218,9 +218,9 @@ task globalTimer[1000]() {
 				}
 			}
 		} else {
-			if(isBW[i]) { // by MisterMagik
+			if(isBW[i] & FL_BW) { // by MisterMagik
 				if(iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(rolki, %s)\n[%s]", pVars[i][pCharName], i, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
 						} else {
@@ -233,8 +233,8 @@ task globalTimer[1000]() {
 							format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki, %s)\n[%s]", pVars[i][pCharName], i, pVars[i][pHours], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
 						}
 					}
-				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && (isDizzines[i] & FL_NONE) && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, %s)\n[%s]", pVars[i][pCharName], i, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
 						} else {
@@ -248,7 +248,7 @@ task globalTimer[1000]() {
 						}						
 					}
 				} else if(pVars[i][pStrength] > 3000) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(%dj, %s)\n[%s]", pVars[i][pCharName], i, pVars[i][pStrength], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
 						} else {
@@ -262,7 +262,7 @@ task globalTimer[1000]() {
 						}						
 					}			
 				} else {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(%s)\n[%s]", pVars[i][pCharName], i, pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
 						} else {
@@ -276,9 +276,9 @@ task globalTimer[1000]() {
 						}
 					}
 				}
-			} else if(hasBelts[i]) {
-				if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+			} else if(hasBelts[i] & FL_BELTS) {
+				if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && (isDizzines[i] & FL_NONE) && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, pasy)\n[%s]", pVars[i][pCharName], i, gVars[srvGrpId][gName]);
 						} else {
@@ -292,7 +292,7 @@ task globalTimer[1000]() {
 						}						
 					}
 				} else if(pVars[i][pStrength] > 3000) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(%dj, pasy)\n[%s]", pVars[i][pCharName], i, pVars[i][pStrength], gVars[srvGrpId][gName]);
 						} else {
@@ -306,7 +306,7 @@ task globalTimer[1000]() {
 						}
 					}
 				} else {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(pasy)\n[%s]", pVars[i][pCharName], i, gVars[srvGrpId][gName]);
 						} else {
@@ -321,7 +321,7 @@ task globalTimer[1000]() {
 					}
 				}
 			} else if(pVars[i][pDetention] > 0) {
-				if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
+				if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && (isDizzines[i] & FL_NONE) && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
 					if(pVars[i][pHours] > 20) {
 						format(timerStr, sizeof(timerStr), "%s (%d)\n(podpity, przetrzymywany)", pVars[i][pCharName], i);
 					} else {
@@ -342,7 +342,7 @@ task globalTimer[1000]() {
 				}
 			} else {
 				if(iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(rolki)\n[%s]", pVars[i][pCharName], i, gVars[srvGrpId][gName]);
 						} else {
@@ -355,8 +355,8 @@ task globalTimer[1000]() {
 							format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(rolki)", pVars[i][pCharName], i, pVars[i][pHours]);
 						}						
 					}
-				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && !isDizzines[i] && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+				} else if(drunkLevel >= 2000 && pVars[i][pBw] / 59 > 0 && (isDizzines[i] & FL_NONE) && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4)) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pStrength] > 3000) {
 							if(pVars[i][pHours] > 20) {
 								format(timerStr, sizeof(timerStr), "%s (%d)\n(%dj, podpity)\n[%s]", pVars[i][pCharName], i, pVars[i][pStrength], gVars[srvGrpId][gName]);
@@ -386,7 +386,7 @@ task globalTimer[1000]() {
 						}
 					}
 				} else if(pVars[i][pStrength] > 3000) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n(%dj)\n[%s]", pVars[i][pCharName], i, pVars[i][pStrength], gVars[srvGrpId][gName]);
 						} else {
@@ -400,7 +400,7 @@ task globalTimer[1000]() {
 						}
 					}
 				} else {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+					if(pVars[i][pGroup] != -1 && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 						if(pVars[i][pHours] > 20) {
 							format(timerStr, sizeof(timerStr), "%s (%d)\n[%s]", pVars[i][pCharName], i, gVars[srvGrpId][gName]);
 						} else {
@@ -433,8 +433,16 @@ task globalTimer[1000]() {
 				pVars[i][pMinutes]++;
 				pVars[i][pSeconds] = 0;
 				
-				if(isPlayerDuty[i]) {
+				if((isPlayerDuty[i] & FL_PLAYERDUTY)) {
 					pVars[i][pDuty]++;
+					
+					if((pVars[i][pDuty] % 30) == 0) {
+						gVars[srvGrpId][gMoney] -= gVars[srvGrpId][gPayDay];
+						pVars[i][pBank] += gVars[srvGrpId][gPayDay];
+						
+						format(timerStr, sizeof(timerStr), "* Otrzymujesz $%d wyp³aty. *", gVars[srvGrpId][gPayDay]);
+						SendClientMessage(i, COLOR_WHITE, timerStr);
+					}
 				}
 			}
 			
@@ -446,7 +454,7 @@ task globalTimer[1000]() {
 		
 		if(!isBicycle(vVars[actualVehicle[i]][vModelId])) {
 			if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
-				if(hasBelts[i]) {
+				if(hasBelts[i] & FL_BELTS) {
 					format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%0.1f~w~ KM~n~~w~Paliwo: ~b~%0.1f~w~ L~n~Pasy: ~g~zapiete", getVehicleSpeed(vVars[actualVehicle[i]][vId]), vVars[actualVehicle[i]][vMileage], vVars[actualVehicle[i]][vFuel]);
 					TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
 					TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
@@ -456,7 +464,7 @@ task globalTimer[1000]() {
 					TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
 				}
 			} else if(GetPlayerState(i) == PLAYER_STATE_PASSENGER) {
-				if(hasBelts[i]) {
+				if(hasBelts[i] & FL_BELTS) {
 					format(timerStr, sizeof(timerStr), "Pasy: ~g~zapiete");
 					TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
 					TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
@@ -547,7 +555,7 @@ task globalTimer[1000]() {
 			}
 		}
 		
-		if(insidedHotel[i] && pVars[i][pHotel] && playerToPoint(i, 5.0, 2216.12, -1076.30, 1050.48)) {
+		if((insidedHotel[i] & FL_HOTEL) && pVars[i][pHotel] && playerToPoint(i, 5.0, 2216.12, -1076.30, 1050.48)) {
 			GameTextForPlayer(i, "~n~~n~~n~~n~~n~~w~[LALT+SPACJA] ~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
 		}
 	}
@@ -555,7 +563,7 @@ task globalTimer[1000]() {
 
 task saveAllValuesTimer[60000]() {
 	foreach(new i : Player) {
-		if(hasLoged[i] && isSpawned[i]) {
+		if((hasLoged[i] & FL_LOGGED) && (isSpawned[i] & FL_SPAWN)) {
 			savePlayerValues(i);
 		}
 	}
@@ -611,9 +619,14 @@ task townHallBellsTimer[59000]() {
 
 task antiCheat[1000]() {
 	foreach(new i : Player) {
-		if(isFreeze[i]) {
+		if(isFreeze[i] & FL_FREEZE) {
 			format(mainStr, sizeof(mainStr), "Ruch o %0.1fj podczas zamrozenia pieszo.");
 			return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, mainStr);
+		}
+		
+		if((isFreeze[i] & FL_FREEZE) && IsPlayerInAnyVehicle(i)) {
+			format(mainStr, sizeof(mainStr), "Unfreeze~n~~w~3x ruch o %0.1fj podczas zamrozenia w pojezdzie.");
+			return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, mainStr);
 		}
 	}
 	return 1;

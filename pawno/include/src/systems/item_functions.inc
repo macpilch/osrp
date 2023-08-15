@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: item_functions.inc
 	Date: 14.08.2022
-	Modified: 07.08.2023
+	Modified: 11.08.2023
 */
 
 #if defined __ITEM_FUNCTIONS_INC__
@@ -91,7 +91,7 @@ stock addPlayerItem(playerid, itemid) {
 		mysql_query(queryStr);
 	}
 	
-	if(iVars[freeId][iId] >= P_COLT && iVars[freeId][iId] <= P_M4) {
+	if(iVars[freeId][iId] >= P_COLT && iVars[freeId][iId] <= P_TEC9) {
 		iVars[freeId][iValues] = 50;
 		
 		queryStr[0] = EOS;
@@ -161,7 +161,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_DRINK_BEER);
 				
 				iVars[srvitemid][iUsed] = true;
-				isDizzines[playerid] = false;
+				isDizzines[playerid] &= ~FL_DIZZINES;
 			} else {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 				
@@ -174,7 +174,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_DRINK_WINE);
 				
 				iVars[srvitemid][iUsed] = true;
-				isDizzines[playerid] = false;
+				isDizzines[playerid] &= ~FL_DIZZINES;
 			} else {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 				
@@ -221,7 +221,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 		case P_TELEFON, P_NKA8110: {
 			new id = getPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
 			
-			if(telEnterNumber[id] == pVars[playerid][pTelNum] && !usedTelephone[id] && !usedTelephone[playerid]) {
+			if(telEnterNumber[id] == pVars[playerid][pTelNum] && (usedTelephone[id] & FL_NONE) && (usedTelephone[playerid] & FL_NONE)) {
 				new str[32];
 				new h, m, d;
 				
@@ -231,14 +231,14 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				
 				strcat(mainStr, "{FFFFFF}8\tOdbierz\n9\tZignoruj");
 				ShowPlayerDialog(playerid, DIALOG_TELEPHONE_CALL_CHOICE, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
-			} else if(usedTelephone[id] && usedTelephone[playerid]) {
+			} else if((usedTelephone[id] & FL_TELEPHONE) && (usedTelephone[playerid] & FL_TELEPHONE)) {
 				applyAnimationEx(playerid, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
 				applyAnimationEx(id, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
 				
 				iVars[srvitemid][iUsed] = false;
 				choosedItem[playerid] = -1;
-				usedTelephone[playerid] = false;
-				usedTelephone[id] = false;
+				usedTelephone[playerid] &= ~FL_TELEPHONE;
+				usedTelephone[id] &= ~FL_TELEPHONE;
 				telEnterNumber[playerid] = 0;
 				telEnterNumber[id] = 0;
 				
@@ -260,6 +260,17 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
 			}
 		}
+		case P_KOSTKA: {
+			iVars[srvitemid][iUsed] = true;
+			
+			new randNum = random(6) + 1;
+			
+			format(mainStr, sizeof(mainStr), "* %s wylosowa³ liczbê %d (z 1-6) u¿ywaj¹c Kostka. *", pVars[playerid][pCharName], randNum);
+			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+			
+			choosedItem[playerid] = -1;
+			iVars[srvitemid][iUsed] = false;
+		}
 		case P_MASKA: {
 			if(!iVars[srvitemid][iUsed]) {
 				setPlayerHexName(playerid);
@@ -271,20 +282,25 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				
 				iVars[srvitemid][iUsed] = true;
 			} else {
+				SetPlayerName(playerid, pVars[playerid][pCharName]);
+				
 				choosedItem[playerid] = -1;
 				iVars[srvitemid][iUsed] = false;
 			}
 		}
-		case P_KOSTKA: {
-			iVars[srvitemid][iUsed] = true;
-			
-			new randNum = random(6) + 1;
-			
-			format(mainStr, sizeof(mainStr), "* %s wylosowa³ liczbê %d (z 1-6) u¿ywaj¹c Kostka. *", pVars[playerid][pCharName], randNum);
-			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
-			
-			choosedItem[playerid] = -1;
-			iVars[srvitemid][iUsed] = false;
+		case P_REKA: {
+			if(!iVars[srvitemid][iUsed]) {
+				format(mainStr, sizeof(mainStr), "* %s zak³ada %s.", pVars[playerid][pCharName], itemNames[itemid]);
+				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+				
+				iVars[srvitemid][iUsed] = true;
+			} else {
+				format(mainStr, sizeof(mainStr), "* %s zdejmuje %s.", pVars[playerid][pCharName], itemNames[itemid]);
+				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+				
+				choosedItem[playerid] = -1;
+				iVars[srvitemid][iUsed] = false;
+			}
 		}
 		case P_KAMIZELKA: {
 			if(!iVars[srvitemid][iUsed]) {
@@ -305,25 +321,12 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				SetPlayerArmour(playerid, 0);
 			}
 		}
-		case P_COLT, P_DEAGLE, P_SHOTGUN, P_M4: {
-			if(!iVars[srvitemid][iUsed]) {
-				strcat(mainStr, "Sk¹d wyci¹gasz/dok¹d chowasz broñ (np. \"z kabury\")?\n\n");
-				strcat(mainStr, "Mo¿esz pomin¹æ ten dialog i szybciej u¿ywaæ przedmiotów (/pomoc -> Przedmioty).");
-				ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PARAMETERS, DIALOG_STYLE_INPUT, "Parametry", mainStr, "U¿yj", "Anuluj");
-				
-				iVars[srvitemid][iUsed] = true;
-			} else {
-				ResetPlayerWeapons(playerid);
-				saveItemWeaponAmmo(srvitemid);
-				
-				format(mainStr, sizeof(mainStr), "* %s chowa %s.", pVars[playerid][pCharName], itemNames[itemid]);
-				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
-				
-				choosedItem[playerid] = -1;
-				iVars[srvitemid][iUsed] = false;
-			}
+		case P_KASTET, P_NITESTICK, P_KNIFE, P_BASEBALL, P_PARALIZ, P_COLT, P_DEAGLE, P_SHOTGUN, P_UZI, P_MP5, P_AK47, P_M4, P_TEC9, P_PARA: {
+			strcat(mainStr, "Sk¹d wyci¹gasz/dok¹d chowasz broñ (np. \"z kabury\")?\n\n");
+			strcat(mainStr, "Mo¿esz pomin¹æ ten dialog i szybciej u¿ywaæ przedmiotów (/pomoc -> Przedmioty).");
+			ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PARAMETERS, DIALOG_STYLE_INPUT, "Parametry", mainStr, "U¿yj", "Anuluj");
 		}
-		case P_CHEESBURG, P_ZAPIEK, P_FRYTKI, P_GRVBURGER, P_HAMBGRG, P_HOTDOG, P_KEBAB, P_LODY, P_LODYWKBK, P_LONGER, P_NACHOSZS, P_NALESNIK, P_NALESNIKI, P_PACZEK, P_PACZEKAFRO, P_PACZEKZLT, P_SUSHI: {
+		case P_CHEESBURG, P_ZAPIEK, P_FRYTKI, P_GRVBURGER, P_HAMBGRG, P_HOTDOG, P_KEBAB, P_LODY, P_LODYWKBK, P_LONGER, P_NACHOSZS, P_NALESNIK, P_NALESNIKI, P_PACZEK, P_PACZEKAFRO, P_PACZEKZLT, P_DONUT, P_SUSHI: {
 			iVars[srvitemid][iUsed] = true;
 			
 			setPlayerHealthEx(playerid, pVars[playerid][pHp] += random(10) + 5.0);
@@ -360,6 +363,32 @@ stock saveItemWeaponAmmo(srvitemid) {
 	return 1;
 }
 
+stock pickUpNearblyItems(playerid) {
+	new srvVehId = actualVehicle[playerid], count;
+	
+	if(vVars[srvVehId][vOUid] != pVars[playerid][pUid]) {
+		return GameTextForPlayer(playerid, "~y~Ten pojazd nie nalezy do ciebie.", 5000, 3);
+	}
+	
+	mainStr[0] = EOS;
+	foreach(new i : itemItter) {
+		if(iVars[i][iPlace] == ITEM_PLACE_FLOOR && choosedItem[playerid] == -1 && iVars[i][iOUid] == INVALID_PLAYER_ID) {
+			if(playerToPoint(playerid, 5.0, iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ])) {
+				format(mainStr, sizeof(mainStr), "%s{FFFFFF}%d\t%s\n", mainStr, iVars[i][iUid], iVars[i][iName]);
+				
+				count++;
+			}
+		}
+	}
+	
+	if(!count) {
+		return 1;
+	}
+	
+	ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PICKUP, DIALOG_STYLE_LIST, "Pobliskie przedmioty (/p podnies)", mainStr, "Podnieœ", "Zamknij");
+	return 1;
+}
+
 stock showDialogItems(playerid) {
 	new tmpIVars[MAX_ITEMS][2];
 	new i;
@@ -388,7 +417,7 @@ stock showDialogItems(playerid) {
 		TextDrawShowForPlayer(playerid, itemTips[playerid][j]);
 	}
 	
-	SetTimerEx("hideItemTips", 10000, false, "i", playerid);
+	SetTimerEx("hideItemTips", 5000, false, "i", playerid);
 	
 	format(mainStr, sizeof(mainStr), "Przedmioty znajduj¹ce siê przy Tobie:\n%s\nPodnieœ przedmiot...", mainStr);
 	ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS, DIALOG_STYLE_LIST, "Dostêpne przedmioty", mainStr, "U¿yj", "Wiêcej");

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 07.08.2023
+	Modified: 14.08.2023
 */
 
 #if defined __DEFINES_INC__
@@ -36,6 +36,7 @@
 #define MAX_STATIONS 10
 #define MAX_GAS_PUMPS 10
 #define MAX_PETROL_STATIONS 10
+#define MAX_BOOTHS 10
 #define MAX_BUS_STOPS 10
 #define MAX_CASHPOINTS 10
 #define MAX_GROUPS 4
@@ -50,9 +51,9 @@
 		forward %0(%1); public %0(%1)
 
 #define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "server_763"
-#define MYSQL_PASS "po8z10knv3"
-#define MYSQL_DB "server_763_osrp"
+#define MYSQL_USER "root"
+#define MYSQL_PASS "1234"
+#define MYSQL_DB "samp"
 
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_RED 0xFF0000FF
@@ -85,9 +86,21 @@
 #define PEN_ADMJAIL 2
 #define PEN_WARN 3
 #define PEN_BLCKACC 4
+#define PEN_RUNNBLW 5
+#define PEN_BLCKOOC 6
 
 #define INVALID_OFFER_TYPE -1
-
+#define O_ZAPRGRP 0
+#define O_KURS 1
+#define O_DOWOD 2
+#define O_PRAWKO 3
+#define O_PODATEK 4
+#define O_ZAKUPPRZED 5
+#define O_ZAKUPPOJ 6
+#define O_REJESTR 7
+#define O_TANKOWANIE 8
+#define O_VCARD 9
+#define O_PRZETRZY 10
 
 #define ITEM_PLACE_PLAYER 0
 #define ITEM_PLACE_FLOOR 1

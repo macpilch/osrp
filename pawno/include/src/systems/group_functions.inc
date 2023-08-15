@@ -27,10 +27,10 @@ stock initGroupValues(){
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iis[32]s[8]iiiiiiiii", gVars[i][gUid], gVars[i][gOUid], gVars[i][gName], gVars[i][gTag], gVars[i][gType], gVars[i][gMembers], gVars[i][gVehicle1], gVars[i][gVehsLimit], gVars[i][gMoney], gVars[i][gDoors], gVars[i][gFlags], gVars[i][gChatOOC], gVars[i][gChatIC]);
+		sscanf(queryStr, "p<|>iis[32]s[8]iiiiiiiii", gVars[i][gUid], gVars[i][gOUid], gVars[i][gName], gVars[i][gTag], gVars[i][gType], gVars[i][gMembers], gVars[i][gVehsLimit], gVars[i][gMoney], gVars[i][gPayDay], gVars[i][gDoors], gVars[i][gFlags], gVars[i][gChatOOC], gVars[i][gChatIC]);
 		
 		Iter_Add(groupItter, i);
-		printf("[DEBUG] Id: %d, Uid: %d, OUid: %d, Name: %s, Tag: %s, Type: %d, Members: %d, Vehicle: %d, VehLimit: %d, Money: %d, Doors: %d, Flags: %d, ChatOOC: %d, ChatIC: %d", i, gVars[i][gUid], gVars[i][gOUid], gVars[i][gName], gVars[i][gTag], gVars[i][gType], gVars[i][gMembers], gVars[i][gVehicle1], gVars[i][gVehsLimit], gVars[i][gMoney], gVars[i][gDoors], gVars[i][gFlags], gVars[i][gChatOOC], gVars[i][gChatIC]);
+		printf("[DEBUG] Id: %d, Uid: %d, OUid: %d, Name: %s, Tag: %s, Type: %d, Members: %d, VehLimit: %d, Money: %d, PayDay: %d, Doors: %d, Flags: %d, ChatOOC: %d, ChatIC: %d", i, gVars[i][gUid], gVars[i][gOUid], gVars[i][gName], gVars[i][gTag], gVars[i][gType], gVars[i][gMembers], gVars[i][gVehsLimit], gVars[i][gMoney], gVars[i][gPayDay], gVars[i][gDoors], gVars[i][gFlags], gVars[i][gChatOOC], gVars[i][gChatIC]);
 	}
 	
 	mysql_free_result();
@@ -68,11 +68,11 @@ stock createNewGroup(playerid, type, tag[], name[]) {
 			gVars[freeId][gType] = G_BUSSIN;
 		}
 	}
-
+	
 	gVars[freeId][gMembers]++;
-	gVars[freeId][gVehicle1] = INVALID_VEHICLE_ID;
 	gVars[freeId][gVehsLimit] = 0;
 	gVars[freeId][gMoney] = 0;
+	gVars[freeId][gPayDay] = 0;
 	gVars[freeId][gDoors] = 0;
 	gVars[freeId][gFlags] = 0;
 	gVars[freeId][gChatOOC] = true;
@@ -89,8 +89,8 @@ stock createNewGroup(playerid, type, tag[], name[]) {
 	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Fraction` = '%d' WHERE `UID` = '%d' AND `GUID` = '%d'", gVars[freeId][gUid], pVars[playerid][pUid], pVars[playerid][pGuid]);
 	mysql_query(queryStr);
 	
-	printf("[DEBUG] Id: %d, Uid: %d, OUid: %d, Name: %s, Tag: %s, Type: %d, Members: %d, Vehicle: %d, VehLimit: %d, Money: %d, Doors: %d, Flags: %d, ChatOOC: %d, ChatIC: %d",
-	freeId, gVars[freeId][gUid], gVars[freeId][gOUid], gVars[freeId][gName], gVars[freeId][gTag], gVars[freeId][gType], gVars[freeId][gMembers], gVars[freeId][gVehicle1], gVars[freeId][gVehsLimit], gVars[freeId][gMoney], gVars[freeId][gDoors], gVars[freeId][gFlags], gVars[freeId][gChatOOC], gVars[freeId][gChatIC]);
+	printf("[DEBUG] Id: %d, Uid: %d, OUid: %d, Name: %s, Tag: %s, Type: %d, Members: %d, VehLimit: %d, Money: %d, PayDay: %d, Doors: %d, Flags: %d, ChatOOC: %d, ChatIC: %d",
+	freeId, gVars[freeId][gUid], gVars[freeId][gOUid], gVars[freeId][gName], gVars[freeId][gTag], gVars[freeId][gType], gVars[freeId][gMembers], gVars[freeId][gVehsLimit], gVars[freeId][gMoney], gVars[freeId][gPayDay], gVars[freeId][gDoors], gVars[freeId][gFlags], gVars[freeId][gChatOOC], gVars[freeId][gChatIC]);
 	return 1;
 }
 

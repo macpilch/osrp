@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_publics.inc
 	Date: 29.07.2022
-	Modified: 07.08.2023
+	Modified: 14.08.2023
 */
 
 #if defined __VEHICLE_PUBLICS_INC__
@@ -12,7 +12,7 @@
 #define __VEHICLE_PUBLICS_INC__
 #pragma library osrp
 
-sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
+sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {	
 	new srvVehId = getServerVehicleIdForPlayer(vehicleid);
 	
 	actualVehicle[playerid] = srvVehId;
@@ -32,7 +32,7 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		strcat(mainStr, "Musisz najpierw wyrobiæ prawo jazdy.\nDo tego czasu u¿yj budek, by dzwoniæ po taksówki, lub /bus.\n\n");
 		strcat(mainStr, "By wyrobiæ prawko, kup telefon i zadzwoñ do nauki jazdy pod numerem 333.");
 		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
-	}
+	}*/
 	
 	if(vVars[srvVehId][vLock]) {
 		ClearAnimations(playerid);
@@ -42,7 +42,7 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 	if(vVars[srvVehId][vOUid] != pVars[playerid][pUid] && !isVehicleInUse(vehicleid) && pVars[playerid][pDriverLicense] && !drivingCourse[playerid]) {
 		ClearAnimations(playerid);
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Nie mozesz prowadzic tego~n~pojazdu.", 6000, 3);		
-	}*/
+	}
 	return 1;
 }
 
@@ -61,14 +61,25 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 #if defined DEBUG
 	SendClientMessage(killerid, COLOR_WHITE, "Witma ! OnVehicleDeath");
 #endif
-	
+
 	new srvVehId = actualVehicle[killerid];
-	
+
 	DestroyVehicle(vehicleid);
 	vVars[srvVehId][vSpawned] = false;
 	vVars[srvVehId][vEngine] = false;
 	vVars[srvVehId][vLights] = false;
-	GameTextForPlayer(killerid, "Pojazd zostanie odspawnowany.", 5000, 3);
+
+	GetVehiclePos(vVars[srvVehId][vId], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ]);
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `UID` = '%d'", vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], vVars[srvVehId][vUid]);
+	mysql_query(queryStr);
+
+	for(new i = 0; i < 3; i++) {
+		TextDrawHideForPlayer(killerid, vehicleDeath[killerid][i]);
+	}
+
+	SetTimerEx("hideVehicleDeath", 5000, false, "i", killerid);
 	return 1;
 }
 
@@ -103,7 +114,7 @@ sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
 	UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
 	
-	if(!hasBelts[playerid]) {
+	if(hasBelts[playerid] & FL_NONE) {
 		SetPlayerHealth(playerid, pVars[playerid][pHp] - damage);
 	} else {
 		SetPlayerHealth(playerid, pVars[playerid][pHp] - (damage + 2));

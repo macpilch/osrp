@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: arrays.inc
 	Date: 25.07.2022
-	Modified: 07.08.2023
+	Modified: 11.08.2023
 */
 
 #if defined __ARRAYS_INC__
@@ -24,6 +24,7 @@ new sVars[MAX_PETROL_STATIONS][StationData];
 new gsVars[MAX_GAS_PUMPS][GasPumpData];
 //Bus stops system
 new bVars[MAX_BUS_STOPS][BusStopData];
+new boVars[MAX_BOOTHS][BoothData];
 new gVars[MAX_GROUPS][GroupData];
 new dVars[MAX_DOORS][DoorData];
 //Cashpoints system 
@@ -105,11 +106,12 @@ new charSur[][CharSurName] = {
 
 new itemNames[][] = {
 	"Rolki", "Piwo", "Wino", "Sprunk", "Teczka", "Cygaro", "Ubranie", "Telefon", "Kostka",
-	"Maska", "Kamizelka", "Pistolet", "Desert Deagle", "Shotgun", "M4", "Cheeseburger",
+	"Maska", "Rêkawice", "Kamizelka", "Kastet", "Szturmówka", "Nó¿", "Kij baseballowy", "Paralizator", "Pistolet",
+	"Desert Deagle", "Shotgun", "UZI", "MP5", "AK47", "M4", "Tec9", "Spadochron", "Cheeseburger",
 	"Zapiekanka", "Coca-Cola", "Cuba Libre", "Frytki", "Grove Burger", "Hamburger", "Herbata",
 	"Hot Dog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Longer", "Nachos z serem", "Naleœnik",
-	"Naleœniki", "P¹czek", "P¹czek Afro", "P¹czek Z³otawy", "Sushi", "Woda Mineralna", "Discman",
-	"RadioParty", "CD", "Nokia 8110", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik", "Maska samochodowa"
+	"Naleœniki", "P¹czek", "P¹czek Afro", "P¹czek Z³otawy", "Donut", "Sushi", "Woda Mineralna", "Discman",
+	"RadioParty", "CD", "Nokia 8110", "Vitamina C", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik", "Maska samochodowa"
 };
 
 new VehicleNames[212][] = {

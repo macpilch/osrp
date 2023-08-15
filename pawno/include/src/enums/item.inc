@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 29.08.2022
-	Modified: 07.08.2023
+	Modified: 11.08.2023
 */
 
 #if defined __ITEM_INC__
@@ -21,13 +21,24 @@ enum {
 	P_CYGARO,
 	P_UBRANIE,
 	P_TELEFON,
-	P_MASKA,
 	P_KOSTKA,
+	P_MASKA,
+	P_REKA,
 	P_KAMIZELKA,
+	P_KASTET,
+	P_NITESTICK,
+	P_KNIFE,
+	P_BASEBALL,
+	P_PARALIZ,
 	P_COLT,
 	P_DEAGLE,
 	P_SHOTGUN,
+	P_UZI,
+	P_MP5,
+	P_AK47,
 	P_M4,
+	P_TEC9,
+	P_PARA,
 	P_CHEESBURG,
 	P_ZAPIEK,
 	P_COCACOLA,
@@ -48,12 +59,17 @@ enum {
 	P_PACZEK,
 	P_PACZEKAFRO,
 	P_PACZEKZLT,
+	P_DONUT,
 	P_SUSHI,
 	P_WODAMINER,
 	P_DISCMAN,
 	P_RADPARTY,
 	P_CD,
-	P_NKA8110
+	P_NKA8110,
+	P_DRZWIKIER,
+	P_DRZWIPAS,
+	P_BAGAZNIK,
+	P_MASKASAM
 };
 
 enum ItemData {

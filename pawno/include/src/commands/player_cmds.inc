@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 08.08.2023
+	Modified: 15.08.2023
 */
 
 #if defined __PLAYER_CMDS_INC__
@@ -43,16 +43,16 @@ CMD:w(playerid, params[]) {
 		return GameTextForPlayer(playerid, "~r~Taki gracz nie istnieje.", 5000, 3);
 	}
 	
-	if(!chatMessages[pId][0]) {
+	if(chatMessages[pId][0] & FL_NONE) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Ten gracz ma wy³¹czone wiadomoœci.");
 	}
 	
-	if(blockOOC[pId]) {
+	if(blockOOC[pId] & FL_OOC) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Administracja zablokowa³a temu graczowi wiadomoœci OOC. Aby unikn¹æ metagamingu nie mo¿esz do niego pisaæ.");
 	}
 	
 	if(strfind(pmStr, "OOC", true) != 1) {
-		return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, "Proba ominiecia blokady OOC");
+		//return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, "Proba ominiecia blokady OOC");
 	}
 	
 	lastPmId[playerid] = pId;
@@ -114,7 +114,7 @@ CMD:d(playerid, params[]) {
 	
 	foreach(new i : groupItter) {
 		foreach(new j : Player) {
-			if(gVars[i][gType] == G_PUBLIC && isPlayerDuty[j]) {
+			if(gVars[i][gType] == G_PUBLIC && (isPlayerDuty[j] & FL_PLAYERDUTY)) {
 				SendClientMessage(j, COLOR_WHITE, mainStr);
 			}
 		}
@@ -141,17 +141,21 @@ CMD:tog(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /tog [w]");
 	}
 	
+	if(chatMessages[playerid][0] & FL_NONE) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Masz wy³¹czone wiadomoœci. U¿yj /tog w ponownie, by je w³¹czyæ.");
+	}
+	
 	if(strfind(opt, "w", true) != 1) {
-		if(chatMessages[playerid][0]) {
+		if(chatMessages[playerid][0] & FL_CHATMSGS) {
 			//GameTextForPlayer(playerid, "~w~Kanaly grupowe ~r~~n~wylaczone", 5000, 6);
 			GameTextForPlayer(playerid, "~w~Wiadomosci ~r~wylaczone", 5000, 6);
 			
-			chatMessages[playerid][0] = false;
+			chatMessages[playerid][0] &= ~FL_CHATMSGS;
 		} else {
 			//GameTextForPlayer(playerid, "~w~Kanaly grupowe ~g~~n~wlaczone", 5000, 6);
 			GameTextForPlayer(playerid, "~w~Wiadomosci ~g~wlaczone", 5000, 6);
 			
-			chatMessages[playerid][0] = true;			
+			chatMessages[playerid][0] |= FL_CHATMSGS;			
 		}
 	}
 	return 1;
@@ -190,7 +194,7 @@ CMD:pokaz(playerid, params[]) {
 }
 
 CMD:podaj(playerid, params[]) {
-	if(!isPlayerDuty[playerid]) {
+	if(isPlayerDuty[playerid] & FL_NONE) {
 		return SendClientMessage(playerid, COLOR_GRAY, "U¿yj /duty, aby wejœæ na s³u¿bê grupy, z której chcesz coœ podaæ.");
 	}
 	
@@ -255,7 +259,7 @@ CMD:a(playerid, params[]) {
 	
 	foreach(new i : Player) {
 		if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
-			if(isAdminDuty[i]) {
+			if(isAdminDuty[i] & FL_ADMDUTY) {
 				adminsCount++;
 				
 				if(adminsCount > 0) {
@@ -369,6 +373,14 @@ CMD:pay(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Jesteœcie zbyt daleko siebie.");
 	}
 	
+	if(GetPlayerMoney(playerid) < money) {
+		return GameTextForPlayer(playerid, "~g~Nie masz tyle gotowki.", 5000, 3);
+	}
+	
+	if(isFreeze[playerid] & FL_FREEZE) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie mo¿esz z³o¿yæ oferty, gdy Twoja postaæ jest zamro¿ona.");
+	}
+	
 	givePlayerMoneyEx(playerid, -money);
 	givePlayerMoneyEx(pId, money);
 	
@@ -385,11 +397,11 @@ CMD:pay(playerid, params[]) {
 }
 
 CMD:plac(playerid, params[]) {
-	return pc_cmd_plac(playerid, params);
+	return pc_cmd_pay(playerid, params);
 }
 
 CMD:login(playerid, params[]) {
-	if(usedCmdLogin[playerid]) {
+	if(usedCmdLogin[playerid] & FL_CMD) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Musisz odczekaæ minutê od zalogowania, aby siê wylogowaæ.");
 	}
 	
@@ -401,8 +413,8 @@ CMD:login(playerid, params[]) {
 	SetPlayerName(playerid, pVars[playerid][pAccName]);
 	GetPlayerName(playerid, pVars[playerid][pAccName], 24);
 	
-	hasLoged[playerid] = true;
-	usedCmdLogin[playerid] = true;
+	hasLoged[playerid] |= FL_LOGGED;
+	usedCmdLogin[playerid] |= FL_CMD;
 	
 	savePlayerValues(playerid);
 	setPlayerDefaultValues(playerid);
@@ -479,18 +491,22 @@ CMD:p(playerid, params[]) {
 	if(sscanf(params, "s[24]", name)) {
 		showDialogItems(playerid);
 	} else {
-		foreach(new i : itemItter) {
-			if(strfind(name, iVars[i][iName], true) != -1 && iVars[i][iOUid] == pVars[playerid][pUid]) {
-				tmpIId = i;
-				foundItem = true;
+		if(strfind(name, "podnies", true) != -1) {
+			pickUpNearblyItems(playerid);
+		} else {
+			foreach(new i : itemItter) {
+				if(strfind(name, iVars[i][iName], true) != -1 && iVars[i][iOUid] == pVars[playerid][pUid]) {
+					tmpIId = i;
+					foundItem = true;
+				}
 			}
+			
+			if(!foundItem) {
+				return GameTextForPlayer(playerid, "~r~Nie masz takiego przedmiotu.", 4000, 3);
+			}
+			
+			enableItemProperties(playerid, tmpIId, iVars[tmpIId][iId]);
 		}
-		
-		if(!foundItem) {
-			return GameTextForPlayer(playerid, "~r~Nie masz takiego przedmiotu.", 4000, 3);
-		}
-		
-		enableItemProperties(playerid, tmpIId, iVars[tmpIId][iId]);
 	}
 	return 1;
 }
@@ -515,15 +531,19 @@ CMD:o(playerid, params[]) {
 		//return SendClientMessage(playerid, COLOR_GRAY, "Ktoœ w³aœnie oferuje coœ tej osobie. Poczekaj.");
 	//}
 	
+	if(playerid == pId) {
+		return GameTextForPlayer(playerid, "~r~Nie mozesz sobie oferowac.", 5000, 3);
+	}
+	
 	new srvGrpId = getServerGroupIdForPlayer(playerid);
 	
 	if(strfind(type, "kurs", true) != -1) {
 		if(gVars[srvGrpId][gType] == G_DRVRLIC) {
-			sendOfferToPlayer(playerid, pId, cmdParams, 1);
+			sendOfferToPlayer(playerid, pId, cmdParams, O_KURS);
 		}
 	} else if(strfind(type, "dowod", true) != -1) {
 		if(gVars[srvGrpId][gType] == G_PUBLIC) {
-			sendOfferToPlayer(playerid, pId, cmdParams, 2);
+			sendOfferToPlayer(playerid, pId, cmdParams, O_DOWOD);
 		}
 	} else if(strfind(type, "prawko", true) != -1) {
 		if(pVars[pId][pTraveled] < 5.0) {
@@ -531,15 +551,15 @@ CMD:o(playerid, params[]) {
 		}
 		
 		if(gVars[srvGrpId][gType] == G_PUBLIC) {
-			sendOfferToPlayer(playerid, pId, cmdParams, 3);
+			sendOfferToPlayer(playerid, pId, cmdParams, O_PRAWKO);
 		}
 	} else if(strfind(type, "podatek", true) != -1) {
 		if(gVars[srvGrpId][gType] == G_PUBLIC) {
-			sendOfferToPlayer(playerid, pId, cmdParams, 4);
+			sendOfferToPlayer(playerid, pId, cmdParams, O_PODATEK);
 		}		
 	} else if(strfind(type, "rejestracja", true) != -1) {
 		if(gVars[srvGrpId][gType] == G_PUBLIC) {
-			sendOfferToPlayer(playerid, pId, cmdParams, 7);
+			sendOfferToPlayer(playerid, pId, cmdParams, O_REJESTR);
 		}
 	} else if(strfind(type, "lina", true) != -1) {
 		SendClientMessage(playerid, COLOR_WHITE, "Nie znaleziono us³ugi: Service_lina");
@@ -550,10 +570,10 @@ CMD:o(playerid, params[]) {
 		SendClientMessage(playerid, COLOR_WHITE, "Firma taksówkarska: /o przejazd (U¿yj /g zadania, aby akceptowaæ zg³oszenia)");
 		SendClientMessage(playerid, COLOR_WHITE, "Dostêpne dla ka¿dego: /o autowypozycz [Gracz], /o rp [Gracz], /o zasieg [Gracz].");
 	} else if(strfind(type, "tankowanie", true) != -1) {
-		sendOfferToPlayer(playerid, pId, cmdParams, 8);
+		sendOfferToPlayer(playerid, pId, cmdParams, O_TANKOWANIE);
 	} else if(strfind(type, "przetrzymanie", true) != -1) {
 		if(gVars[srvGrpId][gType] == G_CRIMINAL) {
-			sendOfferToPlayer(playerid, pId, cmdParams, 10);
+			sendOfferToPlayer(playerid, pId, cmdParams, O_PRZETRZY);
 		}
 	}
 	return 1;
@@ -566,7 +586,7 @@ CMD:zabierz(playerid, params[]) {
 }
 
 CMD:smiercpostaci(playerid, params[]) {
-	if(!isBW[playerid]) {
+	if(isBW[playerid] & FL_NONE) {
 		SendClientMessage(playerid, COLOR_GRAY, "Aby uœmerciæ (zablokowaæ) postaæ, musi ona byc nieprzytomna (BW).");
 		SendClientMessage(playerid, COLOR_GRAY, "Je¿eli jesteœ liderem grupy przestêpczej, mo¿esz u¿yæ /smiercpostaci [Gracz].");
 		return 1;
@@ -577,9 +597,13 @@ CMD:smiercpostaci(playerid, params[]) {
 	if(!secondUsed) {
 		SendClientMessage(playerid, COLOR_WHITE, "Ta komenda spowoduje œmieræ i ZABLOKOWANIE TEJ POSTACI. Czy na pewno chcesz j¹ zabiæ?");
 		SendClientMessage(playerid, COLOR_WHITE, "Gdy wpiszesz /smiercpostaci ponownie, utracisz dostêp do tej postaci i jej maj¹tku.");
-	
+		
 		secondUsed = true;
 	} else {
+		if(pVars[playerid][pHours] < 10) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Ta postaæ nie ma przegranych 10 godzin. Nie mo¿esz jej uœmierciæ.");
+		}
+		
 		mainStr[0] = EOS;
 		format(mainStr, sizeof(mainStr), "* %s umiera. Jego cia³o pozostaje na ziemi, wraz z przedmiotami, które mia³ przy sobie. *", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
@@ -620,14 +644,14 @@ CMD:g(playerid, params[]) {
 	new type[8];
 	
 	if(sscanf(params, "s[8]", type)) {
-		if(!showGroupsInfo[playerid]) {
+		if(showGroupsInfo[playerid] & FL_NONE) {
 			new srvGrpId = getServerGroupIdForPlayer(playerid);
 			new tmp[32];
 			
 			format(tmp, sizeof(tmp), "~b~1  ~w~%s (%d)", gVars[srvGrpId][gName], gVars[srvGrpId][gUid]);
 			TextDrawSetString(groupsInfo[playerid][1], tmp);
 			
-			if(isPlayerDuty[playerid] && pVars[playerid][pDuty]) {
+			if((isPlayerDuty[playerid] & FL_PLAYERDUTY) && pVars[playerid][pDuty]) {
 				format(tmp, sizeof(tmp), "~w~%dm duty", pVars[playerid][pDuty]);
 				TextDrawSetString(groupsInfo[playerid][2], tmp);
 			}
@@ -638,7 +662,7 @@ CMD:g(playerid, params[]) {
 			
 			SelectTextDraw(playerid, 0xFF000044);
 			
-			showGroupsInfo[playerid] = true;
+			showGroupsInfo[playerid] |= FL_GROUPSINFO;
 		} else {
 			for(new i = 0; i < 15; i++) {
 				TextDrawHideForPlayer(playerid, groupsInfo[playerid][i]);
@@ -646,11 +670,20 @@ CMD:g(playerid, params[]) {
 			
 			CancelSelectTextDraw(playerid);
 			
-			showGroupsInfo[playerid] = false;		
+			showGroupsInfo[playerid] &= ~FL_GROUPSINFO;
 		}
 	} else {
 		if(strfind(type, "info", true) != -1) {
+			new srvGrpId = getServerGroupIdForPlayer(playerid);
+			new str[32];
 			
+			mainStr[0] = EOS;
+			format(str, sizeof(str), "%s", gVars[srvGrpId][gName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}UID:\t\t\t\t%d\nKonto:\t\t\t %d USD\nLimit pojazdów:\t\t\t\t%d\nRodzaj:\t\t\t\t%d\nFlagi:\t\t\t%d\n\n", gVars[srvGrpId][gUid], gVars[srvGrpId][gMoney], gVars[srvGrpId][gVehsLimit], gVars[srvGrpId][gType], gVars[srvGrpId][gFlags]);
+			format(mainStr, sizeof(mainStr), "%s1\t\tCzat OOC aktywny:\t\t\t\t%s\n2\t\tCzat IC aktywny:\t\t\t\t%s", mainStr, gVars[srvGrpId][gChatOOC] ? ("T") : ("N"), gVars[srvGrpId][gChatIC] ? ("T") : ("N"));
+			ShowPlayerDialog(playerid, DIALOG_SHOW_GROUP_STATS, DIALOG_STYLE_LIST, str, mainStr, "OK", "Zamknij");
+			
+			SendClientMessage(playerid, COLOR_GRAY, "Tip: /g [info/z/zadania/v/zapros/wypros/wplac/wyplac/magazyn/online/gps/db]");
 		} else if(strfind(type, "zapros", true) != -1) {
 			new pId;
 			new cmdParams[2];
@@ -660,7 +693,7 @@ CMD:g(playerid, params[]) {
 			}
 			
 			pVars[pId][pGroup] = pVars[playerid][pGroup];
-			sendOfferToPlayer(playerid, pId, cmdParams, 0);
+			sendOfferToPlayer(playerid, pId, cmdParams, O_ZAPRGRP);
 		} else if(strfind(type, "wplac", true) != -1) {
 			new money;
 			new srvGrpId = getServerGroupIdForPlayer(playerid);
@@ -692,7 +725,6 @@ CMD:g(playerid, params[]) {
 		} else if(strfind(type, "gps", true) != -1) {
 			format(mainStr, sizeof(mainStr), "* %s aktywuje namierzanie GPS.");
 		} else {
-			SendClientMessage(playerid, COLOR_GRAY, "Tip: /g [info/z/zadania/v/zapros/wypros/wplac/wyplac/magazyn/online/gps/db]");
 			SendClientMessage(playerid, COLOR_GRAY, "Taka podkomenda nie istnieje lub nie masz do niej uprawnieñ.");
 		}
 	}
@@ -769,7 +801,7 @@ CMD:report(playerid, params[]) {
 	new str[256], reason[128];
 	new pId;
 	
-	if(usedCmdReport[playerid]) {
+	if(usedCmdReport[playerid] & FL_CMD) {
 		SendClientMessage(playerid, COLOR_WHITE, "Mo¿esz wysy³aæ tylko jeden raport na minutê. Spokojnie, albo ktoœ przygl¹da siê ju¿ sytuacji,");
 		SendClientMessage(playerid, COLOR_WHITE, "albo tak czy inaczej wszyscy s¹ zajêci innym raportem i powielanie Twojego nic nie zmieni.");
 		
@@ -781,7 +813,7 @@ CMD:report(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /report [ID Gracza] [Treœæ]");
 	}
 	
-	usedCmdReport[playerid] = true;
+	usedCmdReport[playerid] |= FL_CMD;
 	
 	format(str, sizeof(str), "Wys³ano: [ID %d]%s: %d %s. (%s)", playerid, pVars[playerid][pCharName], pId, reason, pVars[pId][pCharName]);
 	SendClientMessage(playerid, COLOR_RED, str);
@@ -805,7 +837,7 @@ CMD:raport(playerid, params[]) {
 }
 
 CMD:pokoj(playerid, params[]) {
-	if(insidedHotel[playerid]) {
+	if(insidedHotel[playerid] & FL_HOTEL) {
 		return GameTextForPlayer(playerid, "~g~Znajdujesz sie juz w hotelu.", 5000, 3);
 	}
 	
@@ -826,7 +858,7 @@ CMD:pokoj(playerid, params[]) {
 			SetPlayerPos(playerid, 2216.12, -1076.30, 1050.48);
 			SetPlayerVirtualWorld(playerid, random(1000));
 
-			insidedHotel[playerid] = true;			
+			insidedHotel[playerid] |= FL_HOTEL;
 		}
 	}
 	return 1;
@@ -843,7 +875,7 @@ CMD:bank(playerid) {
 }
 
 CMD:kogut(playerid, params[]) {	
-	if(!isPlayerDuty[playerid]) {
+	if(isPlayerDuty[playerid] & FL_NONE) {
 		return GameTextForPlayer(playerid, "~y~Wejdz na sluzbe.", 3000, 3);
 	}
 	return 1;
@@ -859,6 +891,10 @@ CMD:wyrzuc(playerid, params[]) {
 	RemovePlayerFromVehicle(pId);
 	
 	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "~h~~g~Wyrzucasz %s z~n~~h~~y~pojazdu.", pVars[playerid][pCharName]);
+	GameTextForPlayer(playerid, mainStr, 5000, 3);
+	
+	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "~h~~g~%s wyrzuca cie z~n~~y~pojazdu.", pVars[playerid][pCharName]);
 	GameTextForPlayer(pId, mainStr, 5000, 3);
 	return 1;
@@ -868,19 +904,19 @@ CMD:duty(playerid) {
 	new srvGrpId = getServerGroupIdForPlayer(playerid);
 	
 	if(pVars[playerid][pGroup] != 0) {
-		if(isPlayerDuty[playerid]) {
+		if(isPlayerDuty[playerid] & FL_PLAYERDUTY) {
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "~w~Schodzisz ze sluzby~n~%s", gVars[srvGrpId][gName]);
 			GameTextForPlayer(playerid, mainStr, 5000, 3);
 			
 			pVars[playerid][pDuty] = 0;
-			isPlayerDuty[playerid] = false;
+			isPlayerDuty[playerid] &= ~FL_PLAYERDUTY;
 		} else {
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "~w~Wchodzisz na sluzbe~n~%s", gVars[srvGrpId][gName]);
 			GameTextForPlayer(playerid, mainStr, 5000, 3);
 			
-			isPlayerDuty[playerid] = true;
+			isPlayerDuty[playerid] |= FL_PLAYERDUTY;
 		}
 	}
 	return 1;

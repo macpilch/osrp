@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 25.07.2022
-	Modified: 08.08.2023
+	Modified: 15.08.2023
 */
 
 #if defined __PLAYER_PUBLICS_INC__
@@ -66,7 +66,12 @@ sampCallback:OSRP_OnPlayerRequestClass(playerid, classid) {
 	} else {
 		mysql_free_result();
 		
-		new tmpPVars[10][2];
+		enum {
+			UID = 0,
+			charName[24]
+		};
+		
+		new tmpPVars[MAX_PLAYER_CHARS][2];
 		new i;
 		
 		queryStr[0] = EOS;
@@ -78,8 +83,8 @@ sampCallback:OSRP_OnPlayerRequestClass(playerid, classid) {
 		mysql_store_result();
 		
 		while(mysql_fetch_row(queryStr, "|")) {
-			sscanf(queryStr, "p<|>is[24]", tmpPVars[i][0], tmpPVars[i][1]);
-			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d  %s", mainStr, tmpPVars[i][0], tmpPVars[i][1]);
+			sscanf(queryStr, "p<|>is[24]", tmpPVars[i][UID], tmpPVars[i][charName]);
+			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d  %s", mainStr, tmpPVars[i][UID], tmpPVars[i][charName]);
 			
 			i++;
 		}
@@ -97,9 +102,9 @@ sampCallback:OSRP_OnPlayerRequestClass(playerid, classid) {
 sampCallback:OSRP_OnPlayerConnect(playerid) {
 	new callSecs = GetTickCount();
 	
+	PlayerPlaySound(playerid, 1062, 0.0, 0.0, 0.0);
 	createPlayerTextDraws(playerid);
 	setPlayerDefaultValues(playerid);
-	PlayerPlaySound(playerid, 1062, 0.0, 0.0, 0.0);
 	
 	printf("[LOG]: OnPlayerConnect -- Called! (%d ms).", GetTickCount() - callSecs);
 	return 1;
@@ -116,12 +121,20 @@ sampCallback:OSRP_OnPlayerDisconnect(playerid, reason) {
 	resetVehicleValues(playerid);
 	
 	switch(reason) {
+		case 0: {
+			
+		}
 		case 1: {
-			format(mainStr, sizeof(mainStr), "%s\n(( /q ))");
+			format(mainStr, sizeof(mainStr), "%s\n(( /q ))", pVars[playerid][pCharName]);
 			
 			exit3dInfo[playerid] = CreateDynamic3DTextLabel(mainStr, COLOR_WHITE, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], 30.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, 0, 0, -1, 30.0, -1, 0);
 		}
+		case 2: {
+			
+		}
 	}
+	
+	SetTimerEx("destroyExit3dInfo", 20000, false, "i", playerid);
 	
 	printf("[LOG]: OnPlayerDisconnect -- Called! (%d ms).", GetTickCount() - callSecs);
 	return 1;
@@ -152,19 +165,19 @@ sampCallback:OSRP_OnPlayerSpawn(playerid) {
 	
 	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_WHITE, mainStr);
 	
-	if(pVars[playerid][pHotel] && !insidedHotel[playerid]) {
+	if(pVars[playerid][pHotel] && insidedHotel[playerid] & FL_NONE) {
 		SetPlayerPos(playerid, 2216.12,-1076.30,1050.48);
 		SetPlayerInterior(playerid, 1);
 		SetPlayerVirtualWorld(playerid, random(1000));
 		
-		insidedHotel[playerid] = true;
+		insidedHotel[playerid] |= FL_HOTEL;
 	} else if(pVars[playerid][pX] != DEFAULT_POS_X && pVars[playerid][pY] != DEFAULT_POS_Y && pVars[playerid][pZ] != DEFAULT_POS_Z) {
 		SetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	} else {
 		SetPlayerPos(playerid, DEFAULT_POS_X, DEFAULT_POS_Y, DEFAULT_POS_Z);
 	}
 	
-	isSpawned[playerid] = true;
+	isSpawned[playerid] |= FL_SPAWN;
 	
 	printf("[LOG]: OnPlayerSpawn -- Called! (%d ms).", GetTickCount() - callSecs);
 	return 1;
@@ -174,10 +187,14 @@ sampCallback:OSRP_OnPlayerDeath(playerid, killerid, reason) {
 	new callSecs = GetTickCount();
 	new reas[128];
 	
+	if(pVars[killerid][pHours] < 10) {
+		SendClientMessage(killerid, COLOR_WHITE, "{FF4444}Nie wolno Ci zabijaæ dopóki nie przekroczysz 10 godzin gry.");
+	}
+	
 	format(reas, sizeof(reas), "Prawdopodobny DM~n~~w~Zabil %s(%d:%d), bron: %d, godzin: %d", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, GetPlayerWeapon(killerid), pVars[killerid][pHours]);
 	givePlayerPenalty(INVALID_PLAYER_ID, killerid, PEN_ADMJAIL, reas);
 	
-	if(isPlayerDuty[playerid] && pVars[playerid][pDuty] > 0) {
+	if((isPlayerDuty[playerid] & FL_PLAYERDUTY) && pVars[playerid][pDuty] > 0) {
 		pc_cmd_duty(playerid);
 	}
 	
@@ -191,8 +208,8 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 	
 	mainStr[0] = EOS;
 	format(textStr, sizeof(textStr), "%s", text);
-	format(groupChatIC, sizeof(groupChatIC), "!%d", gVars[srvGrpId][gUid]);
-	format(groupChatOOC, sizeof(groupChatOOC), "@%d", gVars[srvGrpId][gUid]);
+	format(groupChatIC, sizeof(groupChatIC), "!1");
+	format(groupChatOOC, sizeof(groupChatOOC), "@1");
 	
 	if(strfind(textStr, "!!", false) != -1) {
 		format(mainStr, sizeof(mainStr), "%s krzyczy: %s", pVars[playerid][pCharName], textStr);
@@ -215,7 +232,7 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 		format(mainStr, sizeof(mainStr), "* %s robi smutn¹ minê.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 	} else if(strfind(textStr, ".", false) == 0) {
-		if(!isBW[playerid]) {
+		if(isBW[playerid] & FL_NONE) {
 			if(strfind(textStr, ". ", false) == 0) {
 				for(new i = 0; i < 2; i++) {
 					TextDrawShowForPlayer(playerid, oocWarning[playerid][i]);
@@ -236,41 +253,21 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 		} else {
 			SendClientMessage(playerid, COLOR_GRAY, "Nie mo¿esz tego zrobiæ podczas BW lub AJ. Zamiast /b, u¿yj /w.");
 		}
-	} else if(strfind(textStr, "@@", true) == 0) {
-		if(pVars[playerid][pRank] < SUPPORT_RANK) {
-			return 1;
-		}
-		
-		new str[256];
-		
-		if(isAdminDuty[playerid]) {
-			strmid(str, textStr, 2, strlen(textStr));
-			
-			format(mainStr, sizeof(mainStr), "[[ %d.%s: %s ]]", playerid, pVars[playerid][pCharName], str);
-			
-			foreach(new i : Player) {
-				if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
-					if(isAdminDuty[i]) {
-						SendClientMessage(i, COLOR_WHITE, mainStr);
-					}
-				}
-			}
-		}
 	} else if(strfind(textStr, groupChatOOC, true) == 0) {
 		if(!gVars[srvGrpId][gChatOOC]) {
 			return GameTextForPlayer(playerid, "~r~Czat OOC tej grupy nie jest~n~aktywny", 5000, 3);
 		}
 		
-		if(!isBW[playerid]) {
+		if(isBW[playerid] & FL_NONE) {
 			new str[256];
 			
-			if(pVars[playerid][pGroup] > 0 && isPlayerDuty[playerid]) {
+			if(pVars[playerid][pGroup] > 0 && (isPlayerDuty[playerid] & FL_PLAYERDUTY)) {
 				strmid(str, textStr, 2, strlen(textStr));
 				
-				format(mainStr, sizeof(mainStr), "@%d %s (( %d.%s: %s ))", gVars[srvGrpId][gUid], gVars[srvGrpId][gName], playerid, pVars[playerid][pCharName], str);
+				format(mainStr, sizeof(mainStr), "@1 %s (( %d.%s: %s ))", gVars[srvGrpId][gName], playerid, pVars[playerid][pCharName], str);
 				
 				foreach(new i : Player) {
-					if(pVars[i][pGroup] == pVars[playerid][pGroup] && chatMessages[i][1]) {
+					if(pVars[i][pGroup] == pVars[playerid][pGroup] && (chatMessages[i][1] & FL_CHATMSGS)) {
 						SendClientMessage(i, COLOR_WHITE, mainStr);
 					}
 				}
@@ -285,13 +282,13 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 		
 		new str[256];
 		
-		if(pVars[playerid][pGroup] > 0 && isPlayerDuty[playerid]) {
+		if(pVars[playerid][pGroup] > 0 && (isPlayerDuty[playerid] & FL_PLAYERDUTY)) {
 			strmid(str, textStr, 2, strlen(textStr));
 			
-			format(mainStr, sizeof(mainStr), "!%d %s ** %s: %s **", gVars[srvGrpId][gUid], gVars[srvGrpId][gName], pVars[playerid][pCharName], str);
+			format(mainStr, sizeof(mainStr), "!1 %s ** %s: %s **", gVars[srvGrpId][gName], pVars[playerid][pCharName], str);
 			
 			foreach(new i : Player) {
-				if(pVars[i][pGroup] == pVars[playerid][pGroup] && chatMessages[i][1]) {
+				if(pVars[i][pGroup] == pVars[playerid][pGroup] && (chatMessages[i][1] & FL_CHATMSGS)) {
 					SendClientMessage(i, COLOR_WHITE, mainStr);
 				}
 			}
@@ -300,8 +297,8 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 			sendDistanceMessage(playerid, 20.0, mainStr, MSG_CHAT, COLOR_WHITE, COLOR_GRAY, COLOR_MEDGRAY, COLOR_DARKGRAY);
 		}
 	} else {
-		if(!isBW[playerid]) {
-			if(usedTelephone[playerid]) {
+		if(isBW[playerid] & FL_NONE) {
+			if(usedTelephone[playerid] & FL_TELEPHONE) {
 				new pId = getPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
 				new telStr[256];
 				
@@ -322,6 +319,7 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 }
 
 sampCallback:OSRP_OnPlayerCommandText(playerid, cmdtext[]) {
+	
 	return 0;
 }
 
@@ -332,7 +330,7 @@ sampCallback:OSRP_OnPlayerCommandReceived(playerid, cmd[], params[], flags) {
 	
 	calledCmds[playerid]++;
 	
-	if(calledCmds[playerid] > 7 && calledCmds[playerid] < 20) {
+	if(calledCmds[playerid] > 7) {
 		if(GetTickCount() > calledSecsCmds[playerid]) {
 			new reas[64];
 			
@@ -341,6 +339,9 @@ sampCallback:OSRP_OnPlayerCommandReceived(playerid, cmd[], params[], flags) {
 			calledCmds[playerid] = 0;
 			calledSecsCmds[playerid] = 0;
 			//return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_KICK, reas);
+		} else {
+			calledCmds[playerid] = 0;
+			calledSecsCmds[playerid] = 0;
 		}
 	}
 	return 1;
@@ -358,7 +359,7 @@ sampCallback:OSRP_OnPlayerCommandPerformed(playerid, cmd[], params[], result, fl
 }
 
 sampCallback:OSRP_OnPlayerStateChange(playerid, newstate, oldstate) {
-	new srvVehId = actualVehicle[playerid];
+	new vehicleid = GetPlayerVehicleID(playerid), srvVehId = getServerVehicleIdForPlayer(vehicleid);
 	
 	if(newstate == PLAYER_STATE_DRIVER && oldstate == PLAYER_STATE_ONFOOT) {
 		if(!strlen(vVars[srvVehId][vPlate]) && !isBicycle(vVars[srvVehId][vModelId])) {
@@ -384,11 +385,18 @@ sampCallback:OSRP_OnPlayerStateChange(playerid, newstate, oldstate) {
 				}
 			}
 		}
+		
+		if(vVars[srvVehId][vOUid] != pVars[playerid][pUid] && vVars[srvVehId][vLock]) {
+			new reas[128];
+			
+			format(reas, sizeof(reas), "Wlamanie do pojazdu~n~~w~UID: %d (%s); Owner 3:%d, 0, Fotel %d, Ping %d", vVars[srvVehId][vUid], VehicleNames[vVars[srvVehId][vModelId] - 400], vVars[srvVehId][vOUid], 0, GetPlayerPing(playerid));
+			return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_BAN, reas);
+		}
 	}
 	
 	if(newstate == PLAYER_STATE_PASSENGER && oldstate == PLAYER_STATE_ONFOOT) {
-		if(drivingCourse[playerid] && !drivingCourse[offerFor[playerid]] && offerType[offerFor[playerid]] == 1) {
-			drivingCourse[offerFor[playerid]] = true;
+		if((drivingCourse[playerid] & FL_DRVCOURSE) && (drivingCourse[offerFor[playerid]] & FL_NONE) && offerType[offerFor[playerid]] == O_KURS) {
+			drivingCourse[offerFor[playerid]] |= FL_DRVCOURSE;
 		}
 	}
 	
@@ -403,18 +411,18 @@ sampCallback:OSRP_OnPlayerStateChange(playerid, newstate, oldstate) {
 			}
 		}
 		
-		if(drivingCourse[playerid] && drivingCourse[offerFor[playerid]] && offerType[offerFor[playerid]] == 1) {
-			if(pVars[offerFor[playerid]][pTraveled] < 5.0) {
-				drivingCourse[playerid] = false;
-				drivingCourse[offerFor[playerid]] = false;
+		if((drivingCourse[playerid] & FL_DRVCOURSE) && (drivingCourse[offerFor[playerid]] & FL_DRVCOURSE) && offerType[offerFor[playerid]] == O_KURS) {
+			if(pVars[offerFor[playerid]][pTraveled] < 10.0) {
+				drivingCourse[playerid] &= ~FL_DRVCOURSE;
+				drivingCourse[offerFor[playerid]] &= ~FL_DRVCOURSE;
 				pVars[offerFor[playerid]][pDriverLicense] = 0;
-			
+				
 				GameTextForPlayer(offerFor[playerid], "~r~Koniec nauki jazdy. Brak~n~instruktora.", 5000, 3);
 			}
 		}
 		
-		if(hasBelts[playerid]) {
-			hasBelts[playerid] = false;
+		if(hasBelts[playerid] & FL_BELTS) {
+			hasBelts[playerid] &= ~FL_BELTS;
 		}
 		
 		exitedVehicleSec[playerid] = GetTickCount() + 15000;
@@ -423,7 +431,7 @@ sampCallback:OSRP_OnPlayerStateChange(playerid, newstate, oldstate) {
 }
 
 sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
-	new vehicleid = GetPlayerVehicleID(playerid), srvVehId = actualVehicle[playerid];
+	new vehicleid = GetPlayerVehicleID(playerid), srvVehId = getServerVehicleIdForPlayer(vehicleid);
 	
 	if(PRESSED(KEY_ACTION)) {
 		if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER && !isBicycle(vVars[srvVehId][vModelId])) {
@@ -431,7 +439,7 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 				TextDrawHideForPlayer(playerid, vehicleTips[playerid][i]);
 			}
 			
-			vehicleEngineStatus(playerid, vehicleid);
+			vehicleEngineStatus(playerid, vVars[srvVehId][vId]);
 		}
 	}
 	
@@ -442,9 +450,9 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			}
 			
 			if(vVars[srvVehId][vLights]) {
-				vehicleLightsOff(playerid, vehicleid);
+				vehicleLightsOff(playerid, vVars[srvVehId][vId]);
 			} else {
-				vehicleLightsOn(playerid, vehicleid);
+				vehicleLightsOn(playerid, vVars[srvVehId][vId]);
 			}
 		}
 	}
@@ -453,8 +461,8 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) {
 			new srvItemId = choosedItem[playerid], weaponid = GetPlayerWeapon(playerid);
 			
-			if(iVars[srvItemId][iId] >= P_COLT && iVars[srvItemId][iId] <= P_M4) {
-				if(weaponid == WEAPON_COLT45 || weaponid == WEAPON_DEAGLE || weaponid == WEAPON_SHOTGUN || weaponid == WEAPON_M4) {
+			if(iVars[srvItemId][iId] >= P_COLT && iVars[srvItemId][iId] <= P_TEC9) {
+				if(weaponid == WEAPON_COLT45 || weaponid == WEAPON_DEAGLE || weaponid == WEAPON_SHOTGUN || weaponid == WEAPON_UZI || weaponid == WEAPON_MP5 || weaponid == WEAPON_AK47 || weaponid == WEAPON_M4 || weaponid == WEAPON_TEC9) {
 					SetPlayerDrunkLevel(playerid, 8000);
 				}
 			}
@@ -482,34 +490,17 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		if(dVars[srvDoorId][dOpen]) {
 			if(dVars[srvDoorId][dVw] != pVars[playerid][pVw] && dVars[srvDoorId][dInt] != pVars[playerid][pInt]) {
 				if(playerToPoint(playerid, 3.0, dVars[srvDoorId][dEnterX], dVars[srvDoorId][dEnterY], dVars[srvDoorId][dEnterZ])) {
-					/*new srvItemId = choosedItem[playerid];
+					SetPlayerPos(playerid, dVars[srvDoorId][dExitX], dVars[srvDoorId][dExitY], dVars[srvDoorId][dExitZ]);
+					SetPlayerVirtualWorld(playerid, dVars[srvDoorId][dVw]);
+					SetPlayerInterior(playerid, dVars[srvDoorId][dInt]);
 					
-					if(iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) {
+					if(dVars[srvDoorId][dType] == D_HOTEL && !pVars[playerid][pHotel]) {
 						for(new i = 0; i < 3; i++) {
-							TextDrawHideForPlayer(playerid, doorInfo[playerid][i]);
+							TextDrawShowForPlayer(playerid, hotelInfo[playerid][i]);
 						}
 						
-						TextDrawSetString(doorInfo[playerid][0], "~r~Nie mozesz wejsc do budynku w~n~rolkach.");
-						TextDrawSetString(doorInfo[playerid][1], "Uzyj /p rolki, aby je zdjac.");
-						
-						for(new i = 0; i < 3; i++) {
-							TextDrawShowForPlayer(playerid, doorInfo[playerid][i]);
-						}
-						
-						SetTimerEx("hideDoorInfo", 5000, false, "i", playerid);
-					} else {*/
-						SetPlayerPos(playerid, dVars[srvDoorId][dExitX], dVars[srvDoorId][dExitY], dVars[srvDoorId][dExitZ]);
-						SetPlayerVirtualWorld(playerid, dVars[srvDoorId][dVw]);
-						SetPlayerInterior(playerid, dVars[srvDoorId][dInt]);
-						
-						if(dVars[srvDoorId][dType] == D_HOTEL && !pVars[playerid][pHotel]) {
-							for(new i = 0; i < 3; i++) {
-								TextDrawShowForPlayer(playerid, hotelInfo[playerid][i]);
-							}
-							
-							SetTimerEx("hideHotelInfo", 6000, false, "i", playerid);
-						}
-					//}
+						SetTimerEx("hideHotelInfo", 6000, false, "i", playerid);
+					}
 				}
 			} else {
 				if(playerToPoint(playerid, 3.0, dVars[srvDoorId][dExitX], dVars[srvDoorId][dExitY], dVars[srvDoorId][dExitZ])) {
@@ -522,15 +513,19 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~h~~r~Drzwi sa zamkniete.", 3000, 3);
 		}
 		
-		if(insidedHotel[playerid] && pVars[playerid][pHotel] && playerToPoint(playerid, 5.0, 2216.12, -1076.30, 1050.48)) {
+		if((insidedHotel[playerid] & FL_HOTEL) && pVars[playerid][pHotel] && playerToPoint(playerid, 5.0, 2216.12, -1076.30, 1050.48)) {
 			if(pVars[playerid][pVw] != dVars[srvDoorId][dVw] && pVars[playerid][pInt] != dVars[srvDoorId][dInt]) {
 				SetPlayerPos(playerid, dVars[srvDoorId][dExitX], dVars[srvDoorId][dExitY], dVars[srvDoorId][dExitZ]);
 				SetPlayerVirtualWorld(playerid, dVars[srvDoorId][dVw]);
 				SetPlayerInterior(playerid, dVars[srvDoorId][dInt]);
 				
-				insidedHotel[playerid] = false;
+				insidedHotel[playerid] &= ~FL_HOTEL;
 			}
 		}
+	}
+
+	if(PRESSED(KEY_YES)) {
+		searchPlayerBooth(playerid);
 	}
 	
 	if(PRESSED(KEY_NO)) {
@@ -609,20 +604,15 @@ sampCallback:OSRP_OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid
 	}
 	
 	static blowsNum;
+	new notFirst = damagedid;
 	
-	if(blowsNum++ > 0 && !isScrimmage[damagedid] && !isScrimmage[playerid]) {
-		GameTextForPlayer(playerid, "~r~DM. Czekaj!", 1000, 3);
-	}
-	
-	TextDrawShowForPlayer(playerid, scrimmageTips[playerid][4]);
-	SetTimerEx("hideScrimmageTips", 5000, false, "ii", playerid, 4);
-	
-	if(!isScrimmage[playerid] && !isScrimmage[damagedid]) {
-		isScrimmage[damagedid] = true;
-		isScrimmage[playerid] = true;
+	if(notFirst != damagedid) {
+		if(blowsNum++ > 0) {
+			GameTextForPlayer(playerid, "~r~DM. Czekaj!", 1000, 3);
+		}
 		
-		TextDrawShowForPlayer(playerid, scrimmageTips[playerid][3]);
-		SetTimerEx("hideScrimmageTips", 5000, false, "ii", playerid, 3);
+		TextDrawShowForPlayer(playerid, scrimmageTips[playerid][4]);
+		SetTimerEx("hideScrimmageTips", 5000, false, "ii", playerid, 4);
 	}
 	return 1;
 }
@@ -632,6 +622,11 @@ sampCallback:OSRP_OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid)
 	
 	SetPlayerHealth(playerid, pVars[playerid][pHp] - power);
 	SetTimerEx("healthDamage", 100, false, "i", playerid);
+	
+	for(new i = 0; i < 2; i++) {
+		TextDrawShowForPlayer(playerid, scrimmageTips[playerid][i]);
+		SetTimerEx("hideScrimmageTips", 5000, false, "ii", playerid, i);
+	}
 	return 1;
 }
 
@@ -652,6 +647,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			
 			ShowPlayerDialog(playerid, DIALOG_REGISTER_SURNAME, DIALOG_STYLE_LIST, "Krok 1/3: nazwisko i p³eæ postaci:", str, "Mê¿czyzna", "Kobieta");
 		}
+		
 		case DIALOG_REGISTER_SURNAME: {
 			new str[2048];
 			
@@ -675,6 +671,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			
 			ShowPlayerDialog(playerid, DIALOG_REGISTER_NAME, DIALOG_STYLE_LIST, "Krok 2/3: imiê (losowe mêskie imiona)", str, "Dalej", "Od nowa");
 		}
+		
 		case DIALOG_REGISTER_NAME: {
 			if(!response) {
 				new str[2048];
@@ -693,6 +690,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			
 			ShowPlayerDialog(playerid, DIALOG_REGISTER_PASS, DIALOG_STYLE_INPUT, "Krok 3/3: has³o", "Podaj proszê has³o, za pomoc¹ którego bêdziesz siê logowaæ.", "Zapisz", "Od nowa");
 		}
+		
 		case DIALOG_REGISTER_PASS: {
 			if(!response) {
 				new str[2048];
@@ -746,7 +744,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			pVars[playerid][pGuid], pVars[playerid][pUid], pVars[playerid][pCharId], pVars[playerid][pAccName], pVars[playerid][pIp], pVars[playerid][pCharName], pVars[playerid][pCharName2], inputtext, pVars[playerid][pSex]);
 			mysql_query(queryStr);
 			
-			hasLoged[playerid] = true;
+			hasLoged[playerid] |= FL_LOGGED;
 			
 			if(pVars[playerid][pSex] == MAN_SEX) {
 				pVars[playerid][pSkin] = pVars[playerid][pLastSkin] = 291;
@@ -767,6 +765,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			format(mainStr, sizeof(mainStr), "{A52A2A}Witaj, %s (UID %d, ID %d). Mi³ej gry, za³ó¿ profil na naszym forum!", pVars[playerid][pCharName], pVars[playerid][pUid], playerid);
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 		}
+		
 		case DIALOG_LOGIN: {
 			new numChars;
 			
@@ -809,6 +808,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");
 			}
 		}
+		
 		case DIALOG_LOGIN_PASS: {
 			mainStr[0] = EOS;
 			
@@ -835,7 +835,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					loadPlayerValues(playerid);
 					loadPlayerContacts(playerid);
 					
-					hasLoged[playerid] = true;
+					hasLoged[playerid] |= FL_LOGGED;
 					
 					format(mainStr, sizeof(mainStr), "{A52A2A}Witaj, %s (UID %d, ID %d). Mi³ej gry!", pVars[playerid][pCharName], pVars[playerid][pUid], playerid);
 					SendClientMessage(playerid, COLOR_WHITE, mainStr);
@@ -845,6 +845,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				}
 			}
 		}
+		
 		case DIALOG_LOGIN_CHANGE_CHAR: {			
 			mainStr[0] = EOS;
 			
@@ -893,6 +894,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", pVars[playerid][pCharName]);
 			ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");
 		}
+		
 		case DIALOG_HELP: {
 			if(!response) {
 				return 1;
@@ -916,6 +918,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				}
 			}
 		}
+		
 		case DIALOG_STATS: {
 			if(!response) {
 				return 1;
@@ -923,6 +926,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			
 			
 		}
+		
 		case DIALOG_VEHICLE_SELECT: {
 			if(!response) {
 				return 1;
@@ -977,6 +981,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				vVars[srvVehId][vSpawned] = false;
 			}
 		}
+		
 		case DIALOG_VEHICLE_OPTIONS: {
 			if(!response) {
 				return 1;
@@ -1085,6 +1090,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				}
 			}
 		}
+		
 		case DIALOG_VEHICLE_SELL_PLAYER: {
 			if(!response) {
 				return 1;
@@ -1100,6 +1106,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			strcat(mainStr, "Od wymiany dwóch pojazdów miêdzy graczami jest inna, bezpieczna funkcja!");
 			ShowPlayerDialog(playerid, DIALOG_VEHICLE_SELL_PLAYER_PRICE, DIALOG_STYLE_INPUT, "Cena", mainStr, "Sprzedaj", "Anuluj");
 		}
+		
 		case DIALOG_VEHICLE_SELL_PLAYER_PRICE: {
 			if(!response) {
 				return 1;
@@ -1115,8 +1122,9 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			strcat(mainStr, "koniecznie napisz na niego raport! - to oszust!");
 			ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 			
-			sendOfferToPlayer(playerid, offerFor[playerid], str, 6);
+			sendOfferToPlayer(playerid, offerFor[playerid], str, O_ZAKUPPOJ);
 		}
+		
 		case DIALOG_VEHICLE_CHANGE_PLAYER: {
 			if(!response) {
 				return 1;
@@ -1132,8 +1140,9 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				return GameTextForPlayer(playerid, "~r~Nie ma takiego gracza.", 5000, 3);
 			}
 			
-			sendOfferToPlayer(playerid, pId, str, 6);
+			sendOfferToPlayer(playerid, pId, str, O_ZAKUPPOJ);
 		}
+		
 		case DIALOG_SHOW_ITEMS: {
 			new tmpUid, itemid;
 			
@@ -1153,7 +1162,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				return ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_MORE, DIALOG_STYLE_LIST, "Menu przedmiotu", mainStr, "OK", "Anuluj");
 			}
 			
-			new itemsCount, count;
+			new itemsCount;
 			
 			queryStr[0] = EOS;
 			format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Items` WHERE `OUID` = '%d'", pVars[playerid][pUid]);
@@ -1179,24 +1188,10 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				itemid = iVars[choosedItem[playerid]][iId];
 				enableItemProperties(playerid, choosedItem[playerid], itemid);
 			} else {
-				mainStr[0] = EOS;
-				foreach(new i : itemItter) {
-					if(iVars[i][iPlace] == ITEM_PLACE_FLOOR && choosedItem[playerid] == -1 && iVars[i][iOUid] == INVALID_PLAYER_ID) {
-						if(playerToPoint(playerid, 5.0, iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ])) {
-							format(mainStr, sizeof(mainStr), "%s{FFFFFF}%d\t%s\n", mainStr, iVars[i][iUid], iVars[i][iName]);
-							
-							count++;
-						}
-					}
-				}
-				
-				if(!count) {
-					return 1;
-				}
-				
-				ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PICKUP, DIALOG_STYLE_LIST, "Pobliskie przedmioty (/p podnies)", mainStr, "Podnieœ", "Zamknij");
+				pickUpNearblyItems(playerid);
 			}
 		}
+		
 		case DIALOG_SHOW_ITEMS_MORE: {
 			if(!response) {
 				return showDialogItems(playerid);
@@ -1250,56 +1245,18 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				case 2: {
 					
 				}
+				case 3: {
+				
+				}
+				case 4: {
+				
+				}
+				case 5: {
+				
+				}
 			}
 		}
-		case DIALOG_SHOW_ITEMS_GIVE: {
-			if(!response) {
-				return 1;
-			}
-			
-			new pId = strval(inputtext);
-			new str[2];
-			
-			if(GetPlayerState(pId) == PLAYER_STATE_DRIVER) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Ta osoba prowadzi pojazd. Musi siê zatrzymaæ.");
-			}
-			
-			sendOfferToPlayer(playerid, pId, str, 5);
-		}
-		case DIALOG_SHOW_ITEMS_PARAMETERS: {
-			new srvItemId = choosedItem[playerid];
-			
-			if(!response) {
-				iVars[srvItemId][iUsed] = false;
-				return 1;
-			}
-			
-			ResetPlayerWeapons(playerid);
-			
-			switch(iVars[srvItemId][iId]) {
-				case P_COLT: {
-					GivePlayerWeapon(playerid, WEAPON_COLT45, loadItemWeaponAmmo(srvItemId));
-				}
-				case P_DEAGLE: {
-					GivePlayerWeapon(playerid, WEAPON_DEAGLE, loadItemWeaponAmmo(srvItemId));
-				}
-				case P_SHOTGUN: {
-					GivePlayerWeapon(playerid, WEAPON_SHOTGUN, loadItemWeaponAmmo(srvItemId));
-				}
-				case P_M4: {
-					GivePlayerWeapon(playerid, WEAPON_M4, loadItemWeaponAmmo(srvItemId));
-				}
-			}
-			
-			if(pVars[playerid][pPisSkill] < 0 || pVars[playerid][pShtgSkill] < 0 || pVars[playerid][pDglSkill] < 0 || pVars[playerid][pM4Skill] < 0) {
-				SendClientMessage(playerid, COLOR_YELLOW, "Twoja postaæ nie ma doœwiadczenia w strzelaniu. Udaj siê na mecz ASG i");
-				SendClientMessage(playerid, COLOR_YELLOW, "fraguj innych danym rodzajem broni - im wiêcej æwiczysz, tym celniej i szybciej strzelasz.");
-			}
-			
-			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "* %s wyci¹ga %s %s.", pVars[playerid][pCharName], itemNames[iVars[srvItemId][iId]], inputtext);
-			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
-		}
+		
 		case DIALOG_SHOW_ITEMS_PICKUP: {
 			if(!response) {
 				return 1;
@@ -1330,92 +1287,98 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			format(mainStr, sizeof(mainStr), "* %s podnosi przedmiot %s.", pVars[playerid][pCharName], iVars[srvItemId][iName]);
 			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		}
-		case DIALOG_SHOW_CASHPOINT: {
+		
+		case DIALOG_SHOW_ITEMS_GIVE: {
 			if(!response) {
 				return 1;
 			}
 			
-			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "SELECT `Money`, `Bank` FROM `osrp_Players` WHERE `UID` = '%d'", pVars[playerid][pUid]);
-			mysql_query(queryStr); 
+			new pId = strval(inputtext);
+			new str[2];
 			
-			mysql_store_result();
-			
-			mysql_fetch_row(queryStr, "|");
-			sscanf(queryStr, "p<|>ii", pVars[playerid][pMoney], pVars[playerid][pBank]);
-			mysql_free_result();
-			
-			mainStr[0] = EOS;
-			switch(listitem) {
-				case 0: {
-					searchPlayerCashpoint(playerid);
-				}
-				case 1: {
-					strcat(mainStr, "Ile pieniêdzy pragniesz wyp³aciæ z konta?");
-					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_OUT, DIALOG_STYLE_INPUT, "Bank", mainStr, "Wyp³aæ", "Anuluj");
-				}
-				case 2: {
-					strcat(mainStr, "Ile pieniêdzy pragniesz wp³aciæ na konto?");
-					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_IN, DIALOG_STYLE_INPUT, "Bank", mainStr, "Wp³aæ", "Anuluj");
-				}
+			if(GetPlayerState(pId) == PLAYER_STATE_DRIVER) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Ta osoba prowadzi pojazd. Musi siê zatrzymaæ.");
 			}
+			
+			sendOfferToPlayer(playerid, pId, str, O_ZAKUPPRZED);
 		}
-		case DIALOG_SHOW_CASHPOINT_IN: {
+		
+		case DIALOG_SHOW_ITEMS_PARAMETERS: {
+			new srvItemId = choosedItem[playerid];
+			
 			if(!response) {
+				choosedItem[playerid] = -1;
+				iVars[srvItemId][iUsed] = false;
 				return 1;
 			}
 			
-			new money = strval(inputtext);
-			
-			pVars[playerid][pMoney] = GetPlayerMoney(playerid);
-			
-			if(money > pVars[playerid][pMoney]) {
+			if(!iVars[srvItemId][iUsed]) {
+				ResetPlayerWeapons(playerid);
 				
-			} else if(money <= 0) {
+				switch(iVars[srvItemId][iId]) {
+					case P_KASTET: {
+						GivePlayerWeapon(playerid, WEAPON_BRASSKNUCKLE, 1);
+					}
+					case P_NITESTICK: {
+						GivePlayerWeapon(playerid, WEAPON_NITESTICK, 1);
+					}
+					case P_KNIFE: {
+						GivePlayerWeapon(playerid, WEAPON_KNIFE, 1);
+					}
+					case P_BASEBALL: {
+						GivePlayerWeapon(playerid, WEAPON_BAT, 1);
+					}
+					case P_COLT: {
+						GivePlayerWeapon(playerid, WEAPON_COLT45, loadItemWeaponAmmo(srvItemId));
+					}
+					case P_DEAGLE: {
+						GivePlayerWeapon(playerid, WEAPON_DEAGLE, loadItemWeaponAmmo(srvItemId));
+					}
+					case P_SHOTGUN: {
+						GivePlayerWeapon(playerid, WEAPON_SHOTGUN, loadItemWeaponAmmo(srvItemId));
+					}
+					case P_UZI: {
+						GivePlayerWeapon(playerid, WEAPON_UZI, loadItemWeaponAmmo(srvItemId));
+					}
+					case P_MP5: {
+						GivePlayerWeapon(playerid, WEAPON_MP5, loadItemWeaponAmmo(srvItemId));
+					}
+					case P_AK47: {
+						GivePlayerWeapon(playerid, WEAPON_AK47, loadItemWeaponAmmo(srvItemId));
+					}
+					case P_M4: {
+						GivePlayerWeapon(playerid, WEAPON_M4, loadItemWeaponAmmo(srvItemId));
+					}
+					case P_TEC9: {
+						GivePlayerWeapon(playerid, WEAPON_TEC9, loadItemWeaponAmmo(srvItemId));
+					}
+					case P_PARA: {
+						GivePlayerWeapon(playerid, WEAPON_PARACHUTE, 1);
+					}
+				}
 				
-			} else {
-				GivePlayerMoney(playerid, -money);
-				
-				pVars[playerid][pMoney] = GetPlayerMoney(playerid);
-				pVars[playerid][pBank] += money;
+				if(pVars[playerid][pPisSkill] < 0 || pVars[playerid][pShtgSkill] < 0 || pVars[playerid][pDglSkill] < 0 || pVars[playerid][pM4Skill] < 0) {
+					SendClientMessage(playerid, COLOR_YELLOW, "Twoja postaæ nie ma doœwiadczenia w strzelaniu. Udaj siê na mecz ASG i");
+					SendClientMessage(playerid, COLOR_YELLOW, "fraguj innych danym rodzajem broni - im wiêcej æwiczysz, tym celniej i szybciej strzelasz.");
+				}
 				
 				mainStr[0] = EOS;
-				format(mainStr, sizeof(mainStr), "~b~Wplacono ~w~$%d.", money);
-				GameTextForPlayer(playerid, mainStr, 5000, 3);
+				format(mainStr, sizeof(mainStr), "* %s wyci¹ga %s %s.", pVars[playerid][pCharName], itemNames[iVars[srvItemId][iId]], inputtext);
+				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 				
-				queryStr[0] = EOS;
-				format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Money` = '%d', `Bank` = '%d' WHERE `UID` = '%d'", pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pUid]);
-				mysql_query(queryStr);
-			}
-		}
-		case DIALOG_SHOW_CASHPOINT_OUT: {
-			if(!response) {
-				return 1;
-			}
-			
-			new money = strval(inputtext);
-			
-			pVars[playerid][pMoney] = GetPlayerMoney(playerid);
-			
-			if(money > pVars[playerid][pBank]) {
-				
-			} else if(money <= 0) {
-				
+				iVars[srvItemId][iUsed] = true;
 			} else {
-				GivePlayerMoney(playerid, money);
+				ResetPlayerWeapons(playerid);
+				saveItemWeaponAmmo(srvItemId);
 				
-				pVars[playerid][pMoney] += money;
-				pVars[playerid][pBank] -= money;
+				format(mainStr, sizeof(mainStr), "* %s chowa %s %s.", pVars[playerid][pCharName], itemNames[iVars[srvItemId][iId]], inputtext);
+				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 				
-				mainStr[0] = EOS;
-				format(mainStr, sizeof(mainStr), "~b~Wyplacono ~w~$%d.", money);
-				GameTextForPlayer(playerid, mainStr, 5000, 3);
-				
-				queryStr[0] = EOS;
-				format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Money` = '%d', `Bank` = '%d' WHERE `UID` = '%d'", pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pUid]);
-				mysql_query(queryStr);
+				choosedItem[playerid] = -1;
+				iVars[srvItemId][iUsed] = false;
 			}
 		}
+		
 		case DIALOG_SHOW_OFFER: {
 			if(!response) {
 				mainStr[0] = EOS;
@@ -1431,25 +1394,25 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				offerFrom[playerid] = INVALID_PLAYER_ID;
 				
 				switch(offerType[playerid]) {
-					case 0: {
+					case O_ZAPRGRP: {
 						pVars[playerid][pGroup] = 0;
 					}
-					case 1: {
+					case O_KURS: {
 						pVars[playerid][pDriverLicense] = 0;
 					}
-					case 2: {
+					case O_DOWOD: {
 						pVars[playerid][pIdCard] = 0;
 					}
-					case 3: {
+					case O_PRAWKO: {
 						pVars[playerid][pDriverLicense] = 0;
 					}
-					case 4: {
+					case O_PODATEK: {
 						
 					}
-					case 5: {
+					case O_ZAKUPPRZED: {
 						
 					}
-					case 9: {
+					case O_VCARD: {
 						telEnterNumber[playerid] = 0;
 					}
 				}
@@ -1490,7 +1453,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			}
 			
 			switch(offerType[playerid]) {
-				case 0: {
+				case O_ZAPRGRP: {
 					new srvGrpId = getServerGroupIdForPlayer(playerid);
 					
 					gVars[srvGrpId][gMembers]++;
@@ -1519,25 +1482,25 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					format(mainStr, sizeof(mainStr), "* %s podpisuje umowê o pracê.", pVars[playerid][pCharName]);
 					sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 				}
-				case 1: {
-					drivingCourse[offerFrom[playerid]] = true;
+				case O_KURS: {
+					drivingCourse[offerFrom[playerid]] |= FL_DRVCOURSE;
 					
 					SendClientMessage(playerid, COLOR_WHITE, "Zaakceptowano naukê jazdy. Mo¿esz wsi¹œæ do pojazdu gdy znajduje siê w nim instruktor.");
 				}
-				case 2: {
+				case O_DOWOD: {
 					pVars[playerid][pIdCard] = 1;
 					
 					SendClientMessage(playerid, COLOR_WHITE, "Jesteœ teraz zameldowany(a) w tym mieœcie. U¿yj /pokaz dowod [Gracz], by pokazaæ komuœ dowód.");
 				}
-				case 3: {
+				case O_PRAWKO: {
 					pVars[playerid][pDriverLicense] = 1;
 					
 					SendClientMessage(playerid, COLOR_WHITE, "Gratulacje, otrzymujesz prawko! U¿yj /pokaz prawko [Gracz], aby je komuœ pokazaæ.");
 				}
-				case 4: {
+				case O_PODATEK: {
 					GameTextForPlayer(offerFrom[playerid], "~h~~h~~g~Budynek zostal oplacony.", 5000, 3);
 				}
-				case 5: {
+				case O_ZAKUPPRZED: {
 					iVars[choosedItem[offerFrom[playerid]]][iOUid] = pVars[playerid][pUid];
 					
 					format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `OUID` = '%d' WHERE `OUID` = '%d' AND `UID` = '%d'", pVars[playerid][pUid], pVars[offerFrom[playerid]][pUid], iVars[choosedItem[offerFrom[playerid]]][iUid]);
@@ -1547,7 +1510,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					format(mainStr, sizeof(mainStr), "* %s podaje przedmiot %s.", pVars[offerFrom[playerid]][pCharName], pVars[playerid][pCharName]);
 					sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 				}
-				case 6: {
+				case O_ZAKUPPOJ: {
 					new srvVehId = actualVehicle[offerFrom[playerid]];
 					
 					vVars[srvVehId][vOUid] = pVars[playerid][pUid];
@@ -1557,7 +1520,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					}
 					
 					queryStr[0] = EOS;
-					format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `OUID` = '%d' WHERE `UID` = '%d' AND `OUID` = '%d'", pVars[playerid][pUid], vVars[srvVehId][vUid], pVars[offerFrom[playerid]][pUid]);
+					format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `OUID` = '%d', `CharName` = '%s' WHERE `UID` = '%d' AND `OUID` = '%d'", pVars[playerid][pUid], pVars[playerid][pCharName], vVars[srvVehId][vUid], pVars[offerFrom[playerid]][pUid]);
 					mysql_query(queryStr);
 					
 					mainStr[0] = EOS;
@@ -1566,7 +1529,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					
 					ShowPlayerDialog(offerFrom[playerid], DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Twój pojazd zosta³ sprzedany.", "OK", "");
 				}
-				case 7: {
+				case O_REJESTR: {
 					new srvVehId;
 				
 					foreach(new i : vehItter) {
@@ -1582,7 +1545,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					
 					ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Pojazd zosta³ zarejestrowany.", "OK", "");
 				}
-				case 8: {
+				case O_TANKOWANIE: {
 					new srvVehId = actualVehicle[playerid];
 					
 					if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER && vVars[srvVehId][vEngine]) {
@@ -1595,7 +1558,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					
 					SetTimerEx("addFuelToVehicle", 5000, false, "i", playerid);
 				}
-				case 9: {
+				case O_VCARD: {
 					mainStr[0] = EOS;
 					foreach(new i : itemItter) {
 						if(iVars[i][iOUid] == pVars[playerid][pUid] && !iVars[i][iUsed] && (iVars[i][iId] == P_TELEFON || iVars[i][iId] == P_NKA8110)) {
@@ -1605,13 +1568,14 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					
 					ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_VCARD_ADD, DIALOG_STYLE_LIST, "Dostêpne przedmioty", mainStr, "OK", "Zamknij");
 				}
-				case 10: {
+				case O_PRZETRZY: {
 					pVars[playerid][pDetention] = offerParams[playerid][1];
 					
 					ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Jesteœ teraz przetrzymywany(a).\nNie mo¿esz opuœciæ budynku i do koñca przetrzymania bêdziesz siê w nim spawnowaæ.", "OK", "");
 				}
 			}
 		}
+		
 		case DIALOG_SHOW_OFFER_PAY: {
 			if(!response) {
 				mainStr[0] = EOS;
@@ -1627,22 +1591,22 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				offerFrom[playerid] = INVALID_PLAYER_ID;
 				
 				switch(offerType[playerid]) {
-					case 0: {
+					case O_ZAPRGRP: {
 						pVars[playerid][pGroup] = 0;
 					}
-					case 1: {
+					case O_KURS: {
 						pVars[playerid][pDriverLicense] = 0;
 					}
-					case 2: {
+					case O_DOWOD: {
 						pVars[playerid][pIdCard] = 0;
 					}
-					case 3: {
+					case O_PRAWKO: {
 						pVars[playerid][pDriverLicense] = 0;
 					}
-					case 4: {
+					case O_PODATEK: {
 						
 					}
-					case 9: {
+					case O_VCARD: {
 						telEnterNumber[playerid] = 0;
 					}
 				}
@@ -1663,6 +1627,132 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			strcat(mainStr, "{FFFFFF}0\tP³atnoœæ gotówk¹ (USD)");
 			ShowPlayerDialog(playerid, DIALOG_SHOW_OFFER, DIALOG_STYLE_LIST, str, mainStr, "P³aæ", "Anuluj");
 		}
+		
+		case DIALOG_SEARCH_ID: {
+			if(!response) {
+				return 1;
+			}
+			
+			new str[64];
+			
+			format(mainStr, sizeof(mainStr), inputtext);
+			
+			format(str, sizeof(str), "Wpisz treœæ wiadomoœci, któr¹ chcesz wys³aæ do gracza %s.", inputtext);
+			ShowPlayerDialog(playerid, DIALOG_SEARCH_ID_SEND, DIALOG_STYLE_INPUT, "Wysy³anie prywatnej wiadomoœci", str, "Wyœlij", "Anuluj");
+		}
+		
+		case DIALOG_SEARCH_ID_SEND: {
+			if(!response) {
+				return 1;
+			}
+			
+			new pId;
+			new str[128], str2[256];
+			
+			pId = strval(mainStr);
+			format(str, sizeof(str), mainStr);
+			
+			format(str2, sizeof(str2), "%d %s", pId, str);
+			pc_cmd_w(playerid, str2);
+		}
+		
+		case DIALOG_SHOW_DOORS_MENU: {
+			if(!response) {
+				return 1;
+			}
+			
+			
+		}
+		
+		case DIALOG_SHOW_CASHPOINT: {
+			if(!response) {
+				return 1;
+			}
+			
+			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "SELECT `Money`, `Bank` FROM `osrp_Players` WHERE `UID` = '%d'", pVars[playerid][pUid]);
+			mysql_query(queryStr); 
+			
+			mysql_store_result();
+			
+			mysql_fetch_row(queryStr, "|");
+			sscanf(queryStr, "p<|>ii", pVars[playerid][pMoney], pVars[playerid][pBank]);
+			mysql_free_result();
+			
+			mainStr[0] = EOS;
+			switch(listitem) {
+				case 0: {
+					searchPlayerCashpoint(playerid);
+				}
+				case 1: {
+					strcat(mainStr, "Ile pieniêdzy pragniesz wyp³aciæ z konta?");
+					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_OUT, DIALOG_STYLE_INPUT, "Bank", mainStr, "Wyp³aæ", "Anuluj");
+				}
+				case 2: {
+					strcat(mainStr, "Ile pieniêdzy pragniesz wp³aciæ na konto?");
+					ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT_IN, DIALOG_STYLE_INPUT, "Bank", mainStr, "Wp³aæ", "Anuluj");
+				}
+			}
+		}
+		
+		case DIALOG_SHOW_CASHPOINT_IN: {
+			if(!response) {
+				return 1;
+			}
+			
+			new money = strval(inputtext);
+			
+			pVars[playerid][pMoney] = GetPlayerMoney(playerid);
+			
+			if(money > pVars[playerid][pMoney]) {
+				
+			} else if(money <= 0) {
+				
+			} else {
+				GivePlayerMoney(playerid, -money);
+				
+				pVars[playerid][pMoney] = GetPlayerMoney(playerid);
+				pVars[playerid][pBank] += money;
+				
+				mainStr[0] = EOS;
+				format(mainStr, sizeof(mainStr), "~b~Wplacono ~w~$%d.", money);
+				GameTextForPlayer(playerid, mainStr, 5000, 3);
+				
+				queryStr[0] = EOS;
+				format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Money` = '%d', `Bank` = '%d' WHERE `UID` = '%d'", pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pUid]);
+				mysql_query(queryStr);
+			}
+		}
+		
+		case DIALOG_SHOW_CASHPOINT_OUT: {
+			if(!response) {
+				return 1;
+			}
+			
+			new money = strval(inputtext);
+			
+			pVars[playerid][pMoney] = GetPlayerMoney(playerid);
+			
+			if(money > pVars[playerid][pBank]) {
+				
+			} else if(money <= 0) {
+				
+			} else {
+				GivePlayerMoney(playerid, money);
+				
+				pVars[playerid][pMoney] += money;
+				pVars[playerid][pBank] -= money;
+				
+				mainStr[0] = EOS;
+				format(mainStr, sizeof(mainStr), "~b~Wyplacono ~w~$%d.", money);
+				GameTextForPlayer(playerid, mainStr, 5000, 3);
+				
+				queryStr[0] = EOS;
+				format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Money` = '%d', `Bank` = '%d' WHERE `UID` = '%d'", pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pUid]);
+				mysql_query(queryStr);
+			}
+		}
+		
 		case DIALOG_SHOW_TELEPHONE_MENU: {
 			if(!response) {
 				return 1;
@@ -1727,6 +1817,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				}
 			}
 		}
+		
 		case DIALOG_SHOW_TELEPHONE_CONTACTS: {
 			if(!response) {
 				return 1;
@@ -1742,9 +1833,9 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					mainStr[0] = EOS;
 					foreach(new i : Player) {
 						foreach(new j : groupItter) {
-							if(isPlayerDuty[i] && gVars[j][gType] == k) {
+							if((isPlayerDuty[i] & FL_PLAYERDUTY) && gVars[j][gType] == k) {
 								count++;
-							} else if(isPlayerDuty[i] && gVars[j][gType] != k) {
+							} else if((isPlayerDuty[i] & FL_PLAYERDUTY) && gVars[j][gType] != k) {
 								count = 0;
 							}
 							
@@ -1765,7 +1856,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					foreach(new i : Player) {
 						foreach(new j : groupItter) {
 							if(gVars[j][gType] == G_PUBLIC) {
-								if(pVars[i][pGroup] == gVars[j][gUid] && isPlayerDuty[i] && pVars[i][pDuty] > 0) {
+								if(pVars[i][pGroup] == gVars[j][gUid] && (isPlayerDuty[i] & FL_PLAYERDUTY) && pVars[i][pDuty] > 0) {
 									countPlaya++;
 								}
 								
@@ -1787,7 +1878,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					tmpNum = strval(inputtext);
 					pId = getPhoneOwnerIdFromNumber(tmpNum);
 					
-					if(usedTelephone[pId]) {
+					if(usedTelephone[pId] & FL_TELEPHONE) {
 						SendClientMessage(playerid, COLOR_WHITE, "** Sygna³ zajêtoœci. **");
 						SendClientMessage(playerid, COLOR_YELLOW, "Automat (telefon): Abonent jest nieosi¹galny.");
 						return 1;
@@ -1813,6 +1904,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				}
 			}
 		}
+		
 		case DIALOG_SHOW_TELEPHONE_SERVICES: {
 			if(!response) {
 				return 1;
@@ -1831,7 +1923,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					foreach(new i : Player) {
 						foreach(new j : groupItter) {
 							if(gVars[j][gType] == G_DRVRLIC) {
-								if(!strcmp(pVars[i][pGroup], gVars[j][gName]) && isPlayerDuty[i]) {
+								if(!strcmp(pVars[i][pGroupDesc], gVars[j][gName]) && (isPlayerDuty[i] & FL_PLAYERDUTY) && pVars[i][pDuty] > 0) {
 									countPlaya++;
 								}
 								
@@ -1846,11 +1938,14 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				}
 			}
 		}
+		
 		case DIALOG_SHOW_TELEPHONE_GROUPS: {
 			if(!response) {
+				applyAnimationEx(playerid, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
+				GameTextForPlayer(playerid, "~r~Rozmowa zakonczona.", 5000, 3);
 				return 1;
 			}
-			
+
 			new groupUid = strval(inputtext);
 			
 			foreach(new i : groupItter) {
@@ -1878,6 +1973,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			format(mainStr, sizeof(mainStr), "%s (telefon): %s.", pVars[playerid][pCharName], gVars[telEnterGroup[playerid]][gName]);
 			sendDistanceMessage(playerid, 20.0, mainStr, MSG_CHAT, COLOR_WHITE, COLOR_GRAY, COLOR_MEDGRAY, COLOR_DARKGRAY);
 		}
+		
 		case DIALOG_SHOW_TELEPHONE_SERVICES_ORDER: {
 			if(!response) {
 				return 1;
@@ -1886,7 +1982,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			mainStr[0] = EOS;
 			
 			foreach(new i : Player) {
-				if(pVars[i][pGroup] == gVars[telEnterGroup[playerid]][gUid] && isPlayerDuty[i]) {
+				if(pVars[i][pGroup] == gVars[telEnterGroup[playerid]][gUid] && (isPlayerDuty[i] & FL_PLAYERDUTY)) {
 					if(gVars[telEnterGroup[playerid]][gType] == G_PUBLIC) {
 						format(mainStr, sizeof(mainStr), "** Centrala: Zg³oszenie od numeru %d (( %s )) **", pVars[playerid][pTelNum], pVars[playerid][pCharName]);
 						SendClientMessage(i, COLOR_WHITE, mainStr);
@@ -1901,7 +1997,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				}
 			}
 			
-			usedTelephone[playerid] = false;
+			usedTelephone[playerid] &= ~FL_TELEPHONE;
 			telEnterNumber[playerid] = 0;
 			telEnterGroup[playerid] = -1;
 			
@@ -1914,6 +2010,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			
 			SendClientMessage(playerid, COLOR_WHITE, "{FFFF00}Automat (telefon): Przyjmujemy zg³oszenie. Prosimy czekaæ, a¿ zg³osi siê do Pañstwa pracownik.");			
 		}
+		
 		case DIALOG_TELEPHONE_SEND_SMS: {
 			if(!response) {
 				return 1;
@@ -1940,6 +2037,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			format(mainStr, sizeof(mainStr), "* %s %s SMS-a.", pVars[pId][pCharName], pVars[playerid][pSex] ? ("otrzyma³a") : ("otrzyma³"));
 			sendDistanceMessage(pId, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		}
+		
 		case DIALOG_TELEPHONE_ENTER_NUMBER: {
 			if(!response) {
 				return 1;
@@ -1970,6 +2068,15 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			format(mainStr, sizeof(mainStr), "** Dzwoni telefon %s. **", pVars[pId][pCharName]);
 			sendDistanceMessage(pId, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		}
+		
+		case DIALOG_TELEPHONE_NUMBER_OPTS: {
+			if(!response) {
+				return 1;
+			}
+			
+			
+		}
+		
 		case DIALOG_TELEPHONE_CALL_CHOICE: {
 			if(!response) {
 				return 1;
@@ -1981,15 +2088,15 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				case 0: {
 					applyAnimationEx(playerid, "PED", "PHONE_IN", 4.1, 0, 1, 1, 1, 1, 1);
 					
-					usedTelephone[pId] = true;
-					usedTelephone[playerid] = true;
+					usedTelephone[pId] |= FL_TELEPHONE;
+					usedTelephone[playerid] |= FL_TELEPHONE;
 				}
 				case 1: {
 					applyAnimationEx(playerid, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
 					applyAnimationEx(pId, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
-				
-					usedTelephone[playerid] = false;
-					usedTelephone[pId] = false;
+					
+					usedTelephone[playerid] &= ~FL_TELEPHONE;
+					usedTelephone[pId] &= ~FL_TELEPHONE;
 					telEnterNumber[playerid] = 0;
 					telEnterNumber[pId] = 0;
 					
@@ -2002,6 +2109,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				TextDrawHideForPlayer(playerid, telephoneCall[playerid][i]);
 			}
 		}
+		
 		case DIALOG_SHOW_TELEPHONE_VCARD: {
 			if(!response) {
 				return 1;
@@ -2012,8 +2120,9 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			
 			telEnterNumber[tmpId] = pVars[playerid][pTelNum];
 			
-			sendOfferToPlayer(playerid, tmpId, params, 9);
+			sendOfferToPlayer(playerid, tmpId, params, O_VCARD);
 		}
+		
 		case DIALOG_SHOW_TELEPHONE_VCARD_ADD: {
 			if(!response) {
 				return 1;
@@ -2050,38 +2159,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			format(mainStr, sizeof(mainStr), "* %s akceptuje vCard w swoim telefonie", pVars[playerid][pCharName]);
 			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		}
-		case DIALOG_SHOW_CASUAL_JOBS: {
-			if(!response) {
-				return 1;
-			}
-			
-			mainStr[0] = EOS;
-			
-			switch(listitem) {
-				case 0: {
-					casualJob[playerid] = PART_TIME_JOB_MECHANIC;
-				}
-				case 1: {
-					casualJob[playerid] = PART_TIME_JOB_COURIER;
-					
-					strcat(mainStr, "Kurierzy transportuj¹ zamawiane przez w³aœcicieli firm lub inne osoby paczki.\n");
-					strcat(mainStr, "Ich zadaniem jest transport towaru z magazynu do drzwi biznesu.\n");
-					strcat(mainStr, "Magazyny s¹ odleg³e, wiêc kurierzy musz¹ posiadaæ jakiœ œrodek transportu.\n\nKomend¹ kurierów jest /paczka.");
-					ShowPlayerDialog(playerid, DIALOG_SHOW_CASUAL_JOBS_CHOICE, DIALOG_STYLE_MSGBOX, "Czy akceptujesz pracê?", mainStr, "Tak", "Nie");
-				}
-			}
-		}
-		case DIALOG_SHOW_CASUAL_JOBS_CHOICE: {
-			if(!response) {
-				casualJob[playerid] = INVALID_PART_TIME_JOB;
-				return 1;
-			}
-			
-			mainStr[0] = EOS;
-			strcat(mainStr, "Œwietnie, od tej pory Twoja postac mo¿e wykonywaæ\nczynnoœci zwi¹zane z wybran¹ prac¹.\n\n");
-			strcat(mainStr, "Je¿eli mimo opisu pracy nie masz pewnoœci\nw jaki sposób mo¿esz pracowaæ, sprawdŸ {FF0000}w i /pomoc.");
-			ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
-		}
+		
 		case DIALOG_SHOW_HOTEL_OPTS: {
 			if(!response) {
 				return 1;
@@ -2097,7 +2175,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			pVars[playerid][pVw] = GetPlayerVirtualWorld(playerid);
 			pVars[playerid][pInt] = GetPlayerInterior(playerid);
 			pVars[playerid][pHotel] = 1;
-			insidedHotel[playerid] = true;
+			insidedHotel[playerid] |= FL_HOTEL;
 			
 			mainStr[0] = EOS;
 			strcat(mainStr, "Od teraz Twoja postaæ bêdzie siê spawnowa³a w tym hotelu.\n");
@@ -2110,31 +2188,47 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			format(str, sizeof(str), "* %s otrzyma³ klucze do swojego pokoju od recepcjonisty.", pVars[playerid][pCharName]);
 			sendDistanceMessage(playerid, 30.0, str, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		}
-		case DIALOG_SEARCH_ID: {
+		
+		case DIALOG_SHOW_CASUAL_JOBS: {
 			if(!response) {
 				return 1;
 			}
 			
-			new str[64];
+			mainStr[0] = EOS;
 			
-			format(mainStr, sizeof(mainStr), inputtext);
+			switch(listitem) {
+				case 0: {
+					casualJob[playerid] = PART_TIME_JOB_MECHANIC;
+					
+					strcat(mainStr, "Mechanicy pracuj¹ na stacjach benzynowych i w warszatatach.\n");
+					strcat(mainStr, "Pocz¹tkuj¹cy mechanicy mog¹ zaj¹æ siê tankowaniem pojazdów innych osób\n");
+					strcat(mainStr, "lub ich napraw¹, a ci bardziej doœwiadczeni, z odrobin¹ pieniêdzy,\n");
+					strcat(mainStr, "mog¹ zakupiæ lakier lub komponenty, by móc lakierowaæ b¹dŸ tunningowaæ pojazdy.\n\n");
+					strcat(mainStr, "Aby z³o¿yæ zamówienie, udaj siê do 24/7 i zadzwoñ pod numer 777,\n");
+					strcat(mainStr, "a kurier dostarczy Ci zamawiane przedmioty.");
+				}
+				case 1: {
+					casualJob[playerid] = PART_TIME_JOB_COURIER;
+					
+					strcat(mainStr, "Kurierzy transportuj¹ zamawiane przez w³aœcicieli firm lub inne osoby paczki.\n");
+					strcat(mainStr, "Ich zadaniem jest transport towaru z magazynu do drzwi biznesu.\n");
+					strcat(mainStr, "Magazyny s¹ odleg³e, wiêc kurierzy musz¹ posiadaæ jakiœ œrodek transportu.\n\nKomend¹ kurierów jest /paczka.");
+				}
+			}
 			
-			format(str, sizeof(str), "Wpisz treœæ wiadomoœci, któr¹ chcesz wys³aæ do gracza %s.", inputtext);
-			ShowPlayerDialog(playerid, DIALOG_SEARCH_ID_SEND, DIALOG_STYLE_INPUT, "Wysy³anie prywatnej wiadomoœci", str, "Wyœlij", "Anuluj");
+			ShowPlayerDialog(playerid, DIALOG_SHOW_CASUAL_JOBS_CHOICE, DIALOG_STYLE_MSGBOX, "Czy akceptujesz pracê?", mainStr, "Tak", "Nie");
 		}
-		case DIALOG_SEARCH_ID_SEND: {
+		
+		case DIALOG_SHOW_CASUAL_JOBS_CHOICE: {
 			if(!response) {
+				casualJob[playerid] = INVALID_PART_TIME_JOB;
 				return 1;
 			}
 			
-			new pId;
-			new str[128], str2[256];
-			
-			pId = strval(mainStr);
-			format(str, sizeof(str), mainStr);
-			
-			format(str2, sizeof(str2), "%d %s", pId, str);
-			pc_cmd_w(playerid, str2);
+			mainStr[0] = EOS;
+			strcat(mainStr, "Œwietnie, od tej pory Twoja postac mo¿e wykonywaæ\nczynnoœci zwi¹zane z wybran¹ prac¹.\n\n");
+			strcat(mainStr, "Je¿eli mimo opisu pracy nie masz pewnoœci\nw jaki sposób mo¿esz pracowaæ, sprawdŸ {FF0000}/o i /pomoc.");
+			ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 		}
 	}
 	return 1;
@@ -2150,7 +2244,7 @@ sampCallback:OSRP_OnPlayerRequestSpawn(playerid) {
 sampCallback:OSRP_OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ) {
 	new srvItemId = choosedItem[playerid];
 	
-	if(iVars[srvItemId][iId] >= P_COLT && iVars[srvItemId][iId] <= P_M4) {
+	if(iVars[srvItemId][iId] >= P_COLT && iVars[srvItemId][iId] <= P_TEC9) {
 		iVars[srvItemId][iValues]--;
 	}
 	return 1;
@@ -2164,7 +2258,7 @@ sampCallback:OSRP_OnPlayerClickTextDraw(playerid, Text:clickedid) {
 		
 		CancelSelectTextDraw(playerid);
 		
-		showGroupsInfo[playerid] = false;
+		showGroupsInfo[playerid] &= ~FL_GROUPSINFO;
 		return 1;
 	} else if(groupsInfo[playerid][2] == clickedid) {
 		for(new i = 0; i < 15; i++) {
@@ -2173,13 +2267,13 @@ sampCallback:OSRP_OnPlayerClickTextDraw(playerid, Text:clickedid) {
 		
 		pc_cmd_duty(playerid);
 		CancelSelectTextDraw(playerid);
-		showGroupsInfo[playerid] = false;		
+		showGroupsInfo[playerid] &= ~FL_GROUPSINFO;
 		return 1;
 	} else if(groupsInfo[playerid][5] == clickedid) {
 		mainStr[0] = EOS;
 		
 		foreach(new i : Player) {
-			if(isPlayerDuty[i] && pVars[i][pDuty] > 0 && pVars[i][pGroup] == pVars[playerid][pGroup]) {
+			if((isPlayerDuty[i] & FL_PLAYERDUTY) && pVars[i][pDuty] > 0 && pVars[i][pGroup] == pVars[playerid][pGroup]) {
 				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, i, pVars[i][pCharName]);
 			}
 		}

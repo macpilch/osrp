@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 25.07.2022
-	Modified: 07.08.2023
+	Modified: 15.08.2023
 */
 
 #if defined __PLAYER_FUNCTIONS_INC__
@@ -30,6 +30,13 @@ Callback:hideVehicleStats(playerid) {
 	for(new i = 0; i < 2; i++) {
 		TextDrawSetString(vehicleStats[playerid][i], NULL);
 		TextDrawHideForPlayer(playerid, vehicleStats[playerid][i]);
+	}
+	return 1;
+}
+
+Callback:hideVehicleDeath(playerid) {
+	for(new i = 0; i < 3; i++) {
+		TextDrawHideForPlayer(playerid, vehicleDeath[playerid][i]);
 	}
 	return 1;
 }
@@ -118,18 +125,22 @@ Callback:hideScrimmageTips(playerid, numid) {
 	return 1;
 }
 
+Callback:destroyExit3dInfo(playerid) {
+	DestroyDynamic3DTextLabel(exit3dInfo[playerid]);
+}
+
 Callback:bwTimer(playerid) {
 	mainStr[0] = EOS;
 
 	if(pVars[playerid][pBw] > 0) {
-		format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", (pVars[playerid][pBw] / 60));
+		format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", (pVars[playerid][pBw] / 59));
 		GameTextForPlayer(playerid, mainStr, 1000, 1);
 		
 		pVars[playerid][pBw]--;
 		SetTimerEx("bwTimer", 1000, false, "i", playerid);
 	} else {
 		pVars[playerid][pBw] = 0;
-		isBW[playerid] = false;
+		isBW[playerid] &= ~FL_BW;
 		
 		ClearAnimations(playerid);
 		setPlayerHealthEx(playerid, 5.0);
@@ -139,6 +150,23 @@ Callback:bwTimer(playerid) {
 		strcat(mainStr, "Ockn¹³eœ(aœ) siê po odniesieniu powa¿nych obra¿eñ.\n");
 		strcat(mainStr, "Krêci Ci siê w g³owie. Udaj siê do apteki, tam Ci z tym pomog¹.");
 		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+	}
+	return 1;
+}
+
+Callback:ajTimer(playerid) {
+	mainStr[0] = EOS;
+	
+	if(pVars[playerid][pAj] > 0) {
+		format(mainStr, sizeof(mainStr), "~w~Koniec aj za: ~p~~h~%d~w~min.", (pVars[playerid][pAj] / 59));
+		GameTextForPlayer(playerid, mainStr, 1000, 1);
+		
+		pVars[playerid][pAj]--;
+		SetTimerEx("ajTimer", 1000, false, "i", playerid);
+	} else {
+		pVars[playerid][pAj] = 0;
+	
+		SendClientMessage(playerid, COLOR_WHITE, "{FF4444}Opuszczasz AdminJail. Je¿eli sprowokujesz administratorów, kary mog¹ byæ surowsze.");
 	}
 	return 1;
 }
@@ -156,10 +184,10 @@ Callback:setPlayerCamerasView(playerid) {
 Callback:refreshCmds(playerid, cmd) {
 	switch(cmd) {
 		case 0: {
-			usedCmdLogin[playerid] = false;
+			usedCmdLogin[playerid] &= ~FL_CMD;
 		}
 		case 1: {
-			usedCmdReport[playerid] = false;
+			usedCmdReport[playerid] &= ~FL_CMD;
 		}
 	}
 	return 1;
@@ -196,7 +224,7 @@ stock sendDistanceMessage(playerid, Float:range, const str[], type, color1, colo
 	}
 	
 	foreach(new i : Player) {
-		if(!isBW[i]) {
+		if(isBW[i] & FL_NONE) {
 			if(playerToPoint(i, range / 4, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
 				if(strlen(str) > 95) {
 					SendClientMessage(i, color1, str1);
@@ -429,6 +457,37 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawSetOutline(vehicleFuelStatus[playerid][2], 1);
 	TextDrawBackgroundColor(vehicleFuelStatus[playerid][2], 16711935);
 	TextDrawFont(vehicleFuelStatus[playerid][2], 0);
+	
+	vehicleDeath[playerid][0] = TextDrawCreate(499.444091, 284.666595, "Pojazd zostal odspawnowany.~n~Przy nastepnym spawnie~n~zespawnuje sie w tym miejscu.");
+	TextDrawLetterSize(vehicleDeath[playerid][0], 0.345051, 1.389999);
+	TextDrawAlignment(vehicleDeath[playerid][0], 2);
+	TextDrawColor(vehicleDeath[playerid][0], -1);
+	TextDrawSetShadow(vehicleDeath[playerid][0], 5);
+	TextDrawSetOutline(vehicleDeath[playerid][0], 0);
+	TextDrawBackgroundColor(vehicleDeath[playerid][0], 255);
+	TextDrawFont(vehicleDeath[playerid][0], 1);
+	TextDrawSetProportional(vehicleDeath[playerid][0], 1);
+
+	vehicleDeath[playerid][1] = TextDrawCreate(500.849273, 322.583312, "Mechanik musi tu przybyc, by go~n~naprawic. Uzyj /v reset, jezeli~n~masz problem z przywroceniem~n~go do dzialania.");
+	TextDrawLetterSize(vehicleDeath[playerid][1], 0.327715, 1.366666);
+	TextDrawAlignment(vehicleDeath[playerid][1], 2);
+	TextDrawColor(vehicleDeath[playerid][1], -1);
+	TextDrawSetShadow(vehicleDeath[playerid][1], 0);
+	TextDrawSetOutline(vehicleDeath[playerid][1], 1);
+	TextDrawBackgroundColor(vehicleDeath[playerid][1], 255);
+	TextDrawFont(vehicleDeath[playerid][1], 1);
+	TextDrawSetProportional(vehicleDeath[playerid][1], 1);
+
+	vehicleDeath[playerid][2] = TextDrawCreate(600.770202, 284.416687, "_");
+	TextDrawLetterSize(vehicleDeath[playerid][2], 0.000000, 9.794445);
+	TextDrawTextSize(vehicleDeath[playerid][2], 404.208099, 0.000000);
+	TextDrawAlignment(vehicleDeath[playerid][2], 1);
+	TextDrawColor(vehicleDeath[playerid][2], 0);
+	TextDrawUseBox(vehicleDeath[playerid][2], 1);
+	TextDrawBoxColor(vehicleDeath[playerid][2], 102);
+	TextDrawSetShadow(vehicleDeath[playerid][2], 0);
+	TextDrawSetOutline(vehicleDeath[playerid][2], 0);
+	TextDrawFont(vehicleDeath[playerid][2], 0);
 	
 	oocWarning[playerid][0] = TextDrawCreate(509.282592, 280.000030, "Niepotrzebnie wstawiasz spacje~n~miedzy kropka a tekstem OOC.~n~Przyklad powitania OOC:~n~~y~.Czesc!");
 	TextDrawLetterSize(oocWarning[playerid][0], 0.315534, 1.430833);
@@ -894,6 +953,16 @@ stock givePlayerPenalty(playerid, victim, type, const reason[]) {
 			
 			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada konta) od %s. Powód: %s", pVars[playerid][pCharName], reason);		
 		}
+		case PEN_RUNNBLW: {
+			format(str, sizeof(str), "~r~Blokada biegania i bicia~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+			
+			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada biegania i bicia) od %s. Powód: %s", pVars[playerid][pCharName], reason);
+		}
+		case PEN_BLCKOOC: {
+			format(str, sizeof(str), "~r~Blokada czatu OOC ~w~(na 3 dni)~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+			
+			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada czatu OOC) od %s. Powód: %s", pVars[playerid][pCharName], reason);
+		}
 	}
 	
 	SendClientMessage(victim, COLOR_WHITE, mainStr);
@@ -916,7 +985,7 @@ Callback:hidePenalty() {
 
 stock setPlayerDefaultValues(playerid) {
 	// Czysci i od razu ustawia poprawny nick i IP
-	if(!hasLoged[playerid]) {
+	if(hasLoged[playerid] & FL_NONE) {
 		pVars[playerid][pUid] = 0;
 		pVars[playerid][pGuid] = 0;
 		pVars[playerid][pCharId] = 0;
@@ -933,6 +1002,15 @@ stock setPlayerDefaultValues(playerid) {
 	ResetPlayerMoney(playerid);
 	ResetPlayerWeapons(playerid);
 	format(pVars[playerid][pGroupDesc], 128, NULL);
+	
+	SetPlayerSkillLevel(playerid, WEAPON_COLT45, 0);
+	SetPlayerSkillLevel(playerid, WEAPON_DEAGLE, 0);
+	SetPlayerSkillLevel(playerid, WEAPON_SHOTGUN, 0);
+	SetPlayerSkillLevel(playerid, WEAPON_UZI, 0);
+	SetPlayerSkillLevel(playerid, WEAPON_MP5, 0);
+	SetPlayerSkillLevel(playerid, WEAPON_AK47, 0);
+	SetPlayerSkillLevel(playerid, WEAPON_M4, 0);
+	SetPlayerSkillLevel(playerid, WEAPON_TEC9, 0);
 	
 	pVars[playerid][pRank] = 0;
 	pVars[playerid][pSex] = MAN_SEX;
@@ -969,25 +1047,28 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pX] = DEFAULT_POS_X;
 	pVars[playerid][pY] = DEFAULT_POS_Y;
 	pVars[playerid][pZ] = DEFAULT_POS_Z;
-	isSpawned[playerid] = false;
-	hasLoged[playerid] = false;
-	isAdminDuty[playerid] = false;
-	isPlayerDuty[playerid] = false;
-	isSpectating[playerid] = false;
-	isGodMode[playerid] = false;
-	isBW[playerid] = false;
-	usedCmdLogin[playerid] = false;
-	usedCmdReport[playerid] = false;
-	hasBelts[playerid] = false;
-	isDizzines[playerid] = false;
-	usedTelephone[playerid] = false;
-	drivingCourse[playerid] = false;
+	lastPmId[playerid] = -1;
+	isSpawned[playerid] &= ~FL_SPAWN;
+	hasLoged[playerid] &= ~FL_LOGGED;
+	isAdminDuty[playerid] &= ~FL_ADMDUTY;
+	isPlayerDuty[playerid] &= ~FL_PLAYERDUTY;
+	isSpectating[playerid] &= ~FL_SPEC;
+	isGodMode[playerid] &= ~FL_GODMODE;
+	isBW[playerid] &= ~FL_BW;
+	isFreeze[playerid] &= ~FL_FREEZE;
+	usedCmdLogin[playerid] &= ~FL_CMD;
+	usedCmdReport[playerid] &= ~FL_CMD;
+	hasBelts[playerid] &= ~FL_BELTS;
+	isDizzines[playerid] &= ~FL_DIZZINES;
+	usedTelephone[playerid] &= ~FL_TELEPHONE;
+	chatMessages[playerid][0] &= ~FL_CHATMSGS;
+	chatMessages[playerid][1] &= ~FL_CHATMSGS;
+	drivingCourse[playerid] &= ~FL_DRVCOURSE;
+	showGroupsInfo[playerid] &= ~FL_GROUPSINFO;
+	insidedHotel[playerid] &= ~FL_HOTEL;
+	blockOOC[playerid] &= ~FL_OOC;
 	casualJob[playerid] = INVALID_PART_TIME_JOB;
 	calledCmds[playerid] = 0;
-	
-	for(new i = 0; i < sizeof(chatMessages); i++) {
-		chatMessages[playerid][i] = true;
-	}
 	return 1;
 }
 
@@ -1038,25 +1119,28 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pX] = 0.0;
 	pVars[playerid][pY] = 0.0;
 	pVars[playerid][pZ] = 0.0;
-	isSpawned[playerid] = false;
-	hasLoged[playerid] = false;
-	isAdminDuty[playerid] = false;
-	isPlayerDuty[playerid] = false;
-	isSpectating[playerid] = false;
-	isGodMode[playerid] = false;
-	isBW[playerid] = false;
-	usedCmdLogin[playerid] = false;
-	usedCmdReport[playerid] = false;
-	hasBelts[playerid] = false;
-	isDizzines[playerid] = false;
-	usedTelephone[playerid] = false;
-	drivingCourse[playerid] = false;
+	lastPmId[playerid] = -1;
+	isSpawned[playerid] &= ~FL_SPAWN;
+	hasLoged[playerid] &= ~FL_LOGGED;
+	isAdminDuty[playerid] &= ~FL_ADMDUTY;
+	isPlayerDuty[playerid] &= ~FL_PLAYERDUTY;
+	isSpectating[playerid] &= ~FL_SPEC;
+	isGodMode[playerid] &= ~FL_GODMODE;
+	isBW[playerid] &= ~FL_BW;
+	isFreeze[playerid] &= ~FL_FREEZE;
+	usedCmdLogin[playerid] &= ~FL_CMD;
+	usedCmdReport[playerid] &= ~FL_CMD;
+	hasBelts[playerid] &= ~FL_BELTS;
+	isDizzines[playerid] &= ~FL_DIZZINES;
+	usedTelephone[playerid] &= ~FL_TELEPHONE;
+	chatMessages[playerid][0] |= FL_CHATMSGS;
+	chatMessages[playerid][1] |= FL_CHATMSGS;
+	drivingCourse[playerid] &= ~FL_DRVCOURSE;
+	showGroupsInfo[playerid] &= ~FL_GROUPSINFO;
+	insidedHotel[playerid] &= ~FL_HOTEL;
+	blockOOC[playerid] &= ~FL_OOC;
 	casualJob[playerid] = INVALID_PART_TIME_JOB;
-	calledCmds[playerid] = 0;
-	
-	for(new i = 0; i < sizeof(chatMessages); i++) {
-		chatMessages[playerid][i] = false;
-	}	
+	calledCmds[playerid] = 0;	
 	return 1;
 }
 
@@ -1082,7 +1166,7 @@ stock setPlayerBW(playerid, minutes) {
 	}
 	
 	pVars[playerid][pBw] = minutes * 60;
-	isBW[playerid] = true;
+	isBW[playerid] |= FL_BW;
 	
 	TogglePlayerControllable(playerid, 0);
 	applyAnimationEx(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
@@ -1173,39 +1257,39 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 	GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
 	
 	switch(type) {
-		case 0: {
+		case O_ZAPRGRP: {
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[pVars[id][pGroup]][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", gVars[pVars[id][pGroup]][gUid], gVars[pVars[id][pGroup]][gName], offerParams[playerid][0]);			
 		}
-		case 1: {
+		case O_KURS: {
 			new srvGrpId = getServerGroupIdForPlayer(playerid);
 			
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[srvGrpId][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Lekcja prowadzenia pojazdu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);			
 		}
-		case 2: {
+		case O_DOWOD: {
 			new srvGrpId = getServerGroupIdForPlayer(playerid);
 		
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[srvGrpId][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Dowod osobisty\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);			
 		}
-		case 3: {
+		case O_PRAWKO: {
 			new srvGrpId = getServerGroupIdForPlayer(playerid);
 			
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[srvGrpId][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Wyrobienie dokumentu: Prawo jazdy\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);
 		}
-		case 4: {
+		case O_PODATEK: {
 			new srvGrpId = getServerGroupIdForPlayer(playerid);
 		
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[srvGrpId][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaplacenie podatku budynku\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);		
 		}
-		case 5: {
+		case O_ZAKUPPRZED: {
 			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zakup przedmiotu: %s\n\nKoszt: $0. Czy akceptujesz tê ofertê?", iVars[choosedItem[offerFrom[playerid]]][iName]);			
 		}
-		case 6: {
+		case O_ZAKUPPOJ: {
 			new srvVehId = actualVehicle[playerid];
 			
 			format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~9:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
@@ -1228,7 +1312,7 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			strcat(mainStr, "\tUPEWNIJ SIÊ, ¿e wiesz co akceptujesz!");
 			return ShowPlayerDialog(id, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_INPUT, str, mainStr, "Tak", "Nie");
 		}
-		case 7: {
+		case O_REJESTR: {
 			new srvGrpId = getServerGroupIdForPlayer(playerid);
 			
 			SendClientMessage(id, COLOR_WHITE, "UID pojazdu sprawdziæ mo¿na wpisuj¹c /v info, gdy w nim siedzisz.");
@@ -1236,14 +1320,14 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[srvGrpId][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Rejestracja pojazdu o nr seryjnym %d.\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][1], offerParams[id][0]);
 		}
-		case 8: {
+		case O_TANKOWANIE: {
 			new srvVehId = actualVehicle[id];
 			new Float:fuel = 100.0 - (100.0 * vVars[srvVehId][vFuel] / VEHICLE_FUEL_TANK_MEDIUM);
 			
 			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zatankowanie pojazdu o %0.1f procent.\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", fuel, offerParams[0]);
 		}
-		case 9: {
+		case O_VCARD: {
 			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Wizytówka vCard do telefonu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[0]);
 			
@@ -1251,7 +1335,7 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			format(mainStr, sizeof(mainStr), "* %s bierze do rêki telefon i wysy³a vCard.", pVars[playerid][pCharName]);
 			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		}
-		case 10: {
+		case O_PRZETRZY: {
 			new srvGrpId = getServerGroupIdForPlayer(playerid);
 			
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[srvGrpId][gName]);
@@ -1270,7 +1354,26 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 }
 
 stock setPlayerHexName(playerid) {
+    new quotient, remainder, i;
+    new hexName[100];
 	
+    quotient = pVars[playerid][pUid];
+	
+    while(quotient != 0) {
+        remainder = quotient % 16;
+		
+        if(remainder < 10) {
+            hexName[i++] = 48 + remainder;
+        } else {
+            hexName[i++] = 55 + remainder;
+		}
+		
+        quotient /= 16;
+    }
+	
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "%s %s", pVars[playerid][pSex] ? ("Nieznajoma") : ("Nieznajomy"), hexName);
+	SetPlayerName(playerid, mainStr);
 }
 
 // return: void

@@ -40,6 +40,7 @@ sampCallback:OSRP_OnGameModeInit() {
 	initDoorValues();
 	initStationValues();
 	initGasPumpValues();
+	initBoothValues();
 	initBusStopValues();
 	initCashpointValues();
 	initGroupValues();

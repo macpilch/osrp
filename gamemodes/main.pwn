@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: main.pwn
 	Date: 24.07.2022
-	Modified: 07.08.2023
+	Modified: 16.08.2023
 */
 
 #include <a_samp>
@@ -23,10 +23,12 @@
 #include "src\enums\group"
 #include "src\enums\item"
 #include "src\enums\door"
+#include "src\enums\booth"
 #include "src\enums\busstop"
 #include "src\enums\cashpoint"
 #include "src\enums\station"
 #include "src\enums\object"
+#include "src\enums\flags"
 #include "src\core\vars"
 #include "src\core\arrays"
 #include "src\core\main_publics"
@@ -40,6 +42,7 @@
 #include "src\systems\vehicle_functions"
 #include "src\systems\item_functions"
 #include "src\systems\door_functions"
+#include "src\systems\booth_functions"
 #include "src\systems\bus_functions"
 #include "src\systems\cashpoint_functions"
 #include "src\systems\station_functions"
