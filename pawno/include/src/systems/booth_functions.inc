@@ -30,7 +30,7 @@ stock initBoothValues() {
 
 		Iter_Add(boothItter, i);
 
-		boVars[i][boObject] = CreateDynamicObject(0, boVars[i][boPosX], boVars[i][boPosY], boVars[i][boPosZ], 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
+		boVars[i][boObject] = CreateDynamicObject(1216, boVars[i][boPosX], boVars[i][boPosY], boVars[i][boPosZ] + 5.0, 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
 	}
 
 	mysql_free_result();
@@ -49,7 +49,7 @@ stock searchPlayerBooth(playerid) {
 				foreach(new j : Player) {
 					foreach(new k : groupItter) {
 						if(gVars[k][gType] == G_TAXI) {
-							if(pVars[j][pGroup] == gVars[k][gUid] && (isPlayerDuty[j] & FL_PLAYERDUTY) && pVars[j][pDuty] > 0) {
+							if(pVars[j][pGroup] == gVars[k][gUid] && isPlayerDuty[j] && pVars[j][pDuty] > 0) {
 								countPlayers++;
 							}
 

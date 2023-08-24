@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: arrays.inc
 	Date: 25.07.2022
-	Modified: 11.08.2023
+	Modified: 24.08.2023
 */
 
 #if defined __ARRAYS_INC__
@@ -31,6 +31,8 @@ new dVars[MAX_DOORS][DoorData];
 new cVars[MAX_CASHPOINTS][CashpointData];
 //Object system
 stock oVars[MAX_OBJECTS][ObjectData];
+new rcVars[MAX_RACES][RaceData];
+new aVars[MAX_AREAS][AreaData];
 
 new Float:startCameraPos[][] = {
 	{2485.5459,-1656.8232,13.3414}
@@ -102,6 +104,19 @@ new charSur[][CharSurName] = {
 	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
 	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
 	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}
+};
+
+new animNames[][] = {
+	"idz1", "idz2", "idz3", "idz4", "idz5", "idz6", "pa", "zmeczony", "umyjrece", "medyk", "ranny", "salutuj",
+	"wtf", "spoko", "napad", "krzeslo", "szukaj", "lornetka", "oh", "oh2", "wyciagnij", "dowody", "recemaska",
+	"krzeslojem", "gogo", "czekam", "garda", "barman2", "fotel", "napraw", "barman", "opieraj", "bar.nalej",
+	"ramiona", "bar.wez", "chowaj", "wez", "fuck", "klepnij", "daj", "pij", "start", "karta", "spray", "odejdz",
+	"fotelk", "chodz", "stop", "drapjaja", "opieraj2", "walekonia", "popchnij", "rzuc", "rap1", "rap2", "rap3",
+	"rap4", "glowka", "skop", "siad", "krzeslo2", "krzeslo3", "krzeslo4", "krzeslo5", "padnij", "padaczka", "unik",
+	"crack", "bomb", "cpaj", "rece", "tancz1", "tancz2", "tancz3", "tancz4", "tancz5", "pijak", "nie", "lokiec",
+	"go", "stack1", "lez3", "lez1", "lez2", "padnij2", "bat", "bat2", "stack2", "stack3", "taichi", "kosz1", "kosz2",
+	"kosz3", "kosz4", "kosz5", "papieros", "wymiotuj", "fuck2", "koks", "idz7", "cry", "rozciagaj", "cellin", "cellout",
+	"bagaznik", "wywaz"
 };
 
 new itemNames[][] = {

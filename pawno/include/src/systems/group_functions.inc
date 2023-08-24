@@ -4,7 +4,7 @@
 			steeZ (macpilch)
 	File: group_functions.inc
 	Date: 16.09.2022
-	Modified: 07.08.2023
+	Modified: 19.08.2023
 */
 
 #if defined __GROUP_FUNCTIONS_INC__
@@ -55,17 +55,23 @@ stock createNewGroup(playerid, type, tag[], name[]) {
 	format(gVars[freeId][gTag], 8, tag);
 	
 	switch(type) {
-		case G_PUBLIC: {
-			gVars[freeId][gType] = G_PUBLIC;
-		}
-		case G_CRIMINAL: {
-			gVars[freeId][gType] = G_CRIMINAL;
+		case G_GOV: {
+			gVars[freeId][gType] = G_GOV;
 		}
 		case G_DRVRLIC: {
 			gVars[freeId][gType] = G_DRVRLIC;
 		}
+		case G_LSPD: {
+			gVars[freeId][gType] = G_LSPD;
+		}
+		case G_CRIMINAL: {
+			gVars[freeId][gType] = G_CRIMINAL;
+		}
 		case G_BUSSIN: {
 			gVars[freeId][gType] = G_BUSSIN;
+		}
+		case G_TAXI: {
+			gVars[freeId][gType] = G_TAXI;
 		}
 	}
 	

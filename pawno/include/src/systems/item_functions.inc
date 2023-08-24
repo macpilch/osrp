@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: item_functions.inc
 	Date: 14.08.2022
-	Modified: 11.08.2023
+	Modified: 22.08.2023
 */
 
 #if defined __ITEM_FUNCTIONS_INC__
@@ -14,6 +14,7 @@
 
 stock initItemValues() {
 	queryStr[0] = EOS;
+	printf("Zaczynam ladowac przedmioty...");
 	
 	for(new i = 0; i < MAX_ITEMS; i++) {
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Items` WHERE `UID` = '%d'", i + 1);
@@ -26,10 +27,10 @@ stock initItemValues() {
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iiis[32]ifffii", iVars[i][iUid], iVars[i][iId], iVars[i][iOUid], iVars[i][iName], iVars[i][iValues], iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ], iVars[i][iUsed], iVars[i][iPlace]);
+		sscanf(queryStr, "p<|>iiiis[32]ifffii", iVars[i][iUid], iVars[i][iId], iVars[i][iOUid], iVars[i][iVUid], iVars[i][iName], iVars[i][iValues], iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ], iVars[i][iUsed], iVars[i][iPlace]);
 		
 		Iter_Add(itemItter, i);
-		printf("[DEBUG] SrvId: %d, Uid: %d, Id: %d, OUid: %d, Name: %s, Values: %d, PosX: %0.1f, PosY: %0.1f, PosZ: %0.1f, Used: %d, Place: %d", i, iVars[i][iUid], iVars[i][iId], iVars[i][iOUid], iVars[i][iName], iVars[i][iValues], iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ], iVars[i][iUsed], iVars[i][iPlace]);
+		printf("[DEBUG] SrvId: %d, Uid: %d, Id: %d, OUid: %d, VUid: %d, Name: %s, Values: %d, PosX: %0.1f, PosY: %0.1f, PosZ: %0.1f, Used: %d, Place: %d", i, iVars[i][iUid], iVars[i][iId], iVars[i][iOUid], iVars[i][iVUid], iVars[i][iName], iVars[i][iValues], iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ], iVars[i][iUsed], iVars[i][iPlace]);
 	}
 	
 	mysql_free_result();
@@ -40,7 +41,7 @@ stock saveItemValues() {
 	queryStr[0] = EOS;
 	
 	foreach(new i : itemItter) {
-		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `OUID` = '%d', `Values` = '%d', `Used` = '%d', `Place` = '%d' WHERE `UID` = '%d'", iVars[i][iOUid], iVars[i][iValues], iVars[i][iUsed], iVars[i][iPlace], i + 1);
+		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `OUID` = '%d', `VUID` = '%d', `Values` = '%d', `Used` = '%d', `Place` = '%d' WHERE `UID` = '%d'", iVars[i][iOUid], iVars[i][iVUid], iVars[i][iValues], iVars[i][iUsed], iVars[i][iPlace], iVars[i][iUid]);
 		mysql_query(queryStr);
 	}
 	return 1;
@@ -61,6 +62,7 @@ stock addPlayerItem(playerid, itemid) {
 	iVars[freeId][iUid] = freeId + 1;
 	iVars[freeId][iId] = itemid;
 	iVars[freeId][iOUid] = pVars[playerid][pUid];
+	iVars[freeId][iVUid] = 0;
 	format(iVars[freeId][iName], 32, itemNames[itemid]);
 	iVars[freeId][iValues] = 0;
 	iVars[freeId][iPosX] = 0.0;
@@ -118,6 +120,7 @@ stock removePlayerItem(srvitemid) {
 	
 	iVars[srvitemid][iUid] = 0;
 	iVars[srvitemid][iOUid] = 0;
+	iVars[srvitemid][iVUid] = 0;
 	iVars[srvitemid][iId] = -1;
 	format(iVars[srvitemid][iName], 32, NULL);
 	iVars[srvitemid][iValues] = 0;
@@ -161,7 +164,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_DRINK_BEER);
 				
 				iVars[srvitemid][iUsed] = true;
-				isDizzines[playerid] &= ~FL_DIZZINES;
+				isDizzines[playerid] = false;
 			} else {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 				
@@ -174,7 +177,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_DRINK_WINE);
 				
 				iVars[srvitemid][iUsed] = true;
-				isDizzines[playerid] &= ~FL_DIZZINES;
+				isDizzines[playerid] = false;
 			} else {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 				
@@ -221,7 +224,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 		case P_TELEFON, P_NKA8110: {
 			new id = getPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
 			
-			if(telEnterNumber[id] == pVars[playerid][pTelNum] && (usedTelephone[id] & FL_NONE) && (usedTelephone[playerid] & FL_NONE)) {
+			if(telEnterNumber[id] == pVars[playerid][pTelNum] && !usedTelephone[id] && !usedTelephone[playerid]) {
 				new str[32];
 				new h, m, d;
 				
@@ -231,14 +234,14 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				
 				strcat(mainStr, "{FFFFFF}8\tOdbierz\n9\tZignoruj");
 				ShowPlayerDialog(playerid, DIALOG_TELEPHONE_CALL_CHOICE, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
-			} else if((usedTelephone[id] & FL_TELEPHONE) && (usedTelephone[playerid] & FL_TELEPHONE)) {
+			} else if(usedTelephone[id] && usedTelephone[playerid]) {
 				applyAnimationEx(playerid, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
 				applyAnimationEx(id, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
 				
 				iVars[srvitemid][iUsed] = false;
 				choosedItem[playerid] = -1;
-				usedTelephone[playerid] &= ~FL_TELEPHONE;
-				usedTelephone[id] &= ~FL_TELEPHONE;
+				usedTelephone[playerid] = false;
+				usedTelephone[id] = false;
 				telEnterNumber[playerid] = 0;
 				telEnterNumber[id] = 0;
 				

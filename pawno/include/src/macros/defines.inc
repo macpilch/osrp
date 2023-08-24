@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 14.08.2023
+	Modified: 22.08.2023
 */
 
 #if defined __DEFINES_INC__
@@ -30,6 +30,7 @@
 
 #define MAX_PLAYERS 2
 #define MAX_VEHICLES 10
+#define MAX_OBJECTS 10
 #define MAX_PLAYER_CHARS 6
 #define MAX_ITEMS 100
 #define MAX_DOORS 10
@@ -41,7 +42,9 @@
 #define MAX_CASHPOINTS 10
 #define MAX_GROUPS 4
 #define MAX_CAMERAS 2
-#define MAX_OBJECTS 10
+#define MAX_RACES 4
+#define MAX_CPS 50
+#define MAX_AREAS 20
 
 // Callbacks
 #define sampCallback:%0(%1) \
@@ -91,16 +94,17 @@
 
 #define INVALID_OFFER_TYPE -1
 #define O_ZAPRGRP 0
-#define O_KURS 1
-#define O_DOWOD 2
-#define O_PRAWKO 3
-#define O_PODATEK 4
-#define O_ZAKUPPRZED 5
-#define O_ZAKUPPOJ 6
-#define O_REJESTR 7
-#define O_TANKOWANIE 8
-#define O_VCARD 9
-#define O_PRZETRZY 10
+#define O_ZAPRWS 1
+#define O_KURS 2
+#define O_DOWOD 3
+#define O_PRAWKO 4
+#define O_PODATEK 5
+#define O_ZAKUPPRZED 6
+#define O_ZAKUPPOJ 7
+#define O_REJESTR 8
+#define O_TANKOWANIE 9
+#define O_VCARD 10
+#define O_PRZETRZY 11
 
 #define ITEM_PLACE_PLAYER 0
 #define ITEM_PLACE_FLOOR 1

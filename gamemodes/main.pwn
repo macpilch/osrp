@@ -20,6 +20,7 @@
 #include "src\macros\dialogs"
 #include "src\enums\player"
 #include "src\enums\vehicle"
+#include "src\enums\area"
 #include "src\enums\group"
 #include "src\enums\item"
 #include "src\enums\door"
@@ -28,7 +29,7 @@
 #include "src\enums\cashpoint"
 #include "src\enums\station"
 #include "src\enums\object"
-#include "src\enums\flags"
+#include "src\enums\race"
 #include "src\core\vars"
 #include "src\core\arrays"
 #include "src\core\main_publics"
@@ -40,6 +41,7 @@
 #include "src\core\global_functions"
 #include "src\core\player_functions"
 #include "src\systems\vehicle_functions"
+#include "src\systems\area_functions"
 #include "src\systems\item_functions"
 #include "src\systems\door_functions"
 #include "src\systems\booth_functions"
@@ -48,6 +50,7 @@
 #include "src\systems\station_functions"
 #include "src\systems\group_functions"
 #include "src\systems\object_functions"
+#include "src\systems\race_functions"
 #include "src\systems\timers"
 
 main() {

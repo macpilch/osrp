@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 15.08.2023
+	Modified: 22.08.2023
 */
 
 #if defined __VARS_INC__
@@ -15,6 +15,10 @@
 // type - int
 new mySQLConnect;
 new allAccounts;
+new numPlayerRace;
+new playerCps[MAX_PLAYERS];
+new playerRcPosition[MAX_PLAYERS];
+new Float:playerRcTime[MAX_PLAYERS];
 new cameraTimer[MAX_PLAYERS];
 new playerAFKTime[MAX_PLAYERS];
 new actualVehicle[MAX_PLAYERS];
@@ -26,6 +30,7 @@ new offerFor[MAX_PLAYERS]; // Przechowuje id osoby ktora otrzymala oferte
 new offerParams[MAX_PLAYERS][2]; // 0 - pieni¹dze, 1 - dodatkowe opcje
 new offerType[MAX_PLAYERS];
 new choosedItem[MAX_PLAYERS];
+new choosedRace[MAX_PLAYERS];
 new playerContacts[MAX_PLAYERS][10];
 new telEnterNumber[MAX_PLAYERS];
 new telEnterGroup[MAX_PLAYERS];
@@ -39,27 +44,28 @@ new calledCmds[MAX_PLAYERS];
 new calledSecsCmds[MAX_PLAYERS];
 new exitedVehicleSec[MAX_PLAYERS];
 
-// type - logicFlags
-new logicFlags:isSpawned[MAX_PLAYERS];
-new logicFlags:hasLoged[MAX_PLAYERS];
-new logicFlags:isAdminDuty[MAX_PLAYERS]; // false(0) is admin duty off or true(1) is admin duty on only when player have ranks: SUPPORT_RANK, ADMIN_RANK, HEADADMIN_RANK
-new logicFlags:isPlayerDuty[MAX_PLAYERS]; 
-new	logicFlags:isSpectating[MAX_PLAYERS];
-new	logicFlags:isGodMode[MAX_PLAYERS];
-new	logicFlags:isBW[MAX_PLAYERS];
-new logicFlags:isFreeze[MAX_PLAYERS];
-stock logicFlags:isInBus[MAX_PLAYERS];
-new logicFlags:usedCmdLogin[MAX_PLAYERS];
-new logicFlags:usedCmdReport[MAX_PLAYERS];
-new logicFlags:hasBelts[MAX_PLAYERS];
-stock logicFlags:hasBank[MAX_PLAYERS];
-new logicFlags:isDizzines[MAX_PLAYERS];
-new logicFlags:usedTelephone[MAX_PLAYERS];
-new logicFlags:chatMessages[MAX_PLAYERS][2]; // 0 - PM, 1 - Grupowe
-new logicFlags:drivingCourse[MAX_PLAYERS];
-new logicFlags:showGroupsInfo[MAX_PLAYERS];
-new logicFlags:insidedHotel[MAX_PLAYERS];
-new logicFlags:blockOOC[MAX_PLAYERS];
+// type - bool
+new bool:isSpawned[MAX_PLAYERS];
+new bool:hasLoged[MAX_PLAYERS];
+new bool:isAdminDuty[MAX_PLAYERS]; // false(0) is admin duty off or true(1) is admin duty on only when player have ranks: SUPPORT_RANK, ADMIN_RANK, HEADADMIN_RANK
+new bool:isPlayerDuty[MAX_PLAYERS]; 
+new	bool:isSpectating[MAX_PLAYERS];
+new	bool:isGodMode[MAX_PLAYERS];
+new	bool:isBW[MAX_PLAYERS];
+new bool:isFreeze[MAX_PLAYERS];
+stock bool:isInBus[MAX_PLAYERS];
+new bool:usedCmdLogin[MAX_PLAYERS];
+new bool:usedCmdReport[MAX_PLAYERS];
+new bool:hasBelts[MAX_PLAYERS];
+stock bool:hasBank[MAX_PLAYERS];
+new bool:isDizzines[MAX_PLAYERS];
+new bool:usedTelephone[MAX_PLAYERS];
+new bool:chatMessages[MAX_PLAYERS][2]; // 0 - PM, 1 - Grupowe
+new bool:drivingCourse[MAX_PLAYERS];
+new bool:showGroupsInfo[MAX_PLAYERS];
+new bool:insidedHotel[MAX_PLAYERS];
+new bool:blockOOC[MAX_PLAYERS];
+new bool:isRace[MAX_PLAYERS];
 
 // type - MySQL
 new MySQL:hMySQL;
@@ -79,6 +85,7 @@ new Text:vehicleFuelStatus[MAX_PLAYERS][3];
 new Text:vehicleSpawn[MAX_PLAYERS][2];
 new Text:vehicleSpeedMeter[MAX_PLAYERS][2];
 new Text:vehicleDeath[MAX_PLAYERS][3];
+new Text:courseDrivingInfo[MAX_PLAYERS][2];
 new Text:oocWarning[MAX_PLAYERS][2];
 new Text:damageRedScreen[MAX_PLAYERS];
 new Text:doorInfo[MAX_PLAYERS][3];
@@ -95,3 +102,5 @@ new Iterator:boothItter<MAX_BOOTHS>;
 new Iterator:busstopItter<MAX_BUS_STOPS>;
 new Iterator:cashpointItter<MAX_CASHPOINTS>;
 new Iterator:groupItter<MAX_GROUPS>;
+new Iterator:raceItter<MAX_RACES>;
+new Iterator:areaItter<MAX_AREAS>;

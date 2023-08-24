@@ -3,7 +3,7 @@
 	Author: MisterMagik
 	File: cashpoint_functions.inc
 	Date: 16.09.2022
-	Modified: 07.08.2023
+	Modified: 19.08.2023
 */
 
 #if defined __CASHPOINT_FUNCTIONS_INC__

@@ -75,6 +75,7 @@ enum PlayerData {
 	pComputer,
 	pWalkAnim,
 	pScreen,
+	pStyleFight,
 	Float:pX,
 	Float:pY,
 	Float:pZ,

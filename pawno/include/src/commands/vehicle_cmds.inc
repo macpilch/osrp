@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_cmds.inc
 	Date: 25.07.2023
-	Modified: 15.08.2023
+	Modified: 19.08.2023
 */
 
 #if defined __VEHICLE_CMDS_INC__
@@ -204,14 +204,14 @@ CMD:pasy(playerid, params[]) {
 		return GameTextForPlayer(playerid, "~y~Ten pojazd nie ma pasow.", 5000, 3);
 	}
 	
-	if(hasBelts[playerid] & FL_NONE) {
+	if(!hasBelts[playerid]) {
 		GameTextForPlayer(playerid, "~w~Pasy ~g~zapiete", 5000, 6);
 		
-		hasBelts[playerid] |= FL_BELTS;
+		hasBelts[playerid] = true;
 	} else {
 		GameTextForPlayer(playerid, "~w~Pasy ~r~odpiete", 5000, 6);
 		
-		hasBelts[playerid] &= ~FL_BELTS;
+		hasBelts[playerid] = false;
 	}
 	return 1;
 }

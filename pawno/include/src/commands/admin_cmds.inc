@@ -4,7 +4,7 @@
 			MisterMagik
 	File: admin_cmds.inc
 	Date: 04.08.2022
-	Modified: 15.08.2023
+	Modified: 19.08.2023
 */
 
 #if defined __ADMIN_CMDS_INC__
@@ -18,7 +18,7 @@ CMD:ban(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -38,7 +38,7 @@ CMD:kick(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -58,7 +58,7 @@ CMD:warn(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -78,7 +78,7 @@ CMD:aj(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -98,7 +98,7 @@ CMD:unaj(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -121,7 +121,7 @@ CMD:setbw(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -135,7 +135,7 @@ CMD:setbw(playerid, params[]) {
 	
 	foreach(new i : Player) {
 		if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
-			if(isAdminDuty[i] & FL_ADMDUTY) {
+			if(isAdminDuty[i]) {
 				if(playerid == pId) {
 					mainStr[0] = EOS;
 					format(mainStr, sizeof(mainStr), "%s nada³ sobie BW.", pVars[playerid][pCharName]);
@@ -160,7 +160,7 @@ CMD:unbw(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -176,11 +176,11 @@ CMD:unbw(playerid, params[]) {
 	ClearAnimations(pId);
 	
 	pVars[pId][pBw] = 0;
-	isBW[pId] &= ~FL_BW;
+	isBW[pId] = true;
 	
 	foreach(new i : Player) {
 		if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
-			if(isAdminDuty[i] & FL_ADMDUTY) {
+			if(isAdminDuty[i]) {
 				if(playerid == pId) {
 					mainStr[0] = EOS;
 					format(mainStr, sizeof(mainStr), "%s zdj¹³ sobie BW.", pVars[playerid][pCharName]);
@@ -205,7 +205,7 @@ CMD:rc(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -215,16 +215,16 @@ CMD:rc(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nikogo nie podgl¹dasz. /rc [ID/nick] aby rozpocz¹æ.");
 	}
 	
-	if(isSpectating[playerid] & FL_NONE) {
+	if(!isSpectating[playerid]) {
 		TogglePlayerSpectating(playerid, 1);
 		PlayerSpectatePlayer(playerid, pId);
 		
-		isSpectating[playerid] |= FL_SPEC;
+		isSpectating[playerid] = true;
 	} else
 	{	
 		TogglePlayerSpectating(playerid, 0);
 		
-		isSpectating[playerid] &= ~FL_SPEC;
+		isSpectating[playerid] = false;
 	}
 	return 1;
 }
@@ -240,13 +240,13 @@ CMD:gm(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /gm [Tekst]");
 	}
 	
-	if(isAdminDuty[playerid] & FL_ADMDUTY) {
+	if(isAdminDuty[playerid]) {
 		mainStr[0] = EOS;
 		format(mainStr, sizeof(mainStr), "[[ %d.%s: %s ]]", playerid, pVars[playerid][pCharName], str);
 		
 		foreach(new i : Player) {
 			if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
-				if(isAdminDuty[i] & FL_ADMDUTY) {
+				if(isAdminDuty[i]) {
 					SendClientMessage(i, COLOR_WHITE, mainStr);
 				}
 			}
@@ -260,7 +260,7 @@ CMD:tt(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -273,9 +273,7 @@ CMD:tt(playerid, params[]) {
 	SetCameraBehindPlayer(pId);
 	SetPlayerPos(playerid, pVars[pId][pX], pVars[pId][pY], pVars[pId][pZ] + 2.0);
 	
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "%s teleportowa³ siê do Ciebie.", pVars[playerid][pCharName]);
-	SendClientMessage(pId, COLOR_GREEN, mainStr);
+	SendClientMessage(pId, COLOR_GREEN, "Administracja teleportowa³a siê do Ciebie.");
 	
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "Teleportowa³eœ siê do %s", pVars[pId][pCharName]);
@@ -288,14 +286,14 @@ CMD:aduty(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		GameTextForPlayer(playerid, "~w~Wchodzisz na sluzbe~n~Admina", 5000, 3);
 		
-		isAdminDuty[playerid] |= FL_ADMDUTY;
+		isAdminDuty[playerid] = true;
 	} else {	
 		GameTextForPlayer(playerid, "~w~Schodzisz ze sluzby~n~Admina", 5000, 3);
 		
-		isAdminDuty[playerid] &= ~FL_ADMDUTY;
+		isAdminDuty[playerid] = false;
 	}
 	return 1;
 }
@@ -305,7 +303,7 @@ CMD:givehealth(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -320,7 +318,7 @@ CMD:givehealth(playerid, params[]) {
 	
 	foreach(new i : Player) {
 		if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
-			if(isAdminDuty[i] & FL_ADMDUTY) {
+			if(isAdminDuty[i]) {
 				if(playerid == toPlayerid) {
 					mainStr[0] = EOS;
 					format(mainStr, sizeof(mainStr), "%s do³adowa³ sobie ¿ycie.", pVars[playerid][pCharName]);
@@ -384,7 +382,7 @@ CMD:freeze(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -397,11 +395,9 @@ CMD:freeze(playerid, params[]) {
 	switch(freezeOnOff) {
 		case 0: {
 			TogglePlayerControllable(toPlayerid, freezeOnOff);
-			isFreeze[toPlayerid] |= FL_FREEZE;
+			isFreeze[toPlayerid] = true;
 			
-			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "Zosta³eœ zamro¿ony przez admina %s.", pVars[playerid][pAccName]);
-			SendClientMessage(toPlayerid, COLOR_GREEN, mainStr);
+			SendClientMessage(toPlayerid, COLOR_GREEN, "Administracja zamrozi³a Ciê.");
 			
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "Zamrozi³eœ gracza %s.", pVars[toPlayerid][pCharName2]);
@@ -409,11 +405,9 @@ CMD:freeze(playerid, params[]) {
 		}
 		case 1: {
 			TogglePlayerControllable(toPlayerid, freezeOnOff);
-			isFreeze[toPlayerid] &= ~FL_FREEZE;
+			isFreeze[toPlayerid] = false;
 			
-			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "Zosta³eœ odmro¿ony przez admina %s.", pVars[playerid][pAccName]);
-			SendClientMessage(toPlayerid, COLOR_GREEN, mainStr);
+			SendClientMessage(toPlayerid, COLOR_GREEN, "Administracja odmrozi³a Ciê.");
 			
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "Odmrozi³eœ gracza %s.", pVars[toPlayerid][pCharName2]);
@@ -428,21 +422,21 @@ CMD:god(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
-	if(isGodMode[playerid] & FL_NONE) {
+	if(!isGodMode[playerid]) {
 		GetPlayerHealth(playerid, pVars[playerid][pHp]);
 		SetPlayerHealth(playerid, 9999999);
 		SendClientMessage(playerid, COLOR_GREEN, "W³¹czono godmode.");
 		
-		isGodMode[playerid] |= FL_GODMODE;
+		isGodMode[playerid] = true;
 	} else {
 		SetPlayerHealth(playerid, pVars[playerid][pHp]);
 		SendClientMessage(playerid, COLOR_GREEN, "Wy³¹czono godmode.");
 		
-		isGodMode[playerid] &= ~FL_GODMODE;
+		isGodMode[playerid] = false;
 	}
 	return 1;
 }
@@ -452,7 +446,7 @@ CMD:giveweapon(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -472,7 +466,7 @@ CMD:apojazd(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -551,7 +545,7 @@ CMD:adpojazd(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -611,7 +605,7 @@ CMD:setfuel(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -635,7 +629,7 @@ CMD:aitem(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -659,7 +653,7 @@ CMD:adoor(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -679,7 +673,7 @@ CMD:abus(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -698,7 +692,7 @@ CMD:acash(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -717,7 +711,7 @@ CMD:agroup(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -737,7 +731,7 @@ CMD:anumber(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -756,7 +750,7 @@ CMD:askin(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -785,7 +779,7 @@ CMD:dajprace(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -805,7 +799,7 @@ CMD:naprawpojazd(playerid, params[]) {
 		return 0;
 	}
 	
-	if(isAdminDuty[playerid] & FL_NONE) {
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	

@@ -3,7 +3,7 @@
 	Author: MisterMagik
 	File: bus_functions.inc
 	Date: 16.09.2022
-	Modified: 07.08.2023
+	Modified: 19.08.2023
 */
 
 #if defined __BUS_FUNCTIONS_INC__
@@ -27,7 +27,7 @@ stock initBusStopValues() {
 		
 		mysql_fetch_row(queryStr, "|");
 		sscanf(queryStr, "p<|>iis[32]ifff", bVars[i][bsUid], bVars[i][bsObject], bVars[i][bsName], bVars[i][bsPrice], bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ]);
-		bVars[i][bsObject] = CreateDynamicObject(1257, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ], 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
+		bVars[i][bsObject] = CreateDynamicObject(1257, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ] + 0.4, 0.0, 0.0, 90.0, 0, 0, -1, 100.0);
 		
 		Iter_Add(busstopItter, i);
 		printf("[DEBUG] Uid: %d,  Name: %s", i + 1, bVars[i][bsName]);
@@ -49,13 +49,16 @@ stock createNewBusStop(playerid, busstopname[]) {
 }
 
 stock searchPlayerBusStop(playerid) {
-	for(new i = 0; i < MAX_BUS_STOPS; i++) {
-		if(playerToPoint(playerid, 10.0, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ])) {
+	foreach(new i : busstopItter) {
+		if(playerToPoint(playerid, 5.0, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ])) {
 			GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);	
 			SetCameraBehindPlayer(playerid);
 			
-			InterpolateCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 40, 4000, CAMERA_MOVE);
-			InterpolateCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 20, 4000, CAMERA_MOVE);
+			SetPlayerCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], CAMERA_MOVE);
+			SetPlayerCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+			
+			InterpolateCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 80, 4000, CAMERA_MOVE);
+			InterpolateCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 80, 4000, CAMERA_MOVE);
 			
 			actualBusStop[playerid] = i;
 		}

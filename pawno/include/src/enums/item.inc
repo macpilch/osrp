@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 29.08.2022
-	Modified: 11.08.2023
+	Modified: 19.08.2023
 */
 
 #if defined __ITEM_INC__
@@ -66,6 +66,7 @@ enum {
 	P_RADPARTY,
 	P_CD,
 	P_NKA8110,
+	P_WITAMINAC,
 	P_DRZWIKIER,
 	P_DRZWIPAS,
 	P_BAGAZNIK,
@@ -76,6 +77,7 @@ enum ItemData {
 	iUid,
 	iId,
 	iOUid,
+	iVUid,
 	iName[32],
 	iValues,
 	Float:iPosX,

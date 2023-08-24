@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 25.07.2022
-	Modified: 15.08.2023
+	Modified: 22.08.2023
 */
 
 #if defined __PLAYER_FUNCTIONS_INC__
@@ -125,6 +125,13 @@ Callback:hideScrimmageTips(playerid, numid) {
 	return 1;
 }
 
+Callback:hideCourseDrivingInfo(playerid) {
+	for(new i = 0; i < 2; i++) {
+		TextDrawHideForPlayer(playerid, courseDrivingInfo[playerid][i]);
+	}
+	return 1;
+}
+
 Callback:destroyExit3dInfo(playerid) {
 	DestroyDynamic3DTextLabel(exit3dInfo[playerid]);
 }
@@ -140,7 +147,7 @@ Callback:bwTimer(playerid) {
 		SetTimerEx("bwTimer", 1000, false, "i", playerid);
 	} else {
 		pVars[playerid][pBw] = 0;
-		isBW[playerid] &= ~FL_BW;
+		isBW[playerid] = false;
 		
 		ClearAnimations(playerid);
 		setPlayerHealthEx(playerid, 5.0);
@@ -184,10 +191,10 @@ Callback:setPlayerCamerasView(playerid) {
 Callback:refreshCmds(playerid, cmd) {
 	switch(cmd) {
 		case 0: {
-			usedCmdLogin[playerid] &= ~FL_CMD;
+			usedCmdLogin[playerid] = false;
 		}
 		case 1: {
-			usedCmdReport[playerid] &= ~FL_CMD;
+			usedCmdReport[playerid] = false;
 		}
 	}
 	return 1;
@@ -224,7 +231,7 @@ stock sendDistanceMessage(playerid, Float:range, const str[], type, color1, colo
 	}
 	
 	foreach(new i : Player) {
-		if(isBW[i] & FL_NONE) {
+		if(!isBW[i]) {
 			if(playerToPoint(i, range / 4, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
 				if(strlen(str) > 95) {
 					SendClientMessage(i, color1, str1);
@@ -488,7 +495,28 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawSetShadow(vehicleDeath[playerid][2], 0);
 	TextDrawSetOutline(vehicleDeath[playerid][2], 0);
 	TextDrawFont(vehicleDeath[playerid][2], 0);
-	
+
+	courseDrivingInfo[playerid][0] = TextDrawCreate(585.308959, 298.416687, "_");
+	TextDrawLetterSize(courseDrivingInfo[playerid][0], 0.000000, 7.331479);
+	TextDrawTextSize(courseDrivingInfo[playerid][0], 398.585662, 0.000000);
+	TextDrawAlignment(courseDrivingInfo[playerid][0], 1);
+	TextDrawColor(courseDrivingInfo[playerid][0], 0);
+	TextDrawUseBox(courseDrivingInfo[playerid][0], 1);
+	TextDrawBoxColor(courseDrivingInfo[playerid][0], 102);
+	TextDrawSetShadow(courseDrivingInfo[playerid][0], 0);
+	TextDrawSetOutline(courseDrivingInfo[playerid][0], 0);
+	TextDrawFont(courseDrivingInfo[playerid][0], 0);
+
+	courseDrivingInfo[playerid][1] = TextDrawCreate(489.604614, 301.000000, "Rozpoczyna sie Twoj kurs prawa~n~jazdy. Wykonuj polecenia~n~instruktora, albo wyrzuci Cie on~n~z pojazdu bez zwrotu pieniedzy.");
+	TextDrawLetterSize(courseDrivingInfo[playerid][1], 0.298667, 1.582500);
+	TextDrawAlignment(courseDrivingInfo[playerid][1], 2);
+	TextDrawColor(courseDrivingInfo[playerid][1], -1);
+	TextDrawSetShadow(courseDrivingInfo[playerid][1], 0);
+	TextDrawSetOutline(courseDrivingInfo[playerid][1], 1);
+	TextDrawBackgroundColor(courseDrivingInfo[playerid][1], 255);
+	TextDrawFont(courseDrivingInfo[playerid][1], 1);
+	TextDrawSetProportional(courseDrivingInfo[playerid][1], 1);
+
 	oocWarning[playerid][0] = TextDrawCreate(509.282592, 280.000030, "Niepotrzebnie wstawiasz spacje~n~miedzy kropka a tekstem OOC.~n~Przyklad powitania OOC:~n~~y~.Czesc!");
 	TextDrawLetterSize(oocWarning[playerid][0], 0.315534, 1.430833);
 	TextDrawAlignment(oocWarning[playerid][0], 2);
@@ -985,24 +1013,26 @@ Callback:hidePenalty() {
 
 stock setPlayerDefaultValues(playerid) {
 	// Czysci i od razu ustawia poprawny nick i IP
-	if(hasLoged[playerid] & FL_NONE) {
+	if(!hasLoged[playerid]) {
 		pVars[playerid][pUid] = 0;
 		pVars[playerid][pGuid] = 0;
 		pVars[playerid][pCharId] = 0;
-	
-		format(pVars[playerid][pAccName], 24, "%s", NULL);
-		format(pVars[playerid][pCharName], 24, "%s", NULL);
-		format(pVars[playerid][pCharName2], 24, "%s", NULL);
-		format(pVars[playerid][pPass], 32, "%s", NULL);
-		format(pVars[playerid][pIp], 16, "%s", NULL);
+
+		format(pVars[playerid][pAccName], 24, NULL);
+		format(pVars[playerid][pCharName], 24, NULL);
+		format(pVars[playerid][pCharName2], 24, NULL);
+		format(pVars[playerid][pPass], 32, NULL);
+		format(pVars[playerid][pIp], 16, NULL);
+		
 		GetPlayerName(playerid, pVars[playerid][pAccName], 24);
 		GetPlayerIp(playerid, pVars[playerid][pIp], 16);
 	}
-	
+
 	ResetPlayerMoney(playerid);
 	ResetPlayerWeapons(playerid);
+
 	format(pVars[playerid][pGroupDesc], 128, NULL);
-	
+
 	SetPlayerSkillLevel(playerid, WEAPON_COLT45, 0);
 	SetPlayerSkillLevel(playerid, WEAPON_DEAGLE, 0);
 	SetPlayerSkillLevel(playerid, WEAPON_SHOTGUN, 0);
@@ -1011,7 +1041,7 @@ stock setPlayerDefaultValues(playerid) {
 	SetPlayerSkillLevel(playerid, WEAPON_AK47, 0);
 	SetPlayerSkillLevel(playerid, WEAPON_M4, 0);
 	SetPlayerSkillLevel(playerid, WEAPON_TEC9, 0);
-	
+
 	pVars[playerid][pRank] = 0;
 	pVars[playerid][pSex] = MAN_SEX;
 	pVars[playerid][pStrength] = 3000;
@@ -1048,25 +1078,25 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pY] = DEFAULT_POS_Y;
 	pVars[playerid][pZ] = DEFAULT_POS_Z;
 	lastPmId[playerid] = -1;
-	isSpawned[playerid] &= ~FL_SPAWN;
-	hasLoged[playerid] &= ~FL_LOGGED;
-	isAdminDuty[playerid] &= ~FL_ADMDUTY;
-	isPlayerDuty[playerid] &= ~FL_PLAYERDUTY;
-	isSpectating[playerid] &= ~FL_SPEC;
-	isGodMode[playerid] &= ~FL_GODMODE;
-	isBW[playerid] &= ~FL_BW;
-	isFreeze[playerid] &= ~FL_FREEZE;
-	usedCmdLogin[playerid] &= ~FL_CMD;
-	usedCmdReport[playerid] &= ~FL_CMD;
-	hasBelts[playerid] &= ~FL_BELTS;
-	isDizzines[playerid] &= ~FL_DIZZINES;
-	usedTelephone[playerid] &= ~FL_TELEPHONE;
-	chatMessages[playerid][0] &= ~FL_CHATMSGS;
-	chatMessages[playerid][1] &= ~FL_CHATMSGS;
-	drivingCourse[playerid] &= ~FL_DRVCOURSE;
-	showGroupsInfo[playerid] &= ~FL_GROUPSINFO;
-	insidedHotel[playerid] &= ~FL_HOTEL;
-	blockOOC[playerid] &= ~FL_OOC;
+	isSpawned[playerid] = false;
+	hasLoged[playerid] = false;
+	isAdminDuty[playerid] = false;
+	isPlayerDuty[playerid] = false;
+	isSpectating[playerid] = false;
+	isGodMode[playerid] = false;
+	isBW[playerid] = false;
+	isFreeze[playerid] = false;
+	usedCmdLogin[playerid] = false;
+	usedCmdReport[playerid] = false;
+	hasBelts[playerid] = false;
+	isDizzines[playerid] = false;
+	usedTelephone[playerid] = false;
+	chatMessages[playerid][0] = false;
+	chatMessages[playerid][1] = false;
+	drivingCourse[playerid] = false;
+	showGroupsInfo[playerid] = false;
+	insidedHotel[playerid] = false;
+	blockOOC[playerid] = false;
 	casualJob[playerid] = INVALID_PART_TIME_JOB;
 	calledCmds[playerid] = 0;
 	return 1;
@@ -1076,12 +1106,12 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pUid] = 0;
 	pVars[playerid][pGuid] = 0;
 	pVars[playerid][pCharId] = 0;
-	
-	format(pVars[playerid][pAccName], 24, "%s", NULL);
-	format(pVars[playerid][pCharName], 24, "%s", NULL);
-	format(pVars[playerid][pCharName2], 24, "%s", NULL);
-	format(pVars[playerid][pPass], 32, "%s", NULL);
-	format(pVars[playerid][pIp], 16, "%s", NULL);
+
+	format(pVars[playerid][pAccName], 24, NULL);
+	format(pVars[playerid][pCharName], 24, NULL);
+	format(pVars[playerid][pCharName2], 24, NULL);
+	format(pVars[playerid][pPass], 32, NULL);
+	format(pVars[playerid][pIp], 16, NULL);
 	format(pVars[playerid][pGroupDesc], 128, NULL);
 
 	pVars[playerid][pRank] = 0;
@@ -1120,25 +1150,25 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pY] = 0.0;
 	pVars[playerid][pZ] = 0.0;
 	lastPmId[playerid] = -1;
-	isSpawned[playerid] &= ~FL_SPAWN;
-	hasLoged[playerid] &= ~FL_LOGGED;
-	isAdminDuty[playerid] &= ~FL_ADMDUTY;
-	isPlayerDuty[playerid] &= ~FL_PLAYERDUTY;
-	isSpectating[playerid] &= ~FL_SPEC;
-	isGodMode[playerid] &= ~FL_GODMODE;
-	isBW[playerid] &= ~FL_BW;
-	isFreeze[playerid] &= ~FL_FREEZE;
-	usedCmdLogin[playerid] &= ~FL_CMD;
-	usedCmdReport[playerid] &= ~FL_CMD;
-	hasBelts[playerid] &= ~FL_BELTS;
-	isDizzines[playerid] &= ~FL_DIZZINES;
-	usedTelephone[playerid] &= ~FL_TELEPHONE;
-	chatMessages[playerid][0] |= FL_CHATMSGS;
-	chatMessages[playerid][1] |= FL_CHATMSGS;
-	drivingCourse[playerid] &= ~FL_DRVCOURSE;
-	showGroupsInfo[playerid] &= ~FL_GROUPSINFO;
-	insidedHotel[playerid] &= ~FL_HOTEL;
-	blockOOC[playerid] &= ~FL_OOC;
+	isSpawned[playerid] = false;
+	hasLoged[playerid] = false;
+	isAdminDuty[playerid] = false;
+	isPlayerDuty[playerid] = false;
+	isSpectating[playerid] = false;
+	isGodMode[playerid] = false;
+	isBW[playerid] = false;
+	isFreeze[playerid] = false;
+	usedCmdLogin[playerid] = false;
+	usedCmdReport[playerid] = false;
+	hasBelts[playerid] = false;
+	isDizzines[playerid] = false;
+	usedTelephone[playerid] = false;
+	chatMessages[playerid][0] = true;
+	chatMessages[playerid][1] = true;
+	drivingCourse[playerid] = false;
+	showGroupsInfo[playerid] = false;
+	insidedHotel[playerid] = false;
+	blockOOC[playerid] = false;
 	casualJob[playerid] = INVALID_PART_TIME_JOB;
 	calledCmds[playerid] = 0;	
 	return 1;
@@ -1166,7 +1196,7 @@ stock setPlayerBW(playerid, minutes) {
 	}
 	
 	pVars[playerid][pBw] = minutes * 60;
-	isBW[playerid] |= FL_BW;
+	isBW[playerid] = true;
 	
 	TogglePlayerControllable(playerid, 0);
 	applyAnimationEx(playerid, "BEACH", "LAY_BAC_LOOP", 4.1, 1, 1, 1, 1, 1, 1);
@@ -1261,6 +1291,10 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[pVars[id][pGroup]][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", gVars[pVars[id][pGroup]][gUid], gVars[pVars[id][pGroup]][gName], offerParams[playerid][0]);			
 		}
+		case O_ZAPRWS: {
+			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Udzia³ w wyœcigu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);
+		}
 		case O_KURS: {
 			new srvGrpId = getServerGroupIdForPlayer(playerid);
 			
@@ -1291,6 +1325,8 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 		}
 		case O_ZAKUPPOJ: {
 			new srvVehId = actualVehicle[playerid];
+			
+			actualVehicle[id] = srvVehId;
 			
 			format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~9:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
 			vVars[srvVehId][vUid], vVars[srvVehId][vOUid], vVars[srvVehId][vModelId], vVars[srvVehId][vId], vVars[srvVehId][vColor1], vVars[srvVehId][vColor2], vVars[srvVehId][vEngineHp]);
@@ -1378,8 +1414,11 @@ stock setPlayerHexName(playerid) {
 
 // return: void
 stock applyAnimationEx(playerid, animlib[], animname[], Float:fDelta, loop, lockx, locky, freeze, time, foresync) {
-	ClearAnimations(playerid);
 	ApplyAnimation(playerid, animlib, animname, fDelta, loop, lockx, locky, freeze, time, foresync);
+}
+
+stock preloadAnimLib(playerid, animlib[]) {
+	ApplyAnimation(playerid, animlib, "NULL", 0.0, 0, 0, 0, 0, 0, 0);
 }
 
 stock setPlayerHealthEx(playerid, Float:health) {
