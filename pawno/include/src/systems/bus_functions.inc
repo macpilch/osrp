@@ -3,7 +3,7 @@
 	Author: MisterMagik
 	File: bus_functions.inc
 	Date: 16.09.2022
-	Modified: 19.08.2023
+	Modified: 28.08.2023
 */
 
 #if defined __BUS_FUNCTIONS_INC__
@@ -14,6 +14,7 @@
 
 stock initBusStopValues() {
 	queryStr[0] = EOS;
+	printf("Zaczynam ladowac przystanki...");
 	
 	for(new i = 0; i < MAX_BUS_STOPS; i++) {
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_BusStops` WHERE `UID` = '%d'", i + 1);
@@ -54,7 +55,7 @@ stock searchPlayerBusStop(playerid) {
 			GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);	
 			SetCameraBehindPlayer(playerid);
 			
-			SetPlayerCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], CAMERA_MOVE);
+			SetPlayerCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 			SetPlayerCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 			
 			InterpolateCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 80, 4000, CAMERA_MOVE);

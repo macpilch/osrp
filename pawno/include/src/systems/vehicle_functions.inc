@@ -14,6 +14,7 @@
 
 stock initVehicleValues() {	
 	queryStr[0] = EOS;
+	printf("Zaczynam ladowac pojazdy...");
 	
 	for(new i = 0; i < MAX_VEHICLES; i++) {
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Vehicles` WHERE `UID` = '%d'", i + 1);
@@ -32,11 +33,11 @@ stock initVehicleValues() {
 		Iter_Add(vehItter, i);
 		SetVehicleNumberPlate(vVars[i][vId], vVars[i][vPlate]);
 		
-		vehCP[i] = -1;
-		vehMapIcon[i] = -1;
+		vehCP[i] = INVALID_PLAYER_ID;
+		vehMapIcon[i] = INVALID_PLAYER_ID;
 		
 #if defined DEBUG
-		printf("[DEBUG] Uid: %d, Id: %d, OUid: %d, Charname: %s, ModelId: %d, Color1: %d, Color2: %d, X: %f, Y: %f, Z: %f, Fuel: %f, Lock: %d, Engine: %d, EngineHp: %f, Spawned: %d, Lights: %d, Mileage: %f, Desc: %s, Plate: %s", vVars[i][vUid], vVars[i][vId], vVars[i][vOUid], 
+		printf("[DEBUG]: Uid: %d, Id: %d, OUid: %d, Charname: %s, ModelId: %d, Color1: %d, Color2: %d, X: %f, Y: %f, Z: %f, Fuel: %f, Lock: %d, Engine: %d, EngineHp: %f, Spawned: %d, Lights: %d, Mileage: %f, Desc: %s, Plate: %s", vVars[i][vUid], vVars[i][vId], vVars[i][vOUid], 
 		vVars[i][vCharName], vVars[i][vModelId], vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vFuel], vVars[i][vLock], vVars[i][vEngine], vVars[i][vEngineHp], vVars[i][vSpawned], vVars[i][vLights], vVars[i][vMileage], vVars[i][vDescInfo],
 		vVars[i][vPlate]);
 #endif
@@ -73,28 +74,32 @@ stock getServerVehicleIdForPlayer(vehicleid) {
 
 stock resetVehicleValues(playerid) {
 	foreach(new i : vehItter) {
-		if(vVars[i][vOUid] == pVars[playerid][pUid]) {
+		if(actualVehicle[playerid] == i && vVars[i][vOUid] == pVars[playerid][pUid]) {
 			DestroyVehicle(vVars[i][vId]);
 			DestroyDynamic3DTextLabel(vVars[i][vDesc]);
 			DestroyDynamicMapIcon(vehMapIcon[i]);
 			DestroyDynamicCP(vehCP[i]);
 			
-			vehCP[i] = -1;
-			vehMapIcon[i] = -1;
+			vehCP[i] = INVALID_PLAYER_ID;
+			vehMapIcon[i] = INVALID_PLAYER_ID;
 			actualVehicle[playerid] = INVALID_SERVER_VEHICLE_ID;
 			vVars[i][vSpawned] = false;
+			
+			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Spawned` = '%d' WHERE `UID` = '%d'", vVars[i][vSpawned], vVars[i][vUid]);
+			mysql_query(queryStr);
 		}
 	}
 	return 1;
 }
 
-stock checkPlayerVehicles(playerid) {
+stock bool:checkPlayerVehicles(playerid) {
 	foreach(new i : vehItter) {
 		if(!strcmp(vVars[i][vCharName], pVars[playerid][pCharName], false)) {
-			return 1;
+			return true;
 		}
 	}
-	return 0;
+	return false;
 }
 
 Callback:vehicleLightsOn(playerid, vehicleid) {
@@ -273,19 +278,19 @@ stock setPlayerVehicleDamage(playerid) {
 	return 1;
 }
 
-stock isVehicleInUse(vehicleid) {
+stock bool:isVehicleInUse(vehicleid) {
 	foreach(new i : Player) {
 		if(IsPlayerInVehicle(i, vehicleid)) {
-			return 1;
+			return true;
 		}
 	}
-	return 0;
+	return false;
 }
 
 stock Float:getVehicleDistance(vehicleid) {
 	new Float:vehicleDistance;
 	
-	vehicleDistance = getVehicleSpeed(vehicleid) * (1000 / 3600 / 1);
+	vehicleDistance = getVehicleSpeed(vehicleid) * (1000 / 3600);
 	vehicleDistance /= 1000;
 	return vehicleDistance;
 }

@@ -36,13 +36,13 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 	
 	if(vVars[srvVehId][vLock]) {
 		ClearAnimations(playerid);
-		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Pojazd jest zamkniety.~n~~w~/v zamknij", 6000, 3);
+		GameTextForPlayer(playerid, "~n~~n~~r~Pojazd jest zamkniety.~n~~w~/v zamknij", 6000, 3);
 	}
 	
-	if(vVars[srvVehId][vOUid] != pVars[playerid][pUid] && !isVehicleInUse(vehicleid) && pVars[playerid][pDriverLicense] && !drivingCourse[playerid]) {
+	/*if(vVars[srvVehId][vOUid] != pVars[playerid][pUid] && !isVehicleInUse(vehicleid) && pVars[playerid][pDriverLicense] && !drivingCourse[playerid]) {
 		ClearAnimations(playerid);
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Nie mozesz prowadzic tego~n~pojazdu.", 6000, 3);		
-	}
+	}*/
 	return 1;
 }
 

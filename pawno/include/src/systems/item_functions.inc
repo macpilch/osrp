@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: item_functions.inc
 	Date: 14.08.2022
-	Modified: 22.08.2023
+	Modified: 02.09.2023
 */
 
 #if defined __ITEM_FUNCTIONS_INC__
@@ -155,7 +155,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				format(mainStr, sizeof(mainStr), "* %s zdejmuje rolki.", pVars[playerid][pCharName]);
 				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 				
-				choosedItem[playerid] = -1;
+				actualItem[playerid] = INVALID_ITEM_ID;
 				iVars[srvitemid][iUsed] = false;
 			}
 		}
@@ -168,7 +168,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			} else {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 				
-				choosedItem[playerid] = -1;
+				actualItem[playerid] = INVALID_ITEM_ID;
 				iVars[srvitemid][iUsed] = false;
 			}
 		}
@@ -181,7 +181,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			} else {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 				
-				choosedItem[playerid] = -1;
+				actualItem[playerid] = INVALID_ITEM_ID;
 				iVars[srvitemid][iUsed] = false;
 			}
 		}
@@ -193,7 +193,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			} else {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 				
-				choosedItem[playerid] = -1;
+				actualItem[playerid] = INVALID_ITEM_ID;
 				iVars[srvitemid][iUsed] = false;
 			}
 		}
@@ -205,7 +205,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			} else {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 				
-				choosedItem[playerid] = -1;
+				actualItem[playerid] = INVALID_ITEM_ID;
 				iVars[srvitemid][iUsed] = false;
 			}
 		}
@@ -217,7 +217,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			} else {
 				SetPlayerSkin(playerid, pVars[playerid][pSkin]);
 				
-				choosedItem[playerid] = -1;
+				actualItem[playerid] = INVALID_ITEM_ID;
 				iVars[srvitemid][iUsed] = false;
 			}
 		}
@@ -239,7 +239,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				applyAnimationEx(id, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
 				
 				iVars[srvitemid][iUsed] = false;
-				choosedItem[playerid] = -1;
+				actualItem[playerid] = INVALID_ITEM_ID;
 				usedTelephone[playerid] = false;
 				usedTelephone[id] = false;
 				telEnterNumber[playerid] = 0;
@@ -258,7 +258,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				iVars[srvitemid][iUsed] = true;
 				format(str, sizeof(str), "Tel. %d [%d:%d:%d]", pVars[playerid][pTelNum], h, m, d);
 				
-				strcat(mainStr, "{FFFFFF}1\tZadzwoñ do kontaktu lub firmy\n2\tWyœlij SMS do kontaktu\n10\tUsuñ kontakt\n");
+				strcat(mainStr, "{FFFFFF}1\tZadzwoñ do kontaktu\n2\tWyœlij SMS do kontaktu\n10\tUsuñ kontakt\n");
 				format(mainStr, sizeof(mainStr), "%s3\tWybierz numer\n4\tWyœlij vCard\n5\tWycisz telefon\n7\tWy³¹cz\n(By wys³aæ SMS: /p %s [numer] [tekst])", mainStr, itemNames[itemid]);
 				ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
 			}
@@ -271,7 +271,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			format(mainStr, sizeof(mainStr), "* %s wylosowa³ liczbê %d (z 1-6) u¿ywaj¹c Kostka. *", pVars[playerid][pCharName], randNum);
 			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 			
-			choosedItem[playerid] = -1;
+			actualItem[playerid] = INVALID_ITEM_ID;
 			iVars[srvitemid][iUsed] = false;
 		}
 		case P_MASKA: {
@@ -287,7 +287,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			} else {
 				SetPlayerName(playerid, pVars[playerid][pCharName]);
 				
-				choosedItem[playerid] = -1;
+				actualItem[playerid] = INVALID_ITEM_ID;
 				iVars[srvitemid][iUsed] = false;
 			}
 		}
@@ -301,7 +301,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				format(mainStr, sizeof(mainStr), "* %s zdejmuje %s.", pVars[playerid][pCharName], itemNames[itemid]);
 				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 				
-				choosedItem[playerid] = -1;
+				actualItem[playerid] = INVALID_ITEM_ID;
 				iVars[srvitemid][iUsed] = false;
 			}
 		}
@@ -318,7 +318,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 				
 				iVars[srvitemid][iUsed] = false;
-				choosedItem[playerid] = -1;
+				actualItem[playerid] = INVALID_ITEM_ID;
 				
 				saveItemWeaponAmmo(srvitemid);
 				SetPlayerArmour(playerid, 0);
@@ -339,8 +339,22 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			format(mainStr, sizeof(mainStr), "* %s spo¿ywa %s.", pVars[playerid][pCharName], itemNames[itemid]);
 			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 			
-			choosedItem[playerid] = -1;
+			actualItem[playerid] = INVALID_ITEM_ID;
 			iVars[srvitemid][iUsed] = false;
+		}
+		case P_WITAMINAC: {
+			format(mainStr, sizeof(mainStr), "* %s aplikuje %s lek.", pVars[playerid][pCharName]);
+			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);	
+		}
+		case P_KANISTER: {
+			if(!iVars[srvitemid][iUsed]) {
+				iVars[srvitemid][iUsed] = true;
+				
+				format(mainStr, sizeof(mainStr), "* %s uzupe³nia bak paliwem z kanistra.", pVars[playerid][pCharName]);
+				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);				
+				
+				iVars[srvitemid][iUsed] = false;
+			}
 		}
 	}
 	return 1;
@@ -375,7 +389,7 @@ stock pickUpNearblyItems(playerid) {
 	
 	mainStr[0] = EOS;
 	foreach(new i : itemItter) {
-		if(iVars[i][iPlace] == ITEM_PLACE_FLOOR && choosedItem[playerid] == -1 && iVars[i][iOUid] == INVALID_PLAYER_ID) {
+		if(iVars[i][iPlace] == ITEM_PLACE_FLOOR && actualItem[playerid] == INVALID_ITEM_ID && iVars[i][iOUid] == INVALID_PLAYER_ID) {
 			if(playerToPoint(playerid, 5.0, iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ])) {
 				format(mainStr, sizeof(mainStr), "%s{FFFFFF}%d\t%s\n", mainStr, iVars[i][iUid], iVars[i][iName]);
 				

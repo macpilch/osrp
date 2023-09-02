@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 22.08.2023
+	Modified: 02.09.2023
 */
 
 #if defined __VARS_INC__
@@ -19,34 +19,36 @@ new numPlayerRace;
 new playerCps[MAX_PLAYERS];
 new playerRcPosition[MAX_PLAYERS];
 new Float:playerRcTime[MAX_PLAYERS];
+new Float:playerRcActualTime[MAX_PLAYERS];
 new cameraTimer[MAX_PLAYERS];
 new playerAFKTime[MAX_PLAYERS];
 new actualVehicle[MAX_PLAYERS];
 new actualBusStop[MAX_PLAYERS]; //Zapisuje aktualny przystanek gracza po wpisaniu CMD:bus
 new actualCashpoint[MAX_PLAYERS]; // Zapisuje aktualny bankomat w zasiegu gracza
+new actualItem[MAX_PLAYERS];
+new actualRace[MAX_PLAYERS];
 new playerFuelPrice[MAX_PLAYERS]; // Do tablicy trafia cena paliwa dla danego gracza podczas uzywania funkcji tankuj
 new offerFrom[MAX_PLAYERS]; // Przechowuje id osoby ktora wyslala oferte
 new offerFor[MAX_PLAYERS]; // Przechowuje id osoby ktora otrzymala oferte
 new offerParams[MAX_PLAYERS][2]; // 0 - pieni¹dze, 1 - dodatkowe opcje
 new offerType[MAX_PLAYERS];
-new choosedItem[MAX_PLAYERS];
-new choosedRace[MAX_PLAYERS];
 new playerContacts[MAX_PLAYERS][10];
 new telEnterNumber[MAX_PLAYERS];
 new telEnterGroup[MAX_PLAYERS];
-new lastPmId[MAX_PLAYERS];
+new lastPmId[MAX_PLAYERS] = { INVALID_PLAYER_ID, ... };
 new vehCP[MAX_VEHICLES];
 new vehMapIcon[MAX_VEHICLES];
 //part time job
-new casualJob[MAX_PLAYERS];
+new casualJob[MAX_PLAYERS] = { INVALID_PART_TIME_JOB, ... };
 new casualJobPickup;
 new calledCmds[MAX_PLAYERS];
 new calledSecsCmds[MAX_PLAYERS];
+new enteredVehicleSec[MAX_PLAYERS];
 new exitedVehicleSec[MAX_PLAYERS];
 
 // type - bool
 new bool:isSpawned[MAX_PLAYERS];
-new bool:hasLoged[MAX_PLAYERS];
+new bool:hasLogged[MAX_PLAYERS];
 new bool:isAdminDuty[MAX_PLAYERS]; // false(0) is admin duty off or true(1) is admin duty on only when player have ranks: SUPPORT_RANK, ADMIN_RANK, HEADADMIN_RANK
 new bool:isPlayerDuty[MAX_PLAYERS]; 
 new	bool:isSpectating[MAX_PLAYERS];

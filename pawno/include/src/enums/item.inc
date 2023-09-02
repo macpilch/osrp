@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 29.08.2022
-	Modified: 19.08.2023
+	Modified: 31.08.2023
 */
 
 #if defined __ITEM_INC__
@@ -70,7 +70,8 @@ enum {
 	P_DRZWIKIER,
 	P_DRZWIPAS,
 	P_BAGAZNIK,
-	P_MASKASAM
+	P_MASKASAM,
+	P_KANISTER
 };
 
 enum ItemData {

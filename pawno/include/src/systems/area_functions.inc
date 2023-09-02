@@ -27,13 +27,25 @@ stock initAreaValues() {
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iifffff", aVars[i][aUid], aVars[i][aOUid], aVars[i][aMinX], aVars[i][aMinY], aVars[i][aMaxX], aVars[i][aMaxY], aVars[i][aMaxSpeed]);
+		sscanf(queryStr, "p<|>iifffff", aVars[i][aUid], aVars[i][aOUid], aVars[i][aMinX], aVars[i][aMaxX], aVars[i][aMinY], aVars[i][aMaxY], aVars[i][aMaxSpeed]);
 		
 		Iter_Add(areaItter, i);
 	}
 	
 	mysql_free_result();
 	return 1;
+}
+
+stock getServerAreaIdForPlayer(playerid) {
+	new id;
+	
+	foreach(new i : areaItter) {
+		if(aVars[i][aUid] == pVars[playerid][pArea]) {
+			id = i;
+			break;
+		}
+	}
+	return id;
 }
 
 

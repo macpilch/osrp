@@ -4,7 +4,7 @@
 			MisterMagik
 	File: admin_cmds.inc
 	Date: 04.08.2022
-	Modified: 19.08.2023
+	Modified: 31.08.2023
 */
 
 #if defined __ADMIN_CMDS_INC__
@@ -229,8 +229,34 @@ CMD:rc(playerid, params[]) {
 	return 1;
 }
 
+CMD:ooc(playerid, params[]) {
+	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+		return 1;
+	}
+
+	if(!isAdminDuty[playerid]) {
+		return 1;
+	}
+
+	new str[256];
+	
+	if(sscanf(params, "s[256]", str)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /o [Tekst]");
+	}
+
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "[[ %s: %s ]]", pVars[playerid][pCharName], str);
+
+	SendClientMessageToAll(0xEE82EEFF, mainStr);
+	return 1;
+}
+
 CMD:gm(playerid, params[]) {
 	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+		return 1;
+	}
+	
+	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
 	
@@ -240,15 +266,13 @@ CMD:gm(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /gm [Tekst]");
 	}
 	
-	if(isAdminDuty[playerid]) {
-		mainStr[0] = EOS;
-		format(mainStr, sizeof(mainStr), "[[ %d.%s: %s ]]", playerid, pVars[playerid][pCharName], str);
-		
-		foreach(new i : Player) {
-			if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
-				if(isAdminDuty[i]) {
-					SendClientMessage(i, COLOR_WHITE, mainStr);
-				}
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "[[ %d.%s: %s ]]", playerid, pVars[playerid][pCharName], str);
+	
+	foreach(new i : Player) {
+		if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
+			if(isAdminDuty[i]) {
+				SendClientMessage(i, COLOR_WHITE, mainStr);
 			}
 		}
 	}
@@ -394,23 +418,25 @@ CMD:freeze(playerid, params[]) {
 	
 	switch(freezeOnOff) {
 		case 0: {
-			TogglePlayerControllable(toPlayerid, freezeOnOff);
-			isFreeze[toPlayerid] = true;
+			GetPlayerPos(toPlayerid, pVars[toPlayerid][pX], pVars[toPlayerid][pY], pVars[toPlayerid][pZ]);
+			TogglePlayerControllable(toPlayerid, 1);
 			
-			SendClientMessage(toPlayerid, COLOR_GREEN, "Administracja zamrozi³a Ciê.");
-			
-			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "Zamrozi³eœ gracza %s.", pVars[toPlayerid][pCharName2]);
-			SendClientMessage(playerid, COLOR_GREEN, mainStr);
-		}
-		case 1: {
-			TogglePlayerControllable(toPlayerid, freezeOnOff);
 			isFreeze[toPlayerid] = false;
 			
 			SendClientMessage(toPlayerid, COLOR_GREEN, "Administracja odmrozi³a Ciê.");
 			
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "Odmrozi³eœ gracza %s.", pVars[toPlayerid][pCharName2]);
+			SendClientMessage(playerid, COLOR_GREEN, mainStr);
+		}
+		case 1: {
+			TogglePlayerControllable(toPlayerid, 0);
+			isFreeze[toPlayerid] = true;
+			
+			SendClientMessage(toPlayerid, COLOR_GREEN, "Administracja zamrozi³a Ciê.");
+			
+			mainStr[0] = EOS;
+			format(mainStr, sizeof(mainStr), "Zamrozi³eœ gracza %s.", pVars[toPlayerid][pCharName2]);
 			SendClientMessage(playerid, COLOR_GREEN, mainStr);
 		}
 	}
@@ -471,132 +497,121 @@ CMD:apojazd(playerid, params[]) {
 	}
 	
 	new vehName[16];
-	new vehicleId, modelId, freeId, color1 = random(255), color2 = random(255);
+	new vehicleId, vehUid, modelId, freeId, color1 = random(255), color2 = random(255);
 	
 	if(sscanf(params, "s[16]", vehName)) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /apojazd [Nazwa pojazdu]");
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /apojazd [Nazwa pojazdu] lub /apojazd usun [UID pojazdu]");
 	}
 	
-	modelId = getVehicleModelIdFromName(vehName);
-	
-	if(modelId == -1) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Podany pojazd nie istnieje.");
-	}
-	
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Vehicles`");
-	mysql_query(queryStr);
-	
-	mysql_store_result();
-	
-	freeId = mysql_fetch_int();
-#if defined DEBUG
-	printf("freeId: %d", freeId);
-#endif
-	mysql_free_result();
-	
-	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
-	Iter_Add(vehItter, freeId);
-	
-	vehicleId = CreateVehicle(modelId, pVars[playerid][pX] + 2.0, pVars[playerid][pY] + 2.0, pVars[playerid][pZ] + 2.0, 0.0, color1, color2, 0);
-	actualVehicle[playerid] = freeId;
-	
-	vVars[freeId][vUid] = freeId + 1;
-	vVars[freeId][vId] = vehicleId;
-	vVars[freeId][vOUid] = pVars[playerid][pUid];
-	format(vVars[freeId][vCharName], 24, "%s", pVars[playerid][pCharName]);
-	vVars[freeId][vModelId] = modelId;
-	vVars[freeId][vColor1] = color1;
-	vVars[freeId][vColor2] = color2;
-	vVars[freeId][vLock] = false;
-	vVars[freeId][vSpawned] = true;
-	vVars[freeId][vMileage] = 0.0;
-	vVars[freeId][vX] = pVars[playerid][pX];
-	vVars[freeId][vY] = pVars[playerid][pY];
-	vVars[freeId][vZ] = pVars[playerid][pZ];
-	vVars[freeId][vEngineHp] = 1000.0;
-	
-	if(!isBicycle(vVars[freeId][vModelId])) {
-		vVars[freeId][vEngine] = false;
-		vVars[freeId][vLights] = false;
-		vVars[freeId][vFuel] = VEHICLE_FUEL_TANK_MEDIUM;
+	if(strfind(vehName, "usun", true) != -1) {
+		if(sscanf(params, "s[16]i", vehName, vehUid)) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /apojazd usun [UID pojazdu]");
+		}
 		
-		format(vVars[freeId][vPlate], 32, "Test.");
-		SetVehicleNumberPlate(vVars[freeId][vId], vVars[freeId][vPlate]);
-		SetVehicleToRespawn(vVars[freeId][vId]);
+		queryStr[0] = EOS;
+		format(queryStr, sizeof(queryStr), "SELECT `UID` FROM `osrp_Vehicles` WHERE `UID` = '%d'", vehUid);
+		mysql_query(queryStr);
+		
+		mysql_store_result();
+		
+		if(!mysql_num_rows()) {
+			return GameTextForPlayer(playerid, "~r~Podany pojazd nie istnieje!", 5000, 3);
+		}
+		
+		mysql_free_result();
+		
+		queryStr[0] = EOS;
+		format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Vehicles` WHERE `UID` = '%d'", vehUid);
+		mysql_query(queryStr);
+		
+		DestroyVehicle(vVars[vehUid - 1][vId]);
+		DestroyDynamic3DTextLabel(vVars[vehUid - 1][vDesc]);
+		
+		actualVehicle[playerid] = INVALID_SERVER_VEHICLE_ID;
+		Iter_Remove(vehItter, vehUid - 1);
+		
+		vVars[vehUid - 1][vUid] = 0;
+		vVars[vehUid - 1][vId] = 0;
+		vVars[vehUid - 1][vOUid] = 0;
+		vVars[vehUid - 1][vUid] = 0;
+		format(vVars[vehUid - 1][vCharName], 24, NULL);
+		format(vVars[vehUid - 1][vDescInfo], 64, NULL);
+		format(vVars[vehUid - 1][vPlate], 32, NULL);
+		vVars[vehUid - 1][vModelId] = 0;
+		vVars[vehUid - 1][vColor1] = 0;
+		vVars[vehUid - 1][vColor2] = 0;
+		vVars[vehUid - 1][vX] = 0.0;
+		vVars[vehUid - 1][vY] = 0.0;
+		vVars[vehUid - 1][vZ] = 0.0;
+		vVars[vehUid - 1][vFuel] = 0.0;
+		vVars[vehUid - 1][vLock] = false;
+		vVars[vehUid - 1][vEngine] = false;
+		vVars[vehUid - 1][vLights] = false;
+		vVars[vehUid - 1][vEngineHp] = 0.0;
+		vVars[vehUid - 1][vSpawned] = false;
+		vVars[vehUid - 1][vMileage] = 0;
 	} else {
-		SetVehicleParamsEx(vehicleId, 1, 0, 0, 0, 0, 0, 0);
+		modelId = getVehicleModelIdFromName(vehName);
+		
+		if(modelId == -1) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Podany pojazd nie istnieje.");
+		}
+		
+		queryStr[0] = EOS;
+		format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Vehicles`");
+		mysql_query(queryStr);
+		
+		mysql_store_result();
+		
+		freeId = mysql_fetch_int();
+	#if defined DEBUG
+		printf("freeId: %d", freeId);
+	#endif
+		mysql_free_result();
+		
+		GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+		Iter_Add(vehItter, freeId);
+		
+		vehicleId = CreateVehicle(modelId, pVars[playerid][pX] + 2.0, pVars[playerid][pY] + 2.0, pVars[playerid][pZ] + 2.0, 0.0, color1, color2, 0);
+		actualVehicle[playerid] = freeId;
+		
+		vVars[freeId][vUid] = freeId + 1;
+		vVars[freeId][vId] = vehicleId;
+		vVars[freeId][vOUid] = pVars[playerid][pUid];
+		format(vVars[freeId][vCharName], 24, "%s", pVars[playerid][pCharName]);
+		vVars[freeId][vModelId] = modelId;
+		vVars[freeId][vColor1] = color1;
+		vVars[freeId][vColor2] = color2;
+		vVars[freeId][vLock] = false;
+		vVars[freeId][vSpawned] = true;
+		vVars[freeId][vMileage] = 0.0;
+		vVars[freeId][vX] = pVars[playerid][pX];
+		vVars[freeId][vY] = pVars[playerid][pY];
+		vVars[freeId][vZ] = pVars[playerid][pZ];
+		vVars[freeId][vEngineHp] = 1000.0;
+		
+		if(!isBicycle(vVars[freeId][vModelId])) {
+			vVars[freeId][vEngine] = false;
+			vVars[freeId][vLights] = false;
+			vVars[freeId][vFuel] = VEHICLE_FUEL_TANK_MEDIUM;
+			
+			format(vVars[freeId][vPlate], 32, "Test.");
+			SetVehicleNumberPlate(vVars[freeId][vId], vVars[freeId][vPlate]);
+			SetVehicleToRespawn(vVars[freeId][vId]);
+		} else {
+			SetVehicleParamsEx(vehicleId, 1, 0, 0, 0, 0, 0, 0);
+		}
+		
+		SetVehicleHealth(vVars[freeId][vId], vVars[freeId][vEngineHp]);
+		
+		format(vVars[freeId][vDescInfo], 64, NULL);
+		UpdateDynamic3DTextLabelText(vVars[freeId][vDesc], COLOR_WHITE, vVars[freeId][vDescInfo]);
+		
+		queryStr[0] = EOS;
+		format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`UID`, `ID`, `OUID`, `CharName`, `ModelID`, `Color1`, `Color2`, `X`, `Y`, `Z`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d', '%d', '%f', '%f', '%f')",
+		vVars[freeId][vUid], vVars[freeId][vId], vVars[freeId][vOUid], vVars[freeId][vCharName], vVars[freeId][vModelId], vVars[freeId][vColor1], vVars[freeId][vColor2], vVars[freeId][vX], vVars[freeId][vY], vVars[freeId][vZ]);
+		mysql_query(queryStr);
 	}
-	
-	SetVehicleHealth(vVars[freeId][vId], vVars[freeId][vEngineHp]);
-	
-	format(vVars[freeId][vDescInfo], 64, NULL);
-	UpdateDynamic3DTextLabelText(vVars[freeId][vDesc], COLOR_WHITE, vVars[freeId][vDescInfo]);
-	
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`UID`, `ID`, `OUID`, `CharName`, `ModelID`, `Color1`, `Color2`, `X`, `Y`, `Z`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d', '%d', '%f', '%f', '%f')",
-	vVars[freeId][vUid], vVars[freeId][vId], vVars[freeId][vOUid], vVars[freeId][vCharName], vVars[freeId][vModelId], vVars[freeId][vColor1], vVars[freeId][vColor2], vVars[freeId][vX], vVars[freeId][vY], vVars[freeId][vZ]);
-	mysql_query(queryStr);
-	return 1;
-}
-
-CMD:adpojazd(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
-		return 0;
-	}
-	
-	if(!isAdminDuty[playerid]) {
-		return 1;
-	}
-	
-	new vehUid;
-	
-	if(sscanf(params, "i", vehUid)) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /adpojazd [UID pojazdu]");
-	}
-	
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `UID` FROM `osrp_Vehicles` WHERE `UID` = '%d'", vehUid);
-	mysql_query(queryStr);
-	
-	mysql_store_result();
-	
-	if(!mysql_num_rows()) {
-		return GameTextForPlayer(playerid, "~r~Podany pojazd nie istnieje!", 5000, 3);
-	}
-	
-	mysql_free_result();
-	
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Vehicles` WHERE `UID` = '%d'", vehUid);
-	mysql_query(queryStr);
-	
-	DestroyVehicle(vVars[vehUid - 1][vId]);
-	DestroyDynamic3DTextLabel(vVars[vehUid - 1][vDesc]);
-	
-	actualVehicle[playerid] = INVALID_SERVER_VEHICLE_ID;
-	Iter_Remove(vehItter, vehUid - 1);
-	
-	vVars[vehUid - 1][vUid] = 0;
-	vVars[vehUid - 1][vId] = 0;
-	vVars[vehUid - 1][vOUid] = 0;
-	vVars[vehUid - 1][vUid] = 0;
-	format(vVars[vehUid - 1][vCharName], 24, NULL);
-	format(vVars[vehUid - 1][vDescInfo], 64, NULL);
-	format(vVars[vehUid - 1][vPlate], 32, NULL);
-	vVars[vehUid - 1][vModelId] = 0;
-	vVars[vehUid - 1][vColor1] = 0;
-	vVars[vehUid - 1][vColor2] = 0;
-	vVars[vehUid - 1][vX] = 0.0;
-	vVars[vehUid - 1][vY] = 0.0;
-	vVars[vehUid - 1][vZ] = 0.0;
-	vVars[vehUid - 1][vFuel] = 0.0;
-	vVars[vehUid - 1][vLock] = false;
-	vVars[vehUid - 1][vEngine] = false;
-	vVars[vehUid - 1][vLights] = false;
-	vVars[vehUid - 1][vEngineHp] = 0.0;
-	vVars[vehUid - 1][vSpawned] = false;
-	vVars[vehUid - 1][vMileage] = 0;
 	return 1;
 }
 
@@ -790,7 +805,6 @@ CMD:dajprace(playerid, params[]) {
 	}
 	
 	casualJob[toPlayerGive] = partTimeJob;
-	pVars[toPlayerGive][pCasualJob] = partTimeJob;
 	return 1;
 }
 

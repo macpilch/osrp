@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 22.08.2023
+	Modified: 02.09.2023
 */
 
 #if defined __DEFINES_INC__
@@ -91,6 +91,8 @@
 #define PEN_BLCKACC 4
 #define PEN_RUNNBLW 5
 #define PEN_BLCKOOC 6
+#define PEN_WRITING 7
+#define PEN_RPACTN 8
 
 #define INVALID_OFFER_TYPE -1
 #define O_ZAPRGRP 0
@@ -106,6 +108,7 @@
 #define O_VCARD 10
 #define O_PRZETRZY 11
 
+#define INVALID_ITEM_ID -1
 #define ITEM_PLACE_PLAYER 0
 #define ITEM_PLACE_FLOOR 1
 #define ITEM_PLACE_BAG 2
@@ -132,6 +135,10 @@
 
 // Number plate
 #define VEHICLE_NUMBER_PLATE_NULL ""
+
+forward Float:getVehicleDistance(vehicleid);
+forward bool:checkPlayerVehicles(playerid);
+forward bool:isVehicleInUse(vehicleid);
 
 // Callbacki servera
 #define OSRP_OnGameModeInit OnGameModeInit

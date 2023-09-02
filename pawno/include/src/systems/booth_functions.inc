@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: booth_functions.inc
 	Date: 14.08.2023
-	Modified: 14.08.2023
+	Modified: 28.08.2023
 */
 
 #if defined __BOOTH_FUNCTIONS_INC__
@@ -14,7 +14,8 @@
 
 stock initBoothValues() {
 	queryStr[0] = EOS;
-
+	printf("Zaczynam ladowac budki...");
+	
 	for(new i = 0; i < MAX_BOOTHS; i++) {
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Booths` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);

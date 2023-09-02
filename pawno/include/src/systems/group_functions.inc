@@ -15,6 +15,7 @@
 
 stock initGroupValues(){
 	queryStr[0] = EOS;
+	printf("Zaczynam ladowac grupy...");
 	
 	for(new i = 0; i < MAX_GROUPS; i++) {
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Groups` WHERE `UID` = '%d'", i + 1);

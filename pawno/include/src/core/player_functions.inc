@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 25.07.2022
-	Modified: 22.08.2023
+	Modified: 01.09.2023
 */
 
 #if defined __PLAYER_FUNCTIONS_INC__
@@ -877,7 +877,7 @@ stock loadPlayerValues(playerid) {
 	sscanf(queryStr, "p<|>iis[16]iiiiiiffiiiiiiiiiiiiiiiiiiiiiiiis[128]iifiiiiiifffs[128]", pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pIp], pVars[playerid][pRank], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds],
 	pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pBans], pVars[playerid][pKicks], pVars[playerid][pWarns], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pAl],
 	pVars[playerid][pDriverLicense], pVars[playerid][pPisSkill], pVars[playerid][pDglSkill], pVars[playerid][pShtgSkill], pVars[playerid][pM4Skill], pVars[playerid][pGov], pVars[playerid][pHotel], pVars[playerid][pIdCard], pVars[playerid][pDetention], pVars[playerid][pPdp], pVars[playerid][pTelNum], pVars[playerid][pBankAcc],
-	pVars[playerid][pGroupDesc], pVars[playerid][pGroup], pVars[playerid][pCasualJob], pVars[playerid][pTraveled], pVars[playerid][pDoors], pVars[playerid][pInvi], pVars[playerid][pChatStyle], pVars[playerid][pComputer], pVars[playerid][pWalkAnim], pVars[playerid][pScreen], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], charDesc);
+	pVars[playerid][pGroupDesc], pVars[playerid][pGroup], casualJob[playerid], pVars[playerid][pTraveled], pVars[playerid][pDoors], pVars[playerid][pAudio], pVars[playerid][pChatStyle], pVars[playerid][pComputer], pVars[playerid][pWalkAnim], pVars[playerid][pScreen], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], charDesc);
 	mysql_free_result();
 	
 	UpdateDynamic3DTextLabelText(pVars[playerid][pCharDesc], COLOR_PURPLE, charDesc);
@@ -991,6 +991,16 @@ stock givePlayerPenalty(playerid, victim, type, const reason[]) {
 			
 			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada czatu OOC) od %s. Powód: %s", pVars[playerid][pCharName], reason);
 		}
+		case PEN_WRITING: {
+			format(str, sizeof(str), "~r~Blokada niechlujnego pisania ~w~(na 7 dni)~n~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+			
+			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada niechlujnego pisania) od %s. Powód: %s", pVars[playerid][pCharName], reason);
+		}
+		case PEN_RPACTN: {
+			format(str, sizeof(str), "~r~Wymuszenie odgrywania akcji RolePlay ~w~(na 7 dni)~n~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+			
+			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Wymuszenie odgrywania akcji RolePlay) od %s. Powód: %s", pVars[playerid][pCharName], reason);
+		}
 	}
 	
 	SendClientMessage(victim, COLOR_WHITE, mainStr);
@@ -1013,7 +1023,7 @@ Callback:hidePenalty() {
 
 stock setPlayerDefaultValues(playerid) {
 	// Czysci i od razu ustawia poprawny nick i IP
-	if(!hasLoged[playerid]) {
+	if(!hasLogged[playerid]) {
 		pVars[playerid][pUid] = 0;
 		pVars[playerid][pGuid] = 0;
 		pVars[playerid][pCharId] = 0;
@@ -1023,6 +1033,7 @@ stock setPlayerDefaultValues(playerid) {
 		format(pVars[playerid][pCharName2], 24, NULL);
 		format(pVars[playerid][pPass], 32, NULL);
 		format(pVars[playerid][pIp], 16, NULL);
+		format(pVars[playerid][pDateReg], 24, NULL);
 		
 		GetPlayerName(playerid, pVars[playerid][pAccName], 24);
 		GetPlayerIp(playerid, pVars[playerid][pIp], 16);
@@ -1042,24 +1053,32 @@ stock setPlayerDefaultValues(playerid) {
 	SetPlayerSkillLevel(playerid, WEAPON_M4, 0);
 	SetPlayerSkillLevel(playerid, WEAPON_TEC9, 0);
 
+	pVars[playerid][pBlocked] = 0;
 	pVars[playerid][pRank] = 0;
 	pVars[playerid][pSex] = MAN_SEX;
 	pVars[playerid][pStrength] = 3000;
 	pVars[playerid][pHours] = 0;
 	pVars[playerid][pMinutes] = 0;
 	pVars[playerid][pSeconds] = 0;
+	pVars[playerid][pHp] = 100.0;
+	pVars[playerid][pAp] = 0.0;
+	pVars[playerid][pBans] = 0;
+	pVars[playerid][pKicks] = 0;
+	pVars[playerid][pWarns] = 0;
 	pVars[playerid][pVw] = 0;
 	pVars[playerid][pInt] = 0;
-	pVars[playerid][pHp] = 0.0;
-	pVars[playerid][pAp] = 0.0;
 	pVars[playerid][pSkin] = 0;
+	pVars[playerid][pLastSkin] = 0;
 	pVars[playerid][pMoney] = 0;
 	pVars[playerid][pBank] = 0;
 	pVars[playerid][pBw] = 0;
 	pVars[playerid][pAj] = 0;
 	pVars[playerid][pAl] = 0;
 	pVars[playerid][pDriverLicense] = 0;
-	pVars[playerid][pGroup] = 0;
+	pVars[playerid][pPisSkill] = 0;
+	pVars[playerid][pDglSkill] = 0;
+	pVars[playerid][pShtgSkill] = 0;
+	pVars[playerid][pM4Skill] = 0;
 	pVars[playerid][pGov] = 0;
 	pVars[playerid][pHotel] = 0;
 	pVars[playerid][pIdCard] = 0;
@@ -1067,19 +1086,22 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pPdp] = 0;
 	pVars[playerid][pTelNum] = 0;
 	pVars[playerid][pBankAcc] = 0;
-	pVars[playerid][pTraveled] = 0;
+	pVars[playerid][pGroup] = 0;
+	pVars[playerid][pArea] = 0;
+	pVars[playerid][pDuty] = 0;
+	pVars[playerid][pTraveled] = 0.0;
 	pVars[playerid][pDoors] = 0;
-	pVars[playerid][pInvi] = 0;
+	pVars[playerid][pAudio] = 0;
 	pVars[playerid][pChatStyle] = 0;
 	pVars[playerid][pComputer] = 0;
 	pVars[playerid][pWalkAnim] = 0;
 	pVars[playerid][pScreen] = 0;
+	pVars[playerid][pStyleFight] = 0;
 	pVars[playerid][pX] = DEFAULT_POS_X;
 	pVars[playerid][pY] = DEFAULT_POS_Y;
 	pVars[playerid][pZ] = DEFAULT_POS_Z;
-	lastPmId[playerid] = -1;
 	isSpawned[playerid] = false;
-	hasLoged[playerid] = false;
+	hasLogged[playerid] = false;
 	isAdminDuty[playerid] = false;
 	isPlayerDuty[playerid] = false;
 	isSpectating[playerid] = false;
@@ -1097,8 +1119,7 @@ stock setPlayerDefaultValues(playerid) {
 	showGroupsInfo[playerid] = false;
 	insidedHotel[playerid] = false;
 	blockOOC[playerid] = false;
-	casualJob[playerid] = INVALID_PART_TIME_JOB;
-	calledCmds[playerid] = 0;
+	isRace[playerid] = false;
 	return 1;
 }
 
@@ -1112,26 +1133,35 @@ stock resetPlayerValues(playerid) {
 	format(pVars[playerid][pCharName2], 24, NULL);
 	format(pVars[playerid][pPass], 32, NULL);
 	format(pVars[playerid][pIp], 16, NULL);
+	format(pVars[playerid][pDateReg], 24, NULL);
 	format(pVars[playerid][pGroupDesc], 128, NULL);
 
+	pVars[playerid][pBlocked] = 0;
 	pVars[playerid][pRank] = 0;
 	pVars[playerid][pSex] = 0;
 	pVars[playerid][pStrength] = 0;
 	pVars[playerid][pHours] = 0;
 	pVars[playerid][pMinutes] = 0;
 	pVars[playerid][pSeconds] = 0;
-	pVars[playerid][pVw] = 0;
-	pVars[playerid][pInt] = 0;
 	pVars[playerid][pHp] = 0.0;
 	pVars[playerid][pAp] = 0.0;
+	pVars[playerid][pBans] = 0;
+	pVars[playerid][pKicks] = 0;
+	pVars[playerid][pWarns] = 0;
+	pVars[playerid][pVw] = 0;
+	pVars[playerid][pInt] = 0;
 	pVars[playerid][pSkin] = 0;
+	pVars[playerid][pLastSkin] = 0;
 	pVars[playerid][pMoney] = 0;
 	pVars[playerid][pBank] = 0;
 	pVars[playerid][pBw] = 0;
 	pVars[playerid][pAj] = 0;
 	pVars[playerid][pAl] = 0;
 	pVars[playerid][pDriverLicense] = 0;
-	pVars[playerid][pGroup] = 0;
+	pVars[playerid][pPisSkill] = 0;
+	pVars[playerid][pDglSkill] = 0;
+	pVars[playerid][pShtgSkill] = 0;
+	pVars[playerid][pM4Skill] = 0;
 	pVars[playerid][pGov] = 0;
 	pVars[playerid][pHotel] = 0;
 	pVars[playerid][pIdCard] = 0;
@@ -1139,19 +1169,47 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pPdp] = 0;
 	pVars[playerid][pTelNum] = 0;
 	pVars[playerid][pBankAcc] = 0;
-	pVars[playerid][pTraveled] = 0;
+	pVars[playerid][pGroup] = 0;
+	pVars[playerid][pArea] = 0;
+	pVars[playerid][pDuty] = 0;
+	pVars[playerid][pTraveled] = 0.0;
 	pVars[playerid][pDoors] = 0;
-	pVars[playerid][pInvi] = 0;
+	pVars[playerid][pAudio] = 0;
 	pVars[playerid][pChatStyle] = 0;
 	pVars[playerid][pComputer] = 0;
 	pVars[playerid][pWalkAnim] = 0;
 	pVars[playerid][pScreen] = 0;
+	pVars[playerid][pStyleFight] = 0;
 	pVars[playerid][pX] = 0.0;
 	pVars[playerid][pY] = 0.0;
 	pVars[playerid][pZ] = 0.0;
-	lastPmId[playerid] = -1;
+	numPlayerRace = 0;
+	playerCps[playerid] = 0;
+	playerRcPosition[playerid] = 0;
+	playerRcTime[playerid] = 0.0;
+	playerRcActualTime[playerid] = 0.0;
+	playerAFKTime[playerid] = 0;
+	actualVehicle[playerid] = INVALID_SERVER_VEHICLE_ID;
+	actualBusStop[playerid] = -1;
+	actualCashpoint[playerid] = -1;
+	actualItem[playerid] = -1;
+	actualRace[playerid] = -1;
+	playerFuelPrice[playerid] = 0;
+	offerFrom[playerid] = INVALID_PLAYER_ID;
+	offerFor[playerid] = INVALID_PLAYER_ID;
+	offerParams[playerid][0] = 0;
+	offerParams[playerid][1] = 0;
+	offerType[playerid] = INVALID_OFFER_TYPE;
+	telEnterNumber[playerid] = 0;
+	telEnterGroup[playerid] = 0;
+	lastPmId[playerid] = INVALID_PLAYER_ID;
+	casualJob[playerid] = INVALID_PART_TIME_JOB;
+	calledCmds[playerid] = 0;
+	calledSecsCmds[playerid] = 0;
+	enteredVehicleSec[playerid] = 0;
+	exitedVehicleSec[playerid] = 0;
 	isSpawned[playerid] = false;
-	hasLoged[playerid] = false;
+	hasLogged[playerid] = false;
 	isAdminDuty[playerid] = false;
 	isPlayerDuty[playerid] = false;
 	isSpectating[playerid] = false;
@@ -1169,8 +1227,10 @@ stock resetPlayerValues(playerid) {
 	showGroupsInfo[playerid] = false;
 	insidedHotel[playerid] = false;
 	blockOOC[playerid] = false;
-	casualJob[playerid] = INVALID_PART_TIME_JOB;
-	calledCmds[playerid] = 0;	
+	
+	for(new i = 0; i < sizeof(playerContacts); i++) {
+		playerContacts[playerid][i] = 0;
+	}
 	return 1;
 }
 
@@ -1183,7 +1243,7 @@ stock savePlayerValues(playerid) {
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `HP` = '%f', `AP` = '%f', `VW` = '%d', `INT` = '%d', `Skin` = '%d', `LastSkin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `DriverLicense` = '%d', `Hotel` = '%d', `TelNum` = '%d', `GroupDesc` = '%s', `CasualJob` = '%d', `Group` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'",
 	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pHotel], pVars[playerid][pTelNum], pVars[playerid][pGroupDesc],
-	pVars[playerid][pCasualJob], pVars[playerid][pGroup], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pCharName]);
+	casualJob[playerid], pVars[playerid][pGroup], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pCharName]);
 	mysql_query(queryStr);
 	return 1;
 }
@@ -1235,7 +1295,7 @@ stock getPlayerStrengthPower(playerid) {
 	return 0;
 }
 
-stock getPhoneOwnerFromNumber(number) {
+stock getPhoneOwnerNameFromNumber(number) {
 	new pId;
 	new charName[24];
 	
@@ -1321,7 +1381,7 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 		}
 		case O_ZAKUPPRZED: {
 			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Zakup przedmiotu: %s\n\nKoszt: $0. Czy akceptujesz tê ofertê?", iVars[choosedItem[offerFrom[playerid]]][iName]);			
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Zakup przedmiotu: %s\n\nKoszt: $0. Czy akceptujesz tê ofertê?", iVars[actualItem[offerFrom[playerid]]][iName]);			
 		}
 		case O_ZAKUPPOJ: {
 			new srvVehId = actualVehicle[playerid];
@@ -1391,7 +1451,7 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 
 stock setPlayerHexName(playerid) {
     new quotient, remainder, i;
-    new hexName[100];
+    new hexName[24];
 	
     quotient = pVars[playerid][pUid];
 	
@@ -1399,9 +1459,9 @@ stock setPlayerHexName(playerid) {
         remainder = quotient % 16;
 		
         if(remainder < 10) {
-            hexName[i++] = 48 + remainder;
+            hexName[i++] = remainder + 48;
         } else {
-            hexName[i++] = 55 + remainder;
+            hexName[i++] = remainder + 55;
 		}
 		
         quotient /= 16;
@@ -1412,7 +1472,6 @@ stock setPlayerHexName(playerid) {
 	SetPlayerName(playerid, mainStr);
 }
 
-// return: void
 stock applyAnimationEx(playerid, animlib[], animname[], Float:fDelta, loop, lockx, locky, freeze, time, foresync) {
 	ApplyAnimation(playerid, animlib, animname, fDelta, loop, lockx, locky, freeze, time, foresync);
 }
@@ -1453,18 +1512,39 @@ stock createNumber(playerid) {
 	return 1;
 }
 
+stock isPlayerInArea(playerid, Float:minx, Float:maxx, Float:miny, Float:maxy) {
+    new Float:x, Float:y, Float:z;
+	
+    GetPlayerPos(playerid, x, y, z);
+    
+	if(x > minx && x < maxx && y > miny && y < maxy) {
+		return 1;
+	}
+    return 0;
+}
+
 stock playerToPoint(playerid, Float:radius, Float:x, Float:y, Float:z) {
 	new Float:oldposx, Float:oldposy, Float:oldposz;
 	new Float:tempposx, Float:tempposy, Float:tempposz;
 	
 	GetPlayerPos(playerid, oldposx, oldposy, oldposz);
 	
-	tempposx = (oldposx -x);
-	tempposy = (oldposy -y);
-	tempposz = (oldposz -z);
+	tempposx = (oldposx - x);
+	tempposy = (oldposy - y);
+	tempposz = (oldposz - z);
 	
 	if(((tempposx < radius) && (tempposx > -radius)) && ((tempposy < radius) && (tempposy > -radius)) && ((tempposz < radius) && (tempposz > -radius))) {
 		return 1;
 	}
 	return 0;
+}
+
+stock getPlayerSpeed(playerid) {
+	new Float:pPos[3];
+	new pVel;
+	
+	GetPlayerVelocity(playerid, pPos[0], pPos[1], pPos[2]);
+	
+	pVel = floatround(floatsqroot(pPos[0] * pPos[0] + pPos[1] * pPos[1] + pPos[2] * pPos[2]) * 180);
+	return pVel;
 }

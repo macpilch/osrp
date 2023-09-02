@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 19.08.2023
+	Modified: 01.09.2023
 */
 
 #if defined __TIMERS_INC__
@@ -14,7 +14,7 @@
 
 task globalTimer[1000]() {
 	foreach(new i : Player) {
-		new srvItemId = choosedItem[i], srvGrpId = getServerGroupIdForPlayer(i), drunkLevel = GetPlayerDrunkLevel(i);
+		new srvItemId = actualItem[i], srvGrpId = getServerGroupIdForPlayer(i), drunkLevel = GetPlayerDrunkLevel(i);
 		
 		playerAFKTime[i]++;
 		GetPlayerHealth(i, pVars[i][pHp]);
@@ -540,7 +540,7 @@ task globalTimer[1000]() {
 					
 					GetPlayerKeys(i, Keys, ud, lr);
 					
-					if(Keys & KEY_FIRE) {
+					if(Keys & KEY_ACTION) {
 						GameTextForPlayer(i, "~r~Skakanie tym pojazdem jest~n~zakazane!", 5000, 3);
 						
 						SetVehicleVelocity(vVars[j][vId], 0.0, 0.0, 0.0);
@@ -563,7 +563,7 @@ task globalTimer[1000]() {
 
 task saveAllValuesTimer[60000]() {
 	foreach(new i : Player) {
-		if(hasLoged[i] && isSpawned[i]) {
+		if(hasLogged[i] && isSpawned[i]) {
 			savePlayerValues(i);
 		}
 	}
@@ -598,6 +598,34 @@ task updateWebsiteDateTimer[1900]() {
 	TextDrawSetString(website, timerStr);
 }
 
+task updatePlayerArea[1000]() {
+	timerStr[0] = EOS;
+	
+	foreach(new i : Player) {
+		new srvVehId = actualVehicle[i];
+		
+		foreach(new j : areaItter) {
+			if(isPlayerInArea(i, aVars[j][aMinX], aVars[j][aMaxX], aVars[j][aMinY], aVars[j][aMaxY]) && isSpawned[i]) {
+				pVars[i][pArea] = aVars[j][aUid];
+				
+				if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
+					if(aVars[j][aMaxSpeed] < 999) {
+						format(timerStr, sizeof(timerStr), "~w~Max ~r~%d km/h", aVars[j][aMaxSpeed]);
+					} else {
+						format(timerStr, sizeof(timerStr), "~w~Limit: ~g~~h~Brak");
+					}
+					
+					GameTextForPlayer(i, timerStr, 3000, 5);
+					
+					if(getVehicleSpeed(vVars[srvVehId][vId]) > aVars[j][aMaxSpeed]) {
+						
+					}
+				}
+			}
+		}
+	}
+}
+
 task townHallBellsTimer[59000]() {
 	new hours, minutes, seconds;
 	
@@ -619,22 +647,36 @@ task townHallBellsTimer[59000]() {
 
 task antiCheat[1000]() {
 	foreach(new i : Player) {
-		if(isFreeze[i]) {
-			format(mainStr, sizeof(mainStr), "Ruch o %0.1fj podczas zamrozenia pieszo.");
-			return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, mainStr);
+		if(isFreeze[i] && isSpawned[i]) {
+			new reas[64];
+			new Float:x, Float:y, Float:z, Float:totalPos;
+			
+			GetPlayerPos(i, x, y, z);
+			
+			if(IsPlayerInAnyVehicle(i) && getVehicleSpeed(vVars[actualVehicle[i]][vId]) > 0 && GetTickCount() < enteredVehicleSec[i]) {
+				enteredVehicleSec[i] = 0;
+				
+				format(reas, sizeof(reas), "Unfreeze~n~~w~3x ruch o %0.1fj podczas zamrozenia w pojezdzie.", getVehicleSpeed(vVars[actualVehicle[i]][vId]));
+				return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas);
+			}
+			
+			if((x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y)) {
+				totalPos = (x - pVars[i][pX]) + (y - pVars[i][pY]);
+				
+				format(reas, sizeof(reas), "Ruch o %0.1fj podczas zamrozenia pieszo.", totalPos);
+				return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_BAN, reas);
+			}
 		}
 		
-		if(isFreeze[i] && IsPlayerInAnyVehicle(i)) {
-			format(mainStr, sizeof(mainStr), "Unfreeze~n~~w~3x ruch o %0.1fj podczas zamrozenia w pojezdzie.");
-			return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, mainStr);
-		}
+		//format(reas, sizeof(reas), "Forced seat takeover");
+		//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, reas);
 	}
 	return 1;
 }
 
 task giveFreeMoneyTimer[590000]() {
 	foreach(new i : Player) {
-		if(pVars[i][pHours] >= 0 && pVars[i][pHours] <= 1) {
+		if(pVars[i][pHours] < 1) {
 			givePlayerMoneyEx(i, 25);
 			GameTextForPlayer(i, "~w~+~g~$25", 2000, 6);
 			
@@ -668,7 +710,7 @@ task getMoneyForHotelTimer[60000]() {
 	
 	gettime(h, m, s);
 	
-	if(h == 14) {
+	if(h == 23 && m == 40) {
 		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Players`");
 		mysql_query(queryStr);

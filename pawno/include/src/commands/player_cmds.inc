@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 19.08.2023
+	Modified: 02.09.2023
 */
 
 #if defined __PLAYER_CMDS_INC__
@@ -54,7 +54,73 @@ CMD:w(playerid, params[]) {
 	if(strfind(pmStr, "OOC", true) != 1) {
 		//return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, "Proba ominiecia blokady OOC");
 	}
-	
+
+	if(pVars[pId][pRank] > 0) {
+		new token[16];
+		new randL, randN;
+
+		for(new i = 0; i < 15; i++) {
+			switch(random(2)) {
+				case 0: {
+					randL = random(26);
+					
+					switch(randL) {
+						case 0: token[i] = 'A';
+						case 1: token[i] = 'B';
+						case 2: token[i] = 'C';
+						case 3: token[i] = 'D';
+						case 4: token[i] = 'E';
+						case 5: token[i] = 'F';
+						case 6: token[i] = 'G';
+						case 7: token[i] = 'H';
+						case 8: token[i] = 'I';
+						case 9: token[i] = 'J';
+						case 10: token[i] = 'K';
+						case 11: token[i] = 'L';
+						case 12: token[i] = 'M';
+						case 13: token[i] = 'N';
+						case 14: token[i] = 'O';
+						case 15: token[i] = 'P';
+						case 16: token[i] = 'Q';
+						case 17: token[i] = 'R';
+						case 18: token[i] = 'S';
+						case 19: token[i] = 'T';
+						case 20: token[i] = 'U';
+						case 21: token[i] = 'V';
+						case 22: token[i] = 'W';
+						case 23: token[i] = 'X';
+						case 24: token[i] = 'Y';
+						case 25: token[i] = 'Z';
+					}
+				}
+				case 1: {
+					randN = random(10);
+					
+					switch(randN) {
+						case 0: token[i] = '0';
+						case 1: token[i] = '1';
+						case 2: token[i] = '2';
+						case 3: token[i] = '3';
+						case 4: token[i] = '4';
+						case 5: token[i] = '5';
+						case 6: token[i] = '6';
+						case 7: token[i] = '7';
+						case 8: token[i] = '8';
+						case 9: token[i] = '9';
+					}
+				}
+			}
+		}
+
+		mainStr[0] = EOS;
+		strcat(mainStr, "By usprawniæ miêdzy nami komunikacjê, musisz przepisaæ poni¿szy ci¹g znaków\naby wys³aæ tê wiadomoœæ. ");
+		strcat(mainStr, "Zapobiega to wiadomoœciom typu \"Jesteœ?\", czy \"Mogê o coœ zapytaæ?\".\nNie witaj siê i NIE PYTAJ ");
+		strcat(mainStr, "czy mamy czas, po prostu!\nAby odpowiedzieæ administratorowi bez wpisywania tokenu, u¿yj komendy /re.\n\n");
+		format(mainStr, sizeof(mainStr), "%s%s", mainStr, token);
+
+		ShowPlayerDialog(playerid, DIALOG_SEND_TOKEN, DIALOG_STYLE_INPUT, "Wiadomoœæ do administratora - token", mainStr, "Wyœlij", "Anuluj");
+	}
+
 	lastPmId[playerid] = pId;
 	lastPmId[pId] = playerid;
 	
@@ -87,7 +153,7 @@ CMD:re(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /re [tekst]");
 	}
 	
-	if(lastPmId[playerid] == -1) {
+	if(lastPmId[playerid] == INVALID_PLAYER_ID) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Gracz wylogowa³ siê lub nikt nie wysy³a³ Ci wiadomoœci.");
 	}
 	
@@ -413,7 +479,7 @@ CMD:login(playerid, params[]) {
 	SetPlayerName(playerid, pVars[playerid][pAccName]);
 	GetPlayerName(playerid, pVars[playerid][pAccName], 24);
 	
-	hasLoged[playerid] = true;
+	hasLogged[playerid] = true;
 	usedCmdLogin[playerid] = true;
 	
 	savePlayerValues(playerid);
@@ -429,13 +495,14 @@ CMD:login(playerid, params[]) {
 
 CMD:stats(playerid, params[]) {
 	new tmpStr[64];
+	new srvAreaId = getServerAreaIdForPlayer(playerid);
 	
 	mainStr[0] = EOS;
 	format(tmpStr, sizeof(tmpStr), "%s (UID %d, ID %d, Globalne %d) [%s]", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, pVars[playerid][pGuid], pVars[playerid][pIp]);
-	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nNa s³u¿bie:\t\t\t%dm\nAL:\t\t\t\t%d\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nSi³a:\t\t\t\t%d\nP³eæ:\t\t\t\t%s\nRz¹d:\t\t\t\t%d\nPrawko:\t\t\t%d\nHotel:\t\t\t\t%d\nPrzetrzymanie:\t\t\t%dh\nPDP:\t\t\t\t%d\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nTelefon:\t\t\t%d\nNumer konta:\t\t\t%d\nGrupy:\t\t\t\t%s\nSkin:\t\t\t\t%d\nWyje¿d¿one:\t\t\t%0.1fkm\nOstatni skin:\t\t\t%d\nDrzwi:\t\t\t\t%d\nZaproszenie od:\t\t%d", 
-	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pDuty], pVars[playerid][pAl], pVars[playerid][pAj], pVars[playerid][pBw] / 60, pVars[playerid][pHp], pVars[playerid][pStrength], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pGov], pVars[playerid][pDriverLicense], pVars[playerid][pHotel], pVars[playerid][pDetention], pVars[playerid][pPdp], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pTelNum], pVars[playerid][pBankAcc],
-	pVars[playerid][pGroupDesc], pVars[playerid][pSkin], pVars[playerid][pTraveled], pVars[playerid][pLastSkin], pVars[playerid][pDoors], pVars[playerid][pInvi]);
-	format(mainStr, sizeof(mainStr), "%s\n------\n1\t\tStyl rozmowy:\t\t\t%d\n2\t\tSzybki komputer:\t\t%s\n3\t\tAnimacja chodzenia:\t%s\n5\t\tStyl walki aktywny:\t\t%s", mainStr, pVars[playerid][pChatStyle], pVars[playerid][pComputer] ? ("T") : ("N"), "Brak", pVars[playerid][pStyleFight] ? ("T") : ("N"));
+	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nNa s³u¿bie:\t\t\t%dm\nAL:\t\t\t\t%d\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nSi³a:\t\t\t\t%d\nP³eæ:\t\t\t\t%s\nRz¹d:\t\t\t\t%d\nPrawko:\t\t\t%d\nHotel:\t\t\t\t%d\nPrzetrzymanie:\t\t\t%dh\nPDP:\t\t\t\t%d\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nTelefon:\t\t\t%d\nNumer konta:\t\t\t%d\nArea:\t\t\t\t%d (max %dkm/h)\nGrupy:\t\t\t\t%s\nSkin:\t\t\t\t%d\nWyje¿d¿one:\t\t\t%0.1fkm\nOstatni skin:\t\t\t%d\nDrzwi:\t\t\t\t%d\nAudio:\t\t\t\t%d", 
+	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pDuty], pVars[playerid][pAl], pVars[playerid][pAj], pVars[playerid][pBw] / 60, pVars[playerid][pHp], pVars[playerid][pStrength], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pGov], pVars[playerid][pDriverLicense], pVars[playerid][pHotel], pVars[playerid][pDetention], pVars[playerid][pPdp], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pTelNum], pVars[playerid][pBankAcc], pVars[playerid][pArea],
+	aVars[srvAreaId][aMaxSpeed], pVars[playerid][pGroupDesc], pVars[playerid][pSkin], pVars[playerid][pTraveled], pVars[playerid][pLastSkin], pVars[playerid][pDoors], pVars[playerid][pAudio]);
+	format(mainStr, sizeof(mainStr), "%s\n------\n1\tStyl rozmowy:\t\t%d\n2\tSzybki komputer:\t%s\n3\tAnimacja chodzenia:\t%s\n5\tStyl walki aktywny:\t%s", mainStr, pVars[playerid][pChatStyle], pVars[playerid][pComputer] ? ("T") : ("N"), "Brak", pVars[playerid][pStyleFight] ? ("T") : ("N"));
 	ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, tmpStr, mainStr, "OK", "Zamknij");
 	return 1;
 }
@@ -496,7 +563,7 @@ CMD:p(playerid, params[]) {
 		} else {
 			foreach(new i : itemItter) {
 				if(strfind(name, iVars[i][iName], true) != -1 && iVars[i][iOUid] == pVars[playerid][pUid]) {
-					choosedItem[playerid] = i;
+					actualItem[playerid] = i;
 					foundItem = true;
 				}
 			}
@@ -505,7 +572,7 @@ CMD:p(playerid, params[]) {
 				return GameTextForPlayer(playerid, "~r~Nie masz takiego przedmiotu.", 4000, 3);
 			}
 			
-			enableItemProperties(playerid, choosedItem[playerid], iVars[choosedItem[playerid]][iId]);
+			enableItemProperties(playerid, actualItem[playerid], iVars[actualItem[playerid]][iId]);
 		}
 	}
 	return 1;
@@ -746,6 +813,12 @@ CMD:drzwi(playerid, params[]) {
 }
 
 CMD:zamknij(playerid, params[]) {
+	new srvDoorId = getServerDoorIdForPlayer(playerid);
+	
+	if(dVars[srvDoorId][dOUid] != pVars[playerid][pUid]) {
+		return GameTextForPlayer(playerid, "~w~Nie posiadasz klucza~n~~r~~h~do tych drzwi.", 5000, 3);
+	}
+
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "* %s zamyka drzwi na klucz.", pVars[playerid][pCharName]);
 	sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);

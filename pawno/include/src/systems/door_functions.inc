@@ -14,6 +14,7 @@
 
 stock initDoorValues() {
 	queryStr[0] = EOS;
+	printf("Zaczynam ladowac drzwi...");
 	
 	for(new i = 0; i < MAX_DOORS; i++) {
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Doors` WHERE `UID` = '%d'", i + 1);

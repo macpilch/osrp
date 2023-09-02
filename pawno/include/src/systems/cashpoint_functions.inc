@@ -14,6 +14,7 @@
 
 stock initCashpointValues() {
 	queryStr[0] = EOS;
+	printf("Zaczynam ladowac bankomaty...");
 	
 	for(new i = 0; i < MAX_CASHPOINTS; i++) {
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Cashpoints` WHERE `UID` = '%d'", i + 1);

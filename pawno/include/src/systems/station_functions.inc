@@ -14,6 +14,7 @@
 
 stock initStationValues() {
 	queryStr[0] = EOS;
+	printf("Zaczynam ladowac stacje...");
 	
 	for(new i = 0; i < MAX_PETROL_STATIONS; i++) {
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Stations` WHERE `UID` = '%d'", i + 1);

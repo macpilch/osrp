@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: arrays.inc
 	Date: 25.07.2022
-	Modified: 24.08.2023
+	Modified: 31.08.2023
 */
 
 #if defined __ARRAYS_INC__
@@ -120,13 +120,14 @@ new animNames[][] = {
 };
 
 new itemNames[][] = {
-	"Rolki", "Piwo", "Wino", "Sprunk", "Teczka", "Cygaro", "Ubranie", "Telefon", "Kostka",
-	"Maska", "Rêkawice", "Kamizelka", "Kastet", "Szturmówka", "Nó¿", "Kij baseballowy", "Paralizator", "Pistolet",
-	"Desert Deagle", "Shotgun", "UZI", "MP5", "AK47", "M4", "Tec9", "Spadochron", "Cheeseburger",
+	"Rolki", "Piwo", "Wino", "Sprunk", "Teczka", "Torba", "Notatnik", "Cygaro", "Ubranie", "Telefon", "Kostka",
+	"Maska", "Rêkawice", "Kamizelka", "Kwiaty", "Kastet", "Szturmówka", "Nó¿", "Kij baseballowy", "Paralizator", "Pistolet",
+	"Deagle", "Shotgun", "UZI", "MP5", "AK-47", "M4", "Tec9", "Spadochron", "Cheeseburger",
 	"Zapiekanka", "Coca-Cola", "Cuba Libre", "Frytki", "Grove Burger", "Hamburger", "Herbata",
 	"Hot Dog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Longer", "Nachos z serem", "Naleœnik",
 	"Naleœniki", "P¹czek", "P¹czek Afro", "P¹czek Z³otawy", "Donut", "Sushi", "Woda Mineralna", "Discman",
-	"RadioParty", "CD", "Nokia 8110", "Vitamina C", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik", "Maska samochodowa"
+	"RadioParty", "CD", "Nokia 8110", "Vitamina C", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik", "Maska samochodowa",
+	"Kanister"
 };
 
 new VehicleNames[212][] = {
