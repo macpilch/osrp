@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: door.inc
 	Date: 10.09.2022
-	Modified: 07.08.2023
+	Modified: 04.09.2023
 */
 
 #if defined __DOOR_INC__
@@ -31,6 +31,15 @@ enum DoorData {
 	dPickup,
 	bool:dOpen,
 	bool:dTax,
+	dTaxDate[24],
+	dTaxCost,
+	dDimensions,
+	dObjects,
+	dMaxObjects,
+	dTexts,
+	dMaxTexts,
+	bool:dSecurity,
+	dSecurityName[32],
 	dVw,
 	dInt,
 	dType

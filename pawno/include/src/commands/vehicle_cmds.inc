@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_cmds.inc
 	Date: 25.07.2023
-	Modified: 02.09.2023
+	Modified: 05.09.2023
 */
 
 #if defined __VEHICLE_CMDS_INC__
@@ -48,7 +48,7 @@ CMD:v(playerid, params[]) {
 			
 			while(mysql_fetch_row(queryStr, "|")) {
 				sscanf(queryStr, "p<|>ii", tmpVVars[i][UID], tmpVVars[i][ModelID]);
-				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d  %s", mainStr, tmpVVars[i][UID], VehicleNames[tmpVVars[i][ModelID] - 400]);
+				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d   %s", mainStr, tmpVVars[i][UID], VehicleNames[tmpVVars[i][ModelID] - 400]);
 				
 				i++;
 			}

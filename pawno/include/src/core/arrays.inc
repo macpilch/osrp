@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: arrays.inc
 	Date: 25.07.2022
-	Modified: 31.08.2023
+	Modified: 04.09.2023
 */
 
 #if defined __ARRAYS_INC__
@@ -122,7 +122,7 @@ new animNames[][] = {
 new itemNames[][] = {
 	"Rolki", "Piwo", "Wino", "Sprunk", "Teczka", "Torba", "Notatnik", "Cygaro", "Ubranie", "Telefon", "Kostka",
 	"Maska", "Rêkawice", "Kamizelka", "Kwiaty", "Kastet", "Szturmówka", "Nó¿", "Kij baseballowy", "Paralizator", "Pistolet",
-	"Deagle", "Shotgun", "UZI", "MP5", "AK-47", "M4", "Tec9", "Spadochron", "Cheeseburger",
+	"Deagle", "Shotgun", "UZI", "MP5", "AK-47", "M4", "Tec9", "Spadochron", "Mat Wybuchowe", "Cheeseburger",
 	"Zapiekanka", "Coca-Cola", "Cuba Libre", "Frytki", "Grove Burger", "Hamburger", "Herbata",
 	"Hot Dog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Longer", "Nachos z serem", "Naleœnik",
 	"Naleœniki", "P¹czek", "P¹czek Afro", "P¹czek Z³otawy", "Donut", "Sushi", "Woda Mineralna", "Discman",

@@ -111,7 +111,8 @@
 #define INVALID_ITEM_ID -1
 #define ITEM_PLACE_PLAYER 0
 #define ITEM_PLACE_FLOOR 1
-#define ITEM_PLACE_BAG 2
+#define ITEM_PLACE_VEHICLE 2
+#define ITEM_PLACE_BAG 3
 
 // admin ranks
 #define HEADADMIN_RANK 4

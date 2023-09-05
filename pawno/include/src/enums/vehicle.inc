@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle.inc
 	Date: 29.07.2022
-	Modified: 07.08.2023
+	Modified: 05.09.2023
 */
 
 #if defined __VEHICLE_INC__
@@ -16,6 +16,7 @@ enum VehicleData {
 	vUid, //id from database	
 	vId,   // id in game
 	vOUid,  // vehicle owner
+	vGUid, // group uid
 	vCharName[24], // vehicle owner name
 	vModelId, // vehicle modelid
 	vColor1,

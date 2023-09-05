@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 25.07.2022
-	Modified: 02.09.2023
+	Modified: 05.09.2023
 */
 
 #if defined __PLAYER_PUBLICS_INC__
@@ -195,8 +195,10 @@ sampCallback:OSRP_OnPlayerDeath(playerid, killerid, reason) {
 		SendClientMessage(killerid, COLOR_WHITE, "{FF4444}Nie wolno Ci zabijaæ dopóki nie przekroczysz 10 godzin gry.");
 	}
 
-	format(reas, sizeof(reas), "Prawdopodobny DM~n~~w~Zabil %s(%d:%d), bron: %d, godzin: %d", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, GetPlayerWeapon(killerid), pVars[killerid][pHours]);
-	givePlayerPenalty(INVALID_PLAYER_ID, killerid, PEN_ADMJAIL, reas);
+	if(killerid != INVALID_PLAYER_ID) {
+		format(reas, sizeof(reas), "Prawdopodobny DM~n~~w~Zabil %s(%d:%d), bron: %d, godzin: %d", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, GetPlayerWeapon(killerid), pVars[killerid][pHours]);
+		return givePlayerPenalty(INVALID_PLAYER_ID, killerid, PEN_ADMJAIL, reas);
+	}
 
 	if(isPlayerDuty[playerid] && pVars[playerid][pDuty] > 0) {
 		pc_cmd_duty(playerid);
@@ -347,18 +349,17 @@ sampCallback:OSRP_OnPlayerCommandReceived(playerid, cmd[], params[], flags) {
 	calledCmds[playerid]++;
 	
 	if(calledCmds[playerid] > 7) {
-		if(GetTickCount() > calledSecsCmds[playerid]) {
+		if(GetTickCount() < calledSecsCmds[playerid]) {
 			new reas[64];
 			
 			format(reas, sizeof(reas), "Flood~n~~w~%d komend w ciagu 3. sekund.", calledCmds[playerid]);
 			
 			calledCmds[playerid] = 0;
 			calledSecsCmds[playerid] = 0;
-			//return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_KICK, reas);
-		} else {
-			calledCmds[playerid] = 0;
-			calledSecsCmds[playerid] = 0;
+			return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, reas); // kick
 		}
+		
+		calledCmds[playerid] = 0;
 	}
 	return 1;
 }
@@ -1157,6 +1158,39 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					*/
 				}
 				case 10: {
+					
+				}
+			}
+		}
+		
+		case DIALOG_GROUP_VEHICLE_SELECT: {
+			mainStr[0] = EOS;
+			
+			if(!response) {
+				strcat(mainStr, "{FFFFFF}1\tNamierz\n3\tZresetuj na spawnpoint\n5\tUstaw subownera\n2\tSkasuj ca³kowicie\n4\tOdpisz");
+				return ShowPlayerDialog(playerid, DIALOG_GROUP_VEHICLE_MORE, DIALOG_STYLE_LIST, "Wybór pojazdu > Wiêcej", mainStr, "OK", "Anuluj");
+			}
+		}
+		
+		case DIALOG_GROUP_VEHICLE_MORE: {
+			if(!response) {
+				return 1;
+			}
+			
+			switch(listitem) {
+				case 0: {
+					
+				}
+				case 1: {
+					
+				}
+				case 2: {
+					
+				}
+				case 3: {
+					
+				}
+				case 4: {
 					
 				}
 			}

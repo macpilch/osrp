@@ -4,7 +4,7 @@
 			MisterMagik
 	File: admin_cmds.inc
 	Date: 04.08.2022
-	Modified: 31.08.2023
+	Modified: 05.09.2023
 */
 
 #if defined __ADMIN_CMDS_INC__
@@ -430,7 +430,9 @@ CMD:freeze(playerid, params[]) {
 			SendClientMessage(playerid, COLOR_GREEN, mainStr);
 		}
 		case 1: {
+			GetPlayerPos(toPlayerid, pVars[toPlayerid][pX], pVars[toPlayerid][pY], pVars[toPlayerid][pZ]);
 			TogglePlayerControllable(toPlayerid, 0);
+			
 			isFreeze[toPlayerid] = true;
 			
 			SendClientMessage(toPlayerid, COLOR_GREEN, "Administracja zamrozi³a Ciê.");
@@ -533,7 +535,7 @@ CMD:apojazd(playerid, params[]) {
 		vVars[vehUid - 1][vUid] = 0;
 		vVars[vehUid - 1][vId] = 0;
 		vVars[vehUid - 1][vOUid] = 0;
-		vVars[vehUid - 1][vUid] = 0;
+		vVars[vehUid - 1][vGUid] = 0;
 		format(vVars[vehUid - 1][vCharName], 24, NULL);
 		format(vVars[vehUid - 1][vDescInfo], 64, NULL);
 		format(vVars[vehUid - 1][vPlate], 32, NULL);
@@ -578,6 +580,7 @@ CMD:apojazd(playerid, params[]) {
 		vVars[freeId][vUid] = freeId + 1;
 		vVars[freeId][vId] = vehicleId;
 		vVars[freeId][vOUid] = pVars[playerid][pUid];
+		vVars[freeId][vGUid] = 0;
 		format(vVars[freeId][vCharName], 24, "%s", pVars[playerid][pCharName]);
 		vVars[freeId][vModelId] = modelId;
 		vVars[freeId][vColor1] = color1;

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: dialogs.inc
 	Date: 25.07.2022
-	Modified: 31.08.2023
+	Modified: 04.09.2023
 */
 
 #if defined __DIALOGS_INC__
@@ -55,4 +55,6 @@
 #define DIALOG_SHOW_CASUAL_JOBS 41
 #define DIALOG_SHOW_CASUAL_JOBS_CHOICE 42
 #define DIALOG_SHOW_GROUP_STATS 43
+#define DIALOG_GROUP_VEHICLE_SELECT 44
+#define DIALOG_GROUP_VEHICLE_MORE 45
 #define DIALOG_DEFAULT 100

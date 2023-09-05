@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 01.09.2023
+	Modified: 05.09.2023
 */
 
 #if defined __TIMERS_INC__
@@ -503,20 +503,22 @@ task globalTimer[1000]() {
 					pVars[i][pTraveled] += getVehicleDistance(vVars[j][vId]);
 				}
 				
-				if(!vVars[j][vFuel]) {
+				if(vVars[j][vFuel] <= 0.0) {
 					new engine, lights, alarm, doors, bonnet, boot, objective;
-					
+
 					GetVehicleParamsEx(vVars[j][vId], engine, lights, alarm, doors, bonnet, boot, objective);
 					SetVehicleParamsEx(vVars[j][vId], 0, lights, alarm, doors, bonnet, boot, objective);
-					
-					vVars[j][vFuel] = 0;
+
+					vVars[j][vFuel] = 0.0;
 					vVars[j][vEngine] = false;
-					
-					GameTextForPlayer(i, "~r~Brak paliwa w pojezdzie.", 5000, 3);
+
+					if(IsPlayerInVehicle(i, vVars[j][vId])) {
+						SendClientMessage(i, COLOR_PURPLE, "** W pojeŸdzie %s koñczy siê paliwo. **", VehicleNames[vVars[j][vModelId] - 400]);
+					}
 				}
-				
+
 				GetVehicleHealth(vVars[j][vId], vVars[j][vEngineHp]);
-				
+
 				if(vVars[j][vEngineHp] <= 300.0) {
 					new engine, lights, alarm, doors, bonnet, boot, objective;
 					
@@ -647,31 +649,44 @@ task townHallBellsTimer[59000]() {
 
 task antiCheat[1000]() {
 	foreach(new i : Player) {
-		if(isFreeze[i] && isSpawned[i]) {
-			new reas[64];
+		if(hasLogged[i] && isSpawned[i]) {
+			new reas[80];
 			new Float:x, Float:y, Float:z, Float:totalPos;
-			
+
 			GetPlayerPos(i, x, y, z);
-			
-			if(IsPlayerInAnyVehicle(i) && getVehicleSpeed(vVars[actualVehicle[i]][vId]) > 0 && GetTickCount() < enteredVehicleSec[i]) {
-				enteredVehicleSec[i] = 0;
-				
-				format(reas, sizeof(reas), "Unfreeze~n~~w~3x ruch o %0.1fj podczas zamrozenia w pojezdzie.", getVehicleSpeed(vVars[actualVehicle[i]][vId]));
+
+			if((x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y) && !isFreeze[i]) {
+				format(reas, sizeof(reas), "Cheat, AirBreak~n~~w~Cheat, AirBreak: d%f tc%d d3.s%d", 21.952901, 68927653, 2261);
+				//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas);
+			}
+
+			if(getPlayerSpeed(i) > 30.0) {
+				format(reas, sizeof(reas), "Cheat, Teleport~n~~w~Cheat, Teleport: d%0.6f tc%d delta3s%d", 50.901912, 57113489, 2863);
 				return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas);
 			}
-			
-			if((x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y)) {
-				totalPos = (x - pVars[i][pX]) + (y - pVars[i][pY]);
+
+			if(isFreeze[i]) {
+				if(IsPlayerInAnyVehicle(i) && getVehicleSpeed(vVars[actualVehicle[i]][vId]) > 0 && (x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y)
+				   && GetTickCount() < enteredVehicleSec[i]) {
+					enteredVehicleSec[i] = 0;
+					totalPos = floatabs((x - pVars[i][pX]) + (y - pVars[i][pY]));
+					
+					format(reas, sizeof(reas), "Unfreeze~n~~w~3x ruch o %0.1fj podczas zamrozenia w pojezdzie.", totalPos);
+					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas);
+				}
 				
-				format(reas, sizeof(reas), "Ruch o %0.1fj podczas zamrozenia pieszo.", totalPos);
-				return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_BAN, reas);
+				if((x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y) && GetPlayerState(i) == PLAYER_STATE_ONFOOT) {
+					totalPos = floatabs((x - pVars[i][pX]) + (y - pVars[i][pY]));
+
+					format(reas, sizeof(reas), "Unfreeze~n~~w~Ruch o %0.1fj podczas zamrozenia pieszo.", totalPos);
+					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas);
+				}
 			}
 		}
-		
+
 		//format(reas, sizeof(reas), "Forced seat takeover");
 		//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, reas);
 	}
-	return 1;
 }
 
 task giveFreeMoneyTimer[590000]() {

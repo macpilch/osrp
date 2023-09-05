@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: item_functions.inc
 	Date: 14.08.2022
-	Modified: 02.09.2023
+	Modified: 04.09.2023
 */
 
 #if defined __ITEM_FUNCTIONS_INC__
@@ -382,15 +382,15 @@ stock saveItemWeaponAmmo(srvitemid) {
 
 stock pickUpNearblyItems(playerid) {
 	new srvVehId = actualVehicle[playerid], count;
-	
+
 	if(vVars[srvVehId][vOUid] != pVars[playerid][pUid]) {
 		return GameTextForPlayer(playerid, "~y~Ten pojazd nie nalezy do ciebie.", 5000, 3);
 	}
-	
+
 	mainStr[0] = EOS;
 	foreach(new i : itemItter) {
-		if(iVars[i][iPlace] == ITEM_PLACE_FLOOR && actualItem[playerid] == INVALID_ITEM_ID && iVars[i][iOUid] == INVALID_PLAYER_ID) {
-			if(playerToPoint(playerid, 5.0, iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ])) {
+		if(((iVars[i][iPlace] == ITEM_PLACE_FLOOR && iVars[i][iOUid] == INVALID_PLAYER_ID) || iVars[i][iPlace] == ITEM_PLACE_VEHICLE) && actualItem[playerid] == INVALID_ITEM_ID) {
+			if(playerToPoint(playerid, 5.0, iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ]) || playerToPoint(playerid, 3.0, vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ])) {
 				format(mainStr, sizeof(mainStr), "%s{FFFFFF}%d\t%s\n", mainStr, iVars[i][iUid], iVars[i][iName]);
 				
 				count++;

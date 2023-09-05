@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_functions.inc
 	Date: 29.07.2022
-	Modified: 07.08.2023
+	Modified: 05.09.2023
 */
 
 #if defined __VEHICLE_FUNCTIONS_INC__
@@ -27,7 +27,7 @@ stock initVehicleValues() {
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iiis[24]iiiffffiifiifs[64]s[32]", vVars[i][vUid], vVars[i][vId], vVars[i][vOUid], vVars[i][vCharName], vVars[i][vModelId], vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vFuel], 
+		sscanf(queryStr, "p<|>iiiis[24]iiiffffiifiifs[64]s[32]", vVars[i][vUid], vVars[i][vId], vVars[i][vOUid], vVars[i][vGUid], vVars[i][vCharName], vVars[i][vModelId], vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vFuel], 
 		vVars[i][vLock], vVars[i][vEngine], vVars[i][vEngineHp], vVars[i][vSpawned], vVars[i][vLights], vVars[i][vMileage], vVars[i][vDescInfo], vVars[i][vPlate]);
 		
 		Iter_Add(vehItter, i);
@@ -37,8 +37,8 @@ stock initVehicleValues() {
 		vehMapIcon[i] = INVALID_PLAYER_ID;
 		
 #if defined DEBUG
-		printf("[DEBUG]: Uid: %d, Id: %d, OUid: %d, Charname: %s, ModelId: %d, Color1: %d, Color2: %d, X: %f, Y: %f, Z: %f, Fuel: %f, Lock: %d, Engine: %d, EngineHp: %f, Spawned: %d, Lights: %d, Mileage: %f, Desc: %s, Plate: %s", vVars[i][vUid], vVars[i][vId], vVars[i][vOUid], 
-		vVars[i][vCharName], vVars[i][vModelId], vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vFuel], vVars[i][vLock], vVars[i][vEngine], vVars[i][vEngineHp], vVars[i][vSpawned], vVars[i][vLights], vVars[i][vMileage], vVars[i][vDescInfo],
+		printf("[DEBUG]: Uid: %d, Id: %d, OUid: %d, GUid: %d, Charname: %s, ModelId: %d, Color1: %d, Color2: %d, X: %f, Y: %f, Z: %f, Fuel: %f, Lock: %d, Engine: %d, EngineHp: %f, Spawned: %d, Lights: %d, Mileage: %f, Desc: %s, Plate: %s", vVars[i][vUid], vVars[i][vId], vVars[i][vOUid], 
+		vVars[i][vGUid], vVars[i][vCharName], vVars[i][vModelId], vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vFuel], vVars[i][vLock], vVars[i][vEngine], vVars[i][vEngineHp], vVars[i][vSpawned], vVars[i][vLights], vVars[i][vMileage], vVars[i][vDescInfo],
 		vVars[i][vPlate]);
 #endif
 	}
@@ -288,11 +288,11 @@ stock bool:isVehicleInUse(vehicleid) {
 }
 
 stock Float:getVehicleDistance(vehicleid) {
-	new Float:vehicleDistance;
+	new Float:vehDistance;
 	
-	vehicleDistance = getVehicleSpeed(vehicleid) * (1000 / 3600);
-	vehicleDistance /= 1000;
-	return vehicleDistance;
+	vehDistance = getVehicleSpeed(vehicleid) * 1000 / 3600 / 1;
+	vehDistance = vehDistance / 1000;
+	return vehDistance;
 }
 
 stock getVehicleModelIdFromName(const vname[]) {

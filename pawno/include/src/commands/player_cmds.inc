@@ -40,7 +40,7 @@ CMD:w(playerid, params[]) {
 	}
 	
 	if(!IsPlayerConnected(pId)) {
-		return GameTextForPlayer(playerid, "~r~Taki gracz nie istnieje.", 5000, 3);
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
 	if(!chatMessages[pId][0]) {
@@ -711,10 +711,10 @@ CMD:g(playerid, params[]) {
 	}
 	
 	new type[8];
+	new srvGrpId = getServerGroupIdForPlayer(playerid);
 	
 	if(sscanf(params, "s[8]", type)) {
 		if(!showGroupsInfo[playerid]) {
-			new srvGrpId = getServerGroupIdForPlayer(playerid);
 			new tmp[32];
 			
 			format(tmp, sizeof(tmp), "~b~1  ~w~%s (%d)", gVars[srvGrpId][gName], gVars[srvGrpId][gUid]);
@@ -743,16 +743,51 @@ CMD:g(playerid, params[]) {
 		}
 	} else {
 		if(strfind(type, "info", true) != -1) {
-			new srvGrpId = getServerGroupIdForPlayer(playerid);
 			new str[32];
 			
 			mainStr[0] = EOS;
 			format(str, sizeof(str), "%s", gVars[srvGrpId][gName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}UID:\t\t\t\t%d\nKonto:\t\t\t %d USD\nLimit pojazdów:\t\t\t\t%d\nRodzaj:\t\t\t\t%d\nFlagi:\t\t\t%d\n\n", gVars[srvGrpId][gUid], gVars[srvGrpId][gMoney], gVars[srvGrpId][gVehsLimit], gVars[srvGrpId][gType], gVars[srvGrpId][gFlags]);
-			format(mainStr, sizeof(mainStr), "%s1\t\tCzat OOC aktywny:\t\t\t\t%s\n2\t\tCzat IC aktywny:\t\t\t\t%s", mainStr, gVars[srvGrpId][gChatOOC] ? ("T") : ("N"), gVars[srvGrpId][gChatIC] ? ("T") : ("N"));
+			format(mainStr, sizeof(mainStr), "{FFFFFF}UID:\t\t\t%d\nKonto:\t\t\t%d USD\nLimit pojazdów:\t\t%d\nRodzaj:\t\t\t%d\nFlagi:\t\t\t%d", gVars[srvGrpId][gUid], gVars[srvGrpId][gMoney], gVars[srvGrpId][gVehsLimit], gVars[srvGrpId][gType], gVars[srvGrpId][gFlags]);
+			format(mainStr, sizeof(mainStr), "%s\n\n1\tCzat OOC aktywny:\t\t%s\n2\tCzat IC aktywny:\t\t%s", mainStr, gVars[srvGrpId][gChatOOC] ? ("T") : ("N"), gVars[srvGrpId][gChatIC] ? ("T") : ("N"));
 			ShowPlayerDialog(playerid, DIALOG_SHOW_GROUP_STATS, DIALOG_STYLE_LIST, str, mainStr, "OK", "Zamknij");
+
+			SendClientMessage(playerid, COLOR_GRAY, "Tip: /g [info/z/zadania/v/zapros/wypros/wplac/wyplac/magazyn/online/gps]");
+		} else if(strfind(type, "z", true) == 0 || strfind(type, "zadania", true) != -1) {
 			
-			SendClientMessage(playerid, COLOR_GRAY, "Tip: /g [info/z/zadania/v/zapros/wypros/wplac/wyplac/magazyn/online/gps/db]");
+		} else if(strfind(type, "v", true) == 0) {
+			enum Values {
+				UID,
+				ModelID,
+				Health,
+				Spawned
+			};
+
+			new tmpVVars[5][Values];
+			new i;
+			
+			mainStr[0] = EOS;
+			queryStr[0] = EOS;
+			
+			format(queryStr, sizeof(queryStr), "SELECT `UID`, `ModelID`, `EngineHealth`, `Spawned` FROM `osrp_Vehicles` WHERE `GUID` = '%d'", gVars[srvGrpId][gUid]);
+			mysql_query(queryStr);
+			
+			mysql_store_result();
+			
+			while(mysql_fetch_row(queryStr, "|")) {
+				sscanf(queryStr, "p<|>iifi", tmpVVars[i][UID], tmpVVars[i][ModelID], tmpVVars[i][Health], tmpVVars[i][Spawned]);
+
+				if(tmpVVars[i][Spawned]) {
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%0.1f\t%s*", mainStr, tmpVVars[i][UID], tmpVVars[i][Health], VehicleNames[tmpVVars[i][ModelID] - 400]);
+				} else {
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%0.1f\t%s", mainStr, tmpVVars[i][UID], tmpVVars[i][Health], VehicleNames[tmpVVars[i][ModelID] - 400]);
+				}
+
+				i++;
+			}
+
+			mysql_free_result();
+			ShowPlayerDialog(playerid, DIALOG_GROUP_VEHICLE_SELECT, DIALOG_STYLE_LIST, "Wybór pojazdu (* = zespawnowany)", mainStr, "(Un)spawn", "Wiêcej");
+			
 		} else if(strfind(type, "zapros", true) != -1) {
 			new pId;
 			new cmdParams[2];
@@ -763,9 +798,10 @@ CMD:g(playerid, params[]) {
 			
 			pVars[pId][pGroup] = pVars[playerid][pGroup];
 			sendOfferToPlayer(playerid, pId, cmdParams, O_ZAPRGRP);
+		} else if(strfind(type, "wypros", true) != -1) {
+		
 		} else if(strfind(type, "wplac", true) != -1) {
 			new money;
-			new srvGrpId = getServerGroupIdForPlayer(playerid);
 			
 			if(sscanf(params, "s[8]i", type, money)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /g wplac [Kwota]");
@@ -779,7 +815,6 @@ CMD:g(playerid, params[]) {
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 		} else if(strfind(type, "wyplac", true) != -1) {
 			new money;
-			new srvGrpId = getServerGroupIdForPlayer(playerid);
 			
 			if(sscanf(params, "s[8]i", type, money)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /g wyplac [Kwota]");
@@ -790,7 +825,19 @@ CMD:g(playerid, params[]) {
 			
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "Wyp³acono $%d z konta grupy.", money);
-			SendClientMessage(playerid, COLOR_WHITE, mainStr);			
+			SendClientMessage(playerid, COLOR_WHITE, mainStr);
+		} else if(strfind(type, "magazyn", true) != -1) {
+			
+		} else if(strfind(type, "online", true) != -1) {
+			mainStr[0] = EOS;
+
+			foreach(new i : Player) {
+				if(isPlayerDuty[i] && pVars[i][pDuty] > 0 && pVars[i][pGroup] == pVars[playerid][pGroup]) {
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s*", mainStr, i, pVars[i][pCharName]);
+				}
+			}
+
+			ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_LIST, "Lista graczy", mainStr, "OK", "Zamknij");
 		} else if(strfind(type, "gps", true) != -1) {
 			format(mainStr, sizeof(mainStr), "* %s aktywuje namierzanie GPS.");
 		} else {
@@ -803,12 +850,15 @@ CMD:g(playerid, params[]) {
 CMD:drzwi(playerid, params[]) {
 	new str[64];
 	new srvDoorId = getServerDoorIdForPlayer(playerid);
-	
-	format(str, sizeof(str), "Drzwi %d (Op³acone: %s, do zap³aty: $%d: %d m2)", dVars[srvDoorId][dUid]);
-	
-	mainStr[0] = EOS;
-	strcat(mainStr, "{FFFFFF}1\t\tPoka¿ informacje*\n34\t\tOchrona: brak");
-	ShowPlayerDialog(playerid, DIALOG_SHOW_DOORS_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
+
+	if(dVars[srvDoorId][dOUid] == pVars[playerid][pUid]) {
+		format(str, sizeof(str), "Drzwi %d (Op³acone: %s, do zap³aty: $%d; %d m2)", dVars[srvDoorId][dUid], dVars[srvDoorId][dTaxDate], dVars[srvDoorId][dTaxCost], dVars[srvDoorId][dDimensions]);
+
+		mainStr[0] = EOS;
+		format(mainStr, sizeof(mainStr), "{FFFFFF}1\t\tPoka¿ informacje*\n27\tPrzypisz obiekty (%d + %d przypisanych)\n29\tPrzypisz napisy (%d + %d przypisanych)\n13\tWczytaj mapê obiektów\n30\tSkasuj ostatni obiekt (w razie crashów)\n40\tWykonaj kopiê zapasow¹\n4\tZmieñ interior (widocznoœæ przez okna)\n", dVars[srvDoorId][dMaxObjects], dVars[srvDoorId][dObjects], dVars[srvDoorId][dMaxTexts], dVars[srvDoorId][dTexts]);
+		format(mainStr, sizeof(mainStr), "2\tEdytuj wewnêtrzn¹ pozycjê\n31\tEdytuj wymiary wnêtrza\n20\tW(y)³¹cz przejazd pojazdami\n24\tPrzepisz budynek pod grupê\n16\tZmieñ wyœwietlan¹ nazwê\n35\tPrze³¹cz pickup\n15\tUstal op³atê za wejœcie\n21\tZakup system HiFi ($2500)\n22\tZakup szafê na szyfr ($2000)\n34\t\tOchrona: %s");
+		ShowPlayerDialog(playerid, DIALOG_SHOW_DOORS_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
+	}
 	return 1;
 }
 
