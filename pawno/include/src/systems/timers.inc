@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 05.09.2023
+	Modified: 10.09.2023
 */
 
 #if defined __TIMERS_INC__
@@ -248,19 +248,23 @@ task globalTimer[1000]() {
 						}						
 					}
 				} else if(pVars[i][pStrength] > 3000) {
-					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
-						if(pVars[i][pHours] > 20) {
-							format(timerStr, sizeof(timerStr), "%s (%d)\n(%dj, %s)\n[%s]", pVars[i][pCharName], i, pVars[i][pStrength], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
-						} else {
-							format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(%dj, %s)\n[%s]", pVars[i][pCharName], i, pVars[i][pHours], pVars[i][pStrength], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
-						}
+					if(hasBelts[i]) {
+						format(timerStr, sizeof(timerStr), "%s (%d)\n(%dj, %s, pasy)", pVars[i][pCharName], i, pVars[i][pStrength], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 					} else {
-						if(pVars[i][pHours] > 20) {
-							format(timerStr, sizeof(timerStr), "%s (%d)\n(%dj, %s)", pVars[i][pCharName], i, pVars[i][pStrength], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+						if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
+							if(pVars[i][pHours] > 20) {
+								format(timerStr, sizeof(timerStr), "%s (%d)\n(%dj, %s)\n[%s]", pVars[i][pCharName], i, pVars[i][pStrength], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
+							} else {
+								format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(%dj, %s)\n[%s]", pVars[i][pCharName], i, pVars[i][pHours], pVars[i][pStrength], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
+							}
 						} else {
-							format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(%dj, %s)", pVars[i][pCharName], i, pVars[i][pHours], pVars[i][pStrength], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
-						}						
-					}			
+							if(pVars[i][pHours] > 20) {
+								format(timerStr, sizeof(timerStr), "%s (%d)\n(%dj, %s)", pVars[i][pCharName], i, pVars[i][pStrength], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+							} else {
+								format(timerStr, sizeof(timerStr), "%s (%d, %dh)\n(%dj, %s)", pVars[i][pCharName], i, pVars[i][pHours], pVars[i][pStrength], pVars[i][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+							}						
+						}
+					}
 				} else {
 					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
 						if(pVars[i][pHours] > 20) {
@@ -417,7 +421,7 @@ task globalTimer[1000]() {
 			}
 		}
 		
-		if(pVars[i][pHp] <= 5.0 && !isBW[i] && isSpawned[i]) {
+		if((pVars[i][pHp] >= 5.0 && pVars[i][pHp] <= 10.0) && !isBW[i] && isSpawned[i]) {
 			setPlayerHealthEx(i, 5.0);
 			setPlayerBW(i, 3);
 		}
@@ -513,7 +517,8 @@ task globalTimer[1000]() {
 					vVars[j][vEngine] = false;
 
 					if(IsPlayerInVehicle(i, vVars[j][vId])) {
-						SendClientMessage(i, COLOR_PURPLE, "** W pojeŸdzie %s koñczy siê paliwo. **", VehicleNames[vVars[j][vModelId] - 400]);
+						format(timerStr, sizeof(timerStr), "** W pojeŸdzie %s koñczy siê paliwo. **", VehicleNames[vVars[j][vModelId] - 400]);
+						SendClientMessage(i, COLOR_PURPLE, timerStr);
 					}
 				}
 
@@ -611,13 +616,13 @@ task updatePlayerArea[1000]() {
 				pVars[i][pArea] = aVars[j][aUid];
 				
 				if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
-					if(aVars[j][aMaxSpeed] < 999) {
+					/*if(aVars[j][aMaxSpeed] < 999) {
 						format(timerStr, sizeof(timerStr), "~w~Max ~r~%d km/h", aVars[j][aMaxSpeed]);
 					} else {
 						format(timerStr, sizeof(timerStr), "~w~Limit: ~g~~h~Brak");
-					}
+					}*/
 					
-					GameTextForPlayer(i, timerStr, 3000, 5);
+					GameTextForPlayer(i, "TEST", 3000, 5);
 					
 					if(getVehicleSpeed(vVars[srvVehId][vId]) > aVars[j][aMaxSpeed]) {
 						
@@ -630,18 +635,23 @@ task updatePlayerArea[1000]() {
 
 task townHallBellsTimer[59000]() {
 	new hours, minutes, seconds;
-	
+
 	gettime(hours, minutes, seconds);
-	
+
 	foreach(new i : Player) {
-		if((hours >= 0 && hours <= 23) && minutes == 0) {
-			timerStr[0] = EOS;
-			
-			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d razy. **", hours);
-			SendClientMessage(i, COLOR_WHITE, timerStr);
+		timerStr[0] = EOS;
+
+		if(hours == 0 && minutes == 0) {
+			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu wybi³y pó³noc. **");
+		} else if(hours == 1 && minutes == 0) {
+			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d raz. **", hours);
+		//} else if((hours >= 2 && hours <= 23) && minutes == 0) {
+			//format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d razy. **", hours);
 		}
+
+		SendClientMessage(i, COLOR_WHITE, timerStr);
 	}
-	
+
 	if(hours == 0) {
 		changePricesGasPumps();
 	}
@@ -657,12 +667,12 @@ task antiCheat[1000]() {
 
 			if((x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y) && !isFreeze[i]) {
 				format(reas, sizeof(reas), "Cheat, AirBreak~n~~w~Cheat, AirBreak: d%f tc%d d3.s%d", 21.952901, 68927653, 2261);
-				//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas);
+				//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
 			}
 
 			if(getPlayerSpeed(i) > 30.0) {
 				format(reas, sizeof(reas), "Cheat, Teleport~n~~w~Cheat, Teleport: d%0.6f tc%d delta3s%d", 50.901912, 57113489, 2863);
-				return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas);
+				//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
 			}
 
 			if(isFreeze[i]) {
@@ -672,21 +682,22 @@ task antiCheat[1000]() {
 					totalPos = floatabs((x - pVars[i][pX]) + (y - pVars[i][pY]));
 					
 					format(reas, sizeof(reas), "Unfreeze~n~~w~3x ruch o %0.1fj podczas zamrozenia w pojezdzie.", totalPos);
-					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas);
+					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
 				}
 				
 				if((x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y) && GetPlayerState(i) == PLAYER_STATE_ONFOOT) {
 					totalPos = floatabs((x - pVars[i][pX]) + (y - pVars[i][pY]));
 
 					format(reas, sizeof(reas), "Unfreeze~n~~w~Ruch o %0.1fj podczas zamrozenia pieszo.", totalPos);
-					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas);
+					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
 				}
 			}
 		}
 
 		//format(reas, sizeof(reas), "Forced seat takeover");
-		//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, reas);
+		//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, reas, 0);
 	}
+	return 1;
 }
 
 task giveFreeMoneyTimer[590000]() {

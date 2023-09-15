@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 02.09.2023
+	Modified: 10.09.2023
 */
 
 #if defined __PLAYER_CMDS_INC__
@@ -26,6 +26,17 @@ CMD:pomoc(playerid, params[]) {
 	return pc_cmd_help(playerid, params);
 }
 
+CMD:anim(playerid, params[]) {
+	mainStr[0] = EOS;
+	
+	for(new i = 0; i < sizeof(animNames); i++) {
+		format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}//%s", mainStr, animNames[i]);
+	}
+	
+	ShowPlayerDialog(playerid, DIALOG_SHOW_ANIMATIONS, DIALOG_STYLE_LIST, "Lista Animacji", mainStr, "Wybierz", "Zamknij");
+	return 1;
+}
+
 CMD:w(playerid, params[]) {
 	new pId;
 	new pmStr[128];
@@ -42,7 +53,15 @@ CMD:w(playerid, params[]) {
 	if(!IsPlayerConnected(pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
-	
+
+	if(playerAFKTime[pId] > 0) {
+		for(new i = 0; i < 2; i++) {
+			TextDrawShowForPlayer(playerid, afkPrivateMessage[playerid][i]);
+		}
+		
+		SetTimerEx("hidePlayerTextDraws", 5000, false, "ia[2]i", playerid, afkPrivateMessage[playerid], sizeof(afkPrivateMessage));
+	}
+
 	if(!chatMessages[pId][0]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Ten gracz ma wy³¹czone wiadomoœci.");
 	}
@@ -55,7 +74,7 @@ CMD:w(playerid, params[]) {
 		//return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, "Proba ominiecia blokady OOC");
 	}
 
-	if(pVars[pId][pRank] > 0) {
+	if(pVars[pId][pRank] > SUPPORT_RANK) {
 		new token[16];
 		new randL, randN;
 
@@ -118,7 +137,7 @@ CMD:w(playerid, params[]) {
 		strcat(mainStr, "czy mamy czas, po prostu!\nAby odpowiedzieæ administratorowi bez wpisywania tokenu, u¿yj komendy /re.\n\n");
 		format(mainStr, sizeof(mainStr), "%s%s", mainStr, token);
 
-		ShowPlayerDialog(playerid, DIALOG_SEND_TOKEN, DIALOG_STYLE_INPUT, "Wiadomoœæ do administratora - token", mainStr, "Wyœlij", "Anuluj");
+		return ShowPlayerDialog(playerid, DIALOG_SEND_TOKEN, DIALOG_STYLE_INPUT, "Wiadomoœæ do administratora - token", mainStr, "Wyœlij", "Anuluj");
 	}
 
 	lastPmId[playerid] = pId;
@@ -164,7 +183,7 @@ CMD:re(playerid, params[]) {
 
 CMD:d(playerid, params[]) {
 	new srvGrpId = getServerGroupIdForPlayer(playerid);
-	
+
 	if(gVars[srvGrpId][gType] != G_LSPD) {
 		return 1;
 	}
@@ -371,7 +390,7 @@ CMD:sprobuj(playerid, params[]) {
 	new randCase;
 	new actionCases[][] = {
 		"odniós³ sukces próbuj¹c",
-		"odniós³ pora¿kê próbuj¹c"
+		"zawiód³ próbuj¹c"
 	};
 	
 	if(sscanf(params, "s[128]", action)) {
@@ -690,7 +709,7 @@ CMD:time(playerid, params[]) {
 	new str[32];
 	
 	gettime(hours, minutes, seconds);
-	applyAnimationEx(playerid, "PLAYIDLES", "TIME", 4.1, 0, 1, 1, 1, 1, 1);
+	applyAnimationEx(playerid, "PLAYIDLES", "TIME", 4.1, 0, 0, 0, 0, 0, 1);
 	
 	format(str, sizeof(str), "~w~godzina: ~p~%02d:%02d:%02d~w~.", hours, minutes, seconds);
 	GameTextForPlayer(playerid, str, 7000, 1);
@@ -925,7 +944,7 @@ CMD:przeszukaj(playerid, params[]) {
 CMD:report(playerid, params[]) {
 	new str[256], reason[128];
 	new pId;
-	
+
 	if(usedCmdReport[playerid]) {
 		SendClientMessage(playerid, COLOR_WHITE, "Mo¿esz wysy³aæ tylko jeden raport na minutê. Spokojnie, albo ktoœ przygl¹da siê ju¿ sytuacji,");
 		SendClientMessage(playerid, COLOR_WHITE, "albo tak czy inaczej wszyscy s¹ zajêci innym raportem i powielanie Twojego nic nie zmieni.");
@@ -933,7 +952,7 @@ CMD:report(playerid, params[]) {
 		SetTimerEx("refreshCmds", 60000, false, "ii", playerid, 1);
 		return 1;
 	}
-	
+
 	if(sscanf(params, "is[128]", pId, reason)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /report [ID Gracza] [Treœæ]");
 	}
@@ -954,6 +973,8 @@ CMD:report(playerid, params[]) {
 	SendClientMessage(pId, COLOR_WHITE, "{A52A2A}czynnoœci ma³o odzwierciedla prawdziwe ¿ycie lub odstaje od gry reszty osób.");
 	SendClientMessage(pId, COLOR_WHITE, "{A52A2A}Czy na pewno masz na uwadze równie¿ innych graczy i ich rozgrywkê?");
 	SendClientMessage(pId, COLOR_WHITE, "{A52A2A}Spokojnie, zawsze weryfikujemy raporty.");
+	
+	SendClientMessage(playerid, COLOR_WHITE, "Kolejna osoba raportowa³a tego samego gracza, co Ty. Nie bêdziesz ju¿ otrzymywa³(a) informacji o reakcji ekipy.");
 	return 1;
 }
 
@@ -1027,6 +1048,8 @@ CMD:wyrzuc(playerid, params[]) {
 
 CMD:duty(playerid) {
 	new srvGrpId = getServerGroupIdForPlayer(playerid);
+	
+	//SendClientMessage(playerid, COLOR_GRAY, "Tip: /duty [slot grupy, 1-8] - swoje grupy oraz ich sloty mo¿esz poznaæ komend¹ /g.");
 	
 	if(pVars[playerid][pGroup] != 0) {
 		if(isPlayerDuty[playerid]) {

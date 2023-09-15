@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_functions.inc
 	Date: 29.07.2022
-	Modified: 05.09.2023
+	Modified: 10.09.2023
 */
 
 #if defined __VEHICLE_FUNCTIONS_INC__
@@ -302,6 +302,18 @@ stock getVehicleModelIdFromName(const vname[]) {
 		}
 	}
 	return -1;
+}
+
+stock getNearestVehicleIdForPlayer(vehicleid) {
+	new pId;
+
+	foreach(new i : Player) {
+		if(GetPlayerVehicleID(i) == vehicleid && IsPlayerInAnyVehicle(i)) {
+			pId = i;
+			break;
+		}
+	}
+	return pId;
 }
 
 stock isCar(modelid) {

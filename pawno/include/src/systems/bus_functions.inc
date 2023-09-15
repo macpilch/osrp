@@ -55,7 +55,7 @@ stock searchPlayerBusStop(playerid) {
 			GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);	
 			SetCameraBehindPlayer(playerid);
 			
-			SetPlayerCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+			SetPlayerCameraLookAt(playerid, pVars[playerid][pX] - 200, pVars[playerid][pY] - 200, pVars[playerid][pZ]);
 			SetPlayerCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 			
 			InterpolateCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 80, 4000, CAMERA_MOVE);

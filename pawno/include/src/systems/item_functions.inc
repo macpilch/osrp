@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: item_functions.inc
 	Date: 14.08.2022
-	Modified: 04.09.2023
+	Modified: 11.09.2023
 */
 
 #if defined __ITEM_FUNCTIONS_INC__
@@ -62,7 +62,7 @@ stock addPlayerItem(playerid, itemid) {
 	iVars[freeId][iUid] = freeId + 1;
 	iVars[freeId][iId] = itemid;
 	iVars[freeId][iOUid] = pVars[playerid][pUid];
-	iVars[freeId][iVUid] = 0;
+	iVars[freeId][iVUid] = INVALID_SERVER_VEHICLE_ID;
 	format(iVars[freeId][iName], 32, itemNames[itemid]);
 	iVars[freeId][iValues] = 0;
 	iVars[freeId][iPosX] = 0.0;
@@ -74,7 +74,7 @@ stock addPlayerItem(playerid, itemid) {
 	Iter_Add(itemItter, freeId);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Items` (`UID`, `ID`, `OUID`, `Name`, `Values`, `Used`, `Place`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d', '%d')", iVars[freeId][iUid], iVars[freeId][iId], iVars[freeId][iOUid], iVars[freeId][iName], iVars[freeId][iValues], iVars[freeId][iUsed], iVars[freeId][iPlace]);
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Items` (`UID`, `ID`, `OUID`, `VUID`, `Name`, `Values`, `Used`, `Place`) VALUES ('%d', '%d', '%d', '%d', '%s', '%d', '%d', '%d')", iVars[freeId][iUid], iVars[freeId][iId], iVars[freeId][iOUid], iVars[freeId][iVUid], iVars[freeId][iName], iVars[freeId][iValues], iVars[freeId][iUsed], iVars[freeId][iPlace]);
 	mysql_query(queryStr);
 	
 	if(iVars[freeId][iId] == P_TELEFON || iVars[freeId][iId] == P_NKA8110) {
@@ -119,9 +119,9 @@ stock removePlayerItem(srvitemid) {
 	Iter_Remove(itemItter, srvitemid);
 	
 	iVars[srvitemid][iUid] = 0;
+	iVars[srvitemid][iId] = -1;
 	iVars[srvitemid][iOUid] = 0;
 	iVars[srvitemid][iVUid] = 0;
-	iVars[srvitemid][iId] = -1;
 	format(iVars[srvitemid][iName], 32, NULL);
 	iVars[srvitemid][iValues] = 0;
 	iVars[srvitemid][iPosX] = 0.0;
@@ -328,6 +328,8 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			strcat(mainStr, "Sk¹d wyci¹gasz/dok¹d chowasz broñ (np. \"z kabury\")?\n\n");
 			strcat(mainStr, "Mo¿esz pomin¹æ ten dialog i szybciej u¿ywaæ przedmiotów (/pomoc -> Przedmioty).");
 			ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PARAMETERS, DIALOG_STYLE_INPUT, "Parametry", mainStr, "U¿yj", "Anuluj");
+			
+			//format(mainStr, sizeof(mainStr), "* %s uzupe³nia amunicjê swojej broni.", pVars[playerid][pCharName]);
 		}
 		case P_CHEESBURG, P_ZAPIEK, P_FRYTKI, P_GRVBURGER, P_HAMBGRG, P_HOTDOG, P_KEBAB, P_LODY, P_LODYWKBK, P_LONGER, P_NACHOSZS, P_NALESNIK, P_NALESNIKI, P_PACZEK, P_PACZEKAFRO, P_PACZEKZLT, P_DONUT, P_SUSHI: {
 			iVars[srvitemid][iUsed] = true;
@@ -383,7 +385,7 @@ stock saveItemWeaponAmmo(srvitemid) {
 stock pickUpNearblyItems(playerid) {
 	new srvVehId = actualVehicle[playerid], count;
 
-	if(vVars[srvVehId][vOUid] != pVars[playerid][pUid]) {
+	if(IsPlayerInAnyVehicle(playerid) && vVars[srvVehId][vOUid] != pVars[playerid][pUid]) {
 		return GameTextForPlayer(playerid, "~y~Ten pojazd nie nalezy do ciebie.", 5000, 3);
 	}
 
@@ -434,7 +436,7 @@ stock showDialogItems(playerid) {
 		TextDrawShowForPlayer(playerid, itemTips[playerid][j]);
 	}
 	
-	SetTimerEx("hideItemTips", 5000, false, "i", playerid);
+	SetTimerEx("hideItemTips", 4000, false, "i", playerid);
 	
 	format(mainStr, sizeof(mainStr), "Przedmioty znajduj¹ce siê przy Tobie:\n%s\nPodnieœ przedmiot...", mainStr);
 	ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS, DIALOG_STYLE_LIST, "Dostêpne przedmioty", mainStr, "U¿yj", "Wiêcej");

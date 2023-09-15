@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_publics.inc
 	Date: 29.07.2022
-	Modified: 14.08.2023
+	Modified: 10.09.2023
 */
 
 #if defined __VEHICLE_PUBLICS_INC__
@@ -22,7 +22,12 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		
 		SendClientMessage(playerid, COLOR_WHITE, "(!) Pamiêtaj, to RolePlay. Swój pojazd musisz kupiæ lub wypo¿yczyæ.");
 		SendClientMessage(playerid, COLOR_WHITE, "(!) Warto znaleŸæ pracê, aby zdobyæ pieni¹dze na zakup w³asnego pojazdu.");
-		SendClientMessage(playerid, COLOR_WHITE, "(!) Zanim bêdzie Ciê staæ, u¿yj /budka, by dzwoniæ po taxi, lub /bus. Prowadziæ mo¿na po przegraniu 10min.");
+		
+		if(!pVars[playerid][pHours] && pVars[playerid][pMinutes] < 10) {
+			SendClientMessage(playerid, COLOR_WHITE, "(!) Zanim bêdzie Ciê staæ, u¿yj /budka, by dzwoniæ po taxi, lub /bus. Prowadziæ mo¿na po przegraniu 10min.");
+		} else {
+			SendClientMessage(playerid, COLOR_WHITE, "(!) Jako nowy gracz, mo¿esz byæ pasa¿erem tylko, gdy w pojeŸdzie jest kierowca.");
+		}
 	}
 	*/
 	if(!isBicycle(GetVehicleModel(vehicleid)) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid] && !ispassenger) {
@@ -76,7 +81,7 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 	mysql_query(queryStr);
 
 	for(new i = 0; i < 3; i++) {
-		TextDrawHideForPlayer(killerid, vehicleDeath[killerid][i]);
+		TextDrawShowForPlayer(killerid, vehicleDeath[killerid][i]);
 	}
 
 	SetTimerEx("hideVehicleDeath", 5000, false, "i", killerid);
@@ -110,6 +115,7 @@ sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 #endif
 	
 	new panels, doors, lights, tires, damage = setPlayerVehicleDamage(playerid);
+	new pId = getNearestVehicleIdForPlayer(vehicleid);
 	
 	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
 	UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
@@ -122,6 +128,23 @@ sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 	
 	if(damage >= 4) {
 		SetTimerEx("healthDamage", 100, false, "i", playerid);
+	}
+	
+	if(pId != INVALID_PLAYER_ID) {
+		isCollision[playerid] = true;
+
+		mainStr[0] = EOS;
+		format(mainStr, sizeof(mainStr), "~w~Kolizja z ~r~%s~w~?", pVars[pId][pCharName]);
+		TextDrawSetString(collisionInfo[playerid], mainStr);
+		
+		TextDrawShowForPlayer(playerid, collisionInfo[playerid]);
+		SetTimerEx("hideCollisionInfo", 10000, false, "i", playerid);
+	}
+
+	if(drivingCourse[playerid] && offerType[playerid] == O_PRAWKO) {
+		if(GetPlayerMoney(playerid) <= 0) {
+			GameTextForPlayer(playerid, "~r~Brak pieniedzy na pokrycie~n~zniszczen.", 5000, 3);
+		}
 	}
 	return 1;
 }
@@ -137,5 +160,17 @@ sampCallback:OnVehicleStreamOut(vehicleid, forplayerid) {
 #if defined DEBUG
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamOut");
 #endif
+	new pId = getNearestVehicleIdForPlayer(vehicleid);
+
+	if(isCollision[forplayerid]) {
+		isCollision[forplayerid] = false;
+
+		mainStr[0] = EOS;
+		format(mainStr, sizeof(mainStr), "~w~Najblizszy gracz: ~r~%s", pVars[pId][pCharName]);
+		TextDrawSetString(collisionInfo[forplayerid], mainStr);
+
+		TextDrawShowForPlayer(forplayerid, collisionInfo[forplayerid]);
+		SetTimerEx("hideCollisionInfo", 10000, false, "i", forplayerid);
+	}
 	return 1;
 }

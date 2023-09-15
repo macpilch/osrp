@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_functions.inc
 	Date: 25.07.2022
-	Modified: 01.09.2023
+	Modified: 14.09.2023
 */
 
 #if defined __PLAYER_FUNCTIONS_INC__
@@ -11,6 +11,23 @@
 #endif
 #define __PLAYER_FUNCTIONS_INC__
 #pragma library osrp
+
+Callback:hidePlayerTextDraws(playerid, Text:td[][], size) {
+	for(new i = 0; i < size; i++) {
+		TextDrawHideForPlayer(playerid, td[playerid][i]);
+	}
+	return 1;
+}
+
+Callback:unFreezePlayer(playerid) {
+	TogglePlayerControllable(playerid, 1);
+	return 1;
+}
+
+Callback:hideCollisionInfo(playerid) {
+	TextDrawHideForPlayer(playerid, collisionInfo[playerid]);
+	return 1;
+}
 
 Callback:hideDoorInfo(playerid) {
 	for(new i = 0; i < 3; i++) {
@@ -27,7 +44,7 @@ Callback:hideVehicleSpawn(playerid) {
 }
 
 Callback:hideVehicleStats(playerid) {
-	for(new i = 0; i < 2; i++) {
+	for(new i = 0; i < 3; i++) {
 		TextDrawSetString(vehicleStats[playerid][i], NULL);
 		TextDrawHideForPlayer(playerid, vehicleStats[playerid][i]);
 	}
@@ -429,6 +446,16 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawBackgroundColor(vehicleStats[playerid][1], 51);
 	TextDrawFont(vehicleStats[playerid][1], 1);
 	TextDrawSetProportional(vehicleStats[playerid][1], 1);
+	
+	vehicleStats[playerid][2] = TextDrawCreate(311.097991, 385.583312, "Alarm: N___Immobiliser: N___CB Radio: N~n~Audio: N___Limiter: N___Napraw: 0.0hp");
+	TextDrawLetterSize(vehicleStats[playerid][2], 0.234948, 1.209166);
+	TextDrawAlignment(vehicleStats[playerid][2], 2);
+	TextDrawColor(vehicleStats[playerid][2], -1);
+	TextDrawSetShadow(vehicleStats[playerid][2], 0);
+	TextDrawSetOutline(vehicleStats[playerid][2], 1);
+	TextDrawBackgroundColor(vehicleStats[playerid][2], 51);
+	TextDrawFont(vehicleStats[playerid][2], 1);
+	TextDrawSetProportional(vehicleStats[playerid][2], 1);
 	
 	vehicleFuelStatus[playerid][0] = TextDrawCreate(610.140625, 58.083332, "_");
 	TextDrawLetterSize(vehicleFuelStatus[playerid][0], 0.000000, 0.360370);
@@ -858,6 +885,37 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawBackgroundColor(hotelInfo[playerid][2], 255);
 	TextDrawFont(hotelInfo[playerid][2], 1);
 	TextDrawSetProportional(hotelInfo[playerid][2], 1);
+	
+	collisionInfo[playerid] = TextDrawCreate(451.185516, 100.916709, "Kolizja z ~r~Danny Walker~w~?");
+	TextDrawLetterSize(collisionInfo[playerid], 0.331932, 1.354998);
+	TextDrawAlignment(collisionInfo[playerid], 1);
+	TextDrawColor(collisionInfo[playerid], -1);
+	TextDrawSetShadow(collisionInfo[playerid], 0);
+	TextDrawSetOutline(collisionInfo[playerid], 1);
+	TextDrawBackgroundColor(collisionInfo[playerid], 255);
+	TextDrawFont(collisionInfo[playerid], 1);
+	TextDrawSetProportional(collisionInfo[playerid], 1);
+
+	afkPrivateMessage[playerid][0] = TextDrawCreate(573.127380, 283.833312, "_");
+	TextDrawLetterSize(afkPrivateMessage[playerid][0], 0.000000, 2.794444);
+	TextDrawTextSize(afkPrivateMessage[playerid][0], 395.774505, 0.000000);
+	TextDrawAlignment(afkPrivateMessage[playerid][0], 1);
+	TextDrawColor(afkPrivateMessage[playerid][0], 0);
+	TextDrawUseBox(afkPrivateMessage[playerid][0], 1);
+	TextDrawBoxColor(afkPrivateMessage[playerid][0], 102);
+	TextDrawSetShadow(afkPrivateMessage[playerid][0], 0);
+	TextDrawSetOutline(afkPrivateMessage[playerid][0], 0);
+	TextDrawFont(afkPrivateMessage[playerid][0], 0);
+
+	afkPrivateMessage[playerid][1] = TextDrawCreate(481.639862, 284.666656, "~w~Gracz, do ktorego piszesz, ma~n~status AFK.");
+	TextDrawLetterSize(afkPrivateMessage[playerid][1], 0.293982, 1.308333);
+	TextDrawAlignment(afkPrivateMessage[playerid][1], 2);
+	TextDrawColor(afkPrivateMessage[playerid][1], -1);
+	TextDrawSetShadow(afkPrivateMessage[playerid][1], 0);
+	TextDrawSetOutline(afkPrivateMessage[playerid][1], 1);
+	TextDrawBackgroundColor(afkPrivateMessage[playerid][1], 255);
+	TextDrawFont(afkPrivateMessage[playerid][1], 1);
+	TextDrawSetProportional(afkPrivateMessage[playerid][1], 1);
 	return 1;
 }
 
@@ -907,9 +965,9 @@ stock loadPlayerContacts(playerid) {
 	return 1;
 }
 
-stock givePlayerPenalty(playerid, victim, type, const reason[]) {
+stock givePlayerPenalty(playerid, victim, type, const reason[], days) {
 	new str[256];
-	
+
 	mainStr[0] = EOS;
 	switch(type) {
 		case PEN_BAN: {			
@@ -982,22 +1040,30 @@ stock givePlayerPenalty(playerid, victim, type, const reason[]) {
 			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada konta) od %s. Powód: %s", pVars[playerid][pCharName], reason);		
 		}
 		case PEN_RUNNBLW: {
-			format(str, sizeof(str), "~r~Blokada biegania i bicia~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+			if(days > 0) {
+				format(str, sizeof(str), "~r~Blokada biegania i bicia ~w~(na %d dni)~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+			} else {
+				format(str, sizeof(str), "~r~Blokada biegania i bicia~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+			}
 			
 			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada biegania i bicia) od %s. Powód: %s", pVars[playerid][pCharName], reason);
 		}
 		case PEN_BLCKOOC: {
-			format(str, sizeof(str), "~r~Blokada czatu OOC ~w~(na 3 dni)~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
-			
+			if(days > 0) {
+				format(str, sizeof(str), "~r~Blokada czatu OOC ~w~(na %d dni)~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+			} else {
+				format(str, sizeof(str), "~r~Blokada czatu OOC~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+			}
+
 			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada czatu OOC) od %s. Powód: %s", pVars[playerid][pCharName], reason);
 		}
 		case PEN_WRITING: {
-			format(str, sizeof(str), "~r~Blokada niechlujnego pisania ~w~(na 7 dni)~n~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+			format(str, sizeof(str), "~r~Blokada niechlujnego pisania ~w~(na %d dni)~n~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], pVars[playerid][pCharName], reason);
 			
 			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada niechlujnego pisania) od %s. Powód: %s", pVars[playerid][pCharName], reason);
 		}
 		case PEN_RPACTN: {
-			format(str, sizeof(str), "~r~Wymuszenie odgrywania akcji RolePlay ~w~(na 7 dni)~n~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+			format(str, sizeof(str), "~r~Wymuszenie odgrywania akcji RolePlay ~w~(na %d dni)~n~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], pVars[playerid][pCharName], reason);
 			
 			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Wymuszenie odgrywania akcji RolePlay) od %s. Powód: %s", pVars[playerid][pCharName], reason);
 		}
@@ -1052,6 +1118,14 @@ stock setPlayerDefaultValues(playerid) {
 	SetPlayerSkillLevel(playerid, WEAPON_AK47, 0);
 	SetPlayerSkillLevel(playerid, WEAPON_M4, 0);
 	SetPlayerSkillLevel(playerid, WEAPON_TEC9, 0);
+
+	preloadAnimLib(playerid, "PED");
+	preloadAnimLib(playerid, "RAPPING");
+	preloadAnimLib(playerid, "SKATE");
+	preloadAnimLib(playerid, "PLAYIDLES");
+	preloadAnimLib(playerid, "INT_HOUSE");
+	preloadAnimLib(playerid, "BEACH");
+	preloadAnimLib(playerid, "FOOD");
 
 	pVars[playerid][pBlocked] = 0;
 	pVars[playerid][pRank] = 0;
@@ -1113,8 +1187,8 @@ stock setPlayerDefaultValues(playerid) {
 	hasBelts[playerid] = false;
 	isDizzines[playerid] = false;
 	usedTelephone[playerid] = false;
-	chatMessages[playerid][0] = false;
-	chatMessages[playerid][1] = false;
+	chatMessages[playerid][0] = true;
+	chatMessages[playerid][1] = true;
 	drivingCourse[playerid] = false;
 	showGroupsInfo[playerid] = false;
 	insidedHotel[playerid] = false;
@@ -1221,8 +1295,8 @@ stock resetPlayerValues(playerid) {
 	hasBelts[playerid] = false;
 	isDizzines[playerid] = false;
 	usedTelephone[playerid] = false;
-	chatMessages[playerid][0] = true;
-	chatMessages[playerid][1] = true;
+	chatMessages[playerid][0] = false;
+	chatMessages[playerid][1] = false;
 	drivingCourse[playerid] = false;
 	showGroupsInfo[playerid] = false;
 	insidedHotel[playerid] = false;
@@ -1273,7 +1347,30 @@ stock setPlayerAJ(playerid, minutes) {
 }
 
 stock setPlayerDetention(playerid, minutes) {
-	SendClientMessage(playerid, COLOR_WHITE, "Przetrzymanie %s koñczy siê.");
+	pVars[playerid][pDetention] = minutes * 60;
+	
+	
+	return 1;
+}
+
+Callback:dtTimer(playerid) {
+	if(pVars[playerid][pDetention] > 0) {
+		pVars[playerid][pDetention]--;
+	} else {
+		pVars[playerid][pDetention] = 0;
+		
+		foreach(new i : Player) {
+			foreach(new j : groupItter) {
+				if(isPlayerDuty[i] && pVars[i][pDuty] > 0 && pVars[i][pGroup] == gVars[j][gUid]) {
+					if(gVars[j][gType] == G_LSPD) {
+						mainStr[0] = EOS;
+						format(mainStr, sizeof(mainStr), "Przetrzymanie %s koñczy siê.", pVars[playerid][pCharName]);
+						SendClientMessage(i, COLOR_WHITE, mainStr);
+					}
+				}
+			}
+		}
+	}
 	return 1;
 }
 
@@ -1395,7 +1492,7 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			format(str, sizeof(str), "~b~Przebieg~w~: %0.1fkm ~b~Paliwo~w~: %0.1f", vVars[srvVehId][vMileage], vVars[srvVehId][vFuel]);
 			TextDrawSetString(vehicleStats[id][1], str);
 			
-			for(new i = 0; i < 2; i++) {
+			for(new i = 0; i < 3; i++) {
 				TextDrawShowForPlayer(id, vehicleStats[id][i]);
 			}
 			
@@ -1473,6 +1570,7 @@ stock setPlayerHexName(playerid) {
 }
 
 stock applyAnimationEx(playerid, animlib[], animname[], Float:fDelta, loop, lockx, locky, freeze, time, foresync) {
+	ClearAnimations(playerid);
 	ApplyAnimation(playerid, animlib, animname, fDelta, loop, lockx, locky, freeze, time, foresync);
 }
 
@@ -1487,9 +1585,9 @@ stock setPlayerHealthEx(playerid, Float:health) {
 }
 
 stock setPlayerArmourEx(playerid, Float:armour) {
-	pVars[playerid][pArmor] = armour;
+	pVars[playerid][pAp] = armour;
 	
-	SetPlayerArmour(playerid, pVars[playerid][pArmor]);
+	SetPlayerArmour(playerid, pVars[playerid][pAp]);
 }
 
 stock givePlayerMoneyEx(playerid, money) {

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: arrays.inc
 	Date: 25.07.2022
-	Modified: 04.09.2023
+	Modified: 06.09.2023
 */
 
 #if defined __ARRAYS_INC__
@@ -107,7 +107,7 @@ new charSur[][CharSurName] = {
 };
 
 new animNames[][] = {
-	"idz1", "idz2", "idz3", "idz4", "idz5", "idz6", "pa", "zmeczony", "umyjrece", "medyk", "ranny", "salutuj",
+	"idz1", "idz2", "idz3", "idz4", "stopani", "idz5", "idz6", "pa", "zmeczony", "umyjrece", "medyk", "ranny", "salutuj",
 	"wtf", "spoko", "napad", "krzeslo", "szukaj", "lornetka", "oh", "oh2", "wyciagnij", "dowody", "recemaska",
 	"krzeslojem", "gogo", "czekam", "garda", "barman2", "fotel", "napraw", "barman", "opieraj", "bar.nalej",
 	"ramiona", "bar.wez", "chowaj", "wez", "fuck", "klepnij", "daj", "pij", "start", "karta", "spray", "odejdz",
@@ -121,13 +121,13 @@ new animNames[][] = {
 
 new itemNames[][] = {
 	"Rolki", "Piwo", "Wino", "Sprunk", "Teczka", "Torba", "Notatnik", "Cygaro", "Ubranie", "Telefon", "Kostka",
-	"Maska", "Rêkawice", "Kamizelka", "Kwiaty", "Kastet", "Szturmówka", "Nó¿", "Kij baseballowy", "Paralizator", "Pistolet",
-	"Deagle", "Shotgun", "UZI", "MP5", "AK-47", "M4", "Tec9", "Spadochron", "Mat Wybuchowe", "Cheeseburger",
+	"Maska", "Rêkawice", "Kamizelka", "Kwiaty", "Kastet", "Szturmówka", "Nó¿", "Kij baseballowy", "Paralizator", "Tagger", "Pistolet",
+	"Deagle", "Glock 19", "Shotgun", "UZI", "MP5", "AK-47", "M4", "Tec9", "Spadochron", "Mat Wybuchowe", "Cheeseburger",
 	"Zapiekanka", "Coca-Cola", "Cuba Libre", "Frytki", "Grove Burger", "Hamburger", "Herbata",
 	"Hot Dog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Longer", "Nachos z serem", "Naleœnik",
 	"Naleœniki", "P¹czek", "P¹czek Afro", "P¹czek Z³otawy", "Donut", "Sushi", "Woda Mineralna", "Discman",
-	"RadioParty", "CD", "Nokia 8110", "Vitamina C", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik", "Maska samochodowa",
-	"Kanister"
+	"RadioParty", "CD", "Nokia 8110", "Vitamina C", "Zderzak przedni", "Zderzak tylny", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik",
+	"Maska samochodowa", "Œwiat³o (prawe przednie)", "Kanister"
 };
 
 new VehicleNames[212][] = {

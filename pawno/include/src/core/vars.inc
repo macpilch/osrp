@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 02.09.2023
+	Modified: 11.09.2023
 */
 
 #if defined __VARS_INC__
@@ -68,6 +68,7 @@ new bool:showGroupsInfo[MAX_PLAYERS];
 new bool:insidedHotel[MAX_PLAYERS];
 new bool:blockOOC[MAX_PLAYERS];
 new bool:isRace[MAX_PLAYERS];
+new bool:isCollision[MAX_PLAYERS];
 
 // type - MySQL
 new MySQL:hMySQL;
@@ -82,7 +83,7 @@ new Text:itemTips[MAX_PLAYERS][2];
 new Text:scrimmageTips[MAX_PLAYERS][5];
 new Text:firstHoursInfo[3];
 new Text:vehicleTips[MAX_PLAYERS][2];
-new Text:vehicleStats[MAX_PLAYERS][2];
+new Text:vehicleStats[MAX_PLAYERS][3];
 new Text:vehicleFuelStatus[MAX_PLAYERS][3];
 new Text:vehicleSpawn[MAX_PLAYERS][2];
 new Text:vehicleSpeedMeter[MAX_PLAYERS][2];
@@ -95,6 +96,8 @@ new Text:telephoneCall[MAX_PLAYERS][2];
 new Text:groupsInfo[MAX_PLAYERS][15];
 new Text:usedRollersInfo[MAX_PLAYERS][2];
 new Text:hotelInfo[MAX_PLAYERS][3];
+new Text:collisionInfo[MAX_PLAYERS];
+new Text:afkPrivateMessage[MAX_PLAYERS][2];
 
 // type - Iterator
 new Iterator:vehItter<MAX_VEHICLES>;

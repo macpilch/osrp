@@ -4,7 +4,7 @@
 			MisterMagik
 	File: admin_cmds.inc
 	Date: 04.08.2022
-	Modified: 05.09.2023
+	Modified: 10.09.2023
 */
 
 #if defined __ADMIN_CMDS_INC__
@@ -29,7 +29,7 @@ CMD:ban(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ban [Gracz] [Powód]");
 	}
 	
-	givePlayerPenalty(playerid, pId, PEN_BAN, reason);
+	givePlayerPenalty(playerid, pId, PEN_BAN, reason, 0);
 	return 1;
 }
 
@@ -49,7 +49,7 @@ CMD:kick(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /kick [Gracz] [Powód]");
 	}
 	
-	givePlayerPenalty(playerid, pId, PEN_KICK, reason);
+	givePlayerPenalty(playerid, pId, PEN_KICK, reason, 0);
 	return 1;
 }
 
@@ -69,7 +69,7 @@ CMD:warn(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /warn [Gracz] [Powód]");
 	}
 	
-	givePlayerPenalty(playerid, pId, PEN_WARN, reason);
+	givePlayerPenalty(playerid, pId, PEN_WARN, reason, 0);
 	return 1;
 }
 
@@ -89,7 +89,7 @@ CMD:aj(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /aj [Gracz] [Powód]");
 	}
 	
-	givePlayerPenalty(playerid, pId, PEN_ADMJAIL, reason);
+	givePlayerPenalty(playerid, pId, PEN_ADMJAIL, reason, 0);
 	return 1;
 }
 
@@ -210,12 +210,15 @@ CMD:rc(playerid, params[]) {
 	}
 	
 	new pId;
-	
+
 	if(sscanf(params, "i", pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nikogo nie podgl¹dasz. /rc [ID/nick] aby rozpocz¹æ.");
 	}
 	
 	if(!isSpectating[playerid]) {
+		mainStr[0] = EOS;
+		format(mainStr, sizeof(mainStr), "> GM %s sprawdza %s.");
+		
 		TogglePlayerSpectating(playerid, 1);
 		PlayerSpectatePlayer(playerid, pId);
 		

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_cmds.inc
 	Date: 25.07.2023
-	Modified: 05.09.2023
+	Modified: 11.09.2023
 */
 
 #if defined __VEHICLE_CMDS_INC__
@@ -48,7 +48,7 @@ CMD:v(playerid, params[]) {
 			
 			while(mysql_fetch_row(queryStr, "|")) {
 				sscanf(queryStr, "p<|>ii", tmpVVars[i][UID], tmpVVars[i][ModelID]);
-				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d   %s", mainStr, tmpVVars[i][UID], VehicleNames[tmpVVars[i][ModelID] - 400]);
+				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, tmpVVars[i][UID], VehicleNames[tmpVVars[i][ModelID] - 400]);
 				
 				i++;
 			}
@@ -132,7 +132,7 @@ CMD:v(playerid, params[]) {
 			format(str, sizeof(str), "~b~Przebieg~w~: %0.1fkm ~b~Paliwo~w~: %0.1f", vVars[srvVehId][vMileage], vVars[srvVehId][vFuel]);
 			TextDrawSetString(vehicleStats[playerid][1], str);
 			
-			for(new i = 0; i < 2; i++) {
+			for(new i = 0; i < 3; i++) {
 				TextDrawShowForPlayer(playerid, vehicleStats[playerid][i]);
 			}
 			

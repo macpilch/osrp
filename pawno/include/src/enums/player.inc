@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 25.07.2022
-	Modified: 02.09.2023
+	Modified: 10.09.2023
 */
 
 #if defined __PLAYER_INC__
@@ -33,6 +33,7 @@ enum PlayerData {
 	pIp[16],
 	pDateReg[24],
 	pBlocked,
+	pGold,
 	pRank, // for ranks
 	pSex,
 	pStrength,

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 25.07.2022
-	Modified: 05.09.2023
+	Modified: 10.09.2023
 */
 
 #if defined __PLAYER_PUBLICS_INC__
@@ -125,18 +125,17 @@ sampCallback:OSRP_OnPlayerDisconnect(playerid, reason) {
 	mainStr[0] = EOS;
 	switch(reason) {
 		case 0: {
-
+			format(mainStr, sizeof(mainStr), "%s\n(( Timeout ))", pVars[playerid][pCharName]);
 		}
 		case 1: {
 			format(mainStr, sizeof(mainStr), "%s\n(( /q ))", pVars[playerid][pCharName]);
-
-			exit3dInfo[playerid] = CreateDynamic3DTextLabel(mainStr, COLOR_WHITE, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], 30.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, 0, 0, -1, 30.0, -1, 0);
 		}
 		case 2: {
-
+			
 		}
 	}
 
+	exit3dInfo[playerid] = CreateDynamic3DTextLabel(mainStr, COLOR_WHITE, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], 30.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, 0, 0, -1, 30.0, -1, 0);
 	SetTimerEx("destroyExit3dInfo", 20000, false, "i", playerid);
 
 	printf("[LOG]: OnPlayerDisconnect -- Called! (%d ms).", GetTickCount() - callSecs);
@@ -197,15 +196,18 @@ sampCallback:OSRP_OnPlayerDeath(playerid, killerid, reason) {
 
 	if(killerid != INVALID_PLAYER_ID) {
 		format(reas, sizeof(reas), "Prawdopodobny DM~n~~w~Zabil %s(%d:%d), bron: %d, godzin: %d", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, GetPlayerWeapon(killerid), pVars[killerid][pHours]);
-		return givePlayerPenalty(INVALID_PLAYER_ID, killerid, PEN_ADMJAIL, reas);
+		return givePlayerPenalty(INVALID_PLAYER_ID, killerid, PEN_ADMJAIL, reas, 0);
 	}
+
+	format(reas, sizeof(reas), "FakeKill~n~~w~FakeKill na %s. %s");
+	//return givePlayerPenalty(INVALID_PLAYER_ID, killerid, PEN_KICK, reas, 0));
 
 	if(isPlayerDuty[playerid] && pVars[playerid][pDuty] > 0) {
 		pc_cmd_duty(playerid);
 	}
 
 	if(usedTelephone[playerid]) {
-		applyAnimationEx(pId, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
+		applyAnimationEx(pId, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
 
 		usedTelephone[playerid] = false;
 		usedTelephone[pId] = false;
@@ -217,7 +219,7 @@ sampCallback:OSRP_OnPlayerDeath(playerid, killerid, reason) {
 	}
 
 	printf("[LOG]: OnPlayerDeath -- Called! (%d ms).", GetTickCount() - callSecs);
-	return 1;
+	return 0;
 }
 
 sampCallback:OSRP_OnPlayerText(playerid, text[]) {
@@ -236,7 +238,7 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 		format(mainStr, sizeof(mainStr), "* %s uœmiecha siê.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 	} else if(strfind(textStr, ":D", true) == 0 || strfind(textStr, "xD", true) == 0) {
-		applyAnimationEx(playerid, "RAPPING", "Laugh_01", 4.1, 0, 1, 1, 1, 1, 1);
+		applyAnimationEx(playerid, "RAPPING", "Laugh_01", 4.1, 0, 0, 0, 0, 0, 1);
 		
 		format(mainStr, sizeof(mainStr), "* %s œmieje siê.", pVars[playerid][pCharName]);
 		sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
@@ -356,7 +358,7 @@ sampCallback:OSRP_OnPlayerCommandReceived(playerid, cmd[], params[], flags) {
 			
 			calledCmds[playerid] = 0;
 			calledSecsCmds[playerid] = 0;
-			return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, reas); // kick
+			return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, reas, 0); // kick
 		}
 		
 		calledCmds[playerid] = 0;
@@ -412,7 +414,7 @@ sampCallback:OSRP_OnPlayerStateChange(playerid, newstate, oldstate) {
 			new reas[128];
 			
 			format(reas, sizeof(reas), "CarJack. V%d. Driver %d:%d", vVars[srvVehId][vUid]);
-			return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_KICK, reas);
+			return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_KICK, reas, 0);
 		}
 		
 		enteredVehicleSec[playerid] = GetTickCount() + 10000;
@@ -516,6 +518,10 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		if(dVars[srvDoorId][dOpen]) {
 			if(dVars[srvDoorId][dVw] != pVars[playerid][pVw] && dVars[srvDoorId][dInt] != pVars[playerid][pInt]) {
 				if(playerToPoint(playerid, 3.0, dVars[srvDoorId][dEnterX], dVars[srvDoorId][dEnterY], dVars[srvDoorId][dEnterZ])) {
+					if(pVars[playerid][pHp] < 50 || pVars[playerid][pDetention] > 0) {
+						return GameTextForPlayer(playerid, "~r~Ranne ani przetrzymywane~n~postacie nie moga przechodzic~n~przez drzwi.", 5000, 3);
+					}
+					
 					SetPlayerPos(playerid, dVars[srvDoorId][dExitX], dVars[srvDoorId][dExitY], dVars[srvDoorId][dExitZ]);
 					SetPlayerVirtualWorld(playerid, dVars[srvDoorId][dVw]);
 					SetPlayerInterior(playerid, dVars[srvDoorId][dInt]);
@@ -530,6 +536,10 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 				}
 			} else {
 				if(playerToPoint(playerid, 3.0, dVars[srvDoorId][dExitX], dVars[srvDoorId][dExitY], dVars[srvDoorId][dExitZ])) {
+					if(pVars[playerid][pHp] < 50 || pVars[playerid][pDetention] > 0) {
+						return GameTextForPlayer(playerid, "~r~Ranne ani przetrzymywane~n~postacie nie moga przechodzic~n~przez drzwi.", 5000, 3);
+					}
+
 					SetPlayerPos(playerid, dVars[srvDoorId][dEnterX], dVars[srvDoorId][dEnterY], dVars[srvDoorId][dEnterZ]);
 					SetPlayerVirtualWorld(playerid, 0);
 					SetPlayerInterior(playerid, 0);
@@ -625,7 +635,7 @@ sampCallback:OSRP_OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid
 			
 			new reas[128];
 			format(reas, sizeof(reas), "Potracono %d osob(y). V%d~n~~w~Potracono %d osob(y). V%d", numPeople, vVars[srvVehId][vUid], numPeople, vVars[srvVehId][vUid]);
-			return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, reas);
+			return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, reas, 0);
 		}
 	}
 	
@@ -637,11 +647,19 @@ sampCallback:OSRP_OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid
 	} else {
 		if(blowsNum++ > 0) {
 			GameTextForPlayer(playerid, "~r~DM. Czekaj!", 1000, 3);
+		} else if(blowsNum++ == 4) {
+			GameTextForPlayer(playerid, "~r~DM. Stop!!", 1000, 3);
+			blowsNum = 0;
+			
+			TogglePlayerControllable(playerid, 0);
+			SetTimerEx("unFreezePlayer", 1000, false, "i", playerid);
 		}
-		
+
 		TextDrawShowForPlayer(playerid, scrimmageTips[playerid][4]);
 		SetTimerEx("hideScrimmageTips", 5000, false, "ii", playerid, 4);		
 	}
+	
+	//return givePlayerPenalty(INVALID_PLAYER_ID, killerid, PEN_ADMJAIL, "DeathMatch bez kontrataku~n~~w~DeathMatch bez kontrataku", 0);
 	return 1;
 }
 
@@ -782,6 +800,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			
 			TogglePlayerSpectating(playerid, 0);
 			setPlayerHealthEx(playerid, 100.0);
+			setPlayerArmourEx(playerid, 0.0);
 			givePlayerMoneyEx(playerid, 50);
 			addPlayerItem(playerid, P_ROLKI);
 			
@@ -865,7 +884,12 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					
 					hasLogged[playerid] = true;
 					
-					format(mainStr, sizeof(mainStr), "{A52A2A}Witaj, %s (UID %d, ID %d). Mi³ej gry!", pVars[playerid][pCharName], pVars[playerid][pUid], playerid);
+					if(pVars[playerid][pGold] > 0) {
+						format(mainStr, sizeof(mainStr), "{A52A2A}Witaj, %s (UID %d, ID %d). {FFFF00}Posiadasz konto premium GOLD. Dziêkujemy, mi³ej gry!", pVars[playerid][pCharName], pVars[playerid][pUid], playerid);
+					} else {
+						format(mainStr, sizeof(mainStr), "{A52A2A}Witaj, %s (UID %d, ID %d). Mi³ej gry!", pVars[playerid][pCharName], pVars[playerid][pUid], playerid);
+					}
+					
 					SendClientMessage(playerid, COLOR_WHITE, mainStr);
 				} else {
 					format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", pVars[playerid][pCharName]);
@@ -943,6 +967,48 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 							
 						}
 					}
+				}
+			}
+		}
+		
+		case DIALOG_SHOW_ANIMATIONS: {
+			if(!response) {
+				
+			}
+			
+			switch(listitem) {
+				case 0: {
+					applyAnimationEx(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 1: {
+					applyAnimationEx(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 2: {
+					applyAnimationEx(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 3: {
+					applyAnimationEx(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 4: {
+					applyAnimationEx(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
+				}
+				case 5: {
+					applyAnimationEx(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 6: {
+					applyAnimationEx(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 7: {
+					applyAnimationEx(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 8: {
+					applyAnimationEx(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 9: {
+					applyAnimationEx(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 10: {
+					applyAnimationEx(playerid, "MEDIC", "CPR", 4.1, 0, 0, 0, 0, 0, 1);
 				}
 			}
 		}
@@ -1319,8 +1385,11 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `OUID` = '%d', `PosX` = '%f', `PosY` = '%f', `PosZ` = '%f', `Place` = '%d' WHERE `UID` = '%d'", iVars[srvItemId][iOUid], iVars[srvItemId][iPosX], iVars[srvItemId][iPosY], iVars[srvItemId][iPosZ], iVars[srvItemId][iPlace], iVars[srvItemId][iUid]);
 					mysql_query(queryStr);
 					
+					applyAnimationEx(playerid, "BOMBER", "BOM_Plant", 4.1, 0, 0, 0, 0, 0, 1);
+					
 					mainStr[0] = EOS;
 					format(mainStr, sizeof(mainStr), "* %s upuszcza jakiœ przedmiot.", pVars[playerid][pCharName]);
+					//format(mainStr, sizeof(mainStr), "* %s odk³ada coœ w aucie.", pVars[playerid][pCharName]);
 					sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 				}
 				case 1: {
@@ -1387,9 +1456,10 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			mysql_query(queryStr);
 			
 			GameTextForPlayer(playerid, "~g~~h~Skrot do podnoszenia~n~~y~przedmiotow:~n~~y~~h~/p podnies", 5000, 3);
-			
+
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "* %s podnosi przedmiot %s.", pVars[playerid][pCharName], iVars[srvItemId][iName]);
+			//format(mainStr, sizeof(mainStr), "* %s wyci¹ga %s z auta.", pVars[playerid][pCharName], iVars[srvItemId][iName]);
 			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		}
 		
@@ -2001,6 +2071,12 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 						}
 					}
 					
+					if(!countPlaya) {
+						mainStr[0] = EOS;
+						strcat(mainStr, "Niestety, ¿aden gracz jest siê na s³u¿bie s³u¿b porz¹dkowych.\nNie ma do kogo dzwoniæ.");
+						return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+					}
+					
 					SendClientMessage(playerid, COLOR_WHITE, "{FFFF00}Automat (telefon): Witamy. Gdzie chce siê Pan/Pani dodzwoniæ?");
 					
 					ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_GROUPS, DIALOG_STYLE_LIST, "Dostêpne grupy", mainStr, "Wybierz", "Anuluj");
@@ -2023,7 +2099,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					telEnterNumber[playerid] = tmpNum;
 					telEnterNumber[pId] = pVars[playerid][pTelNum];
 					
-					applyAnimationEx(playerid, "PED", "PHONE_IN", 4.1, 0, 0, 0, 0, 1, 1);
+					applyAnimationEx(playerid, "PED", "PHONE_IN", 4.1, 0, 0, 0, 0, 0, 1);
 					PlayerPlaySound(playerid, 3600, 0.0, 0.0, 0.0);
 					
 					mainStr[0] = EOS;
@@ -2089,7 +2165,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 		
 		case DIALOG_SHOW_TELEPHONE_GROUPS: {
 			if(!response) {
-				applyAnimationEx(playerid, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
+				applyAnimationEx(playerid, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
 				GameTextForPlayer(playerid, "~r~Rozmowa zakonczona.", 5000, 3);
 				return 1;
 			}
@@ -2149,7 +2225,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			telEnterNumber[playerid] = 0;
 			telEnterGroup[playerid] = -1;
 			
-			applyAnimationEx(playerid, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
+			applyAnimationEx(playerid, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
 			GameTextForPlayer(playerid, "~r~Rozmowa zakonczona.", 5000, 3);
 			
 			mainStr[0] = EOS;
@@ -2201,7 +2277,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			pId = getPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
 			telEnterNumber[pId] = pVars[playerid][pTelNum];
 			
-			applyAnimationEx(playerid, "PED", "PHONE_IN", 4.1, 0, 1, 1, 1, 1, 1);
+			applyAnimationEx(playerid, "PED", "PHONE_IN", 4.1, 0, 0, 0, 0, 0, 1);
 			PlayerPlaySound(playerid, 3600, 0.0, 0.0, 0.0);
 			
 			mainStr[0] = EOS;
@@ -2234,14 +2310,14 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			
 			switch(listitem) {
 				case 0: {
-					applyAnimationEx(playerid, "PED", "PHONE_IN", 4.1, 0, 1, 1, 1, 1, 1);
+					applyAnimationEx(playerid, "PED", "PHONE_IN", 4.1, 0, 0, 0, 0, 0, 1);
 					
 					usedTelephone[pId] = true;
 					usedTelephone[playerid] = true;
 				}
 				case 1: {
-					applyAnimationEx(playerid, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
-					applyAnimationEx(pId, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
+					applyAnimationEx(playerid, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
+					applyAnimationEx(pId, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
 					
 					usedTelephone[playerid] = false;
 					usedTelephone[pId] = false;
@@ -2396,6 +2472,14 @@ sampCallback:OSRP_OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:f
 	
 	if(iVars[srvItemId][iId] >= P_COLT && iVars[srvItemId][iId] <= P_TEC9) {
 		iVars[srvItemId][iValues]--;
+	}
+
+	if(hitid != INVALID_PLAYER_ID && hittype == BULLET_HIT_TYPE_PLAYER) {
+		GameTextForPlayer(playerid, "~r~Atak zabroniony", 5000, 3);
+	}
+	
+	if(hittype == BULLET_HIT_TYPE_VEHICLE) {
+		GameTextForPlayer(playerid, "~r~Nie niszcz pojazdow.", 5000, 3);
 	}
 	return 1;
 }
