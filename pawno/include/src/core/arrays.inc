@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: arrays.inc
 	Date: 25.07.2022
-	Modified: 06.09.2023
+	Modified: 24.09.2023
 */
 
 #if defined __ARRAYS_INC__
@@ -121,13 +121,13 @@ new animNames[][] = {
 
 new itemNames[][] = {
 	"Rolki", "Piwo", "Wino", "Sprunk", "Teczka", "Torba", "Notatnik", "Cygaro", "Ubranie", "Telefon", "Kostka",
-	"Maska", "Rêkawice", "Kamizelka", "Kwiaty", "Kastet", "Szturmówka", "Nó¿", "Kij baseballowy", "Paralizator", "Tagger", "Pistolet",
-	"Deagle", "Glock 19", "Shotgun", "UZI", "MP5", "AK-47", "M4", "Tec9", "Spadochron", "Mat Wybuchowe", "Cheeseburger",
+	"Maska", "Rêkawice", "Kamizelka", "Kwiaty", "Kastet", "Palka", "Nó¿", "Kij baseballowy", "Paralizator", "Tagger", "Pistolet",
+	"Deagle", "Glock 19", "Shotgun", "UZI", "MP5", "AK-47", "M4", "Tec9", "Spadochron", "Mat Wybuchowe", "Pizza", "Cheeseburger",
 	"Zapiekanka", "Coca-Cola", "Cuba Libre", "Frytki", "Grove Burger", "Hamburger", "Herbata",
 	"Hot Dog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Longer", "Nachos z serem", "Naleœnik",
 	"Naleœniki", "P¹czek", "P¹czek Afro", "P¹czek Z³otawy", "Donut", "Sushi", "Woda Mineralna", "Discman",
 	"RadioParty", "CD", "Nokia 8110", "Vitamina C", "Zderzak przedni", "Zderzak tylny", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik",
-	"Maska samochodowa", "Œwiat³o (prawe przednie)", "Kanister"
+	"Maska samochodowa", "Œwiat³o (prawe przednie)", "Kanister", "Karnet si³owy"
 };
 
 new VehicleNames[212][] = {

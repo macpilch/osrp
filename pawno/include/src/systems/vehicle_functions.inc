@@ -304,13 +304,21 @@ stock getVehicleModelIdFromName(const vname[]) {
 	return -1;
 }
 
-stock getNearestVehicleIdForPlayer(vehicleid) {
+stock getNearestVehicleDriverId(playerid) {
 	new pId;
-
+	
+	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+	
 	foreach(new i : Player) {
-		if(GetPlayerVehicleID(i) == vehicleid && IsPlayerInAnyVehicle(i)) {
-			pId = i;
-			break;
+		if(playerid == i) {
+			continue;
+		}
+	
+		if(IsPlayerInRangeOfPoint(i, 0.2, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
+			if(GetPlayerVehicleID(i) != INVALID_VEHICLE_ID && IsPlayerInAnyVehicle(i)) {				
+				pId = i;
+				break;				
+			}
 		}
 	}
 	return pId;

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 02.09.2023
+	Modified: 19.09.2023
 */
 
 #if defined __DEFINES_INC__
@@ -93,6 +93,7 @@
 #define PEN_BLCKOOC 6
 #define PEN_WRITING 7
 #define PEN_RPACTN 8
+#define PEN_KLATWA 9
 
 #define INVALID_OFFER_TYPE -1
 #define O_ZAPRGRP 0
@@ -107,6 +108,8 @@
 #define O_TANKOWANIE 9
 #define O_VCARD 10
 #define O_PRZETRZY 11
+
+#define VEHICLE_OWNER_GROUP -1
 
 #define INVALID_ITEM_ID -1
 #define ITEM_PLACE_PLAYER 0

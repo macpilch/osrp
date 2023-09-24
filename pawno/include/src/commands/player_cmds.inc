@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_cmds.inc
 	Date: 28.07.2022
-	Modified: 10.09.2023
+	Modified: 24.09.2023
 */
 
 #if defined __PLAYER_CMDS_INC__
@@ -704,6 +704,11 @@ CMD:smiercpostaci(playerid, params[]) {
 	return 1;
 }
 
+CMD:silownia(playerid, params[]) {
+	searchPlayerGym(playerid);
+	return 1;
+}
+
 CMD:time(playerid, params[]) {
 	new hours, minutes, seconds;
 	new str[32];
@@ -734,29 +739,27 @@ CMD:g(playerid, params[]) {
 	
 	if(sscanf(params, "s[8]", type)) {
 		if(!showGroupsInfo[playerid]) {
-			new tmp[32];
-			
-			format(tmp, sizeof(tmp), "~b~1  ~w~%s (%d)", gVars[srvGrpId][gName], gVars[srvGrpId][gUid]);
-			TextDrawSetString(groupsInfo[playerid][1], tmp);
-			
+			new str[32];
+
+			format(str, sizeof(str), "~b~1  ~w~%s (%d)", gVars[srvGrpId][gName], gVars[srvGrpId][gUid]);
+			TextDrawSetString(groupsInfo[playerid][1], str);
+
 			if(isPlayerDuty[playerid] && pVars[playerid][pDuty]) {
-				format(tmp, sizeof(tmp), "~w~%dm duty", pVars[playerid][pDuty]);
-				TextDrawSetString(groupsInfo[playerid][2], tmp);
+				format(str, sizeof(str), "~w~%dm duty", pVars[playerid][pDuty]);
+				TextDrawSetString(groupsInfo[playerid][2], str);
 			}
 			
 			for(new i = 0; i < 15; i++) {
 				TextDrawShowForPlayer(playerid, groupsInfo[playerid][i]);
 			}
-			
-			SelectTextDraw(playerid, 0xFF000044);
+
+			SelectTextDraw(playerid, 0xFF000000);
 			
 			showGroupsInfo[playerid] = true;
 		} else {
 			for(new i = 0; i < 15; i++) {
 				TextDrawHideForPlayer(playerid, groupsInfo[playerid][i]);
 			}
-			
-			CancelSelectTextDraw(playerid);
 			
 			showGroupsInfo[playerid] = false;
 		}
@@ -787,9 +790,9 @@ CMD:g(playerid, params[]) {
 			mainStr[0] = EOS;
 			queryStr[0] = EOS;
 			
-			format(queryStr, sizeof(queryStr), "SELECT `UID`, `ModelID`, `EngineHealth`, `Spawned` FROM `osrp_Vehicles` WHERE `GUID` = '%d'", gVars[srvGrpId][gUid]);
+			format(queryStr, sizeof(queryStr), "SELECT `UID`, `ModelID`, `EngineHealth`, `Spawned` FROM `osrp_Vehicles` WHERE `OUID` = '%d' AND `GUID` = '%d'", VEHICLE_OWNER_GROUP, gVars[srvGrpId][gUid]);
 			mysql_query(queryStr);
-			
+
 			mysql_store_result();
 			
 			while(mysql_fetch_row(queryStr, "|")) {

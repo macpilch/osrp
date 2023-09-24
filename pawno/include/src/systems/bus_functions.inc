@@ -52,15 +52,19 @@ stock createNewBusStop(playerid, busstopname[]) {
 stock searchPlayerBusStop(playerid) {
 	foreach(new i : busstopItter) {
 		if(playerToPoint(playerid, 5.0, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ])) {
-			GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);	
-			SetCameraBehindPlayer(playerid);
+			new Float:ang;
 			
-			SetPlayerCameraLookAt(playerid, pVars[playerid][pX] - 200, pVars[playerid][pY] - 200, pVars[playerid][pZ]);
-			SetPlayerCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+			GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+			//SetCameraBehindPlayer(playerid);
+			SetPlayerFacingAngle(playerid, ang + 100);
 			
-			InterpolateCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 80, 4000, CAMERA_MOVE);
-			InterpolateCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 80, 4000, CAMERA_MOVE);
-			
+			//SetPlayerCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+			//SetPlayerCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+
+			//InterpolateCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 200, 4000, CAMERA_MOVE);
+			//InterpolateCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 200, 4000, CAMERA_MOVE);
+
+			isInBus[playerid] = true;
 			actualBusStop[playerid] = i;
 		}
 	}
@@ -69,14 +73,14 @@ stock searchPlayerBusStop(playerid) {
 
 stock teleportToBusStop(playerid, busstopid) {
 	mainStr[0] = EOS;
-	
+
 	foreach(new i: busstopItter) {
 		if(actualBusStop[playerid] == i) {
 			format(mainStr, sizeof(mainStr), "[Przystanek]: Znajdujesz sie juz na tym przystanku.");
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 		} else if(busstopid == i) {
-			format(mainStr, sizeof(mainStr), "[Przystanek]: Znajdujesz sie na przystanku nr.%d %s", bVars[i][bsUid], bVars[i][bsName]);
-			SendClientMessage(playerid, COLOR_WHITE, mainStr);
+			format(mainStr, sizeof(mainStr), "* %s wsiad³ do autobusu jad¹cego w kierunku przystanku nr %d", bVars[i][bsUid]);
+			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 			
 			SetPlayerPos(playerid, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ]);
 			

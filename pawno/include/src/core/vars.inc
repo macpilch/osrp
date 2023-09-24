@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 11.09.2023
+	Modified: 24.09.2023
 */
 
 #if defined __VARS_INC__
@@ -46,6 +46,8 @@ new calledSecsCmds[MAX_PLAYERS];
 new enteredVehicleSec[MAX_PLAYERS];
 new exitedVehicleSec[MAX_PLAYERS];
 
+new gymObject[2];
+
 // type - bool
 new bool:isSpawned[MAX_PLAYERS];
 new bool:hasLogged[MAX_PLAYERS];
@@ -55,7 +57,7 @@ new	bool:isSpectating[MAX_PLAYERS];
 new	bool:isGodMode[MAX_PLAYERS];
 new	bool:isBW[MAX_PLAYERS];
 new bool:isFreeze[MAX_PLAYERS];
-stock bool:isInBus[MAX_PLAYERS];
+new bool:isInBus[MAX_PLAYERS];
 new bool:usedCmdLogin[MAX_PLAYERS];
 new bool:usedCmdReport[MAX_PLAYERS];
 new bool:hasBelts[MAX_PLAYERS];
@@ -69,6 +71,7 @@ new bool:insidedHotel[MAX_PLAYERS];
 new bool:blockOOC[MAX_PLAYERS];
 new bool:isRace[MAX_PLAYERS];
 new bool:isCollision[MAX_PLAYERS];
+new bool:isGym[MAX_PLAYERS];
 
 // type - MySQL
 new MySQL:hMySQL;

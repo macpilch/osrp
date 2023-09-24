@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_publics.inc
 	Date: 29.07.2022
-	Modified: 10.09.2023
+	Modified: 19.09.2023
 */
 
 #if defined __VEHICLE_PUBLICS_INC__
@@ -115,8 +115,8 @@ sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 #endif
 	
 	new panels, doors, lights, tires, damage = setPlayerVehicleDamage(playerid);
-	new pId = getNearestVehicleIdForPlayer(vehicleid);
-	
+	new pId = getNearestVehicleDriverId(playerid);
+
 	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
 	UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
 	
@@ -160,7 +160,7 @@ sampCallback:OnVehicleStreamOut(vehicleid, forplayerid) {
 #if defined DEBUG
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamOut");
 #endif
-	new pId = getNearestVehicleIdForPlayer(vehicleid);
+	new pId = getNearestVehicleDriverId(forplayerid);
 
 	if(isCollision[forplayerid]) {
 		isCollision[forplayerid] = false;

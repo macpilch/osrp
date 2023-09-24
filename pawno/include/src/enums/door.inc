@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: door.inc
 	Date: 10.09.2022
-	Modified: 04.09.2023
+	Modified: 24.09.2023
 */
 
 #if defined __DOOR_INC__
@@ -15,7 +15,8 @@
 enum {
 	D_PUBLIC = 0,
 	D_BUSSI,
-	D_HOTEL
+	D_HOTEL,
+	D_GYM
 };
 
 enum DoorData {

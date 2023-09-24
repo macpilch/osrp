@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 25.07.2022
-	Modified: 10.09.2023
+	Modified: 17.09.2023
 */
 
 #if defined __PLAYER_PUBLICS_INC__
@@ -144,43 +144,44 @@ sampCallback:OSRP_OnPlayerDisconnect(playerid, reason) {
 
 sampCallback:OSRP_OnPlayerSpawn(playerid) {
 	new callSecs = GetTickCount();
-	
+
 	SetCameraBehindPlayer(playerid);
+	SetPlayerHealth(playerid, pVars[playerid][pHp]);
 	SetPlayerArmour(playerid, pVars[playerid][pAp]);
 	SetPlayerSkin(playerid, pVars[playerid][pSkin]);
-	
+
 	ResetPlayerMoney(playerid);
 	GivePlayerMoney(playerid, pVars[playerid][pMoney]);
-	
+
 	SetPlayerInterior(playerid, pVars[playerid][pInt]);
 	SetPlayerVirtualWorld(playerid, pVars[playerid][pVw]);
-	
+
 	TextDrawShowForPlayer(playerid, website);
 	KillTimer(cameraTimer[playerid]);
-	
+
 	mainStr[0] = EOS;
 	if(pVars[playerid][pHours] > 20) {
 		format(mainStr, sizeof(mainStr), "%s (%d)", pVars[playerid][pCharName], playerid);
 	} else {
 		format(mainStr, sizeof(mainStr), "%s (%d, %dh)", pVars[playerid][pCharName], playerid, pVars[playerid][pHours]);
 	}
-	
+
 	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_WHITE, mainStr);
-	
+
 	if(pVars[playerid][pHotel] && !insidedHotel[playerid]) {
 		SetPlayerPos(playerid, 2216.12,-1076.30,1050.48);
 		SetPlayerInterior(playerid, 1);
 		SetPlayerVirtualWorld(playerid, random(1000));
-		
+
 		insidedHotel[playerid] = true;
 	} else if(pVars[playerid][pX] != DEFAULT_POS_X && pVars[playerid][pY] != DEFAULT_POS_Y && pVars[playerid][pZ] != DEFAULT_POS_Z) {
 		SetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	} else {
 		SetPlayerPos(playerid, DEFAULT_POS_X, DEFAULT_POS_Y, DEFAULT_POS_Z);
 	}
-	
+
 	isSpawned[playerid] = true;
-	
+
 	printf("[LOG]: OnPlayerSpawn -- Called! (%d ms).", GetTickCount() - callSecs);
 	return 1;
 }
@@ -194,7 +195,7 @@ sampCallback:OSRP_OnPlayerDeath(playerid, killerid, reason) {
 		SendClientMessage(killerid, COLOR_WHITE, "{FF4444}Nie wolno Ci zabijaæ dopóki nie przekroczysz 10 godzin gry.");
 	}
 
-	if(killerid != INVALID_PLAYER_ID) {
+	if(killerid != INVALID_PLAYER_ID && GetPlayerWeapon(playerid) == 0) {
 		format(reas, sizeof(reas), "Prawdopodobny DM~n~~w~Zabil %s(%d:%d), bron: %d, godzin: %d", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, GetPlayerWeapon(killerid), pVars[killerid][pHours]);
 		return givePlayerPenalty(INVALID_PLAYER_ID, killerid, PEN_ADMJAIL, reas, 0);
 	}
@@ -1231,21 +1232,73 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 		
 		case DIALOG_GROUP_VEHICLE_SELECT: {
 			mainStr[0] = EOS;
+
+			new tmpUid = strval(inputtext), srvVehId;
+
+			foreach(new i : vehItter) {
+				if(tmpUid == vVars[i][vUid]) {
+					actualVehicle[playerid] = i;
+					break;
+				}
+			}
 			
 			if(!response) {
 				strcat(mainStr, "{FFFFFF}1\tNamierz\n3\tZresetuj na spawnpoint\n5\tUstaw subownera\n2\tSkasuj ca³kowicie\n4\tOdpisz");
 				return ShowPlayerDialog(playerid, DIALOG_GROUP_VEHICLE_MORE, DIALOG_STYLE_LIST, "Wybór pojazdu > Wiêcej", mainStr, "OK", "Anuluj");
 			}
+
+			srvVehId = actualVehicle[playerid];
+			
+			if(!vVars[srvVehId][vSpawned]) {
+				vVars[srvVehId][vId] = CreateVehicle(vVars[srvVehId][vModelId], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], 0.0, vVars[srvVehId][vColor1], vVars[srvVehId][vColor2], 0);
+				
+				if(vehCP[srvVehId] == INVALID_VEHICLE_ID && vehMapIcon[srvVehId] == INVALID_VEHICLE_ID) {
+					DestroyDynamicMapIcon(vehMapIcon[srvVehId]);
+					DestroyDynamicCP(vehCP[srvVehId]);
+					
+					vehCP[srvVehId] = CreateDynamicCP(vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], 2.0, 0, 0, -1, 100, -1, 0);
+					vehMapIcon[srvVehId] = CreateDynamicMapIcon(vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], 55, COLOR_WHITE, 0, 0, -1, 4000, MAPICON_GLOBAL, -1, 0);
+				}
+				
+				if(isBicycle(vVars[srvVehId][vModelId])) {
+					SetVehicleParamsEx(vVars[srvVehId][vId], 1, 0, 0, 0, 0, 0, 0);
+				}
+				
+				SetVehicleNumberPlate(vVars[srvVehId][vId], vVars[srvVehId][vPlate]);
+				SetVehicleToRespawn(vVars[srvVehId][vId]);
+				
+				TextDrawSetString(vehicleSpawn[playerid][0], "~w~Pojazd zostal zespawnowany.~n~Jezeli nie mozesz go znalezc w~n~miejscu zaznaczonym na radarze,~n~uzyj /g v, by go zresetowac.");
+
+				for(new i = 0; i < sizeof(vehicleSpawn); i++) {
+					TextDrawShowForPlayer(playerid, vehicleSpawn[playerid][i]);
+				}
+				
+				SetTimerEx("hideVehicleSpawn", 7000, false, "i", playerid);
+				
+				exitedVehicleSec[playerid] = 0;
+				vVars[srvVehId][vSpawned] = true;
+			} else {
+				DestroyVehicle(vVars[srvVehId][vId]);
+				GameTextForPlayer(playerid, "~r~Pojazd~n~~n~~w~Pojazd zostal odspawnowany.", 5000, 3);
+				
+				actualVehicle[playerid] = INVALID_SERVER_VEHICLE_ID;
+				vVars[srvVehId][vId] = INVALID_VEHICLE_ID;
+				vVars[srvVehId][vSpawned] = false;
+			}
 		}
-		
+
 		case DIALOG_GROUP_VEHICLE_MORE: {
 			if(!response) {
 				return 1;
 			}
 			
+			new srvVehId = actualVehicle[playerid];
+			
 			switch(listitem) {
 				case 0: {
-					
+					if(!vVars[srvVehId][vSpawned]) {
+						return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Ten pojazd nie jest zespawnowany b¹dŸ nie nale¿y (ju¿) do tej grupy.", "OK", "");
+					}
 				}
 				case 1: {
 					
@@ -1315,18 +1368,16 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 		}
 		
 		case DIALOG_SHOW_ITEMS: {
-			new tmpUid, itemid;
-			
-			if(!response) {
-				tmpUid = strval(inputtext);
-				
-				foreach(new i : itemItter) {
-					if(tmpUid == iVars[i][iUid]) {
-						actualItem[playerid] = i;
-						break;
-					}
+			new tmpUid = strval(inputtext), itemid;
+
+			foreach(new i : itemItter) {
+				if(tmpUid == iVars[i][iUid]) {
+					actualItem[playerid] = i;
+					break;
 				}
-				
+			}
+
+			if(!response) {				
 				mainStr[0] = EOS;
 				strcat(mainStr, "{FFFFFF}10\tOd³ó¿ na ziemiê\n11\tDaj za darmo graczowi...\n12\tSprzedaj graczowi...\n13\tW³ó¿ do torby...\n");
 				strcat(mainStr, "14\tSchowaj do szafy\n15\tDodaj do craftingu");
@@ -1347,15 +1398,6 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			if(!listitem) {
 				return 1;
 			} else if(itemsCount > listitem - 1) {
-				tmpUid = strval(inputtext);
-				
-				foreach(new i : itemItter) {
-					if(tmpUid == iVars[i][iUid]) {
-						actualItem[playerid] = i;
-						break;
-					}
-				}
-				
 				itemid = iVars[actualItem[playerid]][iId];
 				enableItemProperties(playerid, actualItem[playerid], itemid);
 			} else {
@@ -1760,13 +1802,29 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					SetTimerEx("addFuelToVehicle", 5000, false, "i", playerid);
 				}
 				case O_VCARD: {
+					//new count;
+
 					mainStr[0] = EOS;
+					//queryStr[0] = EOS;
+
+					/*format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Items` WHERE `ID` = '9' OR `ID` = '58' AND `OUID` = '%d'", pVars[playerid][pUid]);
+					mysql_query(queryStr);
+
+					mysql_store_result();
+
+					count = mysql_fetch_int();
+					mysql_free_result();
+
+					if(count <= 1) {
+						return 1;
+					}*/
+
 					foreach(new i : itemItter) {
 						if(iVars[i][iOUid] == pVars[playerid][pUid] && !iVars[i][iUsed] && (iVars[i][iId] == P_TELEFON || iVars[i][iId] == P_NKA8110)) {
 							format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t\t%s\t\t%d\t\t%d", iVars[i][iUid], itemNames[iVars[i][iId]], iVars[i][iValues], iVars[i][iId]);
 						}
 					}
-					
+
 					ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_VCARD_ADD, DIALOG_STYLE_LIST, "Dostêpne przedmioty", mainStr, "OK", "Zamknij");
 				}
 				case O_PRZETRZY: {

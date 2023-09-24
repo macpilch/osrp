@@ -51,6 +51,7 @@
 #include "src\systems\group_functions"
 #include "src\systems\object_functions"
 #include "src\systems\race_functions"
+#include "src\systems\gym_functions"
 #include "src\systems\timers"
 
 main() {

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: timers.inc
 	Date: 29.07.2022
-	Modified: 10.09.2023
+	Modified: 19.09.2023
 */
 
 #if defined __TIMERS_INC__
@@ -605,24 +605,24 @@ task updateWebsiteDateTimer[1900]() {
 	TextDrawSetString(website, timerStr);
 }
 
-task updatePlayerArea[1000]() {
-	timerStr[0] = EOS;
-	
+task updatePlayerArea[1000]() {	
 	foreach(new i : Player) {
 		new srvVehId = actualVehicle[i];
-		
+
 		foreach(new j : areaItter) {
 			if(isPlayerInArea(i, aVars[j][aMinX], aVars[j][aMaxX], aVars[j][aMinY], aVars[j][aMaxY]) && isSpawned[i]) {
 				pVars[i][pArea] = aVars[j][aUid];
-				
+
 				if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
-					/*if(aVars[j][aMaxSpeed] < 999) {
+					timerStr[0] = EOS;
+					
+					if(aVars[j][aMaxSpeed] < 999) {
 						format(timerStr, sizeof(timerStr), "~w~Max ~r~%d km/h", aVars[j][aMaxSpeed]);
 					} else {
 						format(timerStr, sizeof(timerStr), "~w~Limit: ~g~~h~Brak");
-					}*/
+					}
 					
-					GameTextForPlayer(i, "TEST", 3000, 5);
+					GameTextForPlayer(i, timerStr, 3000, 5);
 					
 					if(getVehicleSpeed(vVars[srvVehId][vId]) > aVars[j][aMaxSpeed]) {
 						
@@ -641,7 +641,7 @@ task townHallBellsTimer[59000]() {
 	foreach(new i : Player) {
 		timerStr[0] = EOS;
 
-		if(hours == 0 && minutes == 0) {
+		/*if(hours == 0 && minutes == 0) {
 			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu wybi³y pó³noc. **");
 		} else if(hours == 1 && minutes == 0) {
 			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d raz. **", hours);
@@ -649,7 +649,7 @@ task townHallBellsTimer[59000]() {
 			//format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d razy. **", hours);
 		}
 
-		SendClientMessage(i, COLOR_WHITE, timerStr);
+		SendClientMessage(i, COLOR_WHITE, timerStr);*/
 	}
 
 	if(hours == 0) {
@@ -659,13 +659,8 @@ task townHallBellsTimer[59000]() {
 
 task antiCheat[1000]() {
 	foreach(new i : Player) {
-		if(hasLogged[i] && isSpawned[i]) {
-			new reas[80];
-			new Float:x, Float:y, Float:z, Float:totalPos;
-
-			GetPlayerPos(i, x, y, z);
-
-			if((x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y) && !isFreeze[i]) {
+		if(hasLogged[i] && isSpawned[i] && playerAFKTime[i] == 1) {
+			/*if((x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y) && !isFreeze[i]) {
 				format(reas, sizeof(reas), "Cheat, AirBreak~n~~w~Cheat, AirBreak: d%f tc%d d3.s%d", 21.952901, 68927653, 2261);
 				//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
 			}
@@ -673,9 +668,26 @@ task antiCheat[1000]() {
 			if(getPlayerSpeed(i) > 30.0) {
 				format(reas, sizeof(reas), "Cheat, Teleport~n~~w~Cheat, Teleport: d%0.6f tc%d delta3s%d", 50.901912, 57113489, 2863);
 				//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
+			}*/
+			
+			if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
+				new reas[64];
+				new Float:x, Float:y, Float:z;
+
+				GetVehicleVelocity(vVars[actualVehicle[i]][vId], x, y, z);
+
+				if(getVehicleSpeed(vVars[actualVehicle[i]][vId]) > 230) {
+					format(reas, sizeof(reas), "SpeedHack V %f %f %f", x, y, z);
+					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
+				}
 			}
 
 			if(isFreeze[i]) {
+				new reas[64];
+				new Float:x, Float:y, Float:z, Float:totalPos;
+
+				GetPlayerPos(i, x, y, z);
+
 				if(IsPlayerInAnyVehicle(i) && getVehicleSpeed(vVars[actualVehicle[i]][vId]) > 0 && (x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y)
 				   && GetTickCount() < enteredVehicleSec[i]) {
 					enteredVehicleSec[i] = 0;
@@ -684,7 +696,7 @@ task antiCheat[1000]() {
 					format(reas, sizeof(reas), "Unfreeze~n~~w~3x ruch o %0.1fj podczas zamrozenia w pojezdzie.", totalPos);
 					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
 				}
-				
+
 				if((x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y) && GetPlayerState(i) == PLAYER_STATE_ONFOOT) {
 					totalPos = floatabs((x - pVars[i][pX]) + (y - pVars[i][pY]));
 

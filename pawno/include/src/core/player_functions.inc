@@ -1067,6 +1067,9 @@ stock givePlayerPenalty(playerid, victim, type, const reason[], days) {
 			
 			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Wymuszenie odgrywania akcji RolePlay) od %s. Powód: %s", pVars[playerid][pCharName], reason);
 		}
+		case PEN_KLATWA: {
+			format(str, sizeof(str), "~r~Ban w wyniku klatwy ~w~(na %d dni)~n~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+		}
 	}
 	
 	SendClientMessage(victim, COLOR_WHITE, mainStr);
@@ -1523,7 +1526,7 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 		case O_VCARD: {
 			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Wizytówka vCard do telefonu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[0]);
-			
+
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "* %s bierze do rêki telefon i wysy³a vCard.", pVars[playerid][pCharName]);
 			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
@@ -1619,6 +1622,34 @@ stock isPlayerInArea(playerid, Float:minx, Float:maxx, Float:miny, Float:maxy) {
 		return 1;
 	}
     return 0;
+}
+
+stock isPlayerFacingObject(playerid, objectid) {
+	new Float:pX2, Float:pY2, Float:pZ2, Float:obX, Float:obY, Float:obZ, Float:Angle, Float:pAngle;
+
+	GetDynamicObjectPos(objectid, obX, obY, obZ);
+	GetPlayerPos(playerid, pX2, pY2, pZ2);
+
+	if(obY > pY2) {
+		Angle = (-acos((obX - pX2) / floatsqroot((obX - pX2) * (obX - pX2) + (obY - pY2) * (obY - pY2))) - 90.0);
+	} else if(obY < pY2 && obX < pX2) {
+		Angle = (acos((obX - pX2) / floatsqroot((obX - pX2) * (obX - pX2) + (obY - pY2) * (obY - pY2))) - 450.0);
+	} else if(obY < pY2) {
+		Angle = (acos((obX - pX2) / floatsqroot((obX - pX2) * (obX - pX2) + (obY - pY2) * (obY - pY2))) - 90.0);
+	}
+
+	if(obX > pX2) {
+		Angle = (floatabs(floatabs(Angle) + 180.0));
+	} else {
+		Angle = (floatabs(Angle) - 180.0);
+	}
+
+	GetPlayerFacingAngle(playerid, pAngle);
+
+	if(Angle - pAngle < -130 || Angle - pAngle > 130) {
+		return 0;
+	}
+	return 1;
 }
 
 stock playerToPoint(playerid, Float:radius, Float:x, Float:y, Float:z) {

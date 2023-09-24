@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 29.08.2022
-	Modified: 04.09.2023
+	Modified: 24.09.2023
 */
 
 #if defined __ITEM_INC__
@@ -45,6 +45,7 @@ enum {
 	P_TEC9,
 	P_PARA,
 	P_MATWYBCH,
+	P_PIZZA,
 	P_CHEESBURG,
 	P_ZAPIEK,
 	P_COCACOLA,
@@ -77,7 +78,8 @@ enum {
 	P_DRZWIPAS,
 	P_BAGAZNIK,
 	P_MASKASAM,
-	P_KANISTER
+	P_KANISTER,
+	P_KARNET
 };
 
 enum ItemData {

@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: item_functions.inc
 	Date: 14.08.2022
-	Modified: 11.09.2023
+	Modified: 24.09.2023
 */
 
 #if defined __ITEM_FUNCTIONS_INC__
@@ -331,7 +331,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			
 			//format(mainStr, sizeof(mainStr), "* %s uzupe³nia amunicjê swojej broni.", pVars[playerid][pCharName]);
 		}
-		case P_CHEESBURG, P_ZAPIEK, P_FRYTKI, P_GRVBURGER, P_HAMBGRG, P_HOTDOG, P_KEBAB, P_LODY, P_LODYWKBK, P_LONGER, P_NACHOSZS, P_NALESNIK, P_NALESNIKI, P_PACZEK, P_PACZEKAFRO, P_PACZEKZLT, P_DONUT, P_SUSHI: {
+		case P_PIZZA, P_CHEESBURG, P_ZAPIEK, P_FRYTKI, P_GRVBURGER, P_HAMBGRG, P_HOTDOG, P_KEBAB, P_LODY, P_LODYWKBK, P_LONGER, P_NACHOSZS, P_NALESNIK, P_NALESNIKI, P_PACZEK, P_PACZEKAFRO, P_PACZEKZLT, P_DONUT, P_SUSHI: {
 			iVars[srvitemid][iUsed] = true;
 			
 			setPlayerHealthEx(playerid, pVars[playerid][pHp] += random(10) + 5.0);
@@ -354,6 +354,18 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				
 				format(mainStr, sizeof(mainStr), "* %s uzupe³nia bak paliwem z kanistra.", pVars[playerid][pCharName]);
 				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);				
+				
+				iVars[srvitemid][iUsed] = false;
+			}
+		}
+		case P_KARNET: {
+			if(!iVars[srvitemid][iUsed]) {
+				iVars[srvitemid][iUsed] = true;
+				isGym[playerid] = true;
+
+				strcat(mainStr, "Zaakceptowano trening.\n\nU¿yj sprzêtu w silowni (/silownia), aby zwiekszyc swoja sile.\n\n");
+				strcat(mainStr, "Niektore narkotyki zwiekszaja szybkosc zdobywania sily, a inne czestotliwosc treningow!");
+				ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 				
 				iVars[srvitemid][iUsed] = false;
 			}

@@ -56,6 +56,8 @@ sampCallback:OSRP_OnGameModeInit() {
 		vVars[i][vDesc] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 0.1, 20.0, INVALID_PLAYER_ID, i, 0, 0, 0, -1, 20.0, -1, 0);
 	}
 	
+	gymObject[0] = CreateDynamicObject(2629, 758.8672, -76.0945, 1000.6500 - 1, 0.0, 0.0, 90.0, 2, 7, -1, 50.0);
+
 	website = TextDrawCreate(8.433380, 427.000000, "_");
 	TextDrawLetterSize(website, 0.303351, 1.016664);
 	TextDrawTextSize(website, -189.751068, -105.000007);
