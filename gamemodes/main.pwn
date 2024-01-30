@@ -59,4 +59,3 @@ main() {
 
 	printf("[LOG]: main -- Called! (%d ms).", GetTickCount() - callSecs);
 }
-

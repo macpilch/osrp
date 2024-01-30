@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: race_functions.inc
 	Date: 16.08.2023
-	Modified: 27.08.2023
+	Modified: 26.10.2023
 */
 
 #if defined __RACE_FUNCTIONS_INC__
@@ -15,11 +15,11 @@
 stock initRaceValues() {
 	new tmpQuery[64];
 	new cps;
-	
-	queryStr[0] = EOS;
-	printf("Zaczynam ladowac wyscigi...");
-	
-	for(new i = 0; i < MAX_RACES; i++) {
+
+	printf("[LOG]: Zaczynam ladowac wyscigi...");
+
+	for(new i = 0; i < MAX_RACES; i++) {		
+		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "SELECT `UID`, `Name`, `Created`, `Besetments`, `CPS`, `Players` FROM `osrp_Races` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
 		
@@ -55,63 +55,78 @@ stock initRaceValues() {
 		Iter_Add(raceItter, i);
 	}
 	
+	if(Iter_Count(raceItter)) {
+		printf("[LOG]: Wczytano %d tras.", Iter_Count(raceItter));
+	} else {
+		printf("[LOG]: Brak tras.");
+	}
+	
 	mysql_free_result();
 	return 1;
 }
 
 stock onEnterRaceCheckpoint(playerid) {
 	new srvRcId = getServerRaceIdForPlayer(playerid);
-	
+
 	playerRcActualTime[playerid] = ((GetTickCount() - playerRcTime[playerid]) / 1000);
 	playerCps[playerid]++;
 	playerRcPosition[playerid] = 1;
-	
-	DisablePlayerRaceCheckpoint(playerid);
-	SetPlayerRaceCheckpoint(playerid, 0, rcVars[srvRcId][rcCpX][playerCps[playerid]], rcVars[srvRcId][rcCpY][playerCps[playerid]], rcVars[srvRcId][rcCpZ][playerCps[playerid]], rcVars[srvRcId][rcCpX][playerCps[playerid] + 1], rcVars[srvRcId][rcCpY][playerCps[playerid] + 1], rcVars[srvRcId][rcCpZ][playerCps[playerid] + 1], 5.0);
-	
-	foreach(new i : Player) {
-		if(isRace[i]) {
-			if(playerCps[i] > playerCps[playerid]) {
-				playerRcPosition[playerid]++;
+
+	if(playerCps[playerid] != 0 && playerCps[playerid] < rcVars[srvRcId][rcCps] - 1) {
+		DisablePlayerRaceCheckpoint(playerid);
+		SetPlayerRaceCheckpoint(playerid, 0, rcVars[srvRcId][rcCpX][playerCps[playerid]], rcVars[srvRcId][rcCpY][playerCps[playerid]], rcVars[srvRcId][rcCpZ][playerCps[playerid]], rcVars[srvRcId][rcCpX][playerCps[playerid] + 1], rcVars[srvRcId][rcCpY][playerCps[playerid] + 1], rcVars[srvRcId][rcCpZ][playerCps[playerid] + 1], 5.0);
+		
+		foreach(new i : Player) {
+			if(isRace[i]) {
+				if(playerCps[i] > playerCps[playerid]) {
+					if(playerid != i) {
+						playerRcPosition[playerid]++;
+					}
+				}
 			}
 		}
-	}
-	
-	if(playerCps[playerid] == rcVars[srvRcId][rcCps] - 1) {
+	} else if(playerCps[playerid] == rcVars[srvRcId][rcCps] - 1) {
 		DisablePlayerRaceCheckpoint(playerid);
 		SetPlayerRaceCheckpoint(playerid, 1, rcVars[srvRcId][rcCpX][playerCps[playerid]], rcVars[srvRcId][rcCpY][playerCps[playerid]], rcVars[srvRcId][rcCpZ][playerCps[playerid]], 0.0, 0.0, 0.0, 5.0);
-		
-		if(playerCps[playerid] == rcVars[srvRcId][rcCps]) {
-			DisablePlayerRaceCheckpoint(playerid);
-			
-			mainStr[0] = EOS;
-			
-			switch(playerRcPosition[playerid]) {
-				case 1: {
-					format(mainStr, sizeof(mainStr), "~r~~h~Meta!~n~~r~Pozycja: 1~n~Czas: ~w~%0.2fs", playerRcActualTime[playerid]);
-				}
-				case 2: {
-					format(mainStr, sizeof(mainStr), "~r~~h~Meta!~n~~r~Pozycja: 2~n~Czas: ~w~%0.2fs", playerRcActualTime[playerid]);
-				}
-				case 3: {
-					format(mainStr, sizeof(mainStr), "~r~~h~Meta!~n~~r~Pozycja: 3~n~Czas: ~w~%0.2fs", playerRcActualTime[playerid]);
-				}
-				default: {
-					format(mainStr, sizeof(mainStr), "~r~~h~Meta!~n~~r~Pozycja: %d~n~Czas: ~w~%0.2fs", playerRcPosition[playerid], playerRcActualTime[playerid]);
+	
+		foreach(new i : Player) {
+			if(isRace[i]) {
+				if(playerCps[i] > playerCps[playerid]) {
+					if(playerid != i) {
+						playerRcPosition[playerid]++;
+					}
 				}
 			}
-			
-			GameTextForPlayer(playerid, mainStr, 5000, 3);
-			
-			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "%s koñczy wyœcig z czasem %0.2fs.", pVars[playerid][pCharName], playerRcActualTime[playerid]);
-			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN);
+		}		
+	} else if(playerCps[playerid] == rcVars[srvRcId][rcCps]) {
+		DisablePlayerRaceCheckpoint(playerid);
+		mainStr[0] = EOS;
+
+		switch(playerRcPosition[playerid]) {
+			case 1: {
+				format(mainStr, sizeof(mainStr), "~r~~h~Meta!~n~~r~Pozycja: 1~n~Czas: ~w~%0.2fs", playerRcActualTime[playerid]);
+			}
+			case 2: {
+				format(mainStr, sizeof(mainStr), "~r~~h~Meta!~n~~r~Pozycja: 2~n~Czas: ~w~%0.2fs", playerRcActualTime[playerid]);
+			}
+			case 3: {
+				format(mainStr, sizeof(mainStr), "~r~~h~Meta!~n~~r~Pozycja: 3~n~Czas: ~w~%0.2fs", playerRcActualTime[playerid]);
+			}
+			default: {
+				format(mainStr, sizeof(mainStr), "~r~~h~Meta!~n~~r~Pozycja: %d~n~Czas: ~w~%0.2fs", playerRcPosition[playerid], playerRcActualTime[playerid]);
+			}
 		}
+
+		GameTextForPlayer(playerid, mainStr, 5000, 3);
+
+		mainStr[0] = EOS;
+		format(mainStr, sizeof(mainStr), "%s koñczy wyœcig z czasem %0.2fs.", pVars[playerid][pCharName], playerRcActualTime[playerid]);
+		sendOtherMessage(playerid, mainStr);
 	}
-	
+
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "~n~~n~~n~~n~~n~~n~~p~Okrazenie ~w~1/%d~n~~b~Checkpoint ~w~%d/%d~n~~y~~h~%0.2fs ~w~[%d/%d]", rcVars[srvRcId][rcBesetments], playerCps[playerid], rcVars[srvRcId][rcCps], playerRcActualTime[playerid], playerRcPosition[playerid], numPlayerRace);
-	GameTextForPlayer(playerid, mainStr, 5000, 3);
+	GameTextForPlayer(playerid, mainStr, 10000, 3);
 	return 1;
 }
 

@@ -13,10 +13,10 @@
 #pragma library osrp
 
 stock initBusStopValues() {
-	queryStr[0] = EOS;
-	printf("Zaczynam ladowac przystanki...");
+	printf("[LOG]: Zaczynam ladowac przystanki...");
 	
 	for(new i = 0; i < MAX_BUS_STOPS; i++) {
+		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_BusStops` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
 		
@@ -32,6 +32,12 @@ stock initBusStopValues() {
 		
 		Iter_Add(busstopItter, i);
 		printf("[DEBUG] Uid: %d,  Name: %s", i + 1, bVars[i][bsName]);
+	}
+	
+	if(Iter_Count(busstopItter)) {
+		printf("[LOG]: Wczytano %d przystankow.", Iter_Count(busstopItter));
+	} else {
+		printf("[LOG]: Brak przystankow.");
 	}
 	
 	mysql_free_result();
@@ -52,17 +58,12 @@ stock createNewBusStop(playerid, busstopname[]) {
 stock searchPlayerBusStop(playerid) {
 	foreach(new i : busstopItter) {
 		if(playerToPoint(playerid, 5.0, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ])) {
-			new Float:ang;
-			
 			GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
-			//SetCameraBehindPlayer(playerid);
-			SetPlayerFacingAngle(playerid, ang + 100);
 			
-			//SetPlayerCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
-			//SetPlayerCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+			TogglePlayerControllable(playerid, 0);
 
-			//InterpolateCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 200, 4000, CAMERA_MOVE);
-			//InterpolateCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 200, 4000, CAMERA_MOVE);
+			InterpolateCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 100, 1500, CAMERA_MOVE);
+			InterpolateCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], 1500, CAMERA_MOVE);
 
 			isInBus[playerid] = true;
 			actualBusStop[playerid] = i;

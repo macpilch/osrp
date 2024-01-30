@@ -13,10 +13,10 @@
 #pragma library osrp
 
 stock initCashpointValues() {
-	queryStr[0] = EOS;
-	printf("Zaczynam ladowac bankomaty...");
+	printf("[LOG]: Zaczynam ladowac bankomaty...");
 	
 	for(new i = 0; i < MAX_CASHPOINTS; i++) {
+		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Cashpoints` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
 		
@@ -32,6 +32,12 @@ stock initCashpointValues() {
 		Iter_Add(cashpointItter, i);
 		cVars[i][csObject] = CreateDynamicObject(2942, cVars[i][csX], cVars[i][csY], cVars[i][csZ] - 0.35, 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
 		printf("[DEBUG] Id: %d,  Name: %s", i, cVars[i][csName]);
+	}
+	
+	if(Iter_Count(cashpointItter)) {
+		printf("[LOG]: Wczytano %d bankomatow.", Iter_Count(cashpointItter));
+	} else {
+		printf("[LOG]: Brak bankomatow.");
 	}
 	
 	mysql_free_result();

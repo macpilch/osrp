@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: item_functions.inc
 	Date: 14.08.2022
-	Modified: 24.09.2023
+	Modified: 29.01.2024
 */
 
 #if defined __ITEM_FUNCTIONS_INC__
@@ -13,10 +13,10 @@
 #pragma library osrp
 
 stock initItemValues() {
-	queryStr[0] = EOS;
-	printf("Zaczynam ladowac przedmioty...");
+	printf("[LOG]: Zaczynam ladowac przedmioty...");
 	
-	for(new i = 0; i < MAX_ITEMS; i++) {
+	for(new i = 0; i < MAX_ITEMS; i++) {		
+		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Items` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
 		
@@ -27,10 +27,16 @@ stock initItemValues() {
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iiiis[32]ifffii", iVars[i][iUid], iVars[i][iId], iVars[i][iOUid], iVars[i][iVUid], iVars[i][iName], iVars[i][iValues], iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ], iVars[i][iUsed], iVars[i][iPlace]);
+		sscanf(queryStr, "p<|>iiis[32]iifffii", iVars[i][iUid], iVars[i][iId], iVars[i][iOUid], iVars[i][iName], iVars[i][iValue1], iVars[i][iValue2], iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ], iVars[i][iUsed], iVars[i][iPlace]);
 		
 		Iter_Add(itemItter, i);
-		printf("[DEBUG] SrvId: %d, Uid: %d, Id: %d, OUid: %d, VUid: %d, Name: %s, Values: %d, PosX: %0.1f, PosY: %0.1f, PosZ: %0.1f, Used: %d, Place: %d", i, iVars[i][iUid], iVars[i][iId], iVars[i][iOUid], iVars[i][iVUid], iVars[i][iName], iVars[i][iValues], iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ], iVars[i][iUsed], iVars[i][iPlace]);
+		printf("[DEBUG] SrvId: %d, Uid: %d, Id: %d, OUid: %d, Name: %s, Value1: %d, Value2: %d, PosX: %0.1f, PosY: %0.1f, PosZ: %0.1f, Used: %d, Place: %d", i, iVars[i][iUid], iVars[i][iId], iVars[i][iOUid], iVars[i][iName], iVars[i][iValue1], iVars[i][iValue2], iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ], iVars[i][iUsed], iVars[i][iPlace]);
+	}
+	
+	if(Iter_Count(itemItter)) {
+		printf("[LOG]: Wczytano %d przedmiotow.", Iter_Count(itemItter));
+	} else {
+		printf("[LOG]: Brak przedmiotow.");
 	}
 	
 	mysql_free_result();
@@ -41,7 +47,7 @@ stock saveItemValues() {
 	queryStr[0] = EOS;
 	
 	foreach(new i : itemItter) {
-		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `OUID` = '%d', `VUID` = '%d', `Values` = '%d', `Used` = '%d', `Place` = '%d' WHERE `UID` = '%d'", iVars[i][iOUid], iVars[i][iVUid], iVars[i][iValues], iVars[i][iUsed], iVars[i][iPlace], iVars[i][iUid]);
+		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `OUID` = '%d', `Value1` = '%d', `Value2` = '%d', `Used` = '%d', `Place` = '%d' WHERE `UID` = '%d'", iVars[i][iOUid], iVars[i][iValue1], iVars[i][iValue2], iVars[i][iUsed], iVars[i][iPlace], iVars[i][iUid]);
 		mysql_query(queryStr);
 	}
 	return 1;
@@ -62,9 +68,9 @@ stock addPlayerItem(playerid, itemid) {
 	iVars[freeId][iUid] = freeId + 1;
 	iVars[freeId][iId] = itemid;
 	iVars[freeId][iOUid] = pVars[playerid][pUid];
-	iVars[freeId][iVUid] = INVALID_SERVER_VEHICLE_ID;
 	format(iVars[freeId][iName], 32, itemNames[itemid]);
-	iVars[freeId][iValues] = 0;
+	iVars[freeId][iValue1] = 0;
+	iVars[freeId][iValue2] = 0;
 	iVars[freeId][iPosX] = 0.0;
 	iVars[freeId][iPosY] = 0.0;
 	iVars[freeId][iPosZ] = 0.0;
@@ -74,7 +80,7 @@ stock addPlayerItem(playerid, itemid) {
 	Iter_Add(itemItter, freeId);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Items` (`UID`, `ID`, `OUID`, `VUID`, `Name`, `Values`, `Used`, `Place`) VALUES ('%d', '%d', '%d', '%d', '%s', '%d', '%d', '%d')", iVars[freeId][iUid], iVars[freeId][iId], iVars[freeId][iOUid], iVars[freeId][iVUid], iVars[freeId][iName], iVars[freeId][iValues], iVars[freeId][iUsed], iVars[freeId][iPlace]);
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Items` (`UID`, `ID`, `OUID`, `Name`, `Value1`, `Value2`, `Used`, `Place`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d', '%d', '%d')", iVars[freeId][iUid], iVars[freeId][iId], iVars[freeId][iOUid], iVars[freeId][iName], iVars[freeId][iValue1], iVars[freeId][iValue2], iVars[freeId][iUsed], iVars[freeId][iPlace]);
 	mysql_query(queryStr);
 	
 	if(iVars[freeId][iId] == P_TELEFON || iVars[freeId][iId] == P_NKA8110) {
@@ -94,18 +100,18 @@ stock addPlayerItem(playerid, itemid) {
 	}
 	
 	if(iVars[freeId][iId] >= P_COLT && iVars[freeId][iId] <= P_TEC9) {
-		iVars[freeId][iValues] = 50;
+		iVars[freeId][iValue1] = 50;
 		
 		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `Values` = '%d' WHERE `ID` = '%d'", iVars[freeId][iValues], iVars[freeId][iId]);
+		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `Value1` = '%d' WHERE `UID` = '%d'", iVars[freeId][iValue1], iVars[freeId][iUid]);
 		mysql_query(queryStr);
 	}
 	
 	if(iVars[freeId][iId] == P_KAMIZELKA) {
-		iVars[freeId][iValues] = 100;
+		iVars[freeId][iValue1] = 100;
 		
 		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `Values` = '%d' WHERE `ID` = '%d'", iVars[freeId][iValues], iVars[freeId][iId]);
+		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `Value1` = '%d' WHERE `UID` = '%d'", iVars[freeId][iValue1], iVars[freeId][iUid]);
 		mysql_query(queryStr);
 	}
 	return 1;
@@ -121,9 +127,9 @@ stock removePlayerItem(srvitemid) {
 	iVars[srvitemid][iUid] = 0;
 	iVars[srvitemid][iId] = -1;
 	iVars[srvitemid][iOUid] = 0;
-	iVars[srvitemid][iVUid] = 0;
 	format(iVars[srvitemid][iName], 32, NULL);
-	iVars[srvitemid][iValues] = 0;
+	iVars[srvitemid][iValue1] = 0;
+	iVars[srvitemid][iValue2] = 0;
 	iVars[srvitemid][iPosX] = 0.0;
 	iVars[srvitemid][iPosY] = 0.0;
 	iVars[srvitemid][iPosZ] = 0.0;
@@ -145,7 +151,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				SetTimerEx("hideUsedRollersInfo", 5000, false, "i", playerid);
 				
 				format(mainStr, sizeof(mainStr), "* %s zak³ada rolki.", pVars[playerid][pCharName]);
-				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+				sendMeMessage(playerid, mainStr);
 			
 				iVars[srvitemid][iUsed] = true;
 			} else {
@@ -153,7 +159,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				SetPlayerSkin(playerid, pVars[playerid][pSkin]);
 				
 				format(mainStr, sizeof(mainStr), "* %s zdejmuje rolki.", pVars[playerid][pCharName]);
-				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+				sendMeMessage(playerid, mainStr);
 				
 				actualItem[playerid] = INVALID_ITEM_ID;
 				iVars[srvitemid][iUsed] = false;
@@ -222,42 +228,42 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			}
 		}
 		case P_TELEFON, P_NKA8110: {
-			new id = getPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
-			
-			if(telEnterNumber[id] == pVars[playerid][pTelNum] && !usedTelephone[id] && !usedTelephone[playerid]) {
+			new pId = getPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
+
+			if(telEnterNumber[pId] == pVars[playerid][pTelNum] && !usedTelephone[pId] && !usedTelephone[playerid]) {
 				new str[32];
 				new h, m, d;
-				
+
 				gettime(h, m, d);
 				iVars[srvitemid][iUsed] = true;
 				format(str, sizeof(str), "Tel. %d [%d:%d:%d]", pVars[playerid][pTelNum], h, m, d);
-				
+
 				strcat(mainStr, "{FFFFFF}8\tOdbierz\n9\tZignoruj");
 				ShowPlayerDialog(playerid, DIALOG_TELEPHONE_CALL_CHOICE, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
-			} else if(usedTelephone[id] && usedTelephone[playerid]) {
+			} else if(usedTelephone[pId] && usedTelephone[playerid]) {
 				applyAnimationEx(playerid, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
-				applyAnimationEx(id, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
+				applyAnimationEx(pId, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
 				
 				iVars[srvitemid][iUsed] = false;
 				actualItem[playerid] = INVALID_ITEM_ID;
 				usedTelephone[playerid] = false;
-				usedTelephone[id] = false;
+				usedTelephone[pId] = false;
 				telEnterNumber[playerid] = 0;
-				telEnterNumber[id] = 0;
+				telEnterNumber[pId] = 0;
 				
 				GameTextForPlayer(playerid, "~r~Rozmowa zakonczona.", 5000, 3);
-				GameTextForPlayer(id, "~r~Rozmowa zakonczona.", 5000, 3);
+				GameTextForPlayer(pId, "~r~Rozmowa zakonczona.", 5000, 3);
 			/*} else if() {
 				ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_MENU, DIALOG_STYLE_LIST, "Telefon - brak zasiegu", "{FFFFFF}(Brak zasiegu)\n7\tWy³¹cz", "OK", "Anuluj");
 				*/
 			} else {
 				new str[32];
 				new h, m, d;
-				
+
 				gettime(h, m, d);
 				iVars[srvitemid][iUsed] = true;
 				format(str, sizeof(str), "Tel. %d [%d:%d:%d]", pVars[playerid][pTelNum], h, m, d);
-				
+
 				strcat(mainStr, "{FFFFFF}1\tZadzwoñ do kontaktu\n2\tWyœlij SMS do kontaktu\n10\tUsuñ kontakt\n");
 				format(mainStr, sizeof(mainStr), "%s3\tWybierz numer\n4\tWyœlij vCard\n5\tWycisz telefon\n7\tWy³¹cz\n(By wys³aæ SMS: /p %s [numer] [tekst])", mainStr, itemNames[itemid]);
 				ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
@@ -268,8 +274,8 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			
 			new randNum = random(6) + 1;
 			
-			format(mainStr, sizeof(mainStr), "* %s wylosowa³ liczbê %d (z 1-6) u¿ywaj¹c Kostka. *", pVars[playerid][pCharName], randNum);
-			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+			format(mainStr, sizeof(mainStr), "* %s %s liczbê %d (z 1-6) u¿ywaj¹c Kostka. *", pVars[playerid][pCharName], pVars[playerid][pSex] ? ("wylosowa³a") : ("wylosowa³"), randNum);
+			sendMeMessage(playerid, mainStr);
 			
 			actualItem[playerid] = INVALID_ITEM_ID;
 			iVars[srvitemid][iUsed] = false;
@@ -294,12 +300,12 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 		case P_REKA: {
 			if(!iVars[srvitemid][iUsed]) {
 				format(mainStr, sizeof(mainStr), "* %s zak³ada %s.", pVars[playerid][pCharName], itemNames[itemid]);
-				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+				sendMeMessage(playerid, mainStr);
 				
 				iVars[srvitemid][iUsed] = true;
 			} else {
 				format(mainStr, sizeof(mainStr), "* %s zdejmuje %s.", pVars[playerid][pCharName], itemNames[itemid]);
-				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+				sendMeMessage(playerid, mainStr);
 				
 				actualItem[playerid] = INVALID_ITEM_ID;
 				iVars[srvitemid][iUsed] = false;
@@ -307,15 +313,15 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 		}
 		case P_KAMIZELKA: {
 			if(!iVars[srvitemid][iUsed]) {
-				SetPlayerArmour(playerid, iVars[srvitemid][iValues]);
+				SetPlayerArmour(playerid, iVars[srvitemid][iValue1]);
 				
 				format(mainStr, sizeof(mainStr), "* %s zak³ada %s.", pVars[playerid][pCharName], itemNames[itemid]);
-				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+				sendMeMessage(playerid, mainStr);
 				
 				iVars[srvitemid][iUsed] = true;
 			} else {
 				format(mainStr, sizeof(mainStr), "* %s zdejmuje %s.", pVars[playerid][pCharName], itemNames[itemid]);
-				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+				sendMeMessage(playerid, mainStr);
 				
 				iVars[srvitemid][iUsed] = false;
 				actualItem[playerid] = INVALID_ITEM_ID;
@@ -325,10 +331,12 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			}
 		}
 		case P_KASTET, P_NITESTICK, P_KNIFE, P_BASEBALL, P_PARALIZ, P_COLT, P_DEAGLE, P_SHOTGUN, P_UZI, P_MP5, P_AK47, P_M4, P_TEC9, P_PARA: {
-			strcat(mainStr, "Sk¹d wyci¹gasz/dok¹d chowasz broñ (np. \"z kabury\")?\n\n");
-			strcat(mainStr, "Mo¿esz pomin¹æ ten dialog i szybciej u¿ywaæ przedmiotów (/pomoc -> Przedmioty).");
-			ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PARAMETERS, DIALOG_STYLE_INPUT, "Parametry", mainStr, "U¿yj", "Anuluj");
-			
+			if(!strlen(itemParms[playerid])) {
+				strcat(mainStr, "Sk¹d wyci¹gasz/dok¹d chowasz broñ (np. \"z kabury\")?\n\n");
+				strcat(mainStr, "Mo¿esz pomin¹æ ten dialog i szybciej u¿ywaæ przedmiotów (/pomoc -> Przedmioty).");
+				ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PARAMETERS, DIALOG_STYLE_INPUT, "Parametry", mainStr, "U¿yj", "Anuluj");
+			}
+
 			//format(mainStr, sizeof(mainStr), "* %s uzupe³nia amunicjê swojej broni.", pVars[playerid][pCharName]);
 		}
 		case P_PIZZA, P_CHEESBURG, P_ZAPIEK, P_FRYTKI, P_GRVBURGER, P_HAMBGRG, P_HOTDOG, P_KEBAB, P_LODY, P_LODYWKBK, P_LONGER, P_NACHOSZS, P_NALESNIK, P_NALESNIKI, P_PACZEK, P_PACZEKAFRO, P_PACZEKZLT, P_DONUT, P_SUSHI: {
@@ -339,21 +347,21 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			removePlayerItem(srvitemid);
 			
 			format(mainStr, sizeof(mainStr), "* %s spo¿ywa %s.", pVars[playerid][pCharName], itemNames[itemid]);
-			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+			sendMeMessage(playerid, mainStr);
 			
 			actualItem[playerid] = INVALID_ITEM_ID;
 			iVars[srvitemid][iUsed] = false;
 		}
 		case P_WITAMINAC: {
 			format(mainStr, sizeof(mainStr), "* %s aplikuje %s lek.", pVars[playerid][pCharName]);
-			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);	
+			sendMeMessage(playerid, mainStr);
 		}
 		case P_KANISTER: {
 			if(!iVars[srvitemid][iUsed]) {
 				iVars[srvitemid][iUsed] = true;
 				
 				format(mainStr, sizeof(mainStr), "* %s uzupe³nia bak paliwem z kanistra.", pVars[playerid][pCharName]);
-				sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);				
+				sendMeMessage(playerid, mainStr);
 				
 				iVars[srvitemid][iUsed] = false;
 			}
@@ -366,8 +374,9 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				strcat(mainStr, "Zaakceptowano trening.\n\nU¿yj sprzêtu w silowni (/silownia), aby zwiekszyc swoja sile.\n\n");
 				strcat(mainStr, "Niektore narkotyki zwiekszaja szybkosc zdobywania sily, a inne czestotliwosc treningow!");
 				ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
-				
+
 				iVars[srvitemid][iUsed] = false;
+				removePlayerItem(srvitemid);
 			}
 		}
 	}
@@ -378,7 +387,7 @@ stock loadItemWeaponAmmo(srvitemid) {
 	new ammo;
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `Values` FROM `osrp_Items` WHERE `UID` = '%d' AND `ID` = '%d'", iVars[srvitemid][iUid], iVars[srvitemid][iId]);
+	format(queryStr, sizeof(queryStr), "SELECT `Value1` FROM `osrp_Items` WHERE `UID` = '%d' AND `ID` = '%d'", iVars[srvitemid][iUid], iVars[srvitemid][iId]);
 	mysql_query(queryStr);
 	mysql_store_result();
 	
@@ -389,7 +398,7 @@ stock loadItemWeaponAmmo(srvitemid) {
 
 stock saveItemWeaponAmmo(srvitemid) {
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `Values` = '%d' WHERE `ID` = '%d'", iVars[srvitemid][iValues], iVars[srvitemid][iId]);
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `Value1` = '%d' WHERE `ID` = '%d'", iVars[srvitemid][iValue1], iVars[srvitemid][iId]);
 	mysql_query(queryStr);
 	return 1;
 }
@@ -403,7 +412,7 @@ stock pickUpNearblyItems(playerid) {
 
 	mainStr[0] = EOS;
 	foreach(new i : itemItter) {
-		if(((iVars[i][iPlace] == ITEM_PLACE_FLOOR && iVars[i][iOUid] == INVALID_PLAYER_ID) || iVars[i][iPlace] == ITEM_PLACE_VEHICLE) && actualItem[playerid] == INVALID_ITEM_ID) {
+		if(((iVars[i][iPlace] == ITEM_PLACE_FLOOR && iVars[i][iOUid] == INVALID_PLAYER_ID) || (iVars[i][iPlace] == ITEM_PLACE_VEHICLE && iVars[i][iOUid] == vVars[srvVehId][vUid])) && actualItem[playerid] == INVALID_ITEM_ID) {
 			if(playerToPoint(playerid, 5.0, iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ]) || playerToPoint(playerid, 3.0, vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ])) {
 				format(mainStr, sizeof(mainStr), "%s{FFFFFF}%d\t%s\n", mainStr, iVars[i][iUid], iVars[i][iName]);
 				
@@ -420,21 +429,29 @@ stock pickUpNearblyItems(playerid) {
 	return 1;
 }
 
-stock showDialogItems(playerid) {
-	new tmpIVars[MAX_ITEMS][2];
+stock showPlayerDialogItems(playerid) {
+	enum tmp {
+		UID,
+		ID,
+		Name[32],
+		Val1,
+		Val2
+	}
+	
+	new tmpIVars[MAX_ITEMS][tmp];
 	new i;
 	
 	queryStr[0] = EOS;
 	mainStr[0] = EOS;
 	
-	format(queryStr, sizeof(queryStr), "SELECT `UID`, `Name` FROM `osrp_Items` WHERE `OUID` = '%d'", pVars[playerid][pUid]);
+	format(queryStr, sizeof(queryStr), "SELECT `UID`, `ID`, `Name`, `Value1`, `Value2` FROM `osrp_Items` WHERE `OUID` = '%d' AND `Place` = '%d'", pVars[playerid][pUid], ITEM_PLACE_PLAYER);
 	mysql_query(queryStr);
 	
 	mysql_store_result();
 	
 	while(mysql_fetch_row(queryStr, "|")) {
-		sscanf(queryStr, "p<|>is[32]", tmpIVars[i][0], tmpIVars[i][1]);
-		format(mainStr, sizeof(mainStr), "%s\n %d\t%s", mainStr, tmpIVars[i][0], tmpIVars[i][1]);
+		sscanf(queryStr, "p<|>iis[32]ii", tmpIVars[i][UID], tmpIVars[i][ID], tmpIVars[i][Name], tmpIVars[i][Val1], tmpIVars[i][Val2]);
+		format(mainStr, sizeof(mainStr), "%s\n %s\t{000000}%d\t%d\t(%d, %d)", mainStr, tmpIVars[i][Name], tmpIVars[i][UID], tmpIVars[i][ID], tmpIVars[i][Val1], tmpIVars[i][Val2]);
 		
 		i++;
 	}

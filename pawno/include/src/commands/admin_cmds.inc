@@ -29,6 +29,10 @@ CMD:ban(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ban [Gracz] [Powód]");
 	}
 	
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+	}
+	
 	givePlayerPenalty(playerid, pId, PEN_BAN, reason, 0);
 	return 1;
 }
@@ -47,6 +51,10 @@ CMD:kick(playerid, params[]) {
 	
 	if(sscanf(params, "is[128]", pId, reason)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /kick [Gracz] [Powód]");
+	}
+
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
 	givePlayerPenalty(playerid, pId, PEN_KICK, reason, 0);
@@ -68,6 +76,10 @@ CMD:warn(playerid, params[]) {
 	if(sscanf(params, "is[128]", pId, reason)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /warn [Gracz] [Powód]");
 	}
+
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+	}
 	
 	givePlayerPenalty(playerid, pId, PEN_WARN, reason, 0);
 	return 1;
@@ -88,6 +100,10 @@ CMD:aj(playerid, params[]) {
 	if(sscanf(params, "is[128]", pId, reason)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /aj [Gracz] [Powód]");
 	}
+
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+	}
 	
 	givePlayerPenalty(playerid, pId, PEN_ADMJAIL, reason, 0);
 	return 1;
@@ -106,6 +122,10 @@ CMD:unaj(playerid, params[]) {
 	
 	if(sscanf(params, "i", pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /unaj [Gracz]");
+	}
+
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
 	pVars[pId][pAj] = 0;
@@ -129,6 +149,10 @@ CMD:setbw(playerid, params[]) {
 	
 	if(sscanf(params, "ii", pId, time)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /setbw [Gracz] [Czas] {W minutach}");
+	}
+
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
 	setPlayerBW(pId, time);
@@ -168,6 +192,10 @@ CMD:unbw(playerid, params[]) {
 	
 	if(sscanf(params, "i", pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /unbw [Gracz]");
+	}
+
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
 	setPlayerHealthEx(pId, 100.0);
@@ -213,6 +241,10 @@ CMD:rc(playerid, params[]) {
 
 	if(sscanf(params, "i", pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nikogo nie podgl¹dasz. /rc [ID/nick] aby rozpocz¹æ.");
+	}
+
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
 	if(!isSpectating[playerid]) {
@@ -296,6 +328,10 @@ CMD:tt(playerid, params[]) {
 	if(sscanf(params, "i", pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /tt [Gracz]");
 	}
+
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+	}
 	
 	SetCameraBehindPlayer(pId);
 	SetPlayerPos(playerid, pVars[pId][pX], pVars[pId][pY], pVars[pId][pZ] + 2.0);
@@ -338,6 +374,10 @@ CMD:givehealth(playerid, params[]) {
 	
 	if(sscanf(params, "ii", toPlayerid, hp)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /givehealth [Gracz] [Iloœæ zdrowia]");
+	}
+
+	if(!IsPlayerConnected(toPlayerid)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
 	pVars[toPlayerid][pHp] = hp;
@@ -418,6 +458,10 @@ CMD:freeze(playerid, params[]) {
 	if(sscanf(params, "ii", toPlayerid, freezeOnOff)) {	//freezeOnOff: 0-uncontrollable/1-controllable
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /freeze [Gracz] [0/1]");
 	}
+
+	if(!IsPlayerConnected(toPlayerid)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+	}
 	
 	switch(freezeOnOff) {
 		case 0: {
@@ -472,6 +516,32 @@ CMD:god(playerid, params[]) {
 	return 1;
 }
 
+CMD:startpos(playerid, params[]) {
+	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+		return 0;
+	}
+	
+	if(!isAdminDuty[playerid]) {
+		return 1;
+	}
+	
+	new pId;
+	
+	if(sscanf(params, "i", pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /startpos [Gracz]");
+	}
+
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+	}
+
+	SetPlayerVirtualWorld(pId, 0);
+	SetPlayerInterior(pId, 0);
+
+	SetPlayerPos(pId, DEFAULT_POS_X, DEFAULT_POS_Y, DEFAULT_POS_Z);
+	return 1;
+}
+
 CMD:giveweapon(playerid, params[]) {
 	if(pVars[playerid][pRank] < SUPPORT_RANK) {
 		return 0;
@@ -481,13 +551,17 @@ CMD:giveweapon(playerid, params[]) {
 		return 1;
 	}
 	
-	new weaponId, ammo;
+	new pId, weaponId, ammo;
 	
-	if(sscanf(params, "ii", weaponId, ammo)) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /giveweapon [Gracz] [Iloœæ]");
+	if(sscanf(params, "iii", pId, weaponId, ammo)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /giveweapon [Gracz] [Bron] [Iloœæ]");
+	}
+
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	GivePlayerWeapon(playerid, weaponId, ammo);
+	GivePlayerWeapon(pId, weaponId, ammo);
 	SendClientMessage(playerid, COLOR_GREEN, "Otrzymano broñ.");
 	return 1;
 }
@@ -532,7 +606,7 @@ CMD:apojazd(playerid, params[]) {
 		DestroyVehicle(vVars[vehUid - 1][vId]);
 		DestroyDynamic3DTextLabel(vVars[vehUid - 1][vDesc]);
 		
-		actualVehicle[playerid] = INVALID_SERVER_VEHICLE_ID;
+		actualVehicle[playerid] = 0;
 		Iter_Remove(vehItter, vehUid - 1);
 		
 		vVars[vehUid - 1][vUid] = 0;
@@ -578,7 +652,6 @@ CMD:apojazd(playerid, params[]) {
 		Iter_Add(vehItter, freeId);
 		
 		vehicleId = CreateVehicle(modelId, pVars[playerid][pX] + 2.0, pVars[playerid][pY] + 2.0, pVars[playerid][pZ] + 2.0, 0.0, color1, color2, 0);
-		actualVehicle[playerid] = freeId;
 		
 		vVars[freeId][vUid] = freeId + 1;
 		vVars[freeId][vId] = vehicleId;
@@ -595,6 +668,8 @@ CMD:apojazd(playerid, params[]) {
 		vVars[freeId][vY] = pVars[playerid][pY];
 		vVars[freeId][vZ] = pVars[playerid][pZ];
 		vVars[freeId][vEngineHp] = 1000.0;
+		
+		actualVehicle[playerid] = vVars[freeId][vUid];
 		
 		if(!isBicycle(vVars[freeId][vModelId])) {
 			vVars[freeId][vEngine] = false;
@@ -636,11 +711,21 @@ CMD:setfuel(playerid, params[]) {
 	if(sscanf(params, "if", toPlayerId, fuel)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /setfuel [Gracz] [Iloœæ paliwa]");
 	}
-	
-	vVars[actualVehicle[toPlayerId]][vFuel] += fuel;
+
+	if(!IsPlayerConnected(toPlayerId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+	}
+
+	new srvVehId = getServerVehicleIdForPlayer(toPlayerId);
+
+	if(actualVehicle[toPlayerId] == 0) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Ten gracz nie u¿ywa ¿adnego pojazdu.");
+	}
+
+	vVars[srvVehId][vFuel] += fuel;
 	
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "Dodano %0.1f l paliwa do pojazdu %s.", fuel, VehicleNames[vVars[actualVehicle[toPlayerId]][vModelId] - 400]);
+	format(mainStr, sizeof(mainStr), "Dodano %0.1f l paliwa do pojazdu %s.", fuel, VehicleNames[vVars[srvVehId][vModelId] - 400]);
 	SendClientMessage(playerid, COLOR_WHITE, mainStr);
 	return 1;
 }
@@ -658,6 +743,10 @@ CMD:aitem(playerid, params[]) {
 	
 	if(sscanf(params, "ii", pId, itemid)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /aitem [Gracz] [ID przedmiotu]");
+	}
+
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
 	addPlayerItem(pId, itemid);
@@ -683,6 +772,10 @@ CMD:adoor(playerid, params[]) {
 	
 	if(sscanf(params, "is[32]", pId, name)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /adoor [Owner] [Nazwa]");
+	}
+
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
 	createNewDoor(playerid, pId, name);
@@ -737,13 +830,17 @@ CMD:agroup(playerid, params[]) {
 	}
 	
 	new name[32], tag[8];
-	new type;
+	new pId, type;
 	
-	if(sscanf(params, "s[8]s[32]i", tag, name, type)) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /agroup [Tag] [Nazwa grupy] [Rodzaj]");
+	if(sscanf(params, "is[8]s[32]i", pId, tag, name, type)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /agroup [Gracz] [Tag] [Nazwa grupy] [Rodzaj]");
+	}
+
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	createNewGroup(playerid, type, tag, name);
+	createNewGroup(playerid, pId, type, tag, name);
 	return 1;
 }
 
@@ -760,6 +857,10 @@ CMD:anumber(playerid, params[]) {
 	
 	if(sscanf(params, "i", playerToGive)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /anumber [ID]");
+	}
+
+	if(!IsPlayerConnected(playerToGive)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
 	createNumber(playerToGive);
@@ -779,6 +880,10 @@ CMD:askin(playerid, params[]) {
 	
 	if(sscanf(params, "ii", toPlayerGive, skinid)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /askin [Gracz] [ID skina]");
+	}
+
+	if(!IsPlayerConnected(toPlayerGive)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
 	pVars[toPlayerGive][pLastSkin] = pVars[toPlayerGive][pSkin];
@@ -809,6 +914,10 @@ CMD:dajprace(playerid, params[]) {
 	if(sscanf(params, "iii", toPlayerGive, type, partTimeJob)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /dajprace [Gracz] [Typ 0-dorywcze 1-frakcja] [ID pracy]");
 	}
+
+	if(!IsPlayerConnected(toPlayerGive)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+	}
 	
 	casualJob[toPlayerGive] = partTimeJob;
 	return 1;
@@ -829,21 +938,26 @@ CMD:naprawpojazd(playerid, params[]) {
 	if(sscanf(params, "is[24]", toPlayerGive, str)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /naprawpojazd [Gracz] [karoseria/silnik]");
 	}
+
+	if(!IsPlayerConnected(toPlayerGive)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+	}
 	
 	mainStr[0] = EOS;
+	new srvVehId = getServerVehicleIdForPlayer(toPlayerGive);
 	
 	if(IsPlayerInAnyVehicle(toPlayerGive)) {
 		if(strfind(str, "karoseria", true) != -1) {
-			RepairVehicle(vVars[actualVehicle[toPlayerGive]][vId]);
-			SetVehicleHealth(vVars[actualVehicle[toPlayerGive]][vId], vVars[actualVehicle[toPlayerGive]][vEngineHp]);
+			RepairVehicle(vVars[srvVehId][vId]);
+			SetVehicleHealth(vVars[srvVehId][vId], vVars[srvVehId][vEngineHp]);
 			
-			format(mainStr, sizeof(mainStr), "Naprawi³eœ karoserie pojazdu o ID: %d.", vVars[actualVehicle[toPlayerGive]][vId]);
+			format(mainStr, sizeof(mainStr), "Naprawi³eœ karoserie pojazdu o ID: %d.", vVars[srvVehId][vId]);
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);	
 		} else if(strfind(str, "silnik", true) != -1) {
-			vVars[actualVehicle[toPlayerGive]][vEngineHp] = 1000.0;
-			SetVehicleHealth(vVars[actualVehicle[toPlayerGive]][vId], vVars[actualVehicle[toPlayerGive]][vEngineHp]);
+			vVars[srvVehId][vEngineHp] = 1000.0;
+			SetVehicleHealth(vVars[srvVehId][vId], vVars[srvVehId][vEngineHp]);
 			
-			format(mainStr, sizeof(mainStr), "Naprawi³eœ silnik pojazdu o ID: %d.", vVars[actualVehicle[toPlayerGive]][vId]);
+			format(mainStr, sizeof(mainStr), "Naprawi³eœ silnik pojazdu o ID: %d.", vVars[srvVehId][vId]);
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 		} else {
 			SendClientMessage(playerid, COLOR_GRAY, "Tip: /naprawpojazd [Gracz] [karoseria/silnik]");

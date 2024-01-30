@@ -16,6 +16,7 @@ new mainStr[1024];
 new queryStr[1024];
 new timerStr[512]; // stworzona na potrzeby timers.inc
 new tmpName[24];
+new itemParms[MAX_PLAYERS][64];
 
 new pVars[MAX_PLAYERS][PlayerData];
 new vVars[MAX_VEHICLES][VehicleData];
@@ -26,6 +27,7 @@ new gsVars[MAX_GAS_PUMPS][GasPumpData];
 new bVars[MAX_BUS_STOPS][BusStopData];
 new boVars[MAX_BOOTHS][BoothData];
 new gVars[MAX_GROUPS][GroupData];
+new gIVars[50][GroupItems];
 new dVars[MAX_DOORS][DoorData];
 //Cashpoints system 
 new cVars[MAX_CASHPOINTS][CashpointData];
@@ -127,7 +129,7 @@ new itemNames[][] = {
 	"Hot Dog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Longer", "Nachos z serem", "Naleœnik",
 	"Naleœniki", "P¹czek", "P¹czek Afro", "P¹czek Z³otawy", "Donut", "Sushi", "Woda Mineralna", "Discman",
 	"RadioParty", "CD", "Nokia 8110", "Vitamina C", "Zderzak przedni", "Zderzak tylny", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik",
-	"Maska samochodowa", "Œwiat³o (prawe przednie)", "Kanister", "Karnet si³owy"
+	"Maska samochodowa", "Œwiat³o (prawe przednie)", "Kanister", "Karnetsi³owy"
 };
 
 new VehicleNames[212][] = {

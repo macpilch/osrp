@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vars.inc
 	Date: 25.07.2022
-	Modified: 24.09.2023
+	Modified: 28.01.2024
 */
 
 #if defined __VARS_INC__
@@ -16,37 +16,48 @@
 new mySQLConnect;
 new allAccounts;
 new numPlayerRace;
+
 new playerCps[MAX_PLAYERS];
 new playerRcPosition[MAX_PLAYERS];
-new Float:playerRcTime[MAX_PLAYERS];
-new Float:playerRcActualTime[MAX_PLAYERS];
 new cameraTimer[MAX_PLAYERS];
 new playerAFKTime[MAX_PLAYERS];
 new actualVehicle[MAX_PLAYERS];
 new actualBusStop[MAX_PLAYERS]; //Zapisuje aktualny przystanek gracza po wpisaniu CMD:bus
 new actualCashpoint[MAX_PLAYERS]; // Zapisuje aktualny bankomat w zasiegu gracza
 new actualItem[MAX_PLAYERS];
+new actualGroupItemsSet[MAX_PLAYERS];
 new actualRace[MAX_PLAYERS];
 new playerFuelPrice[MAX_PLAYERS]; // Do tablicy trafia cena paliwa dla danego gracza podczas uzywania funkcji tankuj
 new offerFrom[MAX_PLAYERS]; // Przechowuje id osoby ktora wyslala oferte
 new offerFor[MAX_PLAYERS]; // Przechowuje id osoby ktora otrzymala oferte
 new offerParams[MAX_PLAYERS][2]; // 0 - pieni¹dze, 1 - dodatkowe opcje
 new offerType[MAX_PLAYERS];
-new playerContacts[MAX_PLAYERS][10];
+new groupOfferFor[MAX_PLAYERS];
+new groupOfferFrom[MAX_PLAYERS];
+new playerContacts[MAX_PLAYERS][MAX_CONTACTS];
+new playerContactsName[MAX_PLAYERS][MAX_CONTACTS][24];
 new telEnterNumber[MAX_PLAYERS];
 new telEnterGroup[MAX_PLAYERS];
-new lastPmId[MAX_PLAYERS] = { INVALID_PLAYER_ID, ... };
+new lastPmId[MAX_PLAYERS];
+new adminPmStr[MAX_PLAYERS][128];
 new vehCP[MAX_VEHICLES];
 new vehMapIcon[MAX_VEHICLES];
+new gymObject[2];
+new called[MAX_PLAYERS];
+new usedLastItemTime[MAX_PLAYERS];
+new numberPresses[MAX_PLAYERS];
+
 //part time job
-new casualJob[MAX_PLAYERS] = { INVALID_PART_TIME_JOB, ... };
+new casualJob[MAX_PLAYERS];
 new casualJobPickup;
 new calledCmds[MAX_PLAYERS];
 new calledSecsCmds[MAX_PLAYERS];
 new enteredVehicleSec[MAX_PLAYERS];
 new exitedVehicleSec[MAX_PLAYERS];
 
-new gymObject[2];
+// type - float
+new Float:playerRcTime[MAX_PLAYERS];
+new Float:playerRcActualTime[MAX_PLAYERS];
 
 // type - bool
 new bool:isSpawned[MAX_PLAYERS];
@@ -72,10 +83,13 @@ new bool:blockOOC[MAX_PLAYERS];
 new bool:isRace[MAX_PLAYERS];
 new bool:isCollision[MAX_PLAYERS];
 new bool:isGym[MAX_PLAYERS];
+new bool:usedAdminToken[MAX_PLAYERS];
+new bool:pressedBarbell[MAX_PLAYERS];
 
 // type - MySQL
 new MySQL:hMySQL;
 
+// type - 3DText
 new Text3D:exit3dInfo[MAX_PLAYERS];
 
 // type - Text
@@ -85,12 +99,14 @@ new Text:helpInfo[MAX_PLAYERS][2];
 new Text:itemTips[MAX_PLAYERS][2];
 new Text:scrimmageTips[MAX_PLAYERS][5];
 new Text:firstHoursInfo[3];
+new Text:showInfoGym[MAX_PLAYERS][5];
 new Text:vehicleTips[MAX_PLAYERS][2];
 new Text:vehicleStats[MAX_PLAYERS][3];
 new Text:vehicleFuelStatus[MAX_PLAYERS][3];
 new Text:vehicleSpawn[MAX_PLAYERS][2];
 new Text:vehicleSpeedMeter[MAX_PLAYERS][2];
 new Text:vehicleDeath[MAX_PLAYERS][3];
+new Text:areaSpeedWarning[MAX_PLAYERS][2];
 new Text:courseDrivingInfo[MAX_PLAYERS][2];
 new Text:oocWarning[MAX_PLAYERS][2];
 new Text:damageRedScreen[MAX_PLAYERS];
@@ -101,6 +117,7 @@ new Text:usedRollersInfo[MAX_PLAYERS][2];
 new Text:hotelInfo[MAX_PLAYERS][3];
 new Text:collisionInfo[MAX_PLAYERS];
 new Text:afkPrivateMessage[MAX_PLAYERS][2];
+new Text:lastPlayerTD[MAX_PLAYERS][10];
 
 // type - Iterator
 new Iterator:vehItter<MAX_VEHICLES>;
@@ -110,5 +127,7 @@ new Iterator:boothItter<MAX_BOOTHS>;
 new Iterator:busstopItter<MAX_BUS_STOPS>;
 new Iterator:cashpointItter<MAX_CASHPOINTS>;
 new Iterator:groupItter<MAX_GROUPS>;
+new Iterator:groupItemsItter<50>;
+new Iterator:gasItter<MAX_PETROL_STATIONS>;
 new Iterator:raceItter<MAX_RACES>;
 new Iterator:areaItter<MAX_AREAS>;

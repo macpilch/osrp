@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: defines.inc
 	Date: 24.07.2022
-	Modified: 19.09.2023
+	Modified: 26.12.2023
 */
 
 #if defined __DEFINES_INC__
@@ -31,6 +31,7 @@
 #define MAX_PLAYERS 2
 #define MAX_VEHICLES 10
 #define MAX_OBJECTS 10
+
 #define MAX_PLAYER_CHARS 6
 #define MAX_ITEMS 100
 #define MAX_DOORS 10
@@ -45,6 +46,8 @@
 #define MAX_RACES 4
 #define MAX_CPS 50
 #define MAX_AREAS 20
+#define MAX_STATUSES 12
+#define MAX_CONTACTS 10
 
 // Callbacks
 #define sampCallback:%0(%1) \
@@ -56,7 +59,7 @@
 #define MYSQL_HOST "127.0.0.1"
 #define MYSQL_USER "root"
 #define MYSQL_PASS "1234"
-#define MYSQL_DB "samp"
+#define MYSQL_DB "osrp"
 
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_RED 0xFF0000FF
@@ -65,7 +68,11 @@
 #define COLOR_GRAY 0xAFAFAFFF
 #define COLOR_MEDGRAY 0x8B8B83FF
 #define COLOR_DARKGRAY 0x696969FF
-#define COLOR_PURPLE 0xBA55D3FF
+#define COLOR_PURPLE 0xC6A2EEFF
+#define COLOR_PURPLE2 0xA582BDFF
+#define COLOR_PURPLE3 0x8C75A5FF
+#define COLOR_PURPLE4 0x846994FF
+#define COLOR_DO 0x9797FFFF
 #define COLOR_ORANGE 0xFF9900FF
 #define COLOR_LIGHTORANGE 0xFFCC66FF
 
@@ -74,15 +81,23 @@
 #define MAN_SEX 0
 #define WOMAN_SEX 1
 
-#define MSG_CHAT 0
-#define MSG_ME 1
-#define MSG_DO 2
-
 #define DEFAULT_POS_X 837.8678
 #define DEFAULT_POS_Y -1344.6394
 #define DEFAULT_POS_Z 7.1719
 
 #define CAMERA_SPEED 5000
+
+#define STAT_CLEAR 0
+#define STAT_NONE 1
+#define STAT_AFK 2
+#define STAT_BW 3
+#define STAT_ROLLERS 4
+#define STAT_DRUNK 5
+#define STAT_STRENGTH 6
+#define STAT_BELTS 7
+#define STAT_DETENTION 8
+#define STAT_DUTY 9
+#define STAT_GLOVES 10
 
 #define PEN_BAN 0
 #define PEN_KICK 1
@@ -96,20 +111,22 @@
 #define PEN_KLATWA 9
 
 #define INVALID_OFFER_TYPE -1
-#define O_ZAPRGRP 0
-#define O_ZAPRWS 1
-#define O_KURS 2
-#define O_DOWOD 3
-#define O_PRAWKO 4
-#define O_PODATEK 5
-#define O_ZAKUPPRZED 6
-#define O_ZAKUPPOJ 7
-#define O_REJESTR 8
-#define O_TANKOWANIE 9
-#define O_VCARD 10
-#define O_PRZETRZY 11
+#define O_POWITANIE 0
+#define O_ZAPRGRP 1
+#define O_ZAPRWS 2
+#define O_KURS 3
+#define O_DOWOD 4
+#define O_PRAWKO 5
+#define O_PODATEK 6
+#define O_ZAKUPPRZED 7
+#define O_ZAKUPPOJ 8
+#define O_REJESTR 9
+#define O_TANKOWANIE 10
+#define O_VCARD 11
+#define O_PRZETRZY 12
+#define O_SPRZEDAZ 13
 
-#define VEHICLE_OWNER_GROUP -1
+#define VEHICLE_OWNER_GROUP 0
 
 #define INVALID_ITEM_ID -1
 #define ITEM_PLACE_PLAYER 0
@@ -163,6 +180,8 @@ forward bool:isVehicleInUse(vehicleid);
 #define OSRP_OnPlayerTakeDamage OnPlayerTakeDamage
 #define OSRP_OnDialogResponse OnDialogResponse
 #define OSRP_OnPlayerRequestSpawn OnPlayerRequestSpawn
+#define OSRP_OnPlayerEnterDynamicArea OnPlayerEnterDynamicArea
+#define OSRP_OnPlayerLeaveDynamicArea OnPlayerLeaveDynamicArea
 #define OSRP_OnPlayerWeaponShot OnPlayerWeaponShot
 #define OSRP_OnPlayerClickTextDraw OnPlayerClickTextDraw
 #define OSRP_OnEnterExitModShop OnEnterExitModShop

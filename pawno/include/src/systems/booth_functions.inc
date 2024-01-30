@@ -13,10 +13,10 @@
 #pragma library osrp
 
 stock initBoothValues() {
-	queryStr[0] = EOS;
-	printf("Zaczynam ladowac budki...");
+	printf("[LOG]: Zaczynam ladowac budki...");
 	
 	for(new i = 0; i < MAX_BOOTHS; i++) {
+		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Booths` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
 
@@ -27,11 +27,17 @@ stock initBoothValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "is[32]iffffi", boVars[i][boUid], boVars[i][boName], boVars[i][boObject], boVars[i][boPosX], boVars[i][boPosY], boVars[i][boPosZ], boVars[i][boRange], boVars[i][boWorking]);
+		sscanf(queryStr, "p<|>is[32]iffffi", boVars[i][boUid], boVars[i][boName], boVars[i][boObject], boVars[i][boPosX], boVars[i][boPosY], boVars[i][boPosZ], boVars[i][boRange], boVars[i][boWorking]);
 
 		Iter_Add(boothItter, i);
 
-		boVars[i][boObject] = CreateDynamicObject(1216, boVars[i][boPosX], boVars[i][boPosY], boVars[i][boPosZ] + 5.0, 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
+		boVars[i][boObject] = CreateDynamicObject(1216, boVars[i][boPosX], boVars[i][boPosY], boVars[i][boPosZ], 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
+	}
+
+	if(Iter_Count(boothItter)) {
+		printf("[LOG]: Wczytano %d budek.", Iter_Count(boothItter));
+	} else {
+		printf("[LOG]: Brak budek.");
 	}
 
 	mysql_free_result();

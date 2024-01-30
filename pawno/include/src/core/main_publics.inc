@@ -45,6 +45,7 @@ sampCallback:OSRP_OnGameModeInit() {
 	initBusStopValues();
 	initCashpointValues();
 	initGroupValues();
+	initGroupItemsValues();
 	initRaceValues();
 	
 	for(new i = 0; i < MAX_PLAYERS; i++) {

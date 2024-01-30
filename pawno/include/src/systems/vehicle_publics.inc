@@ -129,8 +129,8 @@ sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 	if(damage >= 4) {
 		SetTimerEx("healthDamage", 100, false, "i", playerid);
 	}
-	
-	if(pId != INVALID_PLAYER_ID) {
+
+	if(pId != -1) {
 		isCollision[playerid] = true;
 
 		mainStr[0] = EOS;

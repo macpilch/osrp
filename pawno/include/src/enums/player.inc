@@ -31,8 +31,10 @@ enum PlayerData {
 	pCharName2[24],
 	pPass[32],
 	pIp[16],
-	pDateReg[24],
+	pDateReg[64],
+	pLastDate[64],
 	pBlocked,
+	pBlockOOC,
 	pGold,
 	pRank, // for ranks
 	pSex,

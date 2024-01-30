@@ -79,16 +79,16 @@ enum {
 	P_BAGAZNIK,
 	P_MASKASAM,
 	P_KANISTER,
-	P_KARNET
+	P_KARNET = 69
 };
 
 enum ItemData {
 	iUid,
 	iId,
 	iOUid,
-	iVUid,
 	iName[32],
-	iValues,
+	iValue1,
+	iValue2,
 	Float:iPosX,
 	Float:iPosY,
 	Float:iPosZ,

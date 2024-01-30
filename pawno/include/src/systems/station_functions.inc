@@ -13,10 +13,10 @@
 #pragma library osrp
 
 stock initStationValues() {
-	queryStr[0] = EOS;
-	printf("Zaczynam ladowac stacje...");
+	printf("[LOG]: Zaczynam ladowac stacje...");
 	
 	for(new i = 0; i < MAX_PETROL_STATIONS; i++) {
+		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Stations` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
 		
@@ -28,6 +28,14 @@ stock initStationValues() {
 		
 		mysql_fetch_row(queryStr, "|");
 		sscanf(queryStr, "p<|>is[32]iiiffff", sVars[i][sUid], sVars[i][sName], sVars[i][sPrice], sVars[i][sIsOpen], sVars[i][sGasPumps], sVars[i][sX], sVars[i][sY], sVars[i][sZ], sVars[i][sDistance]);
+	
+		Iter_Add(gasItter, i);
+	}
+	
+	if(Iter_Count(gasItter)) {
+		printf("[LOG]: Wczytano %d stacji paliw.", Iter_Count(gasItter));
+	} else {
+		printf("[LOG]: Brak stacji paliw.");
 	}
 	
 	mysql_free_result();

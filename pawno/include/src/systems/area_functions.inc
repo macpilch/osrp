@@ -13,10 +13,10 @@
 #pragma library osrp
 
 stock initAreaValues() {
-	queryStr[0] = EOS;
-	printf("Zaczynam ladowac strefy...");
+	printf("[LOG]: Zaczynam ladowac strefy...");
 
-	for(new i = 0; i < MAX_AREAS; i++) {
+	for(new i = 0; i < MAX_AREAS; i++) {		
+		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Areas` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
 
@@ -27,15 +27,24 @@ stock initAreaValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iifffff", aVars[i][aUid], aVars[i][aOUid], aVars[i][aMinX], aVars[i][aMaxX], aVars[i][aMinY], aVars[i][aMaxY], aVars[i][aMaxSpeed]);
+		sscanf(queryStr, "p<|>iiffffi", aVars[i][aUid], aVars[i][aOUid], aVars[i][aMinX], aVars[i][aMinY], aVars[i][aMaxX], aVars[i][aMaxY], aVars[i][aMaxSpeed]);
 
 		Iter_Add(areaItter, i);
 		
+		GangZoneCreate(aVars[i][aMinX], aVars[i][aMinY], aVars[i][aMaxX], aVars[i][aMaxY]);
+		aVars[i][aArea] = CreateDynamicRectangle(aVars[i][aMinX], aVars[i][aMinY], aVars[i][aMaxX], aVars[i][aMaxY], 0, 0, -1);
+		
 #if defined DEBUG
-		printf("UID: %d, OUID: %d, MinX: %f, MaxX: %f, MinY: %f, MaxY: %f, MaxSpeed: %f", aVars[i][aUid], aVars[i][aOUid], aVars[i][aMinX], aVars[i][aMaxX], aVars[i][aMinY], aVars[i][aMaxY], aVars[i][aMaxSpeed]);
+		printf("UID: %d, OUID: %d, MinX: %f, MaxX: %f, MinY: %f, MaxY: %f, MaxSpeed: %d, Area: %d\n", aVars[i][aUid], aVars[i][aOUid], aVars[i][aMinX], aVars[i][aMaxX], aVars[i][aMinY], aVars[i][aMaxY], aVars[i][aMaxSpeed], aVars[i][aArea]);
 #endif
 	}
 
+	if(Iter_Count(areaItter)) {
+		printf("[LOG]: Wczytano %d stref.", Iter_Count(areaItter));
+	} else {
+		printf("[LOG]: Brak stref.");
+	}
+	
 	mysql_free_result();
 	return 1;
 }
@@ -51,5 +60,3 @@ stock getServerAreaIdForPlayer(playerid) {
 	}
 	return id;
 }
-
-
