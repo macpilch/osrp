@@ -379,6 +379,12 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				removePlayerItem(srvitemid);
 			}
 		}
+		case P_HEROINA: {
+			if(!iVars[srvitemid][iUsed]) {
+				format(mainStr, sizeof(mainStr), "* %s po≥yka %s.", pVars[playerid][pCharName], itemNames[itemid]);
+				sendMeMessage(playerid, mainStr);
+			}
+		}
 	}
 	return 1;
 }
@@ -403,29 +409,47 @@ stock saveItemWeaponAmmo(srvitemid) {
 	return 1;
 }
 
-stock pickUpNearblyItems(playerid) {
-	new srvVehId = actualVehicle[playerid], count;
-
-	if(IsPlayerInAnyVehicle(playerid) && vVars[srvVehId][vOUid] != pVars[playerid][pUid]) {
-		return GameTextForPlayer(playerid, "~y~Ten pojazd nie nalezy do ciebie.", 5000, 3);
-	}
-
+stock pickUpNearblyItems(playerid, where) {
+	new count;
 	mainStr[0] = EOS;
-	foreach(new i : itemItter) {
-		if(((iVars[i][iPlace] == ITEM_PLACE_FLOOR && iVars[i][iOUid] == INVALID_PLAYER_ID) || (iVars[i][iPlace] == ITEM_PLACE_VEHICLE && iVars[i][iOUid] == vVars[srvVehId][vUid])) && actualItem[playerid] == INVALID_ITEM_ID) {
-			if(playerToPoint(playerid, 5.0, iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ]) || playerToPoint(playerid, 3.0, vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ])) {
+
+	if(where == ITEM_PLACE_FLOOR) {
+		foreach(new i : itemItter) {
+			if(playerToPoint(playerid, 5.0, iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ])) {
+				if((iVars[i][iPlace] == ITEM_PLACE_FLOOR && iVars[i][iOUid] == INVALID_PLAYER_ID) && actualItem[playerid] == INVALID_ITEM_ID) {
+					format(mainStr, sizeof(mainStr), "%s{FFFFFF}%d\t%s\n", mainStr, iVars[i][iUid], iVars[i][iName]);
+
+					count++;
+				}
+			}
+		}
+		
+		if(!count) {
+			return 1;
+		}
+
+		ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PICKUP, DIALOG_STYLE_LIST, "Pobliskie przedmioty (/p podnies)", mainStr, "Podnieú", "Zamknij");
+	} else if(where == ITEM_PLACE_VEHICLE) {
+		new srvVehId = getServerVehicleIdForPlayer(playerid);
+
+		if(vVars[srvVehId][vOUid] != pVars[playerid][pUid]) {
+			return GameTextForPlayer(playerid, "~y~Ten pojazd nie nalezy do ciebie.", 5000, 3);
+		}
+
+		foreach(new i : itemItter) {
+			if((iVars[i][iPlace] == ITEM_PLACE_VEHICLE && iVars[i][iOUid] == vVars[srvVehId][vUid]) && actualItem[playerid] == INVALID_ITEM_ID) {
 				format(mainStr, sizeof(mainStr), "%s{FFFFFF}%d\t%s\n", mainStr, iVars[i][iUid], iVars[i][iName]);
-				
+
 				count++;
 			}
 		}
+
+		if(!count) {
+			return 1;
+		}
+
+		ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PICKUP, DIALOG_STYLE_LIST, "Przedmioty w pojeüdzie", mainStr, "Podnieú", "Zamknij");	
 	}
-	
-	if(!count) {
-		return 1;
-	}
-	
-	ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PICKUP, DIALOG_STYLE_LIST, "Pobliskie przedmioty (/p podnies)", mainStr, "Podnieú", "Zamknij");
 	return 1;
 }
 

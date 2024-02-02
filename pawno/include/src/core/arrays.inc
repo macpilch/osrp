@@ -129,7 +129,7 @@ new itemNames[][] = {
 	"Hot Dog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Longer", "Nachos z serem", "Naleœnik",
 	"Naleœniki", "P¹czek", "P¹czek Afro", "P¹czek Z³otawy", "Donut", "Sushi", "Woda Mineralna", "Discman",
 	"RadioParty", "CD", "Nokia 8110", "Vitamina C", "Zderzak przedni", "Zderzak tylny", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik",
-	"Maska samochodowa", "Œwiat³o (prawe przednie)", "Kanister", "Karnetsi³owy"
+	"Maska samochodowa", "Œwiat³o (prawe przednie)", "Kanister", "Karnetsi³owy", "Heroina"
 };
 
 new VehicleNames[212][] = {

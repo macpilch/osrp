@@ -312,13 +312,13 @@ stock getVehicleModelIdFromName(const vname[]) {
 
 stock getNearestVehicleDriverId(playerid) {
 	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
-	
+
 	foreach(new i : Player) {
 		if(playerid == i) {
 			continue;
 		}
 
-		if(IsPlayerInRangeOfPoint(i, 2.0, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
+		if(IsPlayerInRangeOfPoint(i, 10.0, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
 			if(GetPlayerVehicleID(i) != INVALID_VEHICLE_ID && IsPlayerInAnyVehicle(i)) {				
 				return i;
 			}

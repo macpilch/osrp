@@ -174,9 +174,9 @@ stock createNewGroup(playerid, ownerid, type, tag[], name[]) {
 
 stock getServerGroupIdForPlayer(playerid) {
 	new id;
-	
+
 	foreach(new i : groupItter) {
-		if(gVars[i][gUid] == pVars[playerid][pGroup]) {
+		if(gVars[i][gUid] == pVars[playerid][pGroupNow] && pVars[playerid][pGroupNow] != 0) {
 			id = i;
 			break;
 		}
@@ -194,6 +194,15 @@ stock getServerGroupSetIdForPlayer(playerid) {
 		}
 	}
 	return id;
+}
+
+stock getFreePlayerGroupSlot(playerid) {	
+	for(new i = 0; i < MAX_PLAYER_GROUPS; i++) {
+		if(!pVars[playerid][pGroup][i]) {
+			return i;
+		}
+	}
+	return -1;
 }
 
 stock addGroupSetItems() {

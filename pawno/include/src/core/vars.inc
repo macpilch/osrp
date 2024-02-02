@@ -63,6 +63,7 @@ new Float:playerRcActualTime[MAX_PLAYERS];
 new bool:isSpawned[MAX_PLAYERS];
 new bool:hasLogged[MAX_PLAYERS];
 new bool:isAdminDuty[MAX_PLAYERS]; // false(0) is admin duty off or true(1) is admin duty on only when player have ranks: SUPPORT_RANK, ADMIN_RANK, HEADADMIN_RANK
+new bool:isGMDuty[MAX_PLAYERS];
 new bool:isPlayerDuty[MAX_PLAYERS]; 
 new	bool:isSpectating[MAX_PLAYERS];
 new	bool:isGodMode[MAX_PLAYERS];
@@ -99,7 +100,7 @@ new Text:helpInfo[MAX_PLAYERS][2];
 new Text:itemTips[MAX_PLAYERS][2];
 new Text:scrimmageTips[MAX_PLAYERS][5];
 new Text:firstHoursInfo[3];
-new Text:showInfoGym[MAX_PLAYERS][5];
+new Text:showInfoGym[MAX_PLAYERS][4];
 new Text:vehicleTips[MAX_PLAYERS][2];
 new Text:vehicleStats[MAX_PLAYERS][3];
 new Text:vehicleFuelStatus[MAX_PLAYERS][3];

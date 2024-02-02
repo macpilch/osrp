@@ -17,11 +17,10 @@ task globalTimer[1000]() {
 		playerAFKTime[i]++;
 		GetPlayerHealth(i, pVars[i][pHp]);
 
-		if(playerAFKTime[i] != 1) {
+		//if(playerAFKTime[i] != 1) {
 			//updatePlayerGameStatus(i, STAT_AFK);
-			
-			/*
-			if(isBW[i]) {
+
+			/*if(isBW[i]) {
 				if(iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) {
 					if(pVars[i][pGroup] != -1 && isPlayerDuty[i]) {
 						if(pVars[i][pHours] > 20) {
@@ -410,18 +409,12 @@ task globalTimer[1000]() {
 							format(timerStr, sizeof(timerStr), "%s (%d)", pVars[i][pCharName], i);
 						} else {
 							format(timerStr, sizeof(timerStr), "%s (%d, %dh)", pVars[i][pCharName], i, pVars[i][pHours]);
+							format(timerStr, sizeof(timerStr), "%s (%d)\n(naæpany)", pVars[i][pCharName], i, pVars[i][pHours]);
 						}						
 					}
 				}
-			}*/
-		}
-
-		if((pVars[i][pHp] >= 5.0 && pVars[i][pHp] <= 10.0) && !isBW[i] && isSpawned[i]) {
-			//setPlayerHealthEx(i, 5.0);
-			//setPlayerBW(i, 3);
-		}
-
-		TextDrawHideForPlayer(i, damageRedScreen[i]);
+			}
+		}*/
 
 		// Narazie niech bedzie na 1
 		if(playerAFKTime[i] == 1) {
@@ -621,17 +614,11 @@ task townHallBellsTimer[59000]() {
 	gettime(hours, minutes, seconds);
 
 	foreach(new i : Player) {
-		timerStr[0] = EOS;
-
 		if(hours == 0 && minutes == 0) {
+			timerStr[0] = EOS;
 			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu wybi³y pó³noc. **");
-		} else if(hours == 1 && minutes == 0) {
-			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d raz. **", hours);
-		} else if((hours >= 2 && hours <= 23) && minutes == 0) {
-			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d razy. **", hours);
+			SendClientMessage(i, COLOR_WHITE, timerStr);
 		}
-
-		SendClientMessage(i, COLOR_WHITE, timerStr);
 	}
 
 	if(hours == 0) {
@@ -691,6 +678,9 @@ task antiCheat[1000]() {
 
 		//format(reas, sizeof(reas), "Forced seat takeover");
 		//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, reas, 0);
+
+		//format(reas, sizeof(reas), "AirBreak~n~~w~Cheat, AirBreak: d11.803848 tc16744321 d3.s1885");
+		//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, reas, 0);
 	}
 	return 1;
 }
@@ -721,7 +711,7 @@ task remindPlayerPhoneTimer[300000]() {
 		}
 		
 		if(!hasPhone && pVars[i][pHours] > 0 && pVars[i][pHours] < 3) {
-			//SendClientMessage(i, COLOR_WHITE, "> IdŸ do salonu jakiegoœ operatora komórkowego i kup od nich tani telefon.");
+			SendClientMessage(i, COLOR_GREEN, "> IdŸ do salonu jakiegoœ operatora komórkowego i kup od nich tani telefon.");
 		}
 	}
 }

@@ -79,7 +79,8 @@ enum {
 	P_BAGAZNIK,
 	P_MASKASAM,
 	P_KANISTER,
-	P_KARNET = 69
+	P_KARNET,
+	P_HEROINA
 };
 
 enum ItemData {

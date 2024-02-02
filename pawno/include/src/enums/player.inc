@@ -37,6 +37,7 @@ enum PlayerData {
 	pBlockOOC,
 	pGold,
 	pRank, // for ranks
+	pGM,
 	pSex,
 	pStrength,
 	pHours,
@@ -69,7 +70,8 @@ enum PlayerData {
 	pTelNum,
 	pBankAcc,
 	pGroupDesc[128],
-	pGroup,
+	pGroup[MAX_PLAYER_GROUPS],
+	pGroupNow,
 	pArea,
 	pDuty,
 	Float:pTraveled,

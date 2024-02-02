@@ -18,38 +18,45 @@
 	tym jest bardziej ciemniejsza.
 	Narazie najprostrza wersja do testow.
 */
-stock sendDistanceMessage(playerid, Float:range, const wholeStr[], const strHalf1[], const strHalf2[], color1, color2, color3, color4) {
+stock sendDistanceMessage(playerid, Float:range, const wholeStr[], const strHalf1[], const strHalf2[], color1, color2, color3, color4, color5) {
 	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 
 	foreach(new i : Player) {
 		if(!isBW[playerid]) {
-			if(playerToPoint(i, range / 4, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
+			if(playerToPoint(i, range / 5, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
 				if(strlen(strHalf1) && strlen(strHalf2)) {
 					SendClientMessage(i, color1, strHalf1);
 					SendClientMessage(i, color1, strHalf2);
 				} else {
 					SendClientMessage(i, color1, wholeStr);
 				}
-			} else if(playerToPoint(i, range / 3, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
+			} else if(playerToPoint(i, range / 4, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
 				if(strlen(strHalf1) && strlen(strHalf2)) {
 					SendClientMessage(i, color2, strHalf1);
 					SendClientMessage(i, color2, strHalf2);
 				} else {
 					SendClientMessage(i, color2, wholeStr);
 				}
-			} else if(playerToPoint(i, range / 2, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
+			} else if(playerToPoint(i, range / 3, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
 				if(strlen(strHalf1) && strlen(strHalf2)) {
 					SendClientMessage(i, color3, strHalf1);
 					SendClientMessage(i, color3, strHalf2);
 				} else {
 					SendClientMessage(i, color3, wholeStr);
 				}
-			} else if(playerToPoint(i, range, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
+			} else if(playerToPoint(i, range / 2, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
 				if(strlen(strHalf1) && strlen(strHalf2)) {
 					SendClientMessage(i, color4, strHalf1);
 					SendClientMessage(i, color4, strHalf2);
 				} else {
 					SendClientMessage(i, color4, wholeStr);
+				}
+			} else if(playerToPoint(i, range, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
+				if(strlen(strHalf1) && strlen(strHalf2)) {
+					SendClientMessage(i, color5, strHalf1);
+					SendClientMessage(i, color5, strHalf2);
+				} else {
+					SendClientMessage(i, color5, wholeStr);
 				}
 			}
 		}
@@ -61,7 +68,7 @@ stock sendChatMessage(playerid, const mess[]) {
 	new str1[256], str2[256],
 		tmpStr[95], tmpStr2[64];
 
-	if(strlen(mess) > 95) {
+	if(strlen(mess) > 94) {
 		strmid(tmpStr, mess, 0, 94);
 		strmid(tmpStr2, mess, 95, strlen(mess));
 
@@ -69,14 +76,14 @@ stock sendChatMessage(playerid, const mess[]) {
 		format(str2, sizeof(str2), "... %s", tmpStr2);
 	}
 
-	sendDistanceMessage(playerid, 20.0, mess, str1, str2, COLOR_WHITE, COLOR_GRAY, COLOR_MEDGRAY, COLOR_DARKGRAY);
+	sendDistanceMessage(playerid, 20.0, mess, str1, str2, COLOR_CHAT, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
 }
 
 stock sendShoutMessage(playerid, const mess[]) {
 	new str1[256], str2[256],
 		tmpStr[95], tmpStr2[64];
 
-	if(strlen(mess) > 95) {
+	if(strlen(mess) > 94) {
 		strmid(tmpStr, mess, 0, 94);
 		strmid(tmpStr2, mess, 95, strlen(mess));
 
@@ -84,14 +91,14 @@ stock sendShoutMessage(playerid, const mess[]) {
 		format(str2, sizeof(str2), "... %s", tmpStr2);
 	}
 
-	sendDistanceMessage(playerid, 70.0, mess, str1, str2, COLOR_WHITE, COLOR_GRAY, COLOR_MEDGRAY, COLOR_DARKGRAY);
+	sendDistanceMessage(playerid, 70.0, mess, str1, str2, COLOR_CHAT, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
 }
 
 stock sendWhisperMessage(playerid, const mess[]) {
 	new str1[256], str2[256],
 		tmpStr[95], tmpStr2[64];
 
-	if(strlen(mess) > 95) {
+	if(strlen(mess) > 94) {
 		strmid(tmpStr, mess, 0, 94);
 		strmid(tmpStr2, mess, 95, strlen(mess));
 
@@ -99,14 +106,14 @@ stock sendWhisperMessage(playerid, const mess[]) {
 		format(str2, sizeof(str2), "... %s", tmpStr2);
 	}
 
-	sendDistanceMessage(playerid, 10.0, mess, str1, str2, COLOR_WHITE, COLOR_GRAY, COLOR_MEDGRAY, COLOR_DARKGRAY);
+	sendDistanceMessage(playerid, 10.0, mess, str1, str2, COLOR_CHAT, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
 }
 
 stock sendMegaphoneMessage(playerid, const mess[]) {
 	new str1[256], str2[256],
 		tmpStr[95], tmpStr2[64];
 
-	if(strlen(mess) > 95) {
+	if(strlen(mess) > 94) {
 		strmid(tmpStr, mess, 0, 94);
 		strmid(tmpStr2, mess, 95, strlen(mess));
 
@@ -114,14 +121,14 @@ stock sendMegaphoneMessage(playerid, const mess[]) {
 		format(str2, sizeof(str2), "... %s", tmpStr2);
 	}
 
-	sendDistanceMessage(playerid, 100.0, mess, str1, str2, COLOR_YELLOW, COLOR_YELLOW, COLOR_YELLOW, COLOR_YELLOW);
+	sendDistanceMessage(playerid, 100.0, mess, str1, str2, COLOR_YELLOW, COLOR_YELLOW, COLOR_YELLOW, COLOR_YELLOW, COLOR_YELLOW);
 }
 
 stock sendMeMessage(playerid, const mess[]) {
 	new str1[256], str2[256],
 		tmpStr[95], tmpStr2[64];
 
-	if(strlen(mess) > 95) {
+	if(strlen(mess) > 94) {
 		strmid(tmpStr, mess, 0, 94);
 		strmid(tmpStr2, mess, 95, strlen(mess));
 
@@ -129,14 +136,14 @@ stock sendMeMessage(playerid, const mess[]) {
 		format(str2, sizeof(str2), "** ... %s", tmpStr2);
 	}
 
-	sendDistanceMessage(playerid, 30.0, mess, str1, str2, COLOR_PURPLE, COLOR_PURPLE2, COLOR_PURPLE3, COLOR_PURPLE4);
+	sendDistanceMessage(playerid, 30.0, mess, str1, str2, COLOR_PURPLE, COLOR_PURPLE2, COLOR_PURPLE3, COLOR_PURPLE4, COLOR_PURPLE5);
 }
 
 stock sendDoMessage(playerid, const mess[]) {
 	new str1[256], str2[256],
 		tmpStr[95], tmpStr2[64];
 
-	if(strlen(mess) > 95) {
+	if(strlen(mess) > 94) {
 		strmid(tmpStr, mess, 0, 94);
 		strmid(tmpStr2, mess, 95, strlen(mess));
 
@@ -144,11 +151,11 @@ stock sendDoMessage(playerid, const mess[]) {
 		format(str2, sizeof(str2), "** ... %s", tmpStr2);
 	}
 
-	sendDistanceMessage(playerid, 30.0, mess, str1, str2, COLOR_DO, COLOR_DO, COLOR_DO, COLOR_DO);
+	sendDistanceMessage(playerid, 30.0, mess, str1, str2, COLOR_DO, COLOR_DO, COLOR_DO, COLOR_DO, COLOR_DO);
 }
 
 stock sendOtherMessage(playerid, const mess[]) {
-	sendDistanceMessage(playerid, 30.0, mess, "", "", COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN);
+	sendDistanceMessage(playerid, 30.0, mess, "", "", COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN);
 }
 
 stock createPlayerTextDraws(playerid) {
@@ -858,16 +865,17 @@ stock loadPlayerValues(playerid) {
 	
 	queryStr[0] = EOS;
 	strcat(queryStr, "SELECT `GUID`, `CharId`, `IP`, `Blocked`, `Gold`, `Rank`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `HP`, `AP`, `Bans`, `Kicks`, `Warns`, `VW`, `INT`, `Skin`, `LastSkin`, `Money`, `Bank`, `BW`, `AJ`, `AL`, `DriverLicense`, `PisSkill`, `DglSkill`, `ShtgSkill`, `M4Skill`,");
-	format(queryStr, sizeof(queryStr), "%s`GOV`, `Hotel`, `IdCard`, `Detention`, `PDP`, `TelNum`, `BankAcc`, `GroupDesc`, `Group`, `Area`, `Duty`, `Traveled`, `Doors`, `Audio`, `ChatStyle`, `Computer`, `WalkAnim`, `Screen`, `StyleFight`, `X`, `Y`, `Z`, `Desc` FROM `osrp_Players` WHERE `CharName` = '%s'", queryStr, tmpChrName);
+	format(queryStr, sizeof(queryStr), "%s`GOV`, `Hotel`, `IdCard`, `Detention`, `PDP`, `TelNum`, `BankAcc`, `GroupDesc`, `Group0`, `Group1`, `Group2`, `Group3`, `Group4`, `Area`, `Duty`, `Traveled`, `Doors`, `Audio`, `ChatStyle`, `Computer`, `WalkAnim`, `Screen`, `StyleFight`, `X`, `Y`, `Z`, `Desc` FROM `osrp_Players` WHERE `CharName` = '%s'", queryStr, tmpChrName);
 	mysql_query(queryStr);
 	
 	mysql_store_result();
 	
 	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>iis[16]iiiiiiiiffiiiiiiiiiiiiiiiiiiiiiiiis[128]iiifiiiiiiifffs[128]", pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pIp], pVars[playerid][pBlocked], pVars[playerid][pGold], pVars[playerid][pRank], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds],
+	sscanf(queryStr, "p<|>iis[16]iiiiiiiiffiiiiiiiiiiiiiiiiiiiiiiiis[128]iiiiiiifiiiiiiifffs[128]", pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pIp], pVars[playerid][pBlocked], pVars[playerid][pGold], pVars[playerid][pRank], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds],
 	pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pBans], pVars[playerid][pKicks], pVars[playerid][pWarns], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pAl],
 	pVars[playerid][pDriverLicense], pVars[playerid][pPisSkill], pVars[playerid][pDglSkill], pVars[playerid][pShtgSkill], pVars[playerid][pM4Skill], pVars[playerid][pGov], pVars[playerid][pHotel], pVars[playerid][pIdCard], pVars[playerid][pDetention], pVars[playerid][pPdp], pVars[playerid][pTelNum], pVars[playerid][pBankAcc],
-	pVars[playerid][pGroupDesc], pVars[playerid][pGroup], /*casualJob[playerid],*/ pVars[playerid][pArea], pVars[playerid][pDuty], pVars[playerid][pTraveled], pVars[playerid][pDoors], pVars[playerid][pAudio], pVars[playerid][pChatStyle], pVars[playerid][pComputer], pVars[playerid][pWalkAnim], pVars[playerid][pScreen], pVars[playerid][pStyleFight], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], charDesc);
+	pVars[playerid][pGroupDesc], pVars[playerid][pGroup][0], pVars[playerid][pGroup][1], pVars[playerid][pGroup][2], pVars[playerid][pGroup][3], pVars[playerid][pGroup][4], /*casualJob[playerid],*/ pVars[playerid][pArea], pVars[playerid][pDuty], pVars[playerid][pTraveled], pVars[playerid][pDoors], pVars[playerid][pAudio], pVars[playerid][pChatStyle], pVars[playerid][pComputer],
+	pVars[playerid][pWalkAnim], pVars[playerid][pScreen], pVars[playerid][pStyleFight], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], charDesc);
 	mysql_free_result();
 	
 	UpdateDynamic3DTextLabelText(pVars[playerid][pCharDesc], COLOR_PURPLE, charDesc);
@@ -1103,7 +1111,11 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pPdp] = 0;
 	pVars[playerid][pTelNum] = 0;
 	pVars[playerid][pBankAcc] = 0;
-	pVars[playerid][pGroup] = 0;
+	pVars[playerid][pGroup][0] = 0;
+	pVars[playerid][pGroup][1] = 0;
+	pVars[playerid][pGroup][2] = 0;
+	pVars[playerid][pGroup][3] = 0;
+	pVars[playerid][pGroup][4] = 0;
 	pVars[playerid][pArea] = 0;
 	pVars[playerid][pDuty] = 0;
 	pVars[playerid][pTraveled] = 0.0;
@@ -1118,10 +1130,8 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pY] = DEFAULT_POS_Y;
 	pVars[playerid][pZ] = DEFAULT_POS_Z;
 
-	numPlayerRace = 0;
 	playerCps[playerid] = 0;
 	playerRcPosition[playerid] = 0;
-	cameraTimer[playerid] = -1;
 	playerAFKTime[playerid] = 0;
 	actualVehicle[playerid] = 0;
 	actualBusStop[playerid] = 0;
@@ -1232,7 +1242,11 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pPdp] = 0;
 	pVars[playerid][pTelNum] = 0;
 	pVars[playerid][pBankAcc] = 0;
-	pVars[playerid][pGroup] = 0;
+	pVars[playerid][pGroup][0] = 0;
+	pVars[playerid][pGroup][1] = 0;
+	pVars[playerid][pGroup][2] = 0;
+	pVars[playerid][pGroup][3] = 0;
+	pVars[playerid][pGroup][4] = 0;
 	pVars[playerid][pArea] = 0;
 	pVars[playerid][pDuty] = 0;
 	pVars[playerid][pTraveled] = 0.0;
@@ -1322,9 +1336,9 @@ stock savePlayerValues(playerid) {
 	mysql_real_escape_string(pVars[playerid][pCharName], tmpChrName);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `HP` = '%f', `AP` = '%f', `VW` = '%d', `INT` = '%d', `Skin` = '%d', `LastSkin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `DriverLicense` = '%d', `Hotel` = '%d', `TelNum` = '%d', `GroupDesc` = '%s', `Group` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'",
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `HP` = '%f', `AP` = '%f', `VW` = '%d', `INT` = '%d', `Skin` = '%d', `LastSkin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `DriverLicense` = '%d', `Hotel` = '%d', `TelNum` = '%d', `GroupDesc` = '%s', `Group0` = '%d', `Group1` = '%d', `Group2` = '%d', `Group3` = '%d', `Group4` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'",
 	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pHotel], pVars[playerid][pTelNum], pVars[playerid][pGroupDesc],
-	pVars[playerid][pGroup], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], tmpChrName);
+	pVars[playerid][pGroup][0], pVars[playerid][pGroup][1], pVars[playerid][pGroup][2], pVars[playerid][pGroup][3], pVars[playerid][pGroup][4], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], tmpChrName);
 	mysql_query(queryStr);
 	return 1;
 }
@@ -1368,7 +1382,7 @@ Callback:dtTimer(playerid) {
 
 		foreach(new i : Player) {
 			foreach(new j : groupItter) {
-				if(isPlayerDuty[i] && pVars[i][pDuty] > 0 && pVars[i][pGroup] == gVars[j][gUid]) {
+				if(isPlayerDuty[i] && pVars[i][pDuty] > 0 && pVars[i][pGroupNow] == gVars[j][gUid]) {
 					if(gVars[j][gType] == G_LSPD) {
 						mainStr[0] = EOS;
 						format(mainStr, sizeof(mainStr), "Przetrzymanie %s koñczy siê.", pVars[playerid][pCharName]);
@@ -1410,6 +1424,13 @@ stock updatePlayerGameStatus(playerid, type) {
 			} else {
 				format(statusStr, sizeof(statusStr), "%s (%d, %dh)", pVars[playerid][pCharName], playerid, pVars[playerid][pHours]);
 			}			
+		}
+		case STAT_DAMAGE: {
+			if(pVars[playerid][pHours] > 20) {
+				format(mainStr, sizeof(mainStr), "{FF0000}%s (%d)", pVars[playerid][pCharName], playerid);
+			} else {
+				format(mainStr, sizeof(mainStr), "{FF0000}%s (%d, %dh)", pVars[playerid][pCharName], playerid, pVars[playerid][pHours]);
+			}
 		}
 		case STAT_ROLLERS: {
 			if(pVars[playerid][pHours] > 20) {
@@ -1543,8 +1564,8 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 
 	switch(type) {
 		case O_ZAPRGRP: {
-			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[pVars[id][pGroup]][gName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", gVars[pVars[id][pGroup]][gUid], gVars[pVars[id][pGroup]][gName], offerParams[id][0]);			
+			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[pVars[id][pGroupNow]][gName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", gVars[pVars[id][pGroupNow]][gUid], gVars[pVars[id][pGroupNow]][gName], offerParams[id][0]);			
 		}
 		case O_ZAPRWS: {
 			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
@@ -1866,7 +1887,7 @@ Callback:setICNameForPlayer(playerid) {
 }
 
 Callback:dismissCall(playerid, receiver) {
-	if(usedTelephone[playerid] && usedTelephone[receiver]) {
+	if(!usedTelephone[playerid] && !usedTelephone[receiver]) {
 		for(new i = 0; i < sizeof(telephoneCall); i++) {
 			TextDrawHideForPlayer(receiver, telephoneCall[receiver][i]);
 		}
@@ -1886,15 +1907,16 @@ Callback:dismissCall(playerid, receiver) {
 }
 
 Callback:healthDamage(playerid) {
-	mainStr[0] = EOS;
-	if(pVars[playerid][pHours] > 20) {
-		format(mainStr, sizeof(mainStr), "{FF0000}%s (%d)", pVars[playerid][pCharName], playerid);
-	} else {
-		format(mainStr, sizeof(mainStr), "{FF0000}%s (%d, %dh)", pVars[playerid][pCharName], playerid, pVars[playerid][pHours]);
-	}
-
+	updatePlayerGameStatus(playerid, STAT_DAMAGE);
 	TextDrawShowForPlayer(playerid, damageRedScreen[playerid]);
-	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_WHITE, mainStr);
+	
+	SetTimerEx("hideHealthDamage", 1000, false, "i", playerid);
+	return 1;
+}
+
+Callback:hideHealthDamage(playerid) {
+	updatePlayerGameStatus(playerid, STAT_NONE);
+	TextDrawHideForPlayer(playerid, damageRedScreen[playerid]);
 	return 1;
 }
 
