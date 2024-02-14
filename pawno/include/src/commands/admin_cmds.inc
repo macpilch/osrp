@@ -205,6 +205,30 @@ CMD:norp(playerid, params[]) {
 	return 1;
 }
 
+CMD:noveh(playerid, params[]) {
+	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+		return 0;
+	}
+	
+	if(!isAdminDuty[playerid]) {
+		return 1;
+	}
+	
+	new pId, days;
+	new reason[128];
+	
+	if(sscanf(params, "is[128]i", pId, reason, days)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /noveh [Gracz] [Powód] [Dni]");
+	}
+
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+	}
+	
+	givePlayerPenalty(playerid, pId, PEN_BLCKVEH, reason, days);
+	return 1;
+}
+
 CMD:klatwa(playerid, params[]) {
 	if(pVars[playerid][pRank] < SUPPORT_RANK) {
 		return 0;
@@ -341,12 +365,12 @@ CMD:unbw(playerid, params[]) {
 	if(!IsPlayerConnected(pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
-	
+
 	setPlayerHealthEx(pId, 100.0);
-	TogglePlayerControllable(pId, 0);
+	TogglePlayerControllable(pId, 1);
 	SetPlayerDrunkLevel(pId, 0);
 	ClearAnimations(pId);
-	
+
 	pVars[pId][pBw] = 0;
 	isBW[pId] = false;
 	

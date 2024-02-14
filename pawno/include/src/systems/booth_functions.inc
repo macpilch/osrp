@@ -53,15 +53,15 @@ stock searchPlayerBooth(playerid) {
 				mainStr[0] = EOS;
 				strcat(mainStr, "{FFFFFF}Zadzwoñ do WSZYSTKICH taksówek >>\n--\n");
 
-				foreach(new j : Player) {
-					foreach(new k : groupItter) {
-						if(gVars[k][gType] == G_TAXI) {
-							if(pVars[j][pGroup] == gVars[k][gUid] && isPlayerDuty[j] && pVars[j][pDuty] > 0) {
+				foreach(new j : groupItter) {
+					foreach(new k : Player) {
+						if(gVars[j][gType] == G_TAXI) {
+							if(pVars[k][pGroupNow] == gVars[j][gUid] && isPlayerDuty[k] && pVars[k][pDuty] > 0) {
 								countPlayers++;
 							}
-
-							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, gVars[k][gUid], countPlayers, gVars[k][gName]);
 						}
+
+						format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, gVars[j][gUid], countPlayers, gVars[j][gName]);
 					}
 				}
 
@@ -69,7 +69,7 @@ stock searchPlayerBooth(playerid) {
 					return GameTextForPlayer(playerid, "~r~Brak taksowkarzy.", 5000, 3);
 				}
 
-				applyAnimationEx(playerid, "PED", "PHONE_IN", 4.1, 0, 1, 1, 1, 1, 1);
+				ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 1, 1, 1, 1, 1);
 				SendClientMessage(playerid, COLOR_WHITE, "{FFFF00}Automat (telefon): Witamy. Gdzie chce siê Pan/Pani dodzwoniæ?");
 
 				ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_GROUPS, DIALOG_STYLE_LIST, "Dostêpne grupy", mainStr, "Wybierz", "Anuluj");

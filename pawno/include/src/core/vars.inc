@@ -46,6 +46,7 @@ new gymObject[2];
 new called[MAX_PLAYERS];
 new usedLastItemTime[MAX_PLAYERS];
 new numberPresses[MAX_PLAYERS];
+new blockadeObjects[MAX_BLOCKADES];
 
 //part time job
 new casualJob[MAX_PLAYERS];
@@ -80,7 +81,6 @@ new bool:chatMessages[MAX_PLAYERS][2]; // 0 - PM, 1 - Grupowe
 new bool:drivingCourse[MAX_PLAYERS];
 new bool:showGroupsInfo[MAX_PLAYERS];
 new bool:insidedHotel[MAX_PLAYERS];
-new bool:blockOOC[MAX_PLAYERS];
 new bool:isRace[MAX_PLAYERS];
 new bool:isCollision[MAX_PLAYERS];
 new bool:isGym[MAX_PLAYERS];
@@ -129,6 +129,7 @@ new Iterator:busstopItter<MAX_BUS_STOPS>;
 new Iterator:cashpointItter<MAX_CASHPOINTS>;
 new Iterator:groupItter<MAX_GROUPS>;
 new Iterator:groupItemsItter<50>;
+new Iterator:groupTasksItter<MAX_GROUP_TASKS>;
 new Iterator:gasItter<MAX_PETROL_STATIONS>;
 new Iterator:raceItter<MAX_RACES>;
 new Iterator:areaItter<MAX_AREAS>;

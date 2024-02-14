@@ -28,8 +28,9 @@ new bVars[MAX_BUS_STOPS][BusStopData];
 new boVars[MAX_BOOTHS][BoothData];
 new gVars[MAX_GROUPS][GroupData];
 new gIVars[50][GroupItems];
+new gTVars[MAX_GROUP_TASKS][GroupTasks];
 new dVars[MAX_DOORS][DoorData];
-//Cashpoints system 
+//Cashpoints system
 new cVars[MAX_CASHPOINTS][CashpointData];
 //Object system
 stock oVars[MAX_OBJECTS][ObjectData];
@@ -129,7 +130,8 @@ new itemNames[][] = {
 	"Hot Dog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Longer", "Nachos z serem", "Naleœnik",
 	"Naleœniki", "P¹czek", "P¹czek Afro", "P¹czek Z³otawy", "Donut", "Sushi", "Woda Mineralna", "Discman",
 	"RadioParty", "CD", "Nokia 8110", "Vitamina C", "Zderzak przedni", "Zderzak tylny", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik",
-	"Maska samochodowa", "Œwiat³o (prawe przednie)", "Kanister", "Karnetsi³owy", "Heroina"
+	"Maska samochodowa", "Œwiat³o (lewe przednie)", "Œwiat³o (prawe przednie)", "Œwiat³o (lewe tylne)", "Œwiat³o (prawe tylne)", "Kanister",
+	"Karnetsi³owy", "Heroina", "Canon 450D"
 };
 
 new VehicleNames[212][] = {

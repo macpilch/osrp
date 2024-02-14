@@ -47,6 +47,10 @@ stock initCashpointValues() {
 stock searchPlayerCashpoint(playerid) {
 	foreach(new i : cashpointItter) {
 		if(playerToPoint(playerid, cVars[i][csDistance], cVars[i][csX], cVars[i][csY], cVars[i][csZ])) {
+			if(!pVars[playerid][pBankAcc]) {
+				generateBankAccountNumber(playerid);
+			}
+			
 			queryStr[0] = EOS;
 			format(queryStr, sizeof(queryStr), "SELECT `Bank` FROM `osrp_Players` WHERE `UID` = '%d'", pVars[playerid][pUid]);
 			mysql_query(queryStr);
@@ -68,7 +72,8 @@ stock searchPlayerCashpoint(playerid) {
 
 stock createNewCashpoint(playerid, cashpointname[]) {
 	new freeId;
-	
+	new Float:x, Float:y, Float:z;
+
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Cashpoints`");
 	mysql_query(queryStr);
@@ -80,18 +85,40 @@ stock createNewCashpoint(playerid, cashpointname[]) {
 	
 	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 	Iter_Add(cashpointItter, freeId);
-	
+
+	x = pVars[playerid][pX];
+	y = pVars[playerid][pY];
+	z = pVars[playerid][pZ];
+
+	getXYInFrontOfPlayer(playerid, x, y, 2.0);
+
 	cVars[freeId][csUid] = freeId + 1;
 	format(cVars[freeId][csName], 32, cashpointname);
 	cVars[freeId][csIsOpen] = true;
-	cVars[freeId][csX] = pVars[playerid][pX];
-	cVars[freeId][csY] = pVars[playerid][pY];
-	cVars[freeId][csZ] = pVars[playerid][pZ];
+	cVars[freeId][csX] = x;
+	cVars[freeId][csY] = y;
+	cVars[freeId][csZ] = z;
 	cVars[freeId][csDistance] = 2.0;
-	cVars[freeId][csObject] = CreateDynamicObject(2942, cVars[freeId][csX], cVars[freeId][csY], cVars[freeId][csZ] - 0.35, 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
+	cVars[freeId][csObject] = CreateDynamicObject(2942, x, y, z - 0.35, 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
 	
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Cashpoints`(`UID`, `Name`, `Object`, `IsOpen`, `X`, `Y`, `Z`, `Distance`) VALUES ('%d', '%s', '%d', '%d', '%f', '%f', '%f', '%f')", cVars[freeId][csUid], cVars[freeId][csName], cVars[freeId][csObject], cVars[freeId][csIsOpen], cVars[freeId][csX], cVars[freeId][csY], cVars[freeId][csZ], cVars[freeId][csDistance]);
+	mysql_query(queryStr);
+	return 1;
+}
+
+stock generateBankAccountNumber(playerid) {
+	new tmpAccNum[9];
+
+	for(new i = 0; i < sizeof(tmpAccNum) - 1; i++) {
+		tmpAccNum[i] = random(10);
+	}
+
+	pVars[playerid][pBankAcc] = strval(tmpAccNum);
+	printf("[DEBUG]: %s\n", tmpAccNum);
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `BankAcc` = '%d' WHERE `UID` = '%s'", pVars[playerid][pBankAcc], pVars[playerid][pUid]);
 	mysql_query(queryStr);
 	return 1;
 }

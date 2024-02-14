@@ -15,9 +15,8 @@
 task globalTimer[1000]() {
 	foreach(new i : Player) {
 		playerAFKTime[i]++;
-		GetPlayerHealth(i, pVars[i][pHp]);
 
-		//if(playerAFKTime[i] != 1) {
+		if(playerAFKTime[i] != 1) {
 			//updatePlayerGameStatus(i, STAT_AFK);
 
 			/*if(isBW[i]) {
@@ -413,8 +412,8 @@ task globalTimer[1000]() {
 						}						
 					}
 				}
-			}
-		}*/
+			}*/
+		}
 
 		// Narazie niech bedzie na 1
 		if(playerAFKTime[i] == 1) {
@@ -473,6 +472,10 @@ task globalTimer[1000]() {
 			}
 		}
 
+		if(insidedHotel[i] && pVars[i][pHotel] && playerToPoint(i, 5.0, 2216.12, -1076.30, 1050.48)) {
+			GameTextForPlayer(i, "~n~~n~~n~~n~~n~~w~[LALT+SPACJA] ~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
+		}
+
 		foreach(new j : vehItter) {
 			if(vVars[j][vSpawned]) {
 				if(vVars[j][vEngine]) {
@@ -512,23 +515,23 @@ task globalTimer[1000]() {
 
 						if(IsPlayerInVehicle(i, vVars[j][vId])) {
 							format(timerStr, sizeof(timerStr), "** W pojeŸdzie %s koñczy siê paliwo. **", VehicleNames[vVars[j][vModelId] - 400]);
-							SendClientMessage(i, COLOR_PURPLE, timerStr);
+							sendMeMessage(i, timerStr); // COLOR_DO
 						}
 					}
 
-					if(vVars[j][vEngineHp] <= 300.0) {
+					if(vVars[j][vEngineHp] < 300.0) {
 						new engine, lights, alarm, doors, bonnet, boot, objective;
-						
+
 						vVars[j][vEngineHp] = 300.0;
-						
+
 						GetVehicleParamsEx(vVars[j][vId], engine, lights, alarm, doors, bonnet, boot, objective);
 						SetVehicleParamsEx(vVars[j][vId], 0, lights, alarm, doors, bonnet, boot, objective);					
 						SetVehicleHealth(vVars[j][vId], vVars[j][vEngineHp]);
-						
+
 						vVars[j][vEngine] = false;
-						
+
 						if(IsPlayerInVehicle(i, vVars[j][vId])) {
-							SendClientMessage(i, COLOR_PURPLE, "** Silnik zgas³ ze wzglêdu na z³y stan pojazdu. **");
+							sendMeMessage(i, "** Silnik zgas³ ze wzglêdu na z³y stan pojazdu. **"); // COLOR_DO
 						}
 					}
 				}
@@ -563,10 +566,6 @@ task globalTimer[1000]() {
 					}
 				}
 			}
-		}
-
-		if(insidedHotel[i] && pVars[i][pHotel] && playerToPoint(i, 5.0, 2216.12, -1076.30, 1050.48)) {
-			GameTextForPlayer(i, "~n~~n~~n~~n~~n~~w~[LALT+SPACJA] ~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
 		}
 	}
 }

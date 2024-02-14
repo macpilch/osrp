@@ -53,6 +53,18 @@ stock saveItemValues() {
 	return 1;
 }
 
+stock getServerItemIdForPlayer(playerid) {
+	new iid;
+
+	foreach(new i : itemItter) {
+		if(iVars[i][iUid] == actualItem[playerid]) {
+			iid = i;
+			break;
+		}
+	}
+	return iid;
+}
+
 stock addPlayerItem(playerid, itemid) {
 	new freeId;
 	
@@ -135,6 +147,21 @@ stock removePlayerItem(srvitemid) {
 	iVars[srvitemid][iPosZ] = 0.0;
 	iVars[srvitemid][iUsed] = false;
 	iVars[srvitemid][iPlace] = ITEM_PLACE_PLAYER;
+	return 1;
+}
+
+stock resetItemValues(playerid) {
+	foreach(new i : itemItter) {
+		if(iVars[i][iOUid] == pVars[playerid][pUid] && iVars[i][iUsed]) {
+			iVars[i][iUsed] = false;
+		
+			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `Used` = '%d' WHERE `UID` = '%d'", iVars[i][iUsed], iVars[i][iUid]);
+			mysql_query(queryStr);
+		}
+	}
+
+	actualItem[playerid] = INVALID_ITEM_ID;
 	return 1;
 }
 
@@ -241,8 +268,8 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				strcat(mainStr, "{FFFFFF}8\tOdbierz\n9\tZignoruj");
 				ShowPlayerDialog(playerid, DIALOG_TELEPHONE_CALL_CHOICE, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
 			} else if(usedTelephone[pId] && usedTelephone[playerid]) {
-				applyAnimationEx(playerid, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
-				applyAnimationEx(pId, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
+				ApplyAnimation(playerid, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
+				ApplyAnimation(pId, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
 				
 				iVars[srvitemid][iUsed] = false;
 				actualItem[playerid] = INVALID_ITEM_ID;
@@ -343,7 +370,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			iVars[srvitemid][iUsed] = true;
 			
 			setPlayerHealthEx(playerid, pVars[playerid][pHp] += random(10) + 5.0);
-			applyAnimationEx(playerid, "FOOD", "EAT_Burger", 4.1, 0, 0, 0, 0, 0, 1);
+			ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 0, 0, 0, 0, 1);
 			removePlayerItem(srvitemid);
 			
 			format(mainStr, sizeof(mainStr), "* %s spo¿ywa %s.", pVars[playerid][pCharName], itemNames[itemid]);

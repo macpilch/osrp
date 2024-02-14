@@ -67,15 +67,15 @@ stock saveVehicleValues() {
 }
 
 stock getServerVehicleIdForPlayer(playerid) {
-	new id;
+	new vid;
 
 	foreach(new i : vehItter) {
-		if((actualVehicle[playerid] == vVars[i][vUid]) || ((actualVehicle[playerid] != vVars[i][vUid] || actualVehicle[playerid] == 0) && GetPlayerVehicleID(playerid) == vVars[i][vId])) {
-			id = i;
+		if(actualVehicle[playerid] == vVars[i][vUid]) {
+			vid = i;
 			break;
 		}
 	}
-	return id;
+	return vid;
 }
 
 stock resetVehicleValues(playerid) {
@@ -84,12 +84,13 @@ stock resetVehicleValues(playerid) {
 	if(vVars[srvVehId][vOUid] == pVars[playerid][pUid]) {
 		DestroyVehicle(vVars[srvVehId][vId]);
 		DestroyDynamic3DTextLabel(vVars[srvVehId][vDesc]);
+
 		DestroyDynamicMapIcon(vehMapIcon[srvVehId]);
 		DestroyDynamicCP(vehCP[srvVehId]);
 
 		vehCP[srvVehId] = -1;
 		vehMapIcon[srvVehId] = -1;
-		actualVehicle[playerid] = 0;
+		actualVehicle[playerid] = INVALID_SERVER_VEHICLE_ID;
 		vVars[srvVehId][vSpawned] = false;
 
 		queryStr[0] = EOS;
@@ -169,17 +170,26 @@ Callback:vehicleEngineOn(playerid, vehicleid) {
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 		return 1;
 	}
-	
-	new engine, lights, alarm, doors, bonnet, boot, objective, srvVehId = getServerVehicleIdForPlayer(playerid);
 
-	GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
-	SetVehicleParamsEx(vehicleid, 1, lights, alarm, doors, bonnet, boot, objective);
-	
-	for(new i = 0; i < 3; i++) {
-		TextDrawShowForPlayer(playerid, vehicleFuelStatus[playerid][i]);
+	new srvVehId = getServerVehicleIdForPlayer(playerid);
+	new rand = random(5);
+
+	if(vVars[srvVehId][vEngineHp] == 300.0 && (rand == 0 || rand == 2 || rand == 4)) {
+		mainStr[0] = EOS;
+		format(mainStr, sizeof(mainStr), "* %s próbuje uruchomiæ pojazd, ale silnik odmawia pos³uszeñstwa.", pVars[playerid][pCharName]);
+		sendMeMessage(playerid, mainStr);
+	} else if(vVars[srvVehId][vEngineHp] > 300.0 || (vVars[srvVehId][vEngineHp] == 300.0 && (rand == 1 || rand == 3))) {
+		new engine, lights, alarm, doors, bonnet, boot, objective;
+
+		GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
+		SetVehicleParamsEx(vehicleid, 1, lights, alarm, doors, bonnet, boot, objective);
+
+		for(new i = 0; i < 3; i++) {
+			TextDrawShowForPlayer(playerid, vehicleFuelStatus[playerid][i]);
+		}
+
+		vVars[srvVehId][vEngine] = true;
 	}
-	
-	vVars[srvVehId][vEngine] = true;
 	return 1;
 }
 
@@ -608,6 +618,6 @@ Callback:addFuelToVehicle(playerid) {
 	
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "* Pojazd %s zosta³ zatankowany. *", VehicleNames[vVars[srvVehId][vModelId] - 400]);
-	sendMeMessage(playerid, mainStr);
+	sendMeMessage(playerid, mainStr); // COLOR_DO
 	return 1;
 }

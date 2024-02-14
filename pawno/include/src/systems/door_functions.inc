@@ -14,58 +14,58 @@
 
 stock initDoorValues() {
 	printf("[LOG]: Zaczynam ladowac drzwi...");
-	
+
 	for(new i = 0; i < MAX_DOORS; i++) {
 		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Doors` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
-		
+
 		mysql_store_result();
-		
+
 		if(!mysql_num_rows()) {
 			break;
 		}
-		
+
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iis[32]ffffffiiis[24]iiiiiiis[32]iii", dVars[i][dUid], dVars[i][dOUid], dVars[i][dName], dVars[i][dEnterX], dVars[i][dEnterY], dVars[i][dEnterZ],
-		dVars[i][dExitX], dVars[i][dExitY], dVars[i][dExitZ], dVars[i][dPickup], dVars[i][dOpen], dVars[i][dTax], dVars[i][dTaxDate], dVars[i][dTaxCost], dVars[i][dDimensions],
-		dVars[i][dObjects], dVars[i][dMaxObjects], dVars[i][dTexts], dVars[i][dMaxTexts], dVars[i][dSecurity], dVars[i][dSecurityName], dVars[i][dVw], dVars[i][dInt], dVars[i][dType]);
+		sscanf(queryStr, "p<|>iis[32]ffffffiis[24]iiiiiiis[32]iii", dVars[i][dUid], dVars[i][dOUid], dVars[i][dName], dVars[i][dEnterX], dVars[i][dEnterY], dVars[i][dEnterZ],
+		dVars[i][dExitX], dVars[i][dExitY], dVars[i][dExitZ], dVars[i][dOpen], dVars[i][dTax], dVars[i][dTaxDate], dVars[i][dTaxCost], dVars[i][dDimensions], dVars[i][dObjects],
+		dVars[i][dMaxObjects], dVars[i][dTexts], dVars[i][dMaxTexts], dVars[i][dSecurity], dVars[i][dSecurityName], dVars[i][dVw], dVars[i][dInt], dVars[i][dType]);
 		Iter_Add(doorItter, i);
-		
+
 		dVars[i][dPickup] = CreateDynamicPickup(1239, 2, dVars[i][dEnterX], dVars[i][dEnterY], dVars[i][dEnterZ], 0, 0, -1, 50.0, -1, 0);
 	}
-	
+
 	if(Iter_Count(doorItter)) {
 		printf("[LOG]: Wczytano %d drzwi.", Iter_Count(doorItter));
 	} else {
 		printf("[LOG]: Brak drzwi.");
 	}
-	
+
 	mysql_free_result();
 	return 1;
 }
 
 stock saveDoorValues() {
 	queryStr[0] = EOS;
-	
+
 	foreach(new i : doorItter) {
-		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Doors` SET `OUID` = '%d', `Name` = '%s', `PickupID` = '%d', `Open` = '%d', `VW` = '%d', `INT` = '%d' WHERE `UID` = '%d'", 
-		dVars[i][dOUid], dVars[i][dName], dVars[i][dPickup], dVars[i][dOpen], dVars[i][dVw], dVars[i][dInt], i + 1);
+		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Doors` SET `OUID` = '%d', `Name` = '%s', `Open` = '%d', `VW` = '%d', `INT` = '%d' WHERE `UID` = '%d'", 
+		dVars[i][dOUid], dVars[i][dName], dVars[i][dOpen], dVars[i][dVw], dVars[i][dInt], i + 1);
 		mysql_query(queryStr);
 	}
 	return 1;
 }
 
 stock getServerDoorIdForPlayer(playerid) {
-	new id;
+	new dId;
 	
 	foreach(new i : doorItter) {
-		if(dVars[i][dUid] == pVars[playerid][pDoors]) {
-			id = i;
+		if(dVars[i][dUid] == pVars[playerid][pDoor]) {
+			dId = i;
 			break;
 		}
 	}
-	return id;
+	return dId;
 }
 
 stock createNewDoor(playerid, ownerId, doorName[]) {

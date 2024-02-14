@@ -23,7 +23,7 @@ sampCallback:OSRP_OnGameModeInit() {
 	SetWeather(10);
 	SetWorldTime(20);
 	SetGravity(0.008);
-	SetGameModeText("osrp.com (macpilch)");
+	SetGameModeText("macpilch: osrp.com");
 	
 	hMySQL = mysql_init(LOG_ONLY_ERRORS, 1);
 	mySQLConnect = mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB, hMySQL, 1);
@@ -45,7 +45,9 @@ sampCallback:OSRP_OnGameModeInit() {
 	initBusStopValues();
 	initCashpointValues();
 	initGroupValues();
+	initGroupPermsValues();
 	initGroupItemsValues();
+	initGroupTasksValues();
 	initRaceValues();
 	
 	for(new i = 0; i < MAX_PLAYERS; i++) {
@@ -86,6 +88,8 @@ sampCallback:OSRP_OnGameModeInit() {
 
 sampCallback:OSRP_OnGameModeExit() {
 	new callSecs = GetTickCount();
+	
+	mysql_close(hMySQL);
 	
 	printf("[LOG]: OnGameModeExit -- Called! (%d ms).", GetTickCount() - callSecs);
 	return 1;

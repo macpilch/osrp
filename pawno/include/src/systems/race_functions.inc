@@ -170,13 +170,13 @@ Callback:enablePlayerRaceCD() {
 }
 
 stock getServerRaceIdForPlayer(playerid) {
-	new id;
+	new rId;
 	
 	foreach(new i : raceItter) {
 		if(rcVars[i][rcUid] == actualRace[playerid]) {
-			id = i;
+			rId = i;
 			break;
 		}
 	}
-	return id;
+	return rId;
 }

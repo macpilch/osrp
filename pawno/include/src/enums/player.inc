@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 25.07.2022
-	Modified: 10.09.2023
+	Modified: 02.02.2024
 */
 
 #if defined __PLAYER_INC__
@@ -24,7 +24,7 @@ enum CharSurName {
 
 enum PlayerData {
 	pUid,
-	pGuid,
+	pGUid,
 	pCharId,
 	pAccName[24],
 	pCharName[24],
@@ -33,8 +33,7 @@ enum PlayerData {
 	pIp[16],
 	pDateReg[64],
 	pLastDate[64],
-	pBlocked,
-	pBlockOOC,
+	pBlock,
 	pGold,
 	pRank, // for ranks
 	pGM,
@@ -74,8 +73,9 @@ enum PlayerData {
 	pGroupNow,
 	pArea,
 	pDuty,
+	pStatus[128],
 	Float:pTraveled,
-	pDoors,
+	pDoor,
 	pAudio,
 	pChatStyle,
 	pComputer,

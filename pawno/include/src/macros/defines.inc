@@ -28,7 +28,7 @@
 #undef MAX_VEHICLES
 #undef MAX_OBJECTS
 
-#define MAX_PLAYERS 2
+#define MAX_PLAYERS 100
 #define MAX_VEHICLES 10
 #define MAX_OBJECTS 10
 
@@ -43,12 +43,14 @@
 #define MAX_BUS_STOPS 10
 #define MAX_CASHPOINTS 10
 #define MAX_GROUPS 4
+#define MAX_GROUP_TASKS 100
 #define MAX_CAMERAS 2
 #define MAX_RACES 4
 #define MAX_CPS 50
 #define MAX_AREAS 20
 #define MAX_STATUSES 12
 #define MAX_CONTACTS 10
+#define MAX_BLOCKADES 5
 
 // Callbacks
 #define sampCallback:%0(%1) \
@@ -58,9 +60,9 @@
 		forward %0(%1); public %0(%1)
 
 #define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "root"
-#define MYSQL_PASS "1234"
-#define MYSQL_DB "osrp"
+#define MYSQL_USER "server_868"
+#define MYSQL_PASS "3i74xhmrkp"
+#define MYSQL_DB "server_868_osrp"
 
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_RED 0xFF0000FF
@@ -99,22 +101,34 @@
 #define STAT_DAMAGE 4
 #define STAT_ROLLERS 5
 #define STAT_DRUNK 6
-#define STAT_STRENGTH 7
-#define STAT_BELTS 8
-#define STAT_DETENTION 9
-#define STAT_DUTY 10
-#define STAT_GLOVES 11
+#define STAT_DRUGS 7
+#define STAT_STRENGTH 8
+#define STAT_BELTS 9
+#define STAT_DETENTION 10
+#define STAT_DUTY 11
+#define STAT_GLOVES 12
+
+// Blokady gracza (Flagi)
+#define BLOCK_OOC 1
+#define BLOCK_ACC 2
+#define BLOCK_VEH 4
+
+// Uprawnienia grupy (Flagi)
+#define GROUP_PERM_CHATOOC 1
+#define GROUP_PERM_CHATIC 2
+#define GROUP_PERM_MEGAPHONE 4
 
 #define PEN_BAN 0
 #define PEN_KICK 1
 #define PEN_ADMJAIL 2
 #define PEN_WARN 3
-#define PEN_BLCKACC 4
-#define PEN_RUNNBLW 5
-#define PEN_BLCKOOC 6
-#define PEN_WRITING 7
-#define PEN_RPACTN 8
-#define PEN_KLATWA 9
+#define PEN_BLCKOOC 4
+#define PEN_BLCKACC 5
+#define PEN_BLCKVEH 6
+#define PEN_RUNNBLW 7
+#define PEN_WRITING 8
+#define PEN_RPACTN 9
+#define PEN_KLATWA 10
 
 #define INVALID_OFFER_TYPE -1
 #define O_POWITANIE 0
@@ -133,8 +147,8 @@
 #define O_SPRZEDAZ 13
 
 #define VEHICLE_OWNER_GROUP 0
+#define INVALID_ITEM_ID 0
 
-#define INVALID_ITEM_ID -1
 #define ITEM_PLACE_PLAYER 0
 #define ITEM_PLACE_FLOOR 1
 #define ITEM_PLACE_VEHICLE 2
@@ -155,7 +169,7 @@
 #define PART_TIME_JOB_COURIER 1
 
 // fuel tanks
-#define INVALID_SERVER_VEHICLE_ID -1
+#define INVALID_SERVER_VEHICLE_ID 0
 #define VEHICLE_FUEL_TANK_SMALL 20
 #define VEHICLE_FUEL_TANK_MEDIUM 40
 #define VEHICLE_FUEL_TANK_LARGE 60

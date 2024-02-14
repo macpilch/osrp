@@ -56,7 +56,7 @@ sampCallback:OSRP_OnPlayerRequestClass(playerid, classid) {
 			mysql_store_result();
 
 			mysql_fetch_row(queryStr, "|");
-			sscanf(queryStr, "p<|>iis[24]s[32]", pVars[playerid][pGuid], pVars[playerid][pUid], pVars[playerid][pCharName], pVars[playerid][pPass]);
+			sscanf(queryStr, "p<|>iis[24]s[32]", pVars[playerid][pGUid], pVars[playerid][pUid], pVars[playerid][pCharName], pVars[playerid][pPass]);
 
 			mysql_free_result();
 
@@ -125,7 +125,9 @@ sampCallback:OSRP_OnPlayerDisconnect(playerid, reason) {
 
 	savePlayerValues(playerid);
 	resetPlayerValues(playerid); // dla dobra pamieci
+
 	resetVehicleValues(playerid);
+	resetItemValues(playerid);
 
 	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 
@@ -166,7 +168,9 @@ sampCallback:OSRP_OnPlayerSpawn(playerid) {
 	SetPlayerVirtualWorld(playerid, pVars[playerid][pVw]);
 
 	TextDrawShowForPlayer(playerid, website);
+	
 	KillTimer(cameraTimer[playerid]);
+	cameraTimer[playerid] = -1;
 
 	updatePlayerGameStatus(playerid, STAT_NONE);
 
@@ -193,30 +197,33 @@ sampCallback:OSRP_OnPlayerSpawn(playerid) {
 
 sampCallback:OSRP_OnPlayerDeath(playerid, killerid, reason) {
 	new callSecs = GetTickCount();
-	new reas[128];
-	new pId = getPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
 
 	if(pVars[killerid][pHours] < 10) {
 		SendClientMessage(killerid, COLOR_WHITE, "{FF4444}Nie wolno Ci zabijaæ dopóki nie przekroczysz 10 godzin gry.");
 	}
 
 	if(killerid != INVALID_PLAYER_ID && GetPlayerWeapon(playerid) == 0) {
+		new reas[128];
+		
 		format(reas, sizeof(reas), "Prawdopodobny DM~n~~w~Zabil %s(%d:%d), bron: %d, godzin: %d", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, GetPlayerWeapon(killerid), pVars[killerid][pHours]);
 		return givePlayerPenalty(INVALID_PLAYER_ID, killerid, PEN_ADMJAIL, reas, 0);
 	}
 
-	format(reas, sizeof(reas), "FakeKill~n~~w~FakeKill na %s. %s");
+	//format(reas, sizeof(reas), "FakeKill~n~~w~FakeKill na %s. %s");
 	//return givePlayerPenalty(INVALID_PLAYER_ID, killerid, PEN_KICK, reas, 0));
 
 	if(isPlayerDuty[playerid] && pVars[playerid][pDuty] > 0) {
-		pc_cmd_duty(playerid);
+		pc_cmd_duty(playerid, "");
 	}
 
 	if(usedTelephone[playerid]) {
-		applyAnimationEx(pId, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
+		new pId = getPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
+		
+		ApplyAnimation(pId, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
 
 		usedTelephone[playerid] = false;
 		usedTelephone[pId] = false;
+
 		telEnterNumber[playerid] = 0;
 		telEnterNumber[pId] = 0;
 
@@ -225,6 +232,7 @@ sampCallback:OSRP_OnPlayerDeath(playerid, killerid, reason) {
 	}
 
 	setPlayerBW(playerid, 3);
+	SendClientMessage(playerid, COLOR_GRAY, "Jebane gowno!!!!!!");
 
 	printf("[LOG]: OnPlayerDeath -- Called! (%d ms).", GetTickCount() - callSecs);
 	return 1;
@@ -244,7 +252,7 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 		format(mainStr, sizeof(mainStr), "* %s uœmiecha siê.", pVars[playerid][pCharName]);
 		sendMeMessage(playerid, mainStr);
 	} else if(strfind(textStr, ":D", true) == 0 || strfind(textStr, "xD", true) == 0) {
-		applyAnimationEx(playerid, "RAPPING", "Laugh_01", 4.1, 0, 0, 0, 0, 0, 1);
+		ApplyAnimation(playerid, "RAPPING", "Laugh_01", 4.1, 0, 0, 0, 0, 0, 1);
 
 		format(mainStr, sizeof(mainStr), "* %s œmieje siê.", pVars[playerid][pCharName]);
 		sendMeMessage(playerid, mainStr);
@@ -259,7 +267,7 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 		sendMeMessage(playerid, mainStr);
 	} else if(strfind(textStr, ".", false) == 0) {
 		if(!isBW[playerid]) {
-			if(pVars[playerid][pBlockOOC]) {
+			if(pVars[playerid][pBlock] & BLOCK_OOC) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Administracja zablokowa³a Ci kana³ OOC.");
 			}
 
@@ -296,94 +304,92 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 	} else if(strfind(textStr, "@", true) == 0) {
 		if(strlen(textStr) > 1) {
 			if(!isBW[playerid]) {
-				new groupSlot[2], slot, grpUid;
-				new srvGrpId = getServerGroupIdForPlayer(playerid);
+				if(gVars[srvGrpId][gFlags] & GROUP_PERM_CHATOOC) {
+					new groupSlot[2], slot, grpUid;
 
-				strmid(groupSlot, textStr, 1, 2);
-				slot = strval(groupSlot);
+					strmid(groupSlot, textStr, 1, 2);
+					slot = strval(groupSlot);
 
-				if(!gVars[srvGrpId][gChatOOC]) {
-					return GameTextForPlayer(playerid, "~r~Czat OOC tej grupy nie jest~n~aktywny", 5000, 3);
-				}
-
-				switch(slot) {
-					case 1: grpUid = pVars[playerid][pGroup][0];
-					case 2: grpUid = pVars[playerid][pGroup][1];
-					case 3: grpUid = pVars[playerid][pGroup][2];
-					case 4: grpUid = pVars[playerid][pGroup][3];
-					case 5: grpUid = pVars[playerid][pGroup][4];
-					default: {
-						GameTextForPlayer(playerid, "~r~Podales nieprawidlowy slot.", 5000, 3);
+					switch(slot) {
+						case 1: grpUid = pVars[playerid][pGroup][0];
+						case 2: grpUid = pVars[playerid][pGroup][1];
+						case 3: grpUid = pVars[playerid][pGroup][2];
+						case 4: grpUid = pVars[playerid][pGroup][3];
+						case 5: grpUid = pVars[playerid][pGroup][4];
+						default: {
+							GameTextForPlayer(playerid, "~r~Podales nieprawidlowy slot.", 5000, 3);
+							return 0;
+						}
+					}
+					
+					if(!grpUid) {
+						ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Nie posiadasz grupy na tym slocie.", "OK", "");
 						return 0;
 					}
-				}
-				
-				if(!grpUid) {
-					return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Nie posiadasz grupy na tym slocie.", "OK", "");
-				}
-				
-				new str[256];
-				
-				strmid(str, textStr, 2, strlen(textStr));
-				format(mainStr, sizeof(mainStr), "@@%d %s (( %d.%s: %s ))", slot, gVars[srvGrpId][gName], playerid, pVars[playerid][pCharName], str);
-				
-				foreach(new i : Player) {
-					if(grpUid == pVars[i][pGroupNow] && chatMessages[i][1]) {
-						SendClientMessage(i, COLOR_WHITE, mainStr);
+					
+					new str[256];
+					
+					strmid(str, textStr, 2, strlen(textStr));
+					format(mainStr, sizeof(mainStr), "{%s}@@%d %s (( %d.%s: %s ))", gVars[srvGrpId][gColor], slot, gVars[srvGrpId][gName], playerid, pVars[playerid][pCharName], str);
+					
+					foreach(new i : Player) {
+						if(grpUid == pVars[i][pGroupNow] && chatMessages[i][1]) {
+							SendClientMessage(i, COLOR_WHITE, mainStr);
+						}
 					}
+				} else {
+					return GameTextForPlayer(playerid, "~r~Czat OOC tej grupy nie jest~n~aktywny", 5000, 3);
 				}
 			} else {
 				GameTextForPlayer(playerid, "~r~Nie podczas BW.", 4000, 3);
 			}
 		}
-		return 0;
 	} else if(strfind(textStr, "!", true) == 0) {
 		if(strlen(textStr) > 1) {
 			if(!isBW[playerid]) {
-				new groupSlot[2], slot, grpUid;
-				new srvGrpId = getServerGroupIdForPlayer(playerid);
+				if(gVars[srvGrpId][gFlags] & GROUP_PERM_CHATIC) {
+					new groupSlot[2], slot, grpUid;
 
-				strmid(groupSlot, textStr, 1, 2);
-				slot = strval(groupSlot);
+					strmid(groupSlot, textStr, 1, 2);
+					slot = strval(groupSlot);
 
-				if(!gVars[srvGrpId][gChatIC]) {
-					return GameTextForPlayer(playerid, "~r~Czat IC tej grupy nie jest~n~aktywny", 5000, 3);
-				}
-
-				switch(slot) {
-					case 1: grpUid = pVars[playerid][pGroup][0];
-					case 2: grpUid = pVars[playerid][pGroup][1];
-					case 3: grpUid = pVars[playerid][pGroup][2];
-					case 4: grpUid = pVars[playerid][pGroup][3];
-					case 5: grpUid = pVars[playerid][pGroup][4];
-					default: {
-						GameTextForPlayer(playerid, "~r~Podales nieprawidlowy slot.", 5000, 3);
+					switch(slot) {
+						case 1: grpUid = pVars[playerid][pGroup][0];
+						case 2: grpUid = pVars[playerid][pGroup][1];
+						case 3: grpUid = pVars[playerid][pGroup][2];
+						case 4: grpUid = pVars[playerid][pGroup][3];
+						case 5: grpUid = pVars[playerid][pGroup][4];
+						default: {
+							GameTextForPlayer(playerid, "~r~Podales nieprawidlowy slot.", 5000, 3);
+							return 0;
+						}
+					}
+					
+					if(!grpUid) {
+						ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Nie posiadasz grupy na tym slocie.", "OK", "");
 						return 0;
 					}
-				}
-				
-				if(!grpUid) {
-					return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Nie posiadasz grupy na tym slocie.", "OK", "");
-				}
-				
-				new str[256];
-				
-				strmid(str, textStr, 2, strlen(textStr));
-				format(mainStr, sizeof(mainStr), "!!%d %s (( %d.%s: %s ))", slot, gVars[srvGrpId][gName], playerid, pVars[playerid][pCharName], str);
-				
-				foreach(new i : Player) {
-					if(grpUid == pVars[i][pGroupNow] && chatMessages[i][1]) {
-						SendClientMessage(i, COLOR_WHITE, mainStr);
-					}
-				}
 
-				format(mainStr, sizeof(mainStr), "%s (s³uchawka): %s", pVars[playerid][pCharName], str);
-				sendChatMessage(playerid, mainStr);
+					new str[256];
+					strmid(str, textStr, 2, strlen(textStr));
+
+					format(mainStr, sizeof(mainStr), "%s (s³uchawka): %s", pVars[playerid][pCharName], str);
+					sendChatMessage(playerid, mainStr);
+
+					format(mainStr, sizeof(mainStr), "{%s}!!%d %s (( %d.%s: %s ))", gVars[srvGrpId][gColor], slot, gVars[srvGrpId][gName], playerid, pVars[playerid][pCharName], str);
+
+					foreach(new i : Player) {
+						if(grpUid == pVars[i][pGroupNow] && chatMessages[i][1]) {
+							SendClientMessage(i, COLOR_WHITE, mainStr);
+						}
+					}
+				} else {
+					return GameTextForPlayer(playerid, "~r~Czat IC tej grupy nie jest~n~aktywny", 5000, 3);
+				}
 			} else {
 				GameTextForPlayer(playerid, "~r~Nie podczas BW.", 4000, 3);
 			}
 		}
-		return 0;
 	} else {
 		if(!isBW[playerid]) {
 			if(usedTelephone[playerid]) {
@@ -444,6 +450,10 @@ sampCallback:OSRP_OnPlayerCommandPerformed(playerid, cmd[], params[], result, fl
 	return 1;
 }
 
+sampCallback:OnPlayerEnterCheckpoint(playerid) {
+	return 1;
+}
+
 sampCallback:OnPlayerEnterRaceCheckpoint(playerid) {
 	onEnterRaceCheckpoint(playerid);
 	return 1;
@@ -477,7 +487,7 @@ sampCallback:OSRP_OnPlayerStateChange(playerid, newstate, oldstate) {
 			}
 		}
 
-		if(vVars[srvVehId][vOUid] != pVars[playerid][pUid] && vVars[srvVehId][vLock]) {
+		if(vVars[srvVehId][vOUid] != pVars[playerid][pUid] /*&& vVars[srvVehId][vLock]*/) {
 			new reas[128];
 
 			format(reas, sizeof(reas), "CarJack. V%d. Driver %d:%d", vVars[srvVehId][vUid]);
@@ -508,6 +518,7 @@ sampCallback:OSRP_OnPlayerStateChange(playerid, newstate, oldstate) {
 			if(pVars[offerFor[playerid]][pTraveled] < 10.0) {
 				drivingCourse[playerid] = false;
 				drivingCourse[offerFor[playerid]] = false;
+				
 				pVars[offerFor[playerid]][pDriverLicense] = 0;
 
 				RemovePlayerFromVehicle(offerFor[playerid]);
@@ -516,6 +527,8 @@ sampCallback:OSRP_OnPlayerStateChange(playerid, newstate, oldstate) {
 		}
 
 		if(hasBelts[playerid]) {
+			updatePlayerGameStatus(playerid, STAT_NONE);
+			
 			hasBelts[playerid] = false;
 		}
 
@@ -554,7 +567,7 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
 	if(HOLDING(KEY_HANDBRAKE) || PRESSED(KEY_HANDBRAKE)) {
 		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) {
-			new srvItemId = actualItem[playerid], weaponid = GetPlayerWeapon(playerid);
+			new srvItemId = getServerItemIdForPlayer(playerid), weaponid = GetPlayerWeapon(playerid);
 
 			if(iVars[srvItemId][iId] >= P_COLT && iVars[srvItemId][iId] <= P_TEC9) {
 				if(weaponid == WEAPON_COLT45 || weaponid == WEAPON_DEAGLE || weaponid == WEAPON_SHOTGUN || weaponid == WEAPON_UZI || weaponid == WEAPON_MP5 || weaponid == WEAPON_AK47 || weaponid == WEAPON_M4 || weaponid == WEAPON_TEC9) {
@@ -573,10 +586,10 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	}
 
 	if(PRESSED(KEY_SPRINT)) {
-		new srvItemId = actualItem[playerid];
+		new srvItemId = getServerItemIdForPlayer(playerid);
 
 		if(iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) {
-			applyAnimationEx(playerid, "SKATE", "skate_run", 4.1, 1, 1, 1, 1, 1, 1);
+			ApplyAnimation(playerid, "SKATE", "skate_run", 4.1, 1, 1, 1, 1, 1, 1);
 		}
 
 		if(isGym[playerid]) {
@@ -626,9 +639,9 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		if(!dVars[srvDoorId][dTax]) {
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "Nie mo¿esz wejœæ do budynku, poniewa¿ jego podatek nie by³ op³acany od %s.\n", dVars[srvDoorId][dTaxDate]);
-			format(mainStr, sizeof(mainStr), "%sJe¿eli jesteœ jego w³aœcicielem, udaj siê do urzêdu w celu op³aty budynku nr %d.\n\n", dVars[srvDoorId][dUid]);
-			strcat(mainStr, "Budynek zostanie skasowany po up³ywie 30. dni od ostatniej wp³aty podatku.");
-			
+			format(mainStr, sizeof(mainStr), "%sJe¿eli jesteœ jego w³aœcicielem, udaj siê do urzêdu w celu op³aty budynku nr %d.\n\n", mainStr, dVars[srvDoorId][dUid]);
+			format(mainStr, sizeof(mainStr), "%sBudynek zostanie skasowany po up³ywie 30. dni od ostatniej wp³aty podatku.", mainStr);
+
 			return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 		}
 		
@@ -689,13 +702,13 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
 sampCallback:OnPlayerPickUpPickup(playerid, pickupid) {
 	PlayerPlaySound(playerid, 1150, 0.0, 0.0, 0.0);
-	return 1;
+	return 0;
 }
 
 sampCallback:OSRP_OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 	foreach(new i : doorItter) {
 		if(pickupid == dVars[i][dPickup]) {
-			pVars[playerid][pDoors] = dVars[i][dUid];
+			pVars[playerid][pDoor] = dVars[i][dUid];
 			pVars[playerid][pVw] = GetPlayerVirtualWorld(playerid);
 			pVars[playerid][pInt] = GetPlayerInterior(playerid);
 
@@ -905,9 +918,9 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			mysql_free_result();
 			
 			if(!accNum) {
-				pVars[playerid][pGuid] = allAccounts;
+				pVars[playerid][pGUid] = allAccounts;
 			} else {
-				pVars[playerid][pGuid] = accNum;
+				pVars[playerid][pGUid] = accNum;
 			}
 			
 			pVars[playerid][pUid] = charsCount + 1;
@@ -916,12 +929,12 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			getdate(yr, m, day);
 			gettime(hr, mins, sec);
 			
-			format(pVars[playerid][pDateReg], 64, "%d/%d/%d %02d:%02d:%03d", day, m, yr, hr, mins, sec);
+			format(pVars[playerid][pDateReg], 64, "%02d/%02d/%d %02d:%02d:%02d", day, m, yr, hr, mins, sec);
 			format(pVars[playerid][pLastDate], 64, pVars[playerid][pDateReg]);
 			
 			queryStr[0] = EOS;
 			format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Players` (`GUID`, `UID`, `CharId`, `AccName`, `IP`, `CharName`, `CharName2`, `Pass`, `Sex`, `DateReg`, `LastDate`) VALUES ('%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s')",
-			pVars[playerid][pGuid], pVars[playerid][pUid], pVars[playerid][pCharId], pVars[playerid][pAccName], pVars[playerid][pIp], pVars[playerid][pCharName], pVars[playerid][pCharName2], inputtext, pVars[playerid][pSex], pVars[playerid][pDateReg], pVars[playerid][pLastDate]);
+			pVars[playerid][pGUid], pVars[playerid][pUid], pVars[playerid][pCharId], pVars[playerid][pAccName], pVars[playerid][pIp], pVars[playerid][pCharName], pVars[playerid][pCharName2], inputtext, pVars[playerid][pSex], pVars[playerid][pDateReg], pVars[playerid][pLastDate]);
 			mysql_query(queryStr);
 			
 			hasLogged[playerid] = true;
@@ -974,7 +987,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			if(listitem > numChars - 1) {
 				ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_LIST, "Czy krótaœ z tych postaci jest Twoja?", mainStr, "Zaloguj", "Inna postaæ");
 			} else {
-				setPlayerDefaultValues(playerid);
+				//setPlayerDefaultValues(playerid);
 				pVars[playerid][pUid] = strval(inputtext);
 				
 				queryStr[0] = EOS;
@@ -984,7 +997,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				mysql_store_result();
 				
 				mysql_fetch_row(queryStr, "|");
-				sscanf(queryStr, "p<|>is[24]s[24]s[32]", pVars[playerid][pGuid], pVars[playerid][pCharName], pVars[playerid][pCharName2], pVars[playerid][pPass]);
+				sscanf(queryStr, "p<|>is[24]s[24]s[32]", pVars[playerid][pGUid], pVars[playerid][pCharName], pVars[playerid][pCharName2], pVars[playerid][pPass]);
 				mysql_free_result();
 				
 				mainStr[0] = EOS;
@@ -1077,12 +1090,12 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			mysql_fetch_row(queryStr, "|");
 			sscanf(queryStr,
 				   "p<|>iiis[24]s[24]s[24]s[32]s[16]iiiiiiffiiiiiiiiiiiiiiiiiiiiiiiis[128]iifiiiiiifffs[128]",
-				   pVars[playerid][pUid], pVars[playerid][pGuid], pVars[playerid][pCharId], pVars[playerid][pAccName], pVars[playerid][pCharName], pVars[playerid][pCharName2], pVars[playerid][pPass], pVars[playerid][pIp],
+				   pVars[playerid][pUid], pVars[playerid][pGUid], pVars[playerid][pCharId], pVars[playerid][pAccName], pVars[playerid][pCharName], pVars[playerid][pCharName2], pVars[playerid][pPass], pVars[playerid][pIp],
 				   pVars[playerid][pRank], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp],
 				   pVars[playerid][pBans], pVars[playerid][pKicks], pVars[playerid][pWarns], pVars[playerid][pVw], pVars[playerid][pInt],pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], 
 				   pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pAl], pVars[playerid][pDriverLicense], pVars[playerid][pPisSkill], pVars[playerid][pDglSkill], pVars[playerid][pShtgSkill], pVars[playerid][pM4Skill],
 				   pVars[playerid][pGov], pVars[playerid][pHotel], pVars[playerid][pIdCard], pVars[playerid][pDetention], pVars[playerid][pPdp], pVars[playerid][pTelNum], pVars[playerid][pBankAcc], pVars[playerid][pGroupDesc], pVars[playerid][pGroup][0],
-				   casualJob[playerid], pVars[playerid][pTraveled], pVars[playerid][pDoors],pVars[playerid][pAudio], pVars[playerid][pChatStyle], pVars[playerid][pComputer], pVars[playerid][pWalkAnim], pVars[playerid][pScreen], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pCharDesc]
+				   casualJob[playerid], pVars[playerid][pTraveled], pVars[playerid][pDoor],pVars[playerid][pAudio], pVars[playerid][pChatStyle], pVars[playerid][pComputer], pVars[playerid][pWalkAnim], pVars[playerid][pScreen], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pCharDesc]
 				  );
 			mysql_free_result();
 			
@@ -1126,333 +1139,6 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			}
 		}
 
-		case DIALOG_SHOW_ANIMATIONS: {
-			if(!response) {
-				return 1;
-			}
-
-			switch(listitem) {
-				case 0: {
-					applyAnimationEx(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 1: {
-					applyAnimationEx(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 2: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 3: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 4: {
-					applyAnimationEx(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
-				}
-				case 5: {
-					applyAnimationEx(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 6: {
-					applyAnimationEx(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 7: {
-					applyAnimationEx(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 8: {
-					applyAnimationEx(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 9: {
-					applyAnimationEx(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 10: {
-					applyAnimationEx(playerid, "MEDIC", "CPR", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 11: {
-					applyAnimationEx(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 12: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 13: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 14: {
-					applyAnimationEx(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
-				}
-				case 15: {
-					applyAnimationEx(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 16: {
-					applyAnimationEx(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 17: {
-					applyAnimationEx(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 18: {
-					applyAnimationEx(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 19: {
-					applyAnimationEx(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 20: {
-					applyAnimationEx(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 21: {
-					applyAnimationEx(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 22: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 23: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 24: {
-					applyAnimationEx(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
-				}
-				case 25: {
-					applyAnimationEx(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 26: {
-					applyAnimationEx(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 27: {
-					applyAnimationEx(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 28: {
-					applyAnimationEx(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 29: {
-					applyAnimationEx(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 30: {
-					applyAnimationEx(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 31: {
-					applyAnimationEx(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 32: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 33: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 34: {
-					applyAnimationEx(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
-				}
-				case 35: {
-					applyAnimationEx(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 36: {
-					applyAnimationEx(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 37: {
-					applyAnimationEx(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 38: {
-					applyAnimationEx(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 39: {
-					applyAnimationEx(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 40: {
-					applyAnimationEx(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 41: {
-					applyAnimationEx(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 42: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 43: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 44: {
-					applyAnimationEx(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
-				}
-				case 45: {
-					applyAnimationEx(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 46: {
-					applyAnimationEx(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 47: {
-					applyAnimationEx(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 48: {
-					applyAnimationEx(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 49: {
-					applyAnimationEx(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 50: {
-					applyAnimationEx(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 51: {
-					applyAnimationEx(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 52: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 53: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 54: {
-					applyAnimationEx(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
-				}
-				case 55: {
-					applyAnimationEx(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 56: {
-					applyAnimationEx(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 57: {
-					applyAnimationEx(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 58: {
-					applyAnimationEx(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 59: {
-					applyAnimationEx(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 60: {
-					applyAnimationEx(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 61: {
-					applyAnimationEx(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 62: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 63: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 64: {
-					applyAnimationEx(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
-				}
-				case 65: {
-					applyAnimationEx(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 66: {
-					applyAnimationEx(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 67: {
-					applyAnimationEx(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 68: {
-					applyAnimationEx(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 69: {
-					applyAnimationEx(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 70: {
-					applyAnimationEx(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 71: {
-					applyAnimationEx(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 72: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 73: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 74: {
-					applyAnimationEx(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
-				}
-				case 75: {
-					applyAnimationEx(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 76: {
-					applyAnimationEx(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 77: {
-					applyAnimationEx(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 78: {
-					applyAnimationEx(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 79: {
-					applyAnimationEx(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 80: {
-					applyAnimationEx(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 81: {
-					applyAnimationEx(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 82: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 83: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 84: {
-					applyAnimationEx(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
-				}
-				case 85: {
-					applyAnimationEx(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 86: {
-					applyAnimationEx(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 87: {
-					applyAnimationEx(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 88: {
-					applyAnimationEx(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 89: {
-					applyAnimationEx(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 90: {
-					applyAnimationEx(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 91: {
-					applyAnimationEx(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 92: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 93: {
-					applyAnimationEx(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 94: {
-					applyAnimationEx(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
-				}
-				case 95: {
-					applyAnimationEx(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 96: {
-					applyAnimationEx(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 97: {
-					applyAnimationEx(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 98: {
-					applyAnimationEx(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 99: {
-					applyAnimationEx(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 100: {
-					applyAnimationEx(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
-				}
-				case 101: {
-					applyAnimationEx(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 102: {
-					applyAnimationEx(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
-				}
-				case 103: {
-					applyAnimationEx(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 104: {
-					applyAnimationEx(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-				case 105: {
-					applyAnimationEx(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
-				}
-			}
-		}
-
 		case DIALOG_STATS: {
 			if(!response) {
 				return 1;
@@ -1482,6 +1168,333 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			}
 		}
 
+		case DIALOG_SHOW_ANIMATIONS: {
+			if(!response) {
+				return 1;
+			}
+
+			switch(listitem) {
+				case 0: {
+					ApplyAnimation(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 1: {
+					ApplyAnimation(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 2: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 3: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 4: {
+					ApplyAnimation(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
+				}
+				case 5: {
+					ApplyAnimation(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 6: {
+					ApplyAnimation(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 7: {
+					ApplyAnimation(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 8: {
+					ApplyAnimation(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 9: {
+					ApplyAnimation(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 10: {
+					ApplyAnimation(playerid, "MEDIC", "CPR", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 11: {
+					ApplyAnimation(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 12: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 13: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 14: {
+					ApplyAnimation(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
+				}
+				case 15: {
+					ApplyAnimation(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 16: {
+					ApplyAnimation(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 17: {
+					ApplyAnimation(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 18: {
+					ApplyAnimation(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 19: {
+					ApplyAnimation(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 20: {
+					ApplyAnimation(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 21: {
+					ApplyAnimation(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 22: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 23: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 24: {
+					ApplyAnimation(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
+				}
+				case 25: {
+					ApplyAnimation(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 26: {
+					ApplyAnimation(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 27: {
+					ApplyAnimation(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 28: {
+					ApplyAnimation(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 29: {
+					ApplyAnimation(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 30: {
+					ApplyAnimation(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 31: {
+					ApplyAnimation(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 32: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 33: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 34: {
+					ApplyAnimation(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
+				}
+				case 35: {
+					ApplyAnimation(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 36: {
+					ApplyAnimation(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 37: {
+					ApplyAnimation(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 38: {
+					ApplyAnimation(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 39: {
+					ApplyAnimation(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 40: {
+					ApplyAnimation(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 41: {
+					ApplyAnimation(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 42: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 43: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 44: {
+					ApplyAnimation(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
+				}
+				case 45: {
+					ApplyAnimation(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 46: {
+					ApplyAnimation(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 47: {
+					ApplyAnimation(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 48: {
+					ApplyAnimation(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 49: {
+					ApplyAnimation(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 50: {
+					ApplyAnimation(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 51: {
+					ApplyAnimation(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 52: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 53: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 54: {
+					ApplyAnimation(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
+				}
+				case 55: {
+					ApplyAnimation(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 56: {
+					ApplyAnimation(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 57: {
+					ApplyAnimation(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 58: {
+					ApplyAnimation(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 59: {
+					ApplyAnimation(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 60: {
+					ApplyAnimation(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 61: {
+					ApplyAnimation(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 62: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 63: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 64: {
+					ApplyAnimation(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
+				}
+				case 65: {
+					ApplyAnimation(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 66: {
+					ApplyAnimation(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 67: {
+					ApplyAnimation(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 68: {
+					ApplyAnimation(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 69: {
+					ApplyAnimation(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 70: {
+					ApplyAnimation(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 71: {
+					ApplyAnimation(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 72: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 73: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 74: {
+					ApplyAnimation(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
+				}
+				case 75: {
+					ApplyAnimation(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 76: {
+					ApplyAnimation(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 77: {
+					ApplyAnimation(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 78: {
+					ApplyAnimation(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 79: {
+					ApplyAnimation(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 80: {
+					ApplyAnimation(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 81: {
+					ApplyAnimation(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 82: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 83: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 84: {
+					ApplyAnimation(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
+				}
+				case 85: {
+					ApplyAnimation(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 86: {
+					ApplyAnimation(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 87: {
+					ApplyAnimation(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 88: {
+					ApplyAnimation(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 89: {
+					ApplyAnimation(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 90: {
+					ApplyAnimation(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 91: {
+					ApplyAnimation(playerid, "PED", "WALK_gang2", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 92: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 93: {
+					ApplyAnimation(playerid, "PED", "WOMAN_walkold", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 94: {
+					ApplyAnimation(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
+				}
+				case 95: {
+					ApplyAnimation(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 96: {
+					ApplyAnimation(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 97: {
+					ApplyAnimation(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 98: {
+					ApplyAnimation(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 99: {
+					ApplyAnimation(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 100: {
+					ApplyAnimation(playerid, "NULL", "NULL", 0.0, 0, 0, 0, 0, 0, 0);
+				}
+				case 101: {
+					ApplyAnimation(playerid, "PED", "Walk_Wuzi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 102: {
+					ApplyAnimation(playerid, "PED", "WALK_civi", 4.1, 1, 1, 1, 1, 1, 1);
+				}
+				case 103: {
+					ApplyAnimation(playerid, "KISSING", "gfwave2", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 104: {
+					ApplyAnimation(playerid, "PED", "IDLE_tired", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+				case 105: {
+					ApplyAnimation(playerid, "BD_FIRE", "wash_up", 4.1, 0, 0, 0, 0, 0, 1);
+				}
+			}
+		}
+
 		case DIALOG_VEHICLE_SELECT: {
 			if(!response) {
 				return 1;
@@ -1504,7 +1517,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 
 			if(!vVars[srvVehId][vSpawned]) {
 				vVars[srvVehId][vId] = CreateVehicle(vVars[srvVehId][vModelId], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], vVars[srvVehId][vAngle], vVars[srvVehId][vColor1], vVars[srvVehId][vColor2], 0);
-				
+
 				if(vehCP[srvVehId] == -1 && vehMapIcon[srvVehId] == -1) {
 					DestroyDynamicMapIcon(vehMapIcon[srvVehId]);
 					DestroyDynamicCP(vehCP[srvVehId]);
@@ -1532,8 +1545,9 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			} else {
 				DestroyVehicle(vVars[srvVehId][vId]);
 				GameTextForPlayer(playerid, "~r~Pojazd~n~~n~~w~Pojazd zostal odspawnowany.", 5000, 3);
+				//GameTextForPlayer(playerid, "~r~Miejsce zajete przez inny pojazd.~n~~w~Mozesz go przesunac,  wtedy~n~zniknie.", 5000, 3);
 				
-				actualVehicle[playerid] = 0;
+				actualVehicle[playerid] = INVALID_SERVER_VEHICLE_ID;
 				vVars[srvVehId][vId] = INVALID_VEHICLE_ID;
 				vVars[srvVehId][vSpawned] = false;
 			}
@@ -1671,129 +1685,6 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			}
 		}
 		
-		case DIALOG_SHOW_GROUP_MENU: {
-			if(!response) {
-				return 1;
-			}
-			
-			new tmpUid = strval(inputtext), id;
-			
-			foreach(new i : groupItemsItter) {
-				if(tmpUid == gIVars[i][gIUid]) {
-					id = i;
-					break;
-				}
-			}
-
-			actualGroupItemsSet[playerid] = gIVars[id][gIUid];
-
-			mainStr[0] = EOS;
-			strcat(mainStr, "Podaj iloœæ przedmiotów, któr¹ chcesz sprzedaæ.\n\tMo¿esz u¿yæ skrótu /podaj [Gracz] [Iloœæ], by pomin¹æ ten krok.");
-			strcat(mainStr, "\n\tPrzyk³ad:/podaj John 1");
-			
-			ShowPlayerDialog(playerid, DIALOG_SHOW_GROUP_MENU_SELL, DIALOG_STYLE_INPUT, "Sprzeda¿ przedmiotu > Iloœæ", mainStr, "Oferuj", "Anuluj");			
-		}
-
-		case DIALOG_SHOW_GROUP_MENU_SELL: {
-			if(!response) {
-				return 1;
-			}
-
-			new how = strval(inputtext);
-			new parms[2];
-			new srvSetId = getServerGroupSetIdForPlayer(playerid);
-
-			parms[0] = gIVars[srvSetId][gIPrice];
-			parms[1] = how;
-
-			sendOfferToPlayer(playerid, groupOfferFor[playerid], parms, O_SPRZEDAZ);
-		}
-
-		case DIALOG_GROUP_VEHICLE_SELECT: {
-			new tmpUid = strval(inputtext), srvVehId;
-
-			foreach(new i : vehItter) {
-				if(tmpUid == vVars[i][vUid]) {
-					srvVehId = i;
-					break;
-				}
-			}
-
-			mainStr[0] = EOS;
-
-			if(!response) {
-				strcat(mainStr, "{FFFFFF}1\tNamierz\n3\tZresetuj na spawnpoint\n5\tUstaw subownera\n2\tSkasuj ca³kowicie\n4\tOdpisz");
-				return ShowPlayerDialog(playerid, DIALOG_GROUP_VEHICLE_MORE, DIALOG_STYLE_LIST, "Wybór pojazdu > Wiêcej", mainStr, "OK", "Anuluj");
-			}
-
-			if(!vVars[srvVehId][vSpawned]) {
-				DestroyVehicle(vVars[srvVehId][vId]);
-				vVars[srvVehId][vId] = CreateVehicle(vVars[srvVehId][vModelId], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], vVars[srvVehId][vAngle], vVars[srvVehId][vColor1], vVars[srvVehId][vColor2], 0);
-
-				if(vehCP[srvVehId] == -1 && vehMapIcon[srvVehId] == -1) {
-					DestroyDynamicMapIcon(vehMapIcon[srvVehId]);
-					DestroyDynamicCP(vehCP[srvVehId]);
-					
-					vehCP[srvVehId] = CreateDynamicCP(vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], 2.0, 0, 0, -1, 100, -1, 0);
-					vehMapIcon[srvVehId] = CreateDynamicMapIcon(vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], 55, COLOR_WHITE, 0, 0, -1, 4000, MAPICON_GLOBAL, -1, 0);
-				}
-				
-				if(isBicycle(vVars[srvVehId][vModelId])) {
-					SetVehicleParamsEx(vVars[srvVehId][vId], 1, 0, 0, 0, 0, 0, 0);
-				}
-				
-				SetVehicleNumberPlate(vVars[srvVehId][vId], vVars[srvVehId][vPlate]);
-				SetVehicleToRespawn(vVars[srvVehId][vId]);
-				
-				TextDrawSetString(vehicleSpawn[playerid][0], "~w~Pojazd zostal zespawnowany.~n~Jezeli nie mozesz go znalezc w~n~miejscu zaznaczonym na radarze,~n~uzyj /g v, by go zresetowac.");
-
-				for(new i = 0; i < sizeof(vehicleSpawn); i++) {
-					TextDrawShowForPlayer(playerid, vehicleSpawn[playerid][i]);
-				}
-				
-				SetTimerEx("hideVehicleSpawn", 7000, false, "i", playerid);
-				
-				exitedVehicleSec[playerid] = 0;
-				actualVehicle[playerid] = vVars[srvVehId][vUid];
-				vVars[srvVehId][vSpawned] = true;
-			} else {
-				DestroyVehicle(vVars[srvVehId][vId]);
-				GameTextForPlayer(playerid, "~r~Pojazd~n~~n~~w~Pojazd zostal odspawnowany.", 5000, 3);
-
-				actualVehicle[playerid] = INVALID_SERVER_VEHICLE_ID;
-				vVars[srvVehId][vId] = INVALID_VEHICLE_ID;
-				vVars[srvVehId][vSpawned] = false;
-			}
-		}
-
-		case DIALOG_GROUP_VEHICLE_MORE: {
-			if(!response) {
-				return 1;
-			}
-
-			new srvVehId = getServerVehicleIdForPlayer(playerid);
-
-			switch(listitem) {
-				case 0: {
-					if(!vVars[srvVehId][vSpawned] || vVars[srvVehId][vOUid] != -1) {
-						return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Ten pojazd nie jest zespawnowany b¹dŸ nie nale¿y (ju¿) do tej grupy.", "OK", "");
-					}
-				}
-				case 1: {
-					
-				}
-				case 2: {
-					
-				}
-				case 3: {
-					
-				}
-				case 4: {
-					
-				}
-			}
-		}
-		
 		case DIALOG_VEHICLE_SELL_PLAYER: {
 			if(!response) {
 				return 1;
@@ -1856,14 +1747,16 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				usedLastItemTime[playerid] = 0;
 			}
 
-			new tmpName[32], tmpUid, itemid;
+			new name[32];
+			new tmpUid, itemid, srvItemId;
 
-			sscanf(inputtext, "s[32]i", tmpName, tmpUid);
-			printf("%s, %d", tmpName, tmpUid);
+			sscanf(inputtext, "s[32]i", name, tmpUid);
+			printf("%s, %d", name, tmpUid);
 
 			foreach(new i : itemItter) {
 				if(tmpUid == iVars[i][iUid]) {
-					actualItem[playerid] = i;
+					srvItemId = i;
+					actualItem[playerid] = iVars[i][iUid];
 					break;
 				}
 			}
@@ -1889,10 +1782,10 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			if(!listitem) {
 				return 1;
 			} else if(itemsCount > listitem - 1) {
-				itemid = iVars[actualItem[playerid]][iId];
-				enableItemProperties(playerid, actualItem[playerid], itemid);
+				itemid = iVars[srvItemId][iId];
+				enableItemProperties(playerid, srvItemId, itemid);
 			} else {
-				pickUpNearblyItems(playerid);
+				pickUpNearblyItems(playerid, ITEM_PLACE_FLOOR);
 			}
 
 			usedLastItemTime[playerid] = GetTickCount() + 5000;
@@ -1905,7 +1798,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			
 			switch(listitem) {
 				case 0: {
-					new srvItemId = actualItem[playerid];
+					new srvItemId = getServerItemIdForPlayer(playerid);
 
 					if(IsPlayerInAnyVehicle(playerid)) {
 						new srvVehId = getServerVehicleIdForPlayer(playerid);
@@ -1930,7 +1823,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 						iVars[srvItemId][iPosY] = pVars[playerid][pY];
 						iVars[srvItemId][iPosZ] = pVars[playerid][pZ];
 						
-						applyAnimationEx(playerid, "BOMBER", "BOM_Plant", 4.1, 0, 0, 0, 0, 0, 1);
+						ApplyAnimation(playerid, "BOMBER", "BOM_Plant", 4.1, 0, 0, 0, 0, 0, 1);
 						
 						mainStr[0] = EOS;
 						format(mainStr, sizeof(mainStr), "* %s upuszcza jakiœ przedmiot.", pVars[playerid][pCharName]);
@@ -2033,11 +1926,15 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				return SendClientMessage(playerid, COLOR_GRAY, "Ta osoba prowadzi pojazd. Musi siê zatrzymaæ.");
 			}
 			
+			/*if() {
+				SendClientMessage(playerid, COLOR_GRAY, "Poczekaj a¿ ta osoba przestanie biegaæ.");
+			}*/
+			
 			sendOfferToPlayer(playerid, pId, parms, O_ZAKUPPRZED);
 		}
 		
 		case DIALOG_SHOW_ITEMS_PARAMETERS: {
-			new srvItemId = actualItem[playerid];
+			new srvItemId = getServerItemIdForPlayer(playerid);
 
 			if(!response) {
 				actualItem[playerid] = INVALID_ITEM_ID;
@@ -2121,10 +2018,13 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				
 				offerType[playerid] = INVALID_OFFER_TYPE;
 				offerType[offerFor[playerid]] = INVALID_OFFER_TYPE;
+				
 				offerParams[offerFrom[playerid]][0] = INVALID_OFFER_TYPE;
 				offerParams[offerFrom[playerid]][1] = INVALID_OFFER_TYPE;
+				
 				offerFor[offerFor[playerid]] = INVALID_PLAYER_ID;
 				offerFor[playerid] = INVALID_PLAYER_ID;
+				
 				offerFrom[offerFrom[playerid]] = INVALID_PLAYER_ID;
 				offerFrom[playerid] = INVALID_PLAYER_ID;
 				
@@ -2188,7 +2088,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			}
 			
 			switch(offerType[playerid]) {
-				case O_ZAPRGRP: {					
+				case O_ZAPRGRP: {
 					new srvGrpId = getServerGroupIdForPlayer(playerid),
 						freeSlot = getFreePlayerGroupSlot(playerid);
 
@@ -2209,7 +2109,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Group%d` = '%d' AND `GroupDesc` = '%s'", freeSlot, pVars[playerid][pGroupNow], pVars[playerid][pGroupDesc]);
 					mysql_query(queryStr);
 					
-					pc_cmd_duty(playerid);
+					pc_cmd_duty(playerid, "");
 					
 					SendClientMessage(playerid, COLOR_WHITE, "(!) Nale¿ysz do nowej grupy. SprawdŸ komendy /g oraz /o, aby rozpocz¹æ pracê.");
 					SendClientMessage(playerid, COLOR_WHITE, "(!) SprawdŸ ponownie {FF0000}/pomoc, aby poznaæ nowe komendy dostêpne tylko dla tej grupy.");
@@ -2269,9 +2169,11 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					GameTextForPlayer(offerFrom[playerid], "~h~~h~~g~Budynek zostal oplacony.", 5000, 3);
 				}
 				case O_ZAKUPPRZED: {
-					iVars[actualItem[offerFrom[playerid]]][iOUid] = pVars[playerid][pUid];
+					new srvItemId = getServerItemIdForPlayer(offerFrom[playerid]);
 					
-					format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `OUID` = '%d' WHERE `OUID` = '%d' AND `UID` = '%d'", pVars[playerid][pUid], pVars[offerFrom[playerid]][pUid], iVars[actualItem[offerFrom[playerid]]][iUid]);
+					iVars[srvItemId][iOUid] = pVars[playerid][pUid];
+					
+					format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `OUID` = '%d' WHERE `OUID` = '%d' AND `UID` = '%d'", iVars[srvItemId][iOUid], pVars[offerFrom[playerid]][pUid], iVars[srvItemId][iUid]);
 					mysql_query(queryStr);
 
 					mainStr[0] = EOS;
@@ -2753,7 +2655,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					telEnterNumber[playerid] = tmpNum;
 					telEnterNumber[pId] = pVars[playerid][pTelNum];
 					
-					applyAnimationEx(playerid, "PED", "PHONE_IN", 4.1, 0, 1, 1, 1, 1, 1);
+					ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 1, 1, 1, 1, 1);
 					PlayerPlaySound(playerid, 3600, 0.0, 0.0, 0.0);
 					
 					mainStr[0] = EOS;
@@ -2972,7 +2874,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 		
 		case DIALOG_SHOW_TELEPHONE_GROUPS: {
 			if(!response) {
-				applyAnimationEx(playerid, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
+				ApplyAnimation(playerid, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
 				GameTextForPlayer(playerid, "~r~Rozmowa zakonczona.", 5000, 3);
 				return 1;
 			}
@@ -3006,6 +2908,9 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 		}
 		
 		case DIALOG_SHOW_TELEPHONE_SERVICES_ORDER: {
+			new day, month, year, hour, mins, secs;
+			new date[64];
+
 			if(!response) {
 				return 1;
 			}
@@ -3016,7 +2921,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				telEnterNumber[playerid] = 0;
 				telEnterGroup[playerid] = -1;
 				
-				applyAnimationEx(playerid, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
+				ApplyAnimation(playerid, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
 				GameTextForPlayer(playerid, "~r~Rozmowa zakonczona.", 5000, 3);
 				return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Mo¿esz wysy³aæ tylko jedno ¿¹danie na minutê.", "OK", "");
 			}
@@ -3039,13 +2944,22 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				}
 			}
 			
+			getdate(year, month, day);
+			gettime(hour, mins, secs);
+
+			format(date, sizeof(date), "%02d:%02d %02d/%02d/%02d", hour, mins, day, month, year);
+
+			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_GroupTasks` (`GUID`, `Name`, `Date`, `Caller`) VALUES ('%d', '%s', '%s', '%s')", gVars[telEnterGroup[playerid]][gUid], inputtext, date, pVars[playerid][pCharName]);
+			mysql_query(queryStr);
+
 			usedTelephone[playerid] = false;
 			telEnterNumber[playerid] = 0;
 			telEnterGroup[playerid] = -1;
 			
 			called[playerid] = GetTickCount() + 60000;
 			
-			applyAnimationEx(playerid, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
+			ApplyAnimation(playerid, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
 			GameTextForPlayer(playerid, "~r~Rozmowa zakonczona.", 5000, 3);
 			
 			mainStr[0] = EOS;
@@ -3087,7 +3001,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				return 1;
 			}
 			
-			new pId, srvItemId = actualItem[playerid];
+			new pId, srvItemId = getServerItemIdForPlayer(playerid);
 			
 			if(!iVars[srvItemId][iValue1]) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Nie masz kredytów na telefonie. Udaj siê do operatora po do³adowanie.");
@@ -3097,7 +3011,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			pId = getPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
 			telEnterNumber[pId] = pVars[playerid][pTelNum];
 			
-			applyAnimationEx(playerid, "PED", "PHONE_IN", 4.1, 0, 1, 1, 1, 1, 1);
+			ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 1, 1, 1, 1, 1);
 			PlayerPlaySound(playerid, 3600, 0.0, 0.0, 0.0);
 			
 			mainStr[0] = EOS;
@@ -3130,14 +3044,14 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			
 			switch(listitem) {
 				case 0: {
-					applyAnimationEx(playerid, "PED", "PHONE_IN", 4.1, 0, 1, 1, 1, 1, 1);
+					ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 1, 1, 1, 1, 1);
 
 					usedTelephone[playerid] = true;
 					usedTelephone[pId] = true;
 				}
 				case 1: {
-					applyAnimationEx(playerid, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
-					applyAnimationEx(pId, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
+					ApplyAnimation(playerid, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
+					ApplyAnimation(pId, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
 
 					usedTelephone[playerid] = false;
 					usedTelephone[pId] = false;
@@ -3198,6 +3112,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 						format(queryStr, sizeof(queryStr), "UPDATE `osrp_Contacts` SET `Name` = '%s', `Number` = '%d' WHERE `UID` = '%d'", playerContacts[playerid][i], playerContactsName[playerid][i], pVars[playerid][pUid]);
 						mysql_query(queryStr);						
 					}
+					break;
 				}
 			}
 			
@@ -3281,6 +3196,137 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			strcat(mainStr, "Je¿eli mimo opisu pracy nie masz pewnoœci\nw jaki sposób mo¿esz pracowaæ, sprawdŸ {FF0000}/o i /pomoc.");
 			ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 		}
+
+		case DIALOG_SHOW_GROUP_MENU: {
+			if(!response) {
+				return 1;
+			}
+
+			new tmpUid = strval(inputtext), id;
+
+			foreach(new i : groupItemsItter) {
+				if(tmpUid == gIVars[i][gIUid]) {
+					id = i;
+					break;
+				}
+			}
+
+			actualGroupItemsSet[playerid] = gIVars[id][gIUid];
+
+			mainStr[0] = EOS;
+			strcat(mainStr, "Podaj iloœæ przedmiotów, któr¹ chcesz sprzedaæ.\n\tMo¿esz u¿yæ skrótu /podaj [Gracz] [Iloœæ], by pomin¹æ ten krok.");
+			strcat(mainStr, "\n\tPrzyk³ad:/podaj John 1");
+
+			ShowPlayerDialog(playerid, DIALOG_SHOW_GROUP_MENU_SELL, DIALOG_STYLE_INPUT, "Sprzeda¿ przedmiotu > Iloœæ", mainStr, "Oferuj", "Anuluj");			
+		}
+
+		case DIALOG_SHOW_GROUP_MENU_SELL: {
+			if(!response) {
+				return 1;
+			}
+
+			new how = strval(inputtext);
+			new parms[2];
+			new srvSetId = getServerGroupSetIdForPlayer(playerid);
+
+			parms[0] = gIVars[srvSetId][gIPrice];
+			parms[1] = how;
+
+			sendOfferToPlayer(playerid, groupOfferFor[playerid], parms, O_SPRZEDAZ);
+		}
+		
+		case DIALOG_SHOW_GROUP_STATS: {
+		
+		}
+		
+		case DIALOG_GROUP_VEHICLE_SELECT: {
+			new tmpUid = strval(inputtext), srvVehId;
+
+			foreach(new i : vehItter) {
+				if(tmpUid == vVars[i][vUid]) {
+					srvVehId = i;
+					break;
+				}
+			}
+
+			mainStr[0] = EOS;
+
+			if(!response) {
+				strcat(mainStr, "{FFFFFF}1\tNamierz\n3\tZresetuj na spawnpoint\n5\tUstaw subownera\n2\tSkasuj ca³kowicie\n4\tOdpisz");
+				return ShowPlayerDialog(playerid, DIALOG_GROUP_VEHICLE_MORE, DIALOG_STYLE_LIST, "Wybór pojazdu > Wiêcej", mainStr, "OK", "Anuluj");
+			}
+
+			if(!vVars[srvVehId][vSpawned]) {
+				DestroyVehicle(vVars[srvVehId][vId]);
+				vVars[srvVehId][vId] = CreateVehicle(vVars[srvVehId][vModelId], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], vVars[srvVehId][vAngle], vVars[srvVehId][vColor1], vVars[srvVehId][vColor2], 0);
+
+				if(vehCP[srvVehId] == -1 && vehMapIcon[srvVehId] == -1) {
+					DestroyDynamicMapIcon(vehMapIcon[srvVehId]);
+					DestroyDynamicCP(vehCP[srvVehId]);
+					
+					vehCP[srvVehId] = CreateDynamicCP(vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], 2.0, 0, 0, -1, 100, -1, 0);
+					vehMapIcon[srvVehId] = CreateDynamicMapIcon(vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], 55, COLOR_WHITE, 0, 0, -1, 4000, MAPICON_GLOBAL, -1, 0);
+				}
+				
+				if(isBicycle(vVars[srvVehId][vModelId])) {
+					SetVehicleParamsEx(vVars[srvVehId][vId], 1, 0, 0, 0, 0, 0, 0);
+				}
+				
+				SetVehicleNumberPlate(vVars[srvVehId][vId], vVars[srvVehId][vPlate]);
+				SetVehicleToRespawn(vVars[srvVehId][vId]);
+				
+				TextDrawSetString(vehicleSpawn[playerid][0], "~w~Pojazd zostal zespawnowany.~n~Jezeli nie mozesz go znalezc w~n~miejscu zaznaczonym na radarze,~n~uzyj /g v, by go zresetowac.");
+
+				for(new i = 0; i < sizeof(vehicleSpawn); i++) {
+					TextDrawShowForPlayer(playerid, vehicleSpawn[playerid][i]);
+				}
+				
+				SetTimerEx("hideVehicleSpawn", 7000, false, "i", playerid);
+				
+				exitedVehicleSec[playerid] = 0;
+				actualVehicle[playerid] = vVars[srvVehId][vUid];
+				vVars[srvVehId][vSpawned] = true;
+			} else {
+				DestroyVehicle(vVars[srvVehId][vId]);
+				GameTextForPlayer(playerid, "~r~Pojazd~n~~n~~w~Pojazd zostal odspawnowany.", 5000, 3);
+
+				actualVehicle[playerid] = INVALID_SERVER_VEHICLE_ID;
+				vVars[srvVehId][vId] = INVALID_VEHICLE_ID;
+				vVars[srvVehId][vSpawned] = false;
+			}
+		}
+
+		case DIALOG_GROUP_VEHICLE_MORE: {
+			if(!response) {
+				return 1;
+			}
+
+			new srvVehId = getServerVehicleIdForPlayer(playerid);
+
+			switch(listitem) {
+				case 0: {
+					if(!vVars[srvVehId][vSpawned] || vVars[srvVehId][vOUid] != -1) {
+						return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Ten pojazd nie jest zespawnowany b¹dŸ nie nale¿y (ju¿) do tej grupy.", "OK", "");
+					}
+				}
+				case 1: {
+					
+				}
+				case 2: {
+					
+				}
+				case 3: {
+					
+				}
+				case 4: {
+					
+				}
+			}
+		}
+		
+		case DIALOG_SHOW_AREAS: {
+			
+		}
 	}
 	return 1;
 }
@@ -3293,7 +3339,7 @@ sampCallback:OSRP_OnPlayerEnterDynamicArea(playerid, areaid) {
 
 			pVars[playerid][pArea] = aVars[i][aUid];
 
-			if(IsPlayerInAnyVehicle(playerid) && (GetPlayerState(playerid) == PLAYER_STATE_DRIVER || GetPlayerState(playerid) == PLAYER_STATE_PASSENGER)) {
+			if(IsPlayerInAnyVehicle(playerid) && GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
 				mainStr[0] = EOS;
 
 				if(aVars[i][aMaxSpeed] != 999) {
@@ -3333,7 +3379,7 @@ sampCallback:OSRP_OnPlayerRequestSpawn(playerid) {
 }
 
 sampCallback:OSRP_OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ) {
-	new srvItemId = actualItem[playerid];
+	new srvItemId = getServerItemIdForPlayer(playerid);
 
 	if(iVars[srvItemId][iId] >= P_COLT && iVars[srvItemId][iId] <= P_TEC9) {
 		iVars[srvItemId][iValue1]--;
@@ -3363,21 +3409,29 @@ sampCallback:OSRP_OnPlayerClickTextDraw(playerid, Text:clickedid) {
 		for(new i = 0; i < 15; i++) {
 			TextDrawHideForPlayer(playerid, groupsInfo[playerid][i]);
 		}
-		
-		pc_cmd_duty(playerid);
+
+		pc_cmd_duty(playerid, "");
+
 		CancelSelectTextDraw(playerid);
 		showGroupsInfo[playerid] = false;
 		return 1;
+	} else if(groupsInfo[playerid][3] == clickedid) {
+		CancelSelectTextDraw(playerid);
+		showPlayerGroupInfo(playerid);
+		return 1;
+	} else if(groupsInfo[playerid][4] == clickedid) {
+		showPlayerGroupMagazineItems(playerid);
 	} else if(groupsInfo[playerid][5] == clickedid) {
-		mainStr[0] = EOS;
-		
-		foreach(new i : Player) {
-			if(isPlayerDuty[i] && pVars[i][pDuty] > 0 && pVars[i][pGroupNow] == pVars[playerid][pGroupNow]) {
-				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, i, pVars[i][pCharName]);
-			}
-		}
-		
-		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_LIST, "Lista graczy", mainStr, "OK", "Zamknij");
+		CancelSelectTextDraw(playerid);
+		showPlayerGroupOnlineMembers(playerid);
+		return 1;
+	} else if(groupsInfo[playerid][6] == clickedid) {
+		CancelSelectTextDraw(playerid);
+		showPlayerGroupTasks(playerid);
+		return 1;
+	} else if(groupsInfo[playerid][7] == clickedid) {
+		CancelSelectTextDraw(playerid);
+		showPlayerGroupVehicles(playerid);
 		return 1;
 	}
 	return 0;

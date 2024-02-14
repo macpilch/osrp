@@ -43,11 +43,9 @@ enum GroupData {
 	gVehsLimit,
 	gMoney,
 	gPayDay,
-	gDoors,
+	gDoor,
 	gFlags,
-	gColor,
-	bool:gChatOOC,
-	bool:gChatIC
+	gColor
 };
 
 enum GroupItems {
@@ -57,4 +55,12 @@ enum GroupItems {
 	gIName[64],
 	gIPrice,
 	gIAmount
+};
+
+enum GroupTasks {
+	gTUid,
+	gTGUid,
+	gTName[128],
+	gTDate[64],
+	gTCaller[24]
 };

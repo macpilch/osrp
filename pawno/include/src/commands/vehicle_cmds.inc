@@ -70,10 +70,6 @@ CMD:v(playerid, params[]) {
 			
 			new srvVehId = getServerVehicleIdForPlayer(playerid);
 			
-			if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
-				return 1;
-			}
-			
 			GetVehiclePos(vVars[srvVehId][vId], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ]);
 			
 			format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `UID` = '%d' AND `CharName` = '%s'", vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], vVars[srvVehId][vUid], pVars[playerid][pCharName]);
@@ -85,17 +81,13 @@ CMD:v(playerid, params[]) {
 		} else if(strfind(opt, "z", true) == 0 || strfind(opt, "zamknij", true) != -1) {
 			new srvVehId = getServerVehicleIdForPlayer(playerid);
 			
-			if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
-				return 1;
-			}
-			
 			GetVehiclePos(vVars[srvVehId][vId], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ]);
 			
 			if(playerToPoint(playerid, 2.0, vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ]) || GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
 				if(isBicycle(vVars[srvVehId][vModelId])) {
 					return GameTextForPlayer(playerid, "~g~Pojazdy bez silnika nie~n~maja zamkow.", 5000, 6);
 				} else {
-					applyAnimationEx(playerid, "INT_HOUSE", "wash_up", 4.1, 1, 0, 0, 0, 0, 0);
+					ApplyAnimation(playerid, "INT_HOUSE", "wash_up", 4.1, 1, 0, 0, 0, 0, 0);
 					
 					if(!vVars[srvVehId][vLock]) {
 						GameTextForPlayer(playerid, "~w~Pojazd ~r~zamkniety", 5000, 6);
@@ -112,10 +104,6 @@ CMD:v(playerid, params[]) {
 			new str[64];
 			new srvVehId = getServerVehicleIdForPlayer(playerid);
 			new Float:vHp;
-			
-			if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
-				return 1;
-			}
 			
 			GetVehicleHealth(vVars[srvVehId][vId], vHp);
 			
@@ -140,10 +128,6 @@ CMD:v(playerid, params[]) {
 		} else if(strfind(opt, "namierz", true) != -1) {
 			new srvVehId = getServerVehicleIdForPlayer(playerid);
 			
-			if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
-				return 1;
-			}
-			
 			GetVehiclePos(vVars[srvVehId][vId], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ]);
 			
 			if(vehCP[srvVehId] == -1 && vehMapIcon[srvVehId] == -1) {
@@ -158,10 +142,6 @@ CMD:v(playerid, params[]) {
 		} else if(strfind(opt, "reset", true) != -1) {
 			new srvVehId = getServerVehicleIdForPlayer(playerid);
 			
-			if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
-				return 1;
-			}
-			
 			DestroyDynamicMapIcon(vehMapIcon[srvVehId]);
 			DestroyDynamicCP(vehCP[srvVehId]);
 			
@@ -174,10 +154,6 @@ CMD:v(playerid, params[]) {
 				
 				if(sscanf(params, "s[32]s[64]", opt, vehStr)) {
 					return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v opis [Tresc]");
-				}
-				
-				if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
-					return 1;
 				}
 				
 				format(vVars[srvVehId][vDescInfo], 64, vehStr);
@@ -205,10 +181,12 @@ CMD:pasy(playerid, params[]) {
 	}
 	
 	if(!hasBelts[playerid]) {
+		updatePlayerGameStatus(playerid, STAT_BELTS);
 		GameTextForPlayer(playerid, "~w~Pasy ~g~zapiete", 5000, 6);
 		
 		hasBelts[playerid] = true;
 	} else {
+		updatePlayerGameStatus(playerid, STAT_NONE);
 		GameTextForPlayer(playerid, "~w~Pasy ~r~odpiete", 5000, 6);
 		
 		hasBelts[playerid] = false;

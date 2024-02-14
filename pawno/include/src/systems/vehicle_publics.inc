@@ -13,11 +13,9 @@
 #pragma library osrp
 
 sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {	
-	new srvVehId = getServerVehicleIdForPlayer(vehicleid);
-	
-	actualVehicle[playerid] = srvVehId;
-	
-	/*if(isVehicleInUse(vehicleid) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid]) {
+	new srvVehId = getServerVehicleIdForPlayer(playerid);
+
+	if(isVehicleInUse(vehicleid) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid]) {
 		ClearAnimations(playerid);
 		
 		SendClientMessage(playerid, COLOR_WHITE, "(!) Pamiêtaj, to RolePlay. Swój pojazd musisz kupiæ lub wypo¿yczyæ.");
@@ -29,10 +27,10 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 			SendClientMessage(playerid, COLOR_WHITE, "(!) Jako nowy gracz, mo¿esz byæ pasa¿erem tylko, gdy w pojeŸdzie jest kierowca.");
 		}
 	}
-	*/
+	
 	if(!isBicycle(GetVehicleModel(vehicleid)) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid] && !ispassenger) {
 		ClearAnimations(playerid);
-		
+
 		mainStr[0] = EOS;
 		strcat(mainStr, "Musisz najpierw wyrobiæ prawo jazdy.\nDo tego czasu u¿yj budek, by dzwoniæ po taksówki, lub /bus.\n\n");
 		strcat(mainStr, "By wyrobiæ prawko, kup telefon i zadzwoñ do nauki jazdy pod numerem 333.");
@@ -43,11 +41,11 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		ClearAnimations(playerid);
 		GameTextForPlayer(playerid, "~n~~n~~r~Pojazd jest zamkniety.~n~~w~/v zamknij", 6000, 3);
 	}
-	
-	/*if(vVars[srvVehId][vOUid] != pVars[playerid][pUid] && !isVehicleInUse(vehicleid) && pVars[playerid][pDriverLicense] && !drivingCourse[playerid]) {
+
+	if(vVars[srvVehId][vOUid] != pVars[playerid][pUid] && pVars[playerid][pDriverLicense] && !drivingCourse[playerid]) {
 		ClearAnimations(playerid);
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Nie mozesz prowadzic tego~n~pojazdu.", 6000, 3);		
-	}*/
+	}
 	return 1;
 }
 
@@ -67,7 +65,7 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 	SendClientMessage(killerid, COLOR_WHITE, "Witma ! OnVehicleDeath");
 #endif
 
-	new srvVehId = actualVehicle[killerid];
+	new srvVehId = getServerVehicleIdForPlayer(killerid);
 
 	DestroyVehicle(vehicleid);
 	vVars[srvVehId][vSpawned] = false;
@@ -75,9 +73,10 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 	vVars[srvVehId][vLights] = false;
 
 	GetVehiclePos(vVars[srvVehId][vId], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ]);
+	GetVehicleZAngle(vVars[srvVehId][vId], vVars[srvVehId][vAngle]);
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `UID` = '%d'", vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], vVars[srvVehId][vUid]);
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Spawned` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Angle` = '%f' WHERE `UID` = '%d'", vVars[srvVehId][vSpawned], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], vVars[srvVehId][vAngle], vVars[srvVehId][vUid]);
 	mysql_query(queryStr);
 
 	for(new i = 0; i < 3; i++) {
@@ -153,6 +152,13 @@ sampCallback:OnVehicleStreamIn(vehicleid, forplayerid) {
 #if defined DEBUG
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamIn");
 #endif
+
+	/*foreach(new v : vehItter) {
+		if(vVars[v][vId] == vehicleid) {
+			actualVehicle[forplayerid] = vVars[v][vUid];
+			break;
+		}
+	}*/
 	return 1;
 }
 
@@ -172,5 +178,7 @@ sampCallback:OnVehicleStreamOut(vehicleid, forplayerid) {
 		TextDrawShowForPlayer(forplayerid, collisionInfo[forplayerid]);
 		SetTimerEx("hideCollisionInfo", 10000, false, "i", forplayerid);
 	}
+
+	actualVehicle[forplayerid] = INVALID_SERVER_VEHICLE_ID;
 	return 1;
 }

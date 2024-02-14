@@ -50,13 +50,13 @@ stock initAreaValues() {
 }
 
 stock getServerAreaIdForPlayer(playerid) {
-	new id;
+	new aId;
 	
 	foreach(new i : areaItter) {
 		if(aVars[i][aUid] == pVars[playerid][pArea]) {
-			id = i;
+			aId = i;
 			break;
 		}
 	}
-	return id;
+	return aId;
 }

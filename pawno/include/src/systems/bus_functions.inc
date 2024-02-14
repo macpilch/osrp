@@ -81,7 +81,7 @@ stock teleportToBusStop(playerid, busstopid) {
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 		} else if(busstopid == i) {
 			format(mainStr, sizeof(mainStr), "* %s wsiad³ do autobusu jad¹cego w kierunku przystanku nr %d", bVars[i][bsUid]);
-			sendDistanceMessage(playerid, 30.0, mainStr, MSG_CHAT, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+			sendMeMessage(playerid, mainStr);
 			
 			SetPlayerPos(playerid, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ]);
 			
