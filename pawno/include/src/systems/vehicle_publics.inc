@@ -13,7 +13,7 @@
 #pragma library osrp
 
 sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {	
-	new srvVehId = getServerVehicleIdForPlayer(playerid);
+	new srvVehId = actualVehicle[playerid];
 
 	if(isVehicleInUse(vehicleid) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid]) {
 		ClearAnimations(playerid);
@@ -65,7 +65,7 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 	SendClientMessage(killerid, COLOR_WHITE, "Witma ! OnVehicleDeath");
 #endif
 
-	new srvVehId = getServerVehicleIdForPlayer(killerid);
+	new srvVehId = actualVehicle[killerid];
 
 	DestroyVehicle(vehicleid);
 	vVars[srvVehId][vSpawned] = false;
@@ -153,12 +153,12 @@ sampCallback:OnVehicleStreamIn(vehicleid, forplayerid) {
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamIn");
 #endif
 
-	/*foreach(new v : vehItter) {
+	foreach(new v : vehItter) {
 		if(vVars[v][vId] == vehicleid) {
 			actualVehicle[forplayerid] = vVars[v][vUid];
 			break;
 		}
-	}*/
+	}
 	return 1;
 }
 

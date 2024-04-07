@@ -17,7 +17,11 @@ task globalTimer[1000]() {
 		playerAFKTime[i]++;
 
 		if(playerAFKTime[i] != 1) {
-			//updatePlayerGameStatus(i, STAT_AFK);
+			if(playerAFKTime[i] == 3) {
+				pVars[i][pStatus] += STAT_AFK;
+
+				updatePlayerGameStatus(i);
+			}
 
 			/*if(isBW[i]) {
 				if(iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) {
@@ -444,7 +448,7 @@ task globalTimer[1000]() {
 			}
 		}
 
-		new srvVehId = getServerVehicleIdForPlayer(i);
+		new srvVehId = actualVehicle[i];
 
 		if(!isBicycle(vVars[srvVehId][vModelId])) {
 			if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
@@ -638,7 +642,7 @@ task antiCheat[1000]() {
 				//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
 			}*/
 			
-			new srvVehId = getServerVehicleIdForPlayer(i);
+			new srvVehId = actualVehicle[i];
 			
 			if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
 				new reas[64];

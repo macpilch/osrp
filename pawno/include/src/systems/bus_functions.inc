@@ -27,7 +27,7 @@ stock initBusStopValues() {
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iis[32]ifff", bVars[i][bsUid], bVars[i][bsObject], bVars[i][bsName], bVars[i][bsPrice], bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ]);
+		sscanf(queryStr, "p<|>is[32]ifff", bVars[i][bsUid], bVars[i][bsName], bVars[i][bsPrice], bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ]);
 		bVars[i][bsObject] = CreateDynamicObject(1257, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ] + 0.4, 0.0, 0.0, 90.0, 0, 0, -1, 100.0);
 		
 		Iter_Add(busstopItter, i);

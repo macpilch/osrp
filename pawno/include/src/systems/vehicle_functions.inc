@@ -66,11 +66,11 @@ stock saveVehicleValues() {
 	return 1;
 }
 
-stock getServerVehicleIdForPlayer(playerid) {
+stock getServerVehicleIdForPlayer(vehicleid) {
 	new vid;
 
 	foreach(new i : vehItter) {
-		if(actualVehicle[playerid] == vVars[i][vUid]) {
+		if(vVars[i][vId] == vehicleid) {
 			vid = i;
 			break;
 		}
@@ -79,7 +79,7 @@ stock getServerVehicleIdForPlayer(playerid) {
 }
 
 stock resetVehicleValues(playerid) {
-	new srvVehId = getServerVehicleIdForPlayer(playerid);
+	new srvVehId = actualVehicle[playerid];
 
 	if(vVars[srvVehId][vOUid] == pVars[playerid][pUid]) {
 		DestroyVehicle(vVars[srvVehId][vId]);
@@ -114,7 +114,7 @@ Callback:vehicleLightsOn(playerid, vehicleid) {
 		return 1;
 	}
 	
-	new engine, lights, alarm, doors, bonnet, boot, objective, srvVehId = getServerVehicleIdForPlayer(playerid);
+	new engine, lights, alarm, doors, bonnet, boot, objective, srvVehId = actualVehicle[playerid];
 	
 	GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
 	SetVehicleParamsEx(vehicleid, engine, 1, alarm, doors, bonnet, boot, objective);
@@ -128,7 +128,7 @@ Callback:vehicleLightsOff(playerid, vehicleid) {
 		return 1;
 	}
 	
-	new engine, lights, alarm, doors, bonnet, boot, objective, srvVehId = getServerVehicleIdForPlayer(playerid);
+	new engine, lights, alarm, doors, bonnet, boot, objective, srvVehId = actualVehicle[playerid];
 	
 	GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
 	SetVehicleParamsEx(vehicleid, engine, 0, alarm, doors, bonnet, boot, objective);
@@ -137,8 +137,8 @@ Callback:vehicleLightsOff(playerid, vehicleid) {
 	return 1;
 }
 
-stock vehicleEngineStatus(playerid, vehicleid) {
-	new srvVehId = getServerVehicleIdForPlayer(playerid);
+stock vehicleEngineStatus(playerid) {
+	new srvVehId = actualVehicle[playerid];
 	
 	if(!vVars[srvVehId][vEngine]) {
 		if(!vVars[srvVehId][vFuel]) {
@@ -146,12 +146,12 @@ stock vehicleEngineStatus(playerid, vehicleid) {
 		}
 		
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~n~~n~~g~Trwa odpalanie silnika...", 3000, 3);
-		SetTimerEx("vehicleEngineOn", 3000, false, "ii", playerid, vehicleid);
+		SetTimerEx("vehicleEngineOn", 3000, false, "ii", playerid, vVars[srvVehId][vId]);
 	} else {
 		new engine, lights, alarm, doors, bonnet, boot, objective;
 
-		GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
-		SetVehicleParamsEx(vehicleid, 0, lights, alarm, doors, bonnet, boot, objective);		
+		GetVehicleParamsEx(vVars[srvVehId][vId], engine, lights, alarm, doors, bonnet, boot, objective);
+		SetVehicleParamsEx(vVars[srvVehId][vId], 0, lights, alarm, doors, bonnet, boot, objective);		
 	
 		for(new i = 0; i < 3; i++) {
 			TextDrawHideForPlayer(playerid, vehicleFuelStatus[playerid][i]);
@@ -171,7 +171,7 @@ Callback:vehicleEngineOn(playerid, vehicleid) {
 		return 1;
 	}
 
-	new srvVehId = getServerVehicleIdForPlayer(playerid);
+	new srvVehId = actualVehicle[playerid];
 	new rand = random(5);
 
 	if(vVars[srvVehId][vEngineHp] == 300.0 && (rand == 0 || rand == 2 || rand == 4)) {
@@ -204,7 +204,7 @@ stock getVehicleSpeed(vehicleid) {
 }
 
 stock setPlayerVehicleDamage(playerid) {
-	new srvVehId = getServerVehicleIdForPlayer(playerid), speed = getVehicleSpeed(GetPlayerVehicleID(playerid)), chancePlayerDizzines;
+	new srvVehId = actualVehicle[playerid], speed = getVehicleSpeed(GetPlayerVehicleID(playerid)), chancePlayerDizzines;
 	
 	vVars[srvVehId][vEngineHp] -= speed / 1.5;
 	
@@ -611,7 +611,7 @@ stock isPlane(modelid) {
 }
 
 Callback:addFuelToVehicle(playerid) {
-	new srvVehId = getServerVehicleIdForPlayer(playerid);
+	new srvVehId = actualVehicle[playerid];
 	new Float:fuel = VEHICLE_FUEL_TANK_MEDIUM - vVars[srvVehId][vFuel];
 	
 	vVars[srvVehId][vFuel] += fuel;

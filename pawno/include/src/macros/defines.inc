@@ -60,9 +60,9 @@
 		forward %0(%1); public %0(%1)
 
 #define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "server_868"
-#define MYSQL_PASS "3i74xhmrkp"
-#define MYSQL_DB "server_868_osrp"
+#define MYSQL_USER "osrp"
+#define MYSQL_PASS "4Lx4V3@qP~bHpvw"
+#define MYSQL_DB "osrp"
 
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_RED 0xFF0000FF
@@ -97,16 +97,16 @@
 #define STAT_CLEAR 0
 #define STAT_NONE 1
 #define STAT_AFK 2
-#define STAT_BW 3
-#define STAT_DAMAGE 4
-#define STAT_ROLLERS 5
-#define STAT_DRUNK 6
-#define STAT_DRUGS 7
-#define STAT_STRENGTH 8
-#define STAT_BELTS 9
-#define STAT_DETENTION 10
-#define STAT_DUTY 11
-#define STAT_GLOVES 12
+#define STAT_BW 4
+#define STAT_DAMAGE 8
+#define STAT_ROLLERS 16
+#define STAT_DRUNK 32
+#define STAT_DRUGS 64
+#define STAT_STRENGTH 128
+#define STAT_BELTS 256
+#define STAT_DETENTION 512
+#define STAT_DUTY 1024
+#define STAT_GLOVES 2048
 
 // Blokady gracza (Flagi)
 #define BLOCK_OOC 1
@@ -140,11 +140,12 @@
 #define O_PODATEK 6
 #define O_ZAKUPPRZED 7
 #define O_ZAKUPPOJ 8
-#define O_REJESTR 9
-#define O_TANKOWANIE 10
-#define O_VCARD 11
-#define O_PRZETRZY 12
-#define O_SPRZEDAZ 13
+#define O_AUTOWYP 9
+#define O_REJESTR 10
+#define O_TANKOWANIE 11
+#define O_VCARD 12
+#define O_PRZETRZY 13
+#define O_SPRZEDAZ 14
 
 #define VEHICLE_OWNER_GROUP 0
 #define INVALID_ITEM_ID 0

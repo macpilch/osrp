@@ -47,6 +47,7 @@ new called[MAX_PLAYERS];
 new usedLastItemTime[MAX_PLAYERS];
 new numberPresses[MAX_PLAYERS];
 new blockadeObjects[MAX_BLOCKADES];
+new chatEnabledId[MAX_PLAYERS];
 
 //part time job
 new casualJob[MAX_PLAYERS];
@@ -86,6 +87,7 @@ new bool:isCollision[MAX_PLAYERS];
 new bool:isGym[MAX_PLAYERS];
 new bool:usedAdminToken[MAX_PLAYERS];
 new bool:pressedBarbell[MAX_PLAYERS];
+new bool:chatEnabled[MAX_PLAYERS];
 
 // type - MySQL
 new MySQL:hMySQL;

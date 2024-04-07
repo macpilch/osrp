@@ -102,21 +102,7 @@ stock onEnterRaceCheckpoint(playerid) {
 		DisablePlayerRaceCheckpoint(playerid);
 		mainStr[0] = EOS;
 
-		switch(playerRcPosition[playerid]) {
-			case 1: {
-				format(mainStr, sizeof(mainStr), "~r~~h~Meta!~n~~r~Pozycja: 1~n~Czas: ~w~%0.2fs", playerRcActualTime[playerid]);
-			}
-			case 2: {
-				format(mainStr, sizeof(mainStr), "~r~~h~Meta!~n~~r~Pozycja: 2~n~Czas: ~w~%0.2fs", playerRcActualTime[playerid]);
-			}
-			case 3: {
-				format(mainStr, sizeof(mainStr), "~r~~h~Meta!~n~~r~Pozycja: 3~n~Czas: ~w~%0.2fs", playerRcActualTime[playerid]);
-			}
-			default: {
-				format(mainStr, sizeof(mainStr), "~r~~h~Meta!~n~~r~Pozycja: %d~n~Czas: ~w~%0.2fs", playerRcPosition[playerid], playerRcActualTime[playerid]);
-			}
-		}
-
+		format(mainStr, sizeof(mainStr), "~r~~h~Meta!~n~~r~Pozycja: %d~n~Czas: ~w~%0.2fs", playerRcPosition[playerid], playerRcActualTime[playerid]);
 		GameTextForPlayer(playerid, mainStr, 5000, 3);
 
 		mainStr[0] = EOS;

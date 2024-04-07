@@ -867,7 +867,7 @@ CMD:setfuel(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 
-	new srvVehId = getServerVehicleIdForPlayer(toPlayerId);
+	new srvVehId = actualVehicle[toPlayerId];
 
 	if(actualVehicle[toPlayerId] == 0) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Ten gracz nie u¿ywa ¿adnego pojazdu.");
@@ -1095,7 +1095,7 @@ CMD:naprawpojazd(playerid, params[]) {
 	}
 	
 	mainStr[0] = EOS;
-	new srvVehId = getServerVehicleIdForPlayer(toPlayerGive);
+	new srvVehId = actualVehicle[toPlayerGive];
 	
 	if(IsPlayerInAnyVehicle(toPlayerGive)) {
 		if(strfind(str, "karoseria", true) != -1) {

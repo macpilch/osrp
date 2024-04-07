@@ -457,7 +457,7 @@ stock pickUpNearblyItems(playerid, where) {
 
 		ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PICKUP, DIALOG_STYLE_LIST, "Pobliskie przedmioty (/p podnies)", mainStr, "Podnieœ", "Zamknij");
 	} else if(where == ITEM_PLACE_VEHICLE) {
-		new srvVehId = getServerVehicleIdForPlayer(playerid);
+		new srvVehId = actualVehicle[playerid];
 
 		if(vVars[srvVehId][vOUid] != pVars[playerid][pUid]) {
 			return GameTextForPlayer(playerid, "~y~Ten pojazd nie nalezy do ciebie.", 5000, 3);

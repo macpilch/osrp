@@ -228,8 +228,16 @@ CMD:czat(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /czat [Gracz]");
 	}
 	
-	SendClientMessage(playerid, COLOR_YELLOW, "Czat z graczem uruchomiony. Od teraz zamiast u¿ywaæ /w [Gracz], po prostu zacznij pisaæ.");
-	SendClientMessage(playerid, COLOR_YELLOW, "Aby anulowaæ czat, po prostu wpisz /czat.");
+	if(!chatEnabled[playerid]) {
+		SendClientMessage(playerid, COLOR_YELLOW, "Czat z graczem uruchomiony. Od teraz zamiast u¿ywaæ /w [Gracz], po prostu zacznij pisaæ.");
+		SendClientMessage(playerid, COLOR_YELLOW, "Aby anulowaæ czat, po prostu wpisz /czat.");
+
+		chatEnabledId[playerid] = pId;
+		chatEnabled[playerid] = true;
+	} else {
+		chatEnabledId[playerid] = INVALID_PLAYER_ID;
+		chatEnabled[playerid] = false;
+	}
 	return 1;
 }
 
@@ -615,7 +623,7 @@ CMD:opis(playerid, params[]) {
 				UpdateDynamic3DTextLabelText(pVars[playerid][pCharDesc], COLOR_WHITE, NULL);
 			}
 		} else {
-			new srvVehId = getServerVehicleIdForPlayer(playerid);
+			new srvVehId = actualVehicle[playerid];
 			
 			format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Desc` = '\0' WHERE `UID` = '%d'", vVars[srvVehId][vUid]);
 			mysql_query(queryStr);
@@ -702,6 +710,10 @@ CMD:o(playerid, params[]) {
 		return GameTextForPlayer(playerid, "~r~Nie mozesz sobie oferowac.", 5000, 3);
 	}
 
+	/*if() {
+		SendClientMessage(playerid, COLOR_GRAY, "Poczekaj a¿ ta osoba przestanie biegaæ.");
+	}*/
+
 	new srvGrpId = getServerGroupIdForPlayer(playerid);
 
 	if(strfind(type, "yo", true) != -1) {
@@ -755,7 +767,7 @@ CMD:o(playerid, params[]) {
 	} else if(strfind(type, "przejazd", true) != -1) {
 		
 	} else if(strfind(type, "autowypozycz", true) != -1) {
-		
+		sendOfferToPlayer(playerid, pId, cmdParams, O_AUTOWYP);
 	}
 	return 1;
 }
@@ -940,11 +952,13 @@ CMD:g(playerid, params[]) {
 	}
 
 	format(str, sizeof(str), "Neutralna strefa %d", aVars[srvAreaId][aUid]);
-	format(str, sizeof(str), "Strefa %d (uid %d)", aVars[srvAreaId][aUid]);
+	format(str, sizeof(str), "Strefa %d", aVars[srvAreaId][aUid]);
 
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "{FFFFFF}16\t\tPrzejmij sasiednia strefe\n---\n2\t\tPrzejmij neutraln¹ strefê");
-	format(mainStr, sizeof(mainStr), "{FFFFFF}16\t\tPrzejmij sasiednia strefe\n---\n1\t\tPoka¿ informacje\n13\t\tPrzypisz obiekty (0, w tym 0/0 stworzonych)");
+	format(mainStr, sizeof(mainStr), "{FFFFFF}16\tPrzejmij sasiednia strefe\n---\n2\tPrzejmij neutraln¹ strefê");
+	format(mainStr, sizeof(mainStr), "{FFFFFF}2\tPrzejmij neutraln¹ strefê");
+	format(mainStr, sizeof(mainStr), "{FFFFFF}16\tPrzejmij sasiednia strefe\n---\n1\tPoka¿ informacje\n13\tPrzypisz obiekty (0, w tym 0/0 stworzonych)");
+	format(mainStr, sizeof(mainStr), "{FFFFFF}1\t\tPoka¿ informacje");
 	
 	ShowPlayerDialog(playerid, DIALOG_SHOW_AREAS, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
 	return 1;
@@ -963,13 +977,19 @@ CMD:drzwi(playerid, params[]) {
 	} else if(dVars[srvDoorId][dOUid] != pVars[playerid][pUid]) {
 		format(mainStr, sizeof(mainStr), "{FFFFFF}1\t\tPoka¿ informacje*\n34\tOchrona: %s", dVars[srvDoorId][dSecurity] ? (dVars[srvDoorId][dSecurityName]) : ("brak"));
 	} else {
-		return ShowPlayerDialog(playerid, DIALOG_SHOW_DOORS_MENU, DIALOG_STYLE_LIST, "Subserwer", "{FFFFFF}11\t\tStwórz nowy budynek ($180/m2, min 100m2)", "OK", "Anuluj");
+		return ShowPlayerDialog(playerid, DIALOG_SHOW_DOORS_MENU, DIALOG_STYLE_LIST, "Subserwer", "{FFFFFF}11\tStwórz nowy budynek ($180/m2, min 100m2)", "OK", "Anuluj");
 	}
+
+	mainStr[0] = EOS;
+	strcat(mainStr, "Nie uda³o siê wykryæ budynku.\nNa pewno stoisz pod budynkiem, twarz¹ do œciany?\n");
+	strcat(mainStr, "Nie mo¿esz staæ dalej ni¿ 5m od œciany.");
+	ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 
 	ShowPlayerDialog(playerid, DIALOG_SHOW_DOORS_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
 	return 1;
 }
 */
+
 CMD:zamknij(playerid, params[]) {
 	new srvDoorId = getServerDoorIdForPlayer(playerid);
 

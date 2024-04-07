@@ -27,9 +27,9 @@ stock initDoorValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iis[32]ffffffiis[24]iiiiiiis[32]iii", dVars[i][dUid], dVars[i][dOUid], dVars[i][dName], dVars[i][dEnterX], dVars[i][dEnterY], dVars[i][dEnterZ],
+		sscanf(queryStr, "p<|>iis[32]ffffffiis[24]iiiiiiiiii", dVars[i][dUid], dVars[i][dOUid], dVars[i][dName], dVars[i][dEnterX], dVars[i][dEnterY], dVars[i][dEnterZ],
 		dVars[i][dExitX], dVars[i][dExitY], dVars[i][dExitZ], dVars[i][dOpen], dVars[i][dTax], dVars[i][dTaxDate], dVars[i][dTaxCost], dVars[i][dDimensions], dVars[i][dObjects],
-		dVars[i][dMaxObjects], dVars[i][dTexts], dVars[i][dMaxTexts], dVars[i][dSecurity], dVars[i][dSecurityName], dVars[i][dVw], dVars[i][dInt], dVars[i][dType]);
+		dVars[i][dMaxObjects], dVars[i][dTexts], dVars[i][dMaxTexts], dVars[i][dSecurity], dVars[i][dVw], dVars[i][dInt], dVars[i][dType]);
 		Iter_Add(doorItter, i);
 
 		dVars[i][dPickup] = CreateDynamicPickup(1239, 2, dVars[i][dEnterX], dVars[i][dEnterY], dVars[i][dEnterZ], 0, 0, -1, 50.0, -1, 0);

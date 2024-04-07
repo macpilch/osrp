@@ -121,7 +121,9 @@ sampCallback:OSRP_OnPlayerDisconnect(playerid, reason) {
 	new callSecs = GetTickCount();
 
 	TextDrawHideForPlayer(playerid, website);
-	updatePlayerGameStatus(playerid, STAT_CLEAR);
+
+	pVars[playerid][pStatus] += STAT_CLEAR;
+	updatePlayerGameStatus(playerid);
 
 	savePlayerValues(playerid);
 	resetPlayerValues(playerid); // dla dobra pamieci
@@ -172,7 +174,8 @@ sampCallback:OSRP_OnPlayerSpawn(playerid) {
 	KillTimer(cameraTimer[playerid]);
 	cameraTimer[playerid] = -1;
 
-	updatePlayerGameStatus(playerid, STAT_NONE);
+	pVars[playerid][pStatus] += STAT_NONE;
+	updatePlayerGameStatus(playerid);
 
 	if(pVars[playerid][pHotel] && !insidedHotel[playerid] && !isSpawned[playerid]) {
 		SetPlayerPos(playerid, 2216.12,-1076.30,1050.48);
@@ -244,6 +247,11 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 
 	mainStr[0] = EOS;
 	format(textStr, sizeof(textStr), text);
+
+	if(chatEnabled[playerid] && chatEnabledId[playerid] != INVALID_PLAYER_ID) {
+		pc_cmd_w(playerid, chatEnabledId[playerid], textStr);
+		return 0;
+	}
 
 	if(strfind(textStr, "!!", false) != -1) {
 		format(mainStr, sizeof(mainStr), "%s krzyczy: %s", pVars[playerid][pCharName], textStr);
@@ -330,7 +338,7 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 					new str[256];
 					
 					strmid(str, textStr, 2, strlen(textStr));
-					format(mainStr, sizeof(mainStr), "{%s}@@%d %s (( %d.%s: %s ))", gVars[srvGrpId][gColor], slot, gVars[srvGrpId][gName], playerid, pVars[playerid][pCharName], str);
+					format(mainStr, sizeof(mainStr), "{%s}@%d %s (( %d.%s: %s ))", gVars[srvGrpId][gColor], slot, gVars[srvGrpId][gName], playerid, pVars[playerid][pCharName], str);
 					
 					foreach(new i : Player) {
 						if(grpUid == pVars[i][pGroupNow] && chatMessages[i][1]) {
@@ -376,7 +384,7 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 					format(mainStr, sizeof(mainStr), "%s (s³uchawka): %s", pVars[playerid][pCharName], str);
 					sendChatMessage(playerid, mainStr);
 
-					format(mainStr, sizeof(mainStr), "{%s}!!%d %s (( %d.%s: %s ))", gVars[srvGrpId][gColor], slot, gVars[srvGrpId][gName], playerid, pVars[playerid][pCharName], str);
+					format(mainStr, sizeof(mainStr), "{%s}!%d %s (( %d.%s: %s ))", gVars[srvGrpId][gColor], slot, gVars[srvGrpId][gName], playerid, pVars[playerid][pCharName], str);
 
 					foreach(new i : Player) {
 						if(grpUid == pVars[i][pGroupNow] && chatMessages[i][1]) {
@@ -460,9 +468,12 @@ sampCallback:OnPlayerEnterRaceCheckpoint(playerid) {
 }
 
 sampCallback:OSRP_OnPlayerStateChange(playerid, newstate, oldstate) {
-	new srvVehId = getServerVehicleIdForPlayer(playerid);
+	new srvVehId, vehicleid = GetPlayerVehicleID(playerid);
 
 	if(newstate == PLAYER_STATE_DRIVER && oldstate == PLAYER_STATE_ONFOOT) {
+		actualVehicle[playerid] = getServerVehicleIdForPlayer(vehicleid);
+		srvVehId = actualVehicle[playerid];
+
 		if(!strlen(vVars[srvVehId][vPlate]) && vVars[srvVehId][vOUid] == pVars[playerid][pUid] && !isBicycle(vVars[srvVehId][vModelId])) {
 			mainStr[0] = EOS;
 
@@ -527,8 +538,9 @@ sampCallback:OSRP_OnPlayerStateChange(playerid, newstate, oldstate) {
 		}
 
 		if(hasBelts[playerid]) {
-			updatePlayerGameStatus(playerid, STAT_NONE);
-			
+			pVars[playerid][pStatus] += STAT_NONE;
+			updatePlayerGameStatus(playerid);
+
 			hasBelts[playerid] = false;
 		}
 
@@ -539,15 +551,15 @@ sampCallback:OSRP_OnPlayerStateChange(playerid, newstate, oldstate) {
 }
 
 sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
-	new srvVehId = getServerVehicleIdForPlayer(playerid);
+	new srvVehId = actualVehicle[playerid];
 
 	if(PRESSED(KEY_ACTION)) {
 		if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER && !isBicycle(vVars[srvVehId][vModelId])) {
 			for(new i = 0; i < sizeof(vehicleTips); i++) {
 				TextDrawHideForPlayer(playerid, vehicleTips[playerid][i]);
 			}
-			
-			vehicleEngineStatus(playerid, vVars[srvVehId][vId]);
+
+			vehicleEngineStatus(playerid);
 		}
 	}
 
@@ -766,7 +778,7 @@ sampCallback:OSRP_OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid
 			}
 
 			if(numPeople > 0) {
-				new srvVehId = getServerVehicleIdForPlayer(playerid);
+				new srvVehId = actualVehicle[playerid];
 				new reas[128];
 
 				format(reas, sizeof(reas), "Potracono %d osob(y). V%d~n~~w~Potracono %d osob(y). V%d", numPeople, vVars[srvVehId][vUid], numPeople, vVars[srvVehId][vUid]);
@@ -987,7 +999,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			if(listitem > numChars - 1) {
 				ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_LIST, "Czy krótaœ z tych postaci jest Twoja?", mainStr, "Zaloguj", "Inna postaæ");
 			} else {
-				//setPlayerDefaultValues(playerid);
+				setPlayerDefaultValues(playerid);
 				pVars[playerid][pUid] = strval(inputtext);
 				
 				queryStr[0] = EOS;
@@ -1540,14 +1552,14 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				SetTimerEx("hideVehicleSpawn", 7000, false, "i", playerid);
 
 				exitedVehicleSec[playerid] = 0;
-				actualVehicle[playerid] = vVars[srvVehId][vUid];
+				actualVehicle[playerid] = srvVehId;
 				vVars[srvVehId][vSpawned] = true;
 			} else {
 				DestroyVehicle(vVars[srvVehId][vId]);
 				GameTextForPlayer(playerid, "~r~Pojazd~n~~n~~w~Pojazd zostal odspawnowany.", 5000, 3);
 				//GameTextForPlayer(playerid, "~r~Miejsce zajete przez inny pojazd.~n~~w~Mozesz go przesunac,  wtedy~n~zniknie.", 5000, 3);
-				
-				actualVehicle[playerid] = INVALID_SERVER_VEHICLE_ID;
+
+				actualVehicle[playerid] = -1;
 				vVars[srvVehId][vId] = INVALID_VEHICLE_ID;
 				vVars[srvVehId][vSpawned] = false;
 			}
@@ -1558,7 +1570,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				return 1;
 			}
 			
-			new srvVehId = getServerVehicleIdForPlayer(playerid);
+			new srvVehId = actualVehicle[playerid];
 			
 			switch(listitem) {
 				case 0: {
@@ -1798,10 +1810,10 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			
 			switch(listitem) {
 				case 0: {
-					new srvItemId = getServerItemIdForPlayer(playerid);
+					new srvItemId = actualVehicle[playerid];
 
 					if(IsPlayerInAnyVehicle(playerid)) {
-						new srvVehId = getServerVehicleIdForPlayer(playerid);
+						new srvVehId = actualVehicle[playerid];
 
 						GetVehiclePos(vVars[srvVehId][vId], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ]);
 
@@ -2181,7 +2193,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					sendMeMessage(offerFrom[playerid], mainStr);
 				}
 				case O_ZAKUPPOJ: {
-					new srvVehId = getServerVehicleIdForPlayer(offerFrom[playerid]);
+					new srvVehId = actualVehicle[offerFrom[playerid]];
 
 					vVars[srvVehId][vOUid] = pVars[playerid][pUid];
 					format(vVars[srvVehId][vCharName], 24, pVars[playerid][pCharName]);
@@ -2200,6 +2212,9 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 
 					ShowPlayerDialog(offerFrom[playerid], DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Twój pojazd zosta³ sprzedany.", "OK", "");
 				}
+				case O_AUTOWYP: {
+					ShowPlayerDialog(offerFrom[playerid], DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Pojazd zosta³ wypo¿yczony.", "OK", "");
+				}
 				case O_REJESTR: {
 					new srvVehId;
 
@@ -2217,7 +2232,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Pojazd zosta³ zarejestrowany.", "OK", "");
 				}
 				case O_TANKOWANIE: {
-					new srvVehId = getServerVehicleIdForPlayer(playerid);
+					new srvVehId = actualVehicle[playerid];
 
 					if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER && vVars[srvVehId][vEngine]) {
 						return SendClientMessage(playerid, COLOR_GRAY, "Silnik musi byæ zgaszony.");
@@ -3301,7 +3316,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				return 1;
 			}
 
-			new srvVehId = getServerVehicleIdForPlayer(playerid);
+			new srvVehId = actualVehicle[playerid];
 
 			switch(listitem) {
 				case 0: {
@@ -3334,7 +3349,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 sampCallback:OSRP_OnPlayerEnterDynamicArea(playerid, areaid) {
 	foreach(new i : areaItter) {
 		if(areaid == aVars[i][aArea]) {
-			new srvVehId = getServerVehicleIdForPlayer(playerid);
+			new srvVehId = actualVehicle[playerid];
 			new str[64];
 
 			pVars[playerid][pArea] = aVars[i][aUid];

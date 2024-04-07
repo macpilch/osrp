@@ -27,7 +27,7 @@ stock initCashpointValues() {
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>is[32]iiffff", cVars[i][csUid], cVars[i][csName], cVars[i][csObject], cVars[i][csIsOpen], cVars[i][csX], cVars[i][csY], cVars[i][csZ], cVars[i][csDistance]);
+		sscanf(queryStr, "p<|>is[32]iffff", cVars[i][csUid], cVars[i][csName], cVars[i][csIsOpen], cVars[i][csX], cVars[i][csY], cVars[i][csZ], cVars[i][csDistance]);
 		
 		Iter_Add(cashpointItter, i);
 		cVars[i][csObject] = CreateDynamicObject(2942, cVars[i][csX], cVars[i][csY], cVars[i][csZ] - 0.35, 0.0, 0.0, 180.0, 0, 0, -1, 100.0);

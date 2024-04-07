@@ -27,7 +27,7 @@ stock initBoothValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>is[32]iffffi", boVars[i][boUid], boVars[i][boName], boVars[i][boObject], boVars[i][boPosX], boVars[i][boPosY], boVars[i][boPosZ], boVars[i][boRange], boVars[i][boWorking]);
+		sscanf(queryStr, "p<|>is[32]ffffi", boVars[i][boUid], boVars[i][boName], boVars[i][boPosX], boVars[i][boPosY], boVars[i][boPosZ], boVars[i][boRange], boVars[i][boWorking]);
 
 		Iter_Add(boothItter, i);
 

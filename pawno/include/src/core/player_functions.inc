@@ -865,16 +865,16 @@ stock loadPlayerValues(playerid) {
 	
 	queryStr[0] = EOS;
 	strcat(queryStr, "SELECT `GUID`, `CharId`, `IP`, `Gold`, `Rank`, `GM`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `HP`, `AP`, `Bans`, `Kicks`, `Warns`, `VW`, `INT`, `Skin`, `LastSkin`, `Money`, `Bank`, `BW`, `AJ`, `AL`, `DriverLicense`, `PisSkill`, `DglSkill`, `ShtgSkill`, `M4Skill`,");
-	format(queryStr, sizeof(queryStr), "%s`GOV`, `Hotel`, `IdCard`, `Detention`, `PDP`, `TelNum`, `BankAcc`, `GroupDesc`, `Group0`, `Group1`, `Group2`, `Group3`, `Group4`, `Area`, `Duty`, `Traveled`, `Doors`, `Audio`, `ChatStyle`, `Computer`, `WalkAnim`, `Screen`, `StyleFight`, `X`, `Y`, `Z`, `Desc` FROM `osrp_Players` WHERE `CharName` = '%s'", queryStr, tmpChrName);
+	format(queryStr, sizeof(queryStr), "%s`GOV`, `Hotel`, `IdCard`, `Detention`, `PDP`, `TelNum`, `BankAcc`, `GroupDesc`, `Group0`, `Group1`, `Group2`, `Group3`, `Group4`, `Duty`, `Traveled`, `Audio`, `ChatStyle`, `Computer`, `WalkAnim`, `Screen`, `StyleFight`, `X`, `Y`, `Z`, `Desc` FROM `osrp_Players` WHERE `CharName` = '%s'", queryStr, tmpChrName);
 	mysql_query(queryStr);
 	
 	mysql_store_result();
 	
 	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>iis[16]iiiiiiiiffiiiiiiiiiiiiiiiiiiiiiiiis[128]iiiiiiifiiiiiiifffs[128]", pVars[playerid][pGUid], pVars[playerid][pCharId], pVars[playerid][pIp], pVars[playerid][pGold], pVars[playerid][pRank], pVars[playerid][pGM], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds],
+	sscanf(queryStr, "p<|>iis[16]iiiiiiiiffiiiiiiiiiiiiiiiiiiiiiiiis[128]iiiiiifiiiiiiifffs[128]", pVars[playerid][pGUid], pVars[playerid][pCharId], pVars[playerid][pIp], pVars[playerid][pGold], pVars[playerid][pRank], pVars[playerid][pGM], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds],
 	pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pBans], pVars[playerid][pKicks], pVars[playerid][pWarns], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pAl],
 	pVars[playerid][pDriverLicense], pVars[playerid][pPisSkill], pVars[playerid][pDglSkill], pVars[playerid][pShtgSkill], pVars[playerid][pM4Skill], pVars[playerid][pGov], pVars[playerid][pHotel], pVars[playerid][pIdCard], pVars[playerid][pDetention], pVars[playerid][pPdp], pVars[playerid][pTelNum], pVars[playerid][pBankAcc],
-	pVars[playerid][pGroupDesc], pVars[playerid][pGroup][0], pVars[playerid][pGroup][1], pVars[playerid][pGroup][2], pVars[playerid][pGroup][3], pVars[playerid][pGroup][4], /*casualJob[playerid],*/ pVars[playerid][pArea], pVars[playerid][pDuty], pVars[playerid][pTraveled], pVars[playerid][pDoor], pVars[playerid][pAudio], pVars[playerid][pChatStyle], pVars[playerid][pComputer],
+	pVars[playerid][pGroupDesc], pVars[playerid][pGroup][0], pVars[playerid][pGroup][1], pVars[playerid][pGroup][2], pVars[playerid][pGroup][3], pVars[playerid][pGroup][4], /*casualJob[playerid],*/ pVars[playerid][pDuty], pVars[playerid][pTraveled], pVars[playerid][pAudio], pVars[playerid][pChatStyle], pVars[playerid][pComputer],
 	pVars[playerid][pWalkAnim], pVars[playerid][pScreen], pVars[playerid][pStyleFight], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], charDesc);
 	mysql_free_result();
 	
@@ -1148,7 +1148,7 @@ stock setPlayerDefaultValues(playerid) {
 	playerCps[playerid] = 0;
 	playerRcPosition[playerid] = 0;
 	playerAFKTime[playerid] = 0;
-	actualVehicle[playerid] = 0;
+	//actualVehicle[playerid] = -1;
 	actualBusStop[playerid] = 0;
 	actualCashpoint[playerid] = 0;
 	actualItem[playerid] = 0;
@@ -1282,7 +1282,7 @@ stock resetPlayerValues(playerid) {
 	playerRcTime[playerid] = 0.0;
 	playerRcActualTime[playerid] = 0.0;
 	playerAFKTime[playerid] = 0;
-	actualVehicle[playerid] = 0;
+	//actualVehicle[playerid] = -1;
 	actualBusStop[playerid] = 0;
 	actualCashpoint[playerid] = 0;
 	actualItem[playerid] = 0;
@@ -1409,62 +1409,80 @@ Callback:dtTimer(playerid) {
 	return 1;
 }
 
-stock updatePlayerGameStatus(playerid, type) {	
-	switch(type) {
-		case STAT_CLEAR: {
-			format(pVars[playerid][pStatus], 128, NULL);
+stock updatePlayerGameStatus(playerid) {	
+	new srvItemId = getServerItemIdForPlayer(playerid);
+	new srvGrpId = getServerGroupIdForPlayer(playerid);
+	static h, mins, secs;
+	
+	if(pVars[playerid][pStatus] & STAT_CLEAR) {
+		format(pVars[playerid][pStatusStr], 128, NULL);
+	} else if(pVars[playerid][pStatus] & STAT_NONE) {
+		if(pVars[playerid][pHours] > 20) {
+			format(pVars[playerid][pStatusStr], 128, "%s (%d)", pVars[playerid][pCharName], playerid);
+		} else {
+			format(pVars[playerid][pStatusStr], 128, "%s (%d, %dh)", pVars[playerid][pCharName], playerid, pVars[playerid][pHours]);
+		}		
+	} else if(pVars[playerid][pStatus] & STAT_AFK) {
+		if(playerAFKTime[playerid] == 3) {
+			gettime(h, mins, secs);
 		}
-		case STAT_NONE: {
-			if(pVars[playerid][pHours] > 20) {
-				format(pVars[playerid][pStatus], 128, "%s (%d)", pVars[playerid][pCharName], playerid);
-			} else {
-				format(pVars[playerid][pStatus], 128, "%s (%d, %dh)", pVars[playerid][pCharName], playerid, pVars[playerid][pHours]);
-			}			
-		}
-		case STAT_AFK: {
-			static h, mins, secs;
-			
-			if(playerAFKTime[playerid] == 3) {
-				gettime(h, mins, secs);
-			}
-			
-			format(pVars[playerid][pStatus], 128, "%s\n(AFK od %02d:%02d)", pVars[playerid][pStatus], h, mins);
-		}
-		case STAT_BW: {
-			format(pVars[playerid][pStatus], 128, "%s (%d)\n(%s)", pVars[playerid][pCharName], playerid, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
-		}
-		case STAT_DAMAGE: {
-			format(pVars[playerid][pStatus], 128, "{FF0000}%s", pVars[playerid][pStatus]);
-		}
-		case STAT_ROLLERS: {
-			format(pVars[playerid][pStatus], 128, "%s\n(rolki)", pVars[playerid][pStatus]);
-		}
-		case STAT_DRUNK: {
-			format(pVars[playerid][pStatus], 128, "%s\n(podpity)", pVars[playerid][pStatus]);
-		}
-		case STAT_DRUGS: {
-			format(pVars[playerid][pStatus], 128, "%s\n(naæpany)", pVars[playerid][pStatus]);
-		}
-		case STAT_STRENGTH: {
-			format(pVars[playerid][pStatus], 128, "%s\n(%dj)", pVars[playerid][pStatus], pVars[playerid][pStrength]);
-		}
-		case STAT_BELTS: {
-			format(pVars[playerid][pStatus], 128, "%s\n(pasy)", pVars[playerid][pStatus]);
-		}
-		case STAT_DETENTION: {
-			format(pVars[playerid][pStatus], 128, "%s\n(przetrzymywany)", pVars[playerid][pStatus]);
-		}
-		case STAT_DUTY: {
-			new srvGrpId = getServerGroupIdForPlayer(playerid);
 
-			format(pVars[playerid][pStatus], 128, "%s\n[%s]", pVars[playerid][pStatus], gVars[srvGrpId][gName]);
+		if((pVars[playerid][pStatus] & STAT_BW) && (pVars[playerid][pStatus] & STAT_DUTY)) {
+			format(pVars[playerid][pStatusStr], 128, "%s\n(AFK od %02d:%02d, %s)\n[%s]", pVars[playerid][pStatusStr], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
+		} else if(pVars[playerid][pStatus] & STAT_BW) {
+			format(pVars[playerid][pStatusStr], 128, "%s\n(AFK od %02d:%02d, %s)", pVars[playerid][pStatusStr], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 		}
-		case STAT_GLOVES: {
-			format(pVars[playerid][pStatus], 128, "%s\n(rêkawice)", pVars[playerid][pStatus]);
+
+		format(pVars[playerid][pStatusStr], 128, "%s\n(AFK od %02d:%02d)", pVars[playerid][pStatusStr], h, mins);
+	} else if(pVars[playerid][pStatus] & STAT_BW) { 
+		format(pVars[playerid][pStatusStr], 128, "%s (%d)\n(%s)", pVars[playerid][pCharName], playerid, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+	} else if(pVars[playerid][pStatus] & STAT_DAMAGE) {
+		format(pVars[playerid][pStatusStr], 128, "{FF0000}%s", pVars[playerid][pStatusStr]);
+	} else if(pVars[playerid][pStatus] & STAT_ROLLERS) {
+		if((pVars[playerid][pStatus] & STAT_BW) && (pVars[playerid][pStatus] & STAT_DUTY)) {
+			format(pVars[playerid][pStatusStr], 128, "%s\n(rolki, %s)\n[%s]", pVars[playerid][pStatusStr], pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
+		} else if(pVars[playerid][pStatus] & STAT_AFK && pVars[playerid][pStatus] & STAT_BW && pVars[playerid][pStatus] & STAT_DUTY) {
+			format(pVars[playerid][pStatusStr], 128, "%s\n(rolki, AFK od %02d:%02d, %s)\n[%s]", pVars[playerid][pStatusStr], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
+		} else if(pVars[playerid][pStatus] & STAT_AFK && pVars[playerid][pStatus] & STAT_BW) {
+			format(pVars[playerid][pStatusStr], 128, "%s\n(rolki, AFK od %02d:%02d, %s)", pVars[playerid][pStatusStr], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 		}
+
+		format(pVars[playerid][pStatusStr], 128, "%s\n(rolki)", pVars[playerid][pStatusStr]);
+	} else if(pVars[playerid][pStatus] & STAT_DRUNK) {
+		if((pVars[playerid][pStatus] & STAT_BW) && (pVars[playerid][pStatus] & STAT_DUTY)) {
+			format(pVars[playerid][pStatusStr], 128, "%s\n(podpity, %s)\n[%s]", pVars[playerid][pStatusStr], pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
+		} else if((pVars[playerid][pStatus] & STAT_AFK) && (pVars[playerid][pStatus] & STAT_BW) && (pVars[playerid][pStatus] & STAT_DUTY)) {
+			format(pVars[playerid][pStatusStr], 128, "%s\n(podpity, AFK od %02d:%02d, %s)\n[%s]", pVars[playerid][pStatusStr], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
+		} else if((pVars[playerid][pStatus] & STAT_AFK) && (pVars[playerid][pStatus] & STAT_BW)) {
+			format(pVars[playerid][pStatusStr], 128, "%s\n(podpity, AFK od %02d:%02d, %s)", pVars[playerid][pStatusStr], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+		} else if((pVars[playerid][pStatus] & STAT_AFK) && (pVars[playerid][pStatus] & STAT_BELTS) && (pVars[playerid][pStatus] & STAT_DUTY)) {
+			format(pVars[playerid][pStatusStr], 128, "%s\n(podpity, AFK od %02d:%02d, pasy)\n[%s]", pVars[playerid][pStatusStr], h, mins, gVars[srvGrpId][gName]);
+		} else if((pVars[playerid][pStatus] & STAT_AFK) && (pVars[playerid][pStatus] & STAT_BELTS)) {
+			format(pVars[playerid][pStatusStr], 128, "%s\n(podpity, AFK od %02d:%02d, pasy)", pVars[playerid][pStatusStr], h, mins);
+		}
+
+		format(pVars[playerid][pStatusStr], 128, "%s\n(podpity)", pVars[playerid][pStatusStr]);
+	} else if(pVars[playerid][pStatus] & STAT_DRUGS) {
+		format(pVars[playerid][pStatusStr], 128, "%s\n(naæpany)", pVars[playerid][pStatusStr]);
+	} else if(pVars[playerid][pStatus] & STAT_STRENGTH) {
+		if((pVars[playerid][pStatus] & STAT_AFK) && (pVars[playerid][pStatus] & STAT_BW) && (pVars[playerid][pStatus] & STAT_DUTY)) {
+			format(pVars[playerid][pStatusStr], 128, "%s\n(%dj, AFK od %02d:%02d, %s)\n[%s]", pVars[playerid][pStatusStr], pVars[playerid][pStrength], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
+		} else if((pVars[playerid][pStatus] & STAT_AFK) && (pVars[playerid][pStatus] & STAT_BW)) {
+			format(pVars[playerid][pStatusStr], 128, "%s\n(%dj, AFK od %02d:%02d, %s)", pVars[playerid][pStatusStr], pVars[playerid][pStrength], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+		}
+	
+		format(pVars[playerid][pStatusStr], 128, "%s\n(%dj)", pVars[playerid][pStatusStr], pVars[playerid][pStrength]);
+	} else if(pVars[playerid][pStatus] & STAT_BELTS) {
+		format(pVars[playerid][pStatusStr], 128, "%s\n(pasy)", pVars[playerid][pStatusStr]);
+	} else if(pVars[playerid][pStatus] & STAT_DETENTION) {
+		format(pVars[playerid][pStatusStr], 128, "%s\n(przetrzymywany)", pVars[playerid][pStatusStr]);
+	} else if(pVars[playerid][pStatus] & STAT_DUTY) {
+		format(pVars[playerid][pStatusStr], 128, "%s\n[%s]", pVars[playerid][pStatusStr], gVars[srvGrpId][gName]);	
+	} else if(pVars[playerid][pStatus] & STAT_GLOVES) {
+		format(pVars[playerid][pStatusStr], 128, "%s\n(rêkawice)", pVars[playerid][pStatusStr]);
 	}
 
-	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_CHAT, pVars[playerid][pStatus]);
+	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_CHAT, pVars[playerid][pStatusStr]);
 }
 
 stock getPlayerStrengthPower(playerid) {
@@ -1576,9 +1594,9 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zakup przedmiotu: %s\n\nKoszt: $0. Czy akceptujesz tê ofertê?", iVars[srvItemId][iName]);
 		}
 		case O_ZAKUPPOJ: {
-			new srvVehId = getServerVehicleIdForPlayer(playerid);
+			new srvVehId = actualVehicle[playerid];
 			
-			actualVehicle[id] = vVars[srvVehId][vUid];
+			actualVehicle[id] = actualVehicle[playerid];
 			
 			format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~9:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
 			vVars[srvVehId][vUid], vVars[srvVehId][vOUid], vVars[srvVehId][vModelId], vVars[srvVehId][vId], vVars[srvVehId][vColor1], vVars[srvVehId][vColor2], vVars[srvVehId][vEngineHp]);
@@ -1600,6 +1618,10 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			strcat(mainStr, "\tUPEWNIJ SIÊ, ¿e wiesz co akceptujesz!");
 			return ShowPlayerDialog(id, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_INPUT, str, mainStr, "Tak", "Nie");
 		}
+		case O_AUTOWYP: {
+			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Wypo¿yczenie pojazdu.");
+		}
 		case O_REJESTR: {
 			new srvGrpId = getServerGroupIdForPlayer(playerid);
 			
@@ -1609,7 +1631,7 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Rejestracja pojazdu o nr seryjnym %d.\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][1], offerParams[id][0]);
 		}
 		case O_TANKOWANIE: {
-			new srvVehId = getServerVehicleIdForPlayer(id);
+			new srvVehId = actualVehicle[id];
 			new Float:fuel = 100.0 - (100.0 * vVars[srvVehId][vFuel] / VEHICLE_FUEL_TANK_MEDIUM);
 
 			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
@@ -1895,7 +1917,9 @@ Callback:dismissCall(playerid, receiver) {
 }
 
 Callback:healthDamage(playerid) {
-	updatePlayerGameStatus(playerid, STAT_DAMAGE);
+	pVars[playerid][pStatus] += STAT_DAMAGE;
+	updatePlayerGameStatus(playerid);
+	
 	TextDrawShowForPlayer(playerid, damageRedScreen[playerid]);
 	
 	SetTimerEx("hideHealthDamage", 1000, false, "i", playerid);
@@ -1903,7 +1927,9 @@ Callback:healthDamage(playerid) {
 }
 
 Callback:hideHealthDamage(playerid) {
-	updatePlayerGameStatus(playerid, STAT_NONE);
+	pVars[playerid][pStatus] += STAT_NONE;
+	updatePlayerGameStatus(playerid);
+	
 	TextDrawHideForPlayer(playerid, damageRedScreen[playerid]);
 	return 1;
 }
