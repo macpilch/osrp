@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: vehicle_functions.inc
 	Date: 29.07.2022
-	Modified: 24.01.2024
+	Modified: 08.04.2024
 */
 
 #if defined __VEHICLE_FUNCTIONS_INC__
@@ -31,7 +31,6 @@ stock initVehicleValues() {
 		vVars[i][vLock], vVars[i][vEngine], vVars[i][vEngineHp], vVars[i][vSpawned], vVars[i][vLights], vVars[i][vMileage], vVars[i][vDescInfo], vVars[i][vPlate]);
 		
 		Iter_Add(vehItter, i);
-		SetVehicleNumberPlate(vVars[i][vId], vVars[i][vPlate]);
 		
 		vehCP[i] = -1;
 		vehMapIcon[i] = -1;
@@ -66,11 +65,11 @@ stock saveVehicleValues() {
 	return 1;
 }
 
-stock getServerVehicleIdForPlayer(vehicleid) {
-	new vid;
+stock getServerVehicleIdForPlayer(playerid) {
+	new vid = INVALID_SERVER_VEHICLE_ID;
 
 	foreach(new i : vehItter) {
-		if(vVars[i][vId] == vehicleid) {
+		if(vVars[i][vUid] == actualVehicle[playerid]) {
 			vid = i;
 			break;
 		}
@@ -78,10 +77,69 @@ stock getServerVehicleIdForPlayer(vehicleid) {
 	return vid;
 }
 
-stock resetVehicleValues(playerid) {
-	new srvVehId = actualVehicle[playerid];
+stock getServerVehicleIdForPlayerEx(vehicleid) {
+	new vid = INVALID_SERVER_VEHICLE_ID;
 
-	if(vVars[srvVehId][vOUid] == pVars[playerid][pUid]) {
+	foreach(new i : vehItter) {
+		if(vehicleid == vVars[i][vId]) {
+			vid = i;
+			break;
+		}
+	}
+	return vid;
+}
+
+stock addPlayerVehicle(playerid, modelid) {
+	new freeId;
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Vehicles`");
+	mysql_query(queryStr);
+
+	mysql_store_result();
+
+	freeId = mysql_fetch_int();
+#if defined DEBUG
+	printf("freeId: %d", freeId);
+#endif
+
+	mysql_free_result();
+	Iter_Add(vehItter, freeId);
+
+	vVars[freeId][vUid] = freeId + 1;
+	vVars[freeId][vId] = INVALID_VEHICLE_ID;
+	vVars[freeId][vOUid] = pVars[playerid][pUid];
+	vVars[freeId][vGUid] = 0;
+	format(vVars[freeId][vCharName], 24, "%s", pVars[playerid][pCharName]);
+	vVars[freeId][vModelId] = modelid;
+	vVars[freeId][vColor1] = random(255);
+	vVars[freeId][vColor2] = random(255);
+	vVars[freeId][vLock] = false;
+	vVars[freeId][vSpawned] = false;
+	vVars[freeId][vMileage] = 0.0;
+	vVars[freeId][vX] = 0.0;
+	vVars[freeId][vY] = 0.0;
+	vVars[freeId][vZ] = 0.0;
+	vVars[freeId][vEngineHp] = 1000.0;
+	vVars[freeId][vEngine] = false;
+	vVars[freeId][vLights] = false;
+	vVars[freeId][vFuel] = VEHICLE_FUEL_TANK_MEDIUM;
+	format(vVars[freeId][vPlate], 32, NULL);
+	format(vVars[freeId][vDescInfo], 64, NULL);
+
+	vehCP[freeId] = -1;
+	vehMapIcon[freeId] = -1;
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`UID`, `ID`, `OUID`, `CharName`, `ModelID`, `Color1`, `Color2`, `X`, `Y`, `Z`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d', '%d', '%f', '%f', '%f')",
+	vVars[freeId][vUid], vVars[freeId][vId], vVars[freeId][vOUid], vVars[freeId][vCharName], vVars[freeId][vModelId], vVars[freeId][vColor1], vVars[freeId][vColor2], vVars[freeId][vX], vVars[freeId][vY], vVars[freeId][vZ]);
+	mysql_query(queryStr);
+}
+
+stock resetVehicleValues(playerid) {
+	new srvVehId = getServerVehicleIdForPlayer(playerid);
+
+	if(vVars[srvVehId][vOUid] == pVars[playerid][pUid] && vVars[srvVehId][vSpawned]) {
 		DestroyVehicle(vVars[srvVehId][vId]);
 		DestroyDynamic3DTextLabel(vVars[srvVehId][vDesc]);
 
@@ -90,7 +148,7 @@ stock resetVehicleValues(playerid) {
 
 		vehCP[srvVehId] = -1;
 		vehMapIcon[srvVehId] = -1;
-		actualVehicle[playerid] = INVALID_SERVER_VEHICLE_ID;
+		actualVehicle[playerid] = 0;
 		vVars[srvVehId][vSpawned] = false;
 
 		queryStr[0] = EOS;
@@ -109,44 +167,44 @@ stock bool:checkPlayerVehicles(playerid) {
 	return false;
 }
 
-Callback:vehicleLightsOn(playerid, vehicleid) {
+Callback:vehicleLightsOn(playerid) {
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 		return 1;
 	}
 	
-	new engine, lights, alarm, doors, bonnet, boot, objective, srvVehId = actualVehicle[playerid];
+	new engine, lights, alarm, doors, bonnet, boot, objective, srvVehId = getServerVehicleIdForPlayer(playerid);
 	
-	GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
-	SetVehicleParamsEx(vehicleid, engine, 1, alarm, doors, bonnet, boot, objective);
+	GetVehicleParamsEx(vVars[srvVehId][vId], engine, lights, alarm, doors, bonnet, boot, objective);
+	SetVehicleParamsEx(vVars[srvVehId][vId], engine, 1, alarm, doors, bonnet, boot, objective);
 	
 	vVars[srvVehId][vLights] = true;
 	return 1;
 }
 
-Callback:vehicleLightsOff(playerid, vehicleid) {
+Callback:vehicleLightsOff(playerid) {
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 		return 1;
 	}
 	
-	new engine, lights, alarm, doors, bonnet, boot, objective, srvVehId = actualVehicle[playerid];
+	new engine, lights, alarm, doors, bonnet, boot, objective, srvVehId = getServerVehicleIdForPlayer(playerid);
 	
-	GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
-	SetVehicleParamsEx(vehicleid, engine, 0, alarm, doors, bonnet, boot, objective);
+	GetVehicleParamsEx(vVars[srvVehId][vId], engine, lights, alarm, doors, bonnet, boot, objective);
+	SetVehicleParamsEx(vVars[srvVehId][vId], engine, 0, alarm, doors, bonnet, boot, objective);
 	
 	vVars[srvVehId][vLights] = false;
 	return 1;
 }
 
 stock vehicleEngineStatus(playerid) {
-	new srvVehId = actualVehicle[playerid];
-	
+	new srvVehId = getServerVehicleIdForPlayer(playerid);
+
 	if(!vVars[srvVehId][vEngine]) {
 		if(!vVars[srvVehId][vFuel]) {
 			return GameTextForPlayer(playerid, "~r~Brak paliwa w pojezdzie.", 5000, 3);
 		}
 		
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~n~~n~~g~Trwa odpalanie silnika...", 3000, 3);
-		SetTimerEx("vehicleEngineOn", 3000, false, "ii", playerid, vVars[srvVehId][vId]);
+		SetTimerEx("vehicleEngineOn", 3000, false, "i", playerid);
 	} else {
 		new engine, lights, alarm, doors, bonnet, boot, objective;
 
@@ -166,12 +224,12 @@ stock vehicleEngineStatus(playerid) {
 	return 1;
 }
 
-Callback:vehicleEngineOn(playerid, vehicleid) {
+Callback:vehicleEngineOn(playerid) {
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 		return 1;
 	}
 
-	new srvVehId = actualVehicle[playerid];
+	new srvVehId = getServerVehicleIdForPlayer(playerid);
 	new rand = random(5);
 
 	if(vVars[srvVehId][vEngineHp] == 300.0 && (rand == 0 || rand == 2 || rand == 4)) {
@@ -181,15 +239,42 @@ Callback:vehicleEngineOn(playerid, vehicleid) {
 	} else if(vVars[srvVehId][vEngineHp] > 300.0 || (vVars[srvVehId][vEngineHp] == 300.0 && (rand == 1 || rand == 3))) {
 		new engine, lights, alarm, doors, bonnet, boot, objective;
 
-		GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
-		SetVehicleParamsEx(vehicleid, 1, lights, alarm, doors, bonnet, boot, objective);
+		GetVehicleParamsEx(vVars[srvVehId][vId], engine, lights, alarm, doors, bonnet, boot, objective);
+		SetVehicleParamsEx(vVars[srvVehId][vId], 1, lights, alarm, doors, bonnet, boot, objective);
 
 		for(new i = 0; i < 3; i++) {
 			TextDrawShowForPlayer(playerid, vehicleFuelStatus[playerid][i]);
 		}
 
+		fuelTimer[playerid] = SetTimerEx("updateVehicleFuel", 1000, true, "if", playerid, vVars[srvVehId][vFuel]);
+
 		vVars[srvVehId][vEngine] = true;
 	}
+	return 1;
+}
+
+Callback:updateVehicleFuel(playerid, Float:fuel) {
+	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
+		return 1;
+	}
+
+	new Float:tmp = (596.085083 + 14.6) - 0.5;
+
+	TextDrawDestroy(vehicleFuelStatus[playerid][2]);
+
+	vehicleFuelStatus[playerid][2] = TextDrawCreate(tmp, 59.833312, "_");
+	TextDrawLetterSize(vehicleFuelStatus[playerid][2], 0.000000, -0.115186);
+	TextDrawTextSize(vehicleFuelStatus[playerid][2], 548.981140, 0.000000);
+	TextDrawAlignment(vehicleFuelStatus[playerid][2], 1);
+	TextDrawColor(vehicleFuelStatus[playerid][2], 0);
+	TextDrawUseBox(vehicleFuelStatus[playerid][2], 1);
+	TextDrawBoxColor(vehicleFuelStatus[playerid][2], 16711935);
+	TextDrawSetShadow(vehicleFuelStatus[playerid][2], 0);
+	TextDrawSetOutline(vehicleFuelStatus[playerid][2], 1);
+	TextDrawBackgroundColor(vehicleFuelStatus[playerid][2], 16711935);
+	TextDrawFont(vehicleFuelStatus[playerid][2], 0);
+	
+	TextDrawShowForPlayer(playerid, vehicleFuelStatus[playerid][2]);
 	return 1;
 }
 
@@ -204,7 +289,7 @@ stock getVehicleSpeed(vehicleid) {
 }
 
 stock setPlayerVehicleDamage(playerid) {
-	new srvVehId = actualVehicle[playerid], speed = getVehicleSpeed(GetPlayerVehicleID(playerid)), chancePlayerDizzines;
+	new srvVehId = getServerVehicleIdForPlayer(playerid), speed = getVehicleSpeed(GetPlayerVehicleID(playerid)), chancePlayerDizzines;
 	
 	vVars[srvVehId][vEngineHp] -= speed / 1.5;
 	
@@ -328,13 +413,45 @@ stock getNearestVehicleDriverId(playerid) {
 			continue;
 		}
 
-		if(IsPlayerInRangeOfPoint(i, 10.0, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
+		if(playerToPoint(i, 5.0, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ])) {
 			if(GetPlayerVehicleID(i) != INVALID_VEHICLE_ID && IsPlayerInAnyVehicle(i)) {				
 				return i;
 			}
 		}
 	}
 	return -1;
+}
+
+stock getClosestVehicle(playerid, Float:dist = 1000.0) {
+    dist = floatabs(dist);
+
+    if(dist == 0.0) {
+		dist = 1000.0;
+    }
+
+	new Float:X[2], Float:Y[2], Float:Z[2];
+    new Float:nearestPos = dist;
+    new nearestVehicle = INVALID_VEHICLE_ID;
+
+    GetPlayerPos(playerid, X[0], Y[0], Z[0]);
+
+    for(new i = 0; i < MAX_VEHICLES; i++) {
+        if(!IsVehicleStreamedIn(i, playerid) || i == GetPlayerVehicleID(playerid)) {
+			continue;
+        }
+
+		GetVehiclePos(i, X[1], Y[1], Z[1]);
+
+        if(nearestPos > GetDistanceBetweenPoints(X[0], Y[0], Z[0], X[1], Y[1], Z[1])) {
+			nearestPos = GetDistanceBetweenPoints(X[0], Y[0], Z[0], X[1], Y[1], Z[1]);
+			nearestVehicle = i;
+		}
+    }
+
+    if(nearestPos < dist) {
+		return nearestVehicle;
+    }
+	return INVALID_VEHICLE_ID;
 }
 
 stock isCar(modelid) {
@@ -611,7 +728,7 @@ stock isPlane(modelid) {
 }
 
 Callback:addFuelToVehicle(playerid) {
-	new srvVehId = actualVehicle[playerid];
+	new srvVehId = getServerVehicleIdForPlayer(playerid);
 	new Float:fuel = VEHICLE_FUEL_TANK_MEDIUM - vVars[srvVehId][vFuel];
 	
 	vVars[srvVehId][vFuel] += fuel;
@@ -619,5 +736,22 @@ Callback:addFuelToVehicle(playerid) {
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "* Pojazd %s zosta³ zatankowany. *", VehicleNames[vVars[srvVehId][vModelId] - 400]);
 	sendMeMessage(playerid, mainStr); // COLOR_DO
+	return 1;
+}
+
+Callback:vehRepairEngineTimer(playerid, srvvehid, seconds) {
+	new str[32];
+
+	if(seconds > 0) {
+		format(str, sizeof(str), "~w~Odliczanie: ~r~%d", seconds);
+		GameTextForPlayer(playerid, str, 3000, 5);
+
+		SetTimerEx("vehRepairEngineTimer", 3000, false, "iii", playerid, srvvehid, seconds -= 3);
+	} else {
+		vVars[srvvehid][vEngineHp] = 1000;
+		SetVehicleHealth(vVars[srvvehid][vId], vVars[srvvehid][vEngineHp]);
+
+		GameTextForPlayer(playerid, "~r~Gotowe!~n~~w~Pojazd zostal naprawiony.", 5000, 3);
+	}
 	return 1;
 }

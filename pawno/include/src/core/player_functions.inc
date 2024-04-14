@@ -355,7 +355,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawBackgroundColor(vehicleFuelStatus[playerid][1], -2139094785);
 	TextDrawFont(vehicleFuelStatus[playerid][1], 0);
 
-	vehicleFuelStatus[playerid][2] = TextDrawCreate(596.085083 - 40, 59.833312, "_");
+	vehicleFuelStatus[playerid][2] = TextDrawCreate(596.085083 + 14.6, 59.833312, "_");
 	TextDrawLetterSize(vehicleFuelStatus[playerid][2], 0.000000, -0.115186);
 	TextDrawTextSize(vehicleFuelStatus[playerid][2], 548.981140, 0.000000);
 	TextDrawAlignment(vehicleFuelStatus[playerid][2], 1);
@@ -366,7 +366,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawSetOutline(vehicleFuelStatus[playerid][2], 1);
 	TextDrawBackgroundColor(vehicleFuelStatus[playerid][2], 16711935);
 	TextDrawFont(vehicleFuelStatus[playerid][2], 0);
-	
+
 	vehicleDeath[playerid][0] = TextDrawCreate(499.444091, 284.666595, "Pojazd zostal odspawnowany.~n~Przy nastepnym spawnie~n~zespawnuje sie w tym miejscu.");
 	TextDrawLetterSize(vehicleDeath[playerid][0], 0.345051, 1.389999);
 	TextDrawAlignment(vehicleDeath[playerid][0], 2);
@@ -907,136 +907,136 @@ stock loadPlayerContacts(playerid) {
 	return 1;
 }
 
+stock loadPlayerPenalties(playerid, which) {
+	queryStr[0] = EOS;
+	
+	switch(which) {
+		case PEN_BAN: {
+			format(queryStr, sizeof(queryStr), "SELECT ");
+			mysql_query(queryStr);
+		}
+		default: {
+			
+		}
+	}
+}
+
 stock givePlayerPenalty(playerid, victim, type, const reason[], days) {
-	new str[256];
+	new str[256], suitable[24];
 
 	mainStr[0] = EOS;
+
+	if(playerid == INVALID_PLAYER_ID) {
+		format(suitable, sizeof(suitable), "System");
+	} else {
+		format(suitable, sizeof(suitable), "%s", pVars[playerid][pCharName]);
+	}
+
 	switch(type) {
-		case PEN_BAN: {			
-			if(playerid == INVALID_PLAYER_ID) {
-				format(str, sizeof(str), "~r~Ban~n~~w~Gracz:     %s~n~Nadajacy: System~n~~y~~h~%s", pVars[victim][pCharName], reason);
-				
-				format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Ban) od System. Powód: %s", reason);
-			} else {
-				format(str, sizeof(str), "~r~Ban~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
-				
-				format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Ban) od %s. Powód: %s", pVars[playerid][pCharName], reason);
-			}
-			
+		case PEN_BAN: {
+			format(str, sizeof(str), "~r~Ban~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], suitable, reason);
+			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Ban) od %s. Powód: %s", suitable, reason);
+
 			if(pVars[victim][pDuty] > 0) {
 				pc_cmd_duty(victim, "");
 			}
-			
+
 			pVars[victim][pBans]++;
-			
+
 			savePlayerValues(playerid);
 			SetTimerEx("kickPlayer", 500, false, "i", victim);
 		}
 		case PEN_KICK: {
-			if(playerid == INVALID_PLAYER_ID) {
-				format(str, sizeof(str), "~r~Kick~n~~w~Gracz:     %s~n~Nadajacy: System~n~~y~~h~%s", pVars[victim][pCharName], reason);
-				
-				format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Kick) od System. Powód: %s", reason);
-			} else {
-				format(str, sizeof(str), "~r~Kick~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
-				
-				format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Kick) od %s. Powód: %s", pVars[playerid][pCharName], reason);
-			}
-			
+			format(str, sizeof(str), "~r~Kick~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], suitable, reason);
+			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Kick) od %s. Powód: %s", suitable, reason);
+
 			if(pVars[victim][pDuty] > 0) {
 				pc_cmd_duty(victim, "");
 			}
-			
+
 			pVars[victim][pKicks]++;
-			
+
 			savePlayerValues(playerid);
 			SetTimerEx("kickPlayer", 500, false, "i", victim);
 		}
 		case PEN_ADMJAIL: {
-			if(playerid == INVALID_PLAYER_ID) {
-				format(str, sizeof(str), "~r~AdminJail~n~~w~Gracz:     %s~n~Nadajacy: System~n~~y~~h~%s", pVars[victim][pCharName], reason);
-				
-				format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (AdminJail) od System. Powód: %s", reason);
-			} else {
-				format(str, sizeof(str), "~r~AdminJail~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
-				
-				format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (AdminJail) od %s. Powód: %s", pVars[playerid][pCharName], reason);
-			}
-			
+			format(str, sizeof(str), "~r~AdminJail~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], suitable, reason);
+			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (AdminJail) od %s. Powód: %s", suitable, reason);
+
 			if(pVars[victim][pDuty] > 0) {
 				pc_cmd_duty(victim, "");
 			}
+
+			pVars[victim][pAJs]++;
 		}
 		case PEN_WARN: {
-			if(playerid == INVALID_PLAYER_ID) {
-				format(str, sizeof(str), "~r~Warn~n~~w~Gracz:     %s~n~Nadajacy: System~n~~y~~h~%s", pVars[victim][pCharName], reason);
-				
-				format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Warn) od System. Powód: %s", pVars[playerid][pCharName], reason);
-			} else {
-				format(str, sizeof(str), "~r~Warn~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
-				
-				format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Warn) od %s. Powód: %s", pVars[playerid][pCharName], reason);
-			}
-			
+			format(str, sizeof(str), "~r~Warn~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], suitable, reason);
+			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Warn) od %s. Powód: %s", suitable, reason);
+
 			pVars[victim][pWarns]++;
 		}
 		case PEN_BLCKACC: {
-			format(str, sizeof(str), "~r~Blokada konta~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
-			
-			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada konta) od %s. Powód: %s", pVars[playerid][pCharName], reason);
-			
+			format(str, sizeof(str), "~r~Blokada konta~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], suitable, reason);
+			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada konta) od %s. Powód: %s", suitable, reason);
+
 			pVars[victim][pBlock] += BLOCK_ACC;
 		}
 		case PEN_RUNNBLW: {
 			if(days > 0) {
-				format(str, sizeof(str), "~r~Blokada biegania i bicia ~w~(na %d dni)~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+				format(str, sizeof(str), "~r~Blokada biegania i bicia ~w~(na %d dni)~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], suitable, reason);
 			} else {
-				format(str, sizeof(str), "~r~Blokada biegania i bicia~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+				format(str, sizeof(str), "~r~Blokada biegania i bicia~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], suitable, reason);
 			}
 			
-			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada biegania i bicia) od %s. Powód: %s", pVars[playerid][pCharName], reason);
+			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada biegania i bicia) od %s. Powód: %s", suitable, reason);
+			
+			pVars[victim][pBlock] += BLOCK_RUNNBLW;
 		}
 		case PEN_BLCKVEH: {
 			if(days > 0) {
-				format(str, sizeof(str), "~r~Blokada prowadzenia pojazdow ~w~(na %d dni)~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+				format(str, sizeof(str), "~r~Blokada prowadzenia pojazdow ~w~(na %d dni)~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], suitable, reason);
 			} else {
-				format(str, sizeof(str), "~r~Blokada prowadzenia pojazdow~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+				format(str, sizeof(str), "~r~Blokada prowadzenia pojazdow~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], suitable, reason);
 			}
 
-			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada prowadzenia pojazdow) od %s. Powód: %s", pVars[playerid][pCharName], reason);
+			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada prowadzenia pojazdow) od %s. Powód: %s", suitable, reason);
 
 			pVars[victim][pBlock] += BLOCK_VEH;
 		}
 		case PEN_BLCKOOC: {
 			if(days > 0) {
-				format(str, sizeof(str), "~r~Blokada czatu OOC ~w~(na %d dni)~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+				format(str, sizeof(str), "~r~Blokada czatu OOC ~w~(na %d dni)~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], suitable, reason);
 			} else {
-				format(str, sizeof(str), "~r~Blokada czatu OOC~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+				format(str, sizeof(str), "~r~Blokada czatu OOC~n~~w~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", pVars[victim][pCharName], suitable, reason);
 			}
 
-			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada czatu OOC) od %s. Powód: %s", pVars[playerid][pCharName], reason);
+			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada czatu OOC) od %s. Powód: %s", suitable, reason);
 
 			pVars[victim][pBlock] += BLOCK_OOC;
 		}
 		case PEN_WRITING: {
-			format(str, sizeof(str), "~r~Blokada niechlujnego pisania ~w~(na %d dni)~n~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+			format(str, sizeof(str), "~r~Blokada niechlujnego pisania ~w~(na %d dni)~n~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], suitable, reason);
+			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada niechlujnego pisania) od %s. Powód: %s", suitable, reason);
 			
-			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Blokada niechlujnego pisania) od %s. Powód: %s", pVars[playerid][pCharName], reason);
+			pVars[victim][pBlock] += BLOCK_WRITING;
 		}
 		case PEN_RPACTN: {
-			format(str, sizeof(str), "~r~Wymuszenie odgrywania akcji RolePlay ~w~(na %d dni)~n~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+			format(str, sizeof(str), "~r~Wymuszenie odgrywania akcji RolePlay ~w~(na %d dni)~n~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], suitable, reason);
+			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Wymuszenie odgrywania akcji RolePlay) od %s. Powód: %s", suitable, reason);
 			
-			format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz karê (Wymuszenie odgrywania akcji RolePlay) od %s. Powód: %s", pVars[playerid][pCharName], reason);
+			pVars[victim][pBlock] += BLOCK_RPACTN;
 		}
-		case PEN_KLATWA: {
-			format(str, sizeof(str), "~r~Ban w wyniku klatwy ~w~(na %d dni)~n~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], pVars[playerid][pCharName], reason);
+		case PEN_CURSE: {
+			format(str, sizeof(str), "~r~Ban w wyniku klatwy ~w~(na %d dni)~n~Gracz:     %s~n~Nadajacy: %s~n~~y~~h~%s", days, pVars[victim][pCharName], suitable, reason);
+			
+			pVars[victim][pBlock] += BLOCK_CURSE;
 		}
 	}
-	
+
 	SendClientMessage(victim, COLOR_WHITE, mainStr);
 	TextDrawSetString(penalty, str);
 	TextDrawShowForAll(penalty);
-	
+
 	SetTimer("hidePenalty", 20000, false);
 	return 1;
 }
@@ -1065,7 +1065,7 @@ stock setPlayerDefaultValues(playerid) {
 		format(pVars[playerid][pIp], 16, NULL);
 		format(pVars[playerid][pDateReg], 64, NULL);
 		format(pVars[playerid][pLastDate], 64, NULL);
-		
+
 		GetPlayerName(playerid, pVars[playerid][pAccName], 24);
 		GetPlayerIp(playerid, pVars[playerid][pIp], 16);
 	}
@@ -1145,10 +1145,10 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pY] = DEFAULT_POS_Y;
 	pVars[playerid][pZ] = DEFAULT_POS_Z;
 
-	playerCps[playerid] = 0;
+	/*playerCps[playerid] = 0;
 	playerRcPosition[playerid] = 0;
 	playerAFKTime[playerid] = 0;
-	//actualVehicle[playerid] = -1;
+	actualVehicle[playerid] = 0;
 	actualBusStop[playerid] = 0;
 	actualCashpoint[playerid] = 0;
 	actualItem[playerid] = 0;
@@ -1204,7 +1204,7 @@ stock setPlayerDefaultValues(playerid) {
 		playerContacts[playerid][i] = 0;
 	}
 
-	exit3dInfo[playerid] = Text3D:INVALID_3DTEXT_ID;
+	exit3dInfo[playerid] = Text3D:INVALID_3DTEXT_ID;*/
 	return 1;
 }
 
@@ -1282,7 +1282,7 @@ stock resetPlayerValues(playerid) {
 	playerRcTime[playerid] = 0.0;
 	playerRcActualTime[playerid] = 0.0;
 	playerAFKTime[playerid] = 0;
-	//actualVehicle[playerid] = -1;
+	actualVehicle[playerid] = INVALID_SERVER_VEHICLE_ID;
 	actualBusStop[playerid] = 0;
 	actualCashpoint[playerid] = 0;
 	actualItem[playerid] = 0;
@@ -1293,6 +1293,7 @@ stock resetPlayerValues(playerid) {
 	offerFor[playerid] = INVALID_PLAYER_ID;
 	offerParams[playerid][0] = 0;
 	offerParams[playerid][1] = 0;
+	offerParams[playerid][2] = 0;
 	offerType[playerid] = INVALID_OFFER_TYPE;
 	groupOfferFor[playerid] = INVALID_PLAYER_ID;
 	groupOfferFrom[playerid] = INVALID_PLAYER_ID;
@@ -1381,10 +1382,20 @@ stock setPlayerAJ(playerid, minutes) {
 	return 1;
 }
 
-stock setPlayerDetention(playerid, minutes) {
-	pVars[playerid][pDetention] = minutes * 60;
+stock setPlayerDetention(playerid, id, minutes, const reason[]) {
+	pVars[id][pDetention] = minutes * 60;
 	
-	
+	foreach(new i : Player) {
+		foreach(new j : groupItter) {
+			if(isPlayerDuty[i] && pVars[i][pDuty] > 0 && pVars[i][pGroupNow] == gVars[j][gUid]) {
+				if(gVars[j][gType] == G_LSPD) {
+					mainStr[0] = EOS;
+					format(mainStr, sizeof(mainStr), "%s przetrzymuje %s na %dmin. Powód: %s", pVars[playerid][pCharName], pVars[id][pCharName], minutes, reason);
+					SendClientMessage(i, COLOR_WHITE, mainStr);
+				}
+			}
+		}
+	}
 	return 1;
 }
 
@@ -1410,10 +1421,10 @@ Callback:dtTimer(playerid) {
 }
 
 stock updatePlayerGameStatus(playerid) {	
-	new srvItemId = getServerItemIdForPlayer(playerid);
+	//new srvItemId = getServerItemIdForPlayer(playerid);
 	new srvGrpId = getServerGroupIdForPlayer(playerid);
 	static h, mins, secs;
-	
+
 	if(pVars[playerid][pStatus] & STAT_CLEAR) {
 		format(pVars[playerid][pStatusStr], 128, NULL);
 	} else if(pVars[playerid][pStatus] & STAT_NONE) {
@@ -1542,6 +1553,28 @@ stock getPhoneNumberFromName(name[]) {
 	return number;
 }
 
+stock showTelephoneInterfaceForPlayer(playerid, dialogid) {
+	new str[256];
+	new pId;
+
+	strcat(mainStr, "{FFFFFF}333\tTaxi, restauracje i inne firmy\n777\tZamówienia\n911\tPomoc, s³u¿by porz¹dkowe\n-----\n");
+
+	for(new i = 0; i < sizeof(playerContacts); i++) {
+		if(playerContacts[playerid][i] != 0) {
+			pId = getPhoneOwnerIdFromNumber(playerContacts[playerid][i]);
+
+			if(IsPlayerConnected(pId)) {
+				format(str, sizeof(str), "%s\n{FFFFFF}%d\t%d\t%s", str, playerContacts[playerid][i], playerContacts[playerid][i], playerContactsName[playerid][i]);
+			} else {
+				format(str, sizeof(str), "%s\n{FFFFFF}%d\t%d\t(Nieaktywny)", str, playerContacts[playerid][i], playerContacts[playerid][i]);
+			}
+		}
+	}
+
+	strcat(mainStr, str);
+	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, "Telefon > Kontakty", mainStr, "Wybierz", "Anuluj");
+}
+
 stock sendOfferToPlayer(playerid, id, params[], type) {
 	new str[64];
 
@@ -1551,6 +1584,7 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 	offerType[playerid] = offerType[id] = type;
 	offerParams[playerid][0] = offerParams[id][0] = params[0];
 	offerParams[playerid][1] = offerParams[id][1] = params[1];
+	offerParams[playerid][2] = offerParams[id][2] = params[2];
 
 	GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
 
@@ -1594,9 +1628,9 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zakup przedmiotu: %s\n\nKoszt: $0. Czy akceptujesz tê ofertê?", iVars[srvItemId][iName]);
 		}
 		case O_ZAKUPPOJ: {
-			new srvVehId = actualVehicle[playerid];
+			new srvVehId = getServerVehicleIdForPlayer(playerid);
 			
-			actualVehicle[id] = actualVehicle[playerid];
+			actualVehicle[id] = vVars[srvVehId][vUid];
 			
 			format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~9:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
 			vVars[srvVehId][vUid], vVars[srvVehId][vOUid], vVars[srvVehId][vModelId], vVars[srvVehId][vId], vVars[srvVehId][vColor1], vVars[srvVehId][vColor2], vVars[srvVehId][vEngineHp]);
@@ -1614,9 +1648,7 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			mainStr[0] = EOS;
 			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
 			format(mainStr, sizeof(mainStr), "{FFFFFF}U¿ywany pojazd: %s\nPrzebieg: %dkm (im wiêkszy, tym wiêksze spalanie)\nSuma napraw: %dhp (po przekroczeniu 11500.0 nie mo¿na dalej naprawiaæ)\nHP: %d\n\n", VehicleNames[vVars[srvVehId][vModelId] - 400], vVars[srvVehId][vMileage], 0, vVars[srvVehId][vEngineHp]);
-			format(mainStr, sizeof(mainStr), "Koszt: $%d. Czy akceptujesz tê ofertê?\n{FF0000}\tUWAGA! Ta transakcja wymaga podwy¿szonych uprawnieñ.\n\tWpisz \"potwierdzam\" w poni¿szym okienku, inaczej zostanie anulowana.\n", offerParams[id][0]);
-			strcat(mainStr, "\tUPEWNIJ SIÊ, ¿e wiesz co akceptujesz!");
-			return ShowPlayerDialog(id, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_INPUT, str, mainStr, "Tak", "Nie");
+			format(mainStr, sizeof(mainStr), "Koszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][0]);
 		}
 		case O_AUTOWYP: {
 			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
@@ -1631,7 +1663,7 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Rejestracja pojazdu o nr seryjnym %d.\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][1], offerParams[id][0]);
 		}
 		case O_TANKOWANIE: {
-			new srvVehId = actualVehicle[id];
+			new srvVehId = getServerVehicleIdForPlayer(id);
 			new Float:fuel = 100.0 - (100.0 * vVars[srvVehId][vFuel] / VEHICLE_FUEL_TANK_MEDIUM);
 
 			format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
@@ -1648,11 +1680,9 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 		}
 		case O_PRZETRZY: {
 			new srvGrpId = getServerGroupIdForPlayer(playerid);
-			
+
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[srvGrpId][gName]);
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Przetrzymanie na %d minut\n\nKoszt: $%d. Czy akceptujesz tê ofertê?\n\n", offerParams[id][1], offerParams[id][0]);
-			format(mainStr, sizeof(mainStr), "\t{FF0000}UWAGA! Ta transakcja wymaga podwy¿szonych uprawnieñ.\nWpisz \"potwierdzam\" w poni¿szym okienku, inaczej zostanie anulowane.\nUPEWNIJ SIÊ, ¿e wiesz co akceptujesz!");
-			return ShowPlayerDialog(id, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_INPUT, str, mainStr, "Tak", "Nie");
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Przetrzymanie na %d minut\n\nKoszt: $%d. Czy akceptujesz tê ofertê?\n", offerParams[id][1], offerParams[id][0]);
 		}
 		case O_SPRZEDAZ: {
 			new srvGrpId = getServerGroupIdForPlayer(playerid);
@@ -1661,6 +1691,11 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[srvGrpId][gName]);
 			format(mainStr, sizeof(mainStr), "{FFFF00}Produkt: %dx %s (%d)\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][1], gIVars[srvSetId][gIName], gIVars[srvSetId][gIUid], offerParams[id][0]);
 		}
+	}
+
+	if(offerParams[id][2]) {
+		strcat(mainStr, "\n\t{FF0000}UWAGA! Ta transakcja wymaga podwy¿szonych uprawnieñ.\nWpisz \"potwierdzam\" w poni¿szym okienku, inaczej zostanie anulowane.\nUPEWNIJ SIÊ, ¿e wiesz co akceptujesz!");
+		return ShowPlayerDialog(id, DIALOG_SHOW_OFFER_PAY, DIALOG_STYLE_INPUT, str, mainStr, "Tak", "Nie");
 	}
 
 	if(offerParams[id][0] > 0) {
@@ -1694,14 +1729,11 @@ stock setPlayerHexName(playerid) {
 	SetPlayerName(playerid, mainStr);
 }
 
-stock textDrawShowForPlayerEx(playerid, Text:text) {
-	for(new i = 0; i < sizeof(text); i++) {
-		
+stock resetPlayerTextDraws(playerid) {
+	for(new i = 0; i < 100; i++) {
+		TextDrawHideForPlayer(playerid, Text:i);
 	}
-	TextDrawHideForPlayer(playerid, lastPlayerTD[playerid]);
-	TextDrawShowForPlayer(playerid, text);
-
-	lastPlayerTD[playerid] = text;
+	return 1;
 }
 
 stock preloadAnimLib(playerid, animlib[]) {
@@ -1725,6 +1757,12 @@ stock givePlayerMoneyEx(playerid, money) {
 
 	pVars[playerid][pMoney] += money;
 	GivePlayerMoney(playerid, pVars[playerid][pMoney]);
+}
+
+stock osrp_TogglePlayerControllable(playerid, toggle) {
+	TogglePlayerControllable(playerid, toggle);
+	
+	isFreeze[playerid] = bool:toggle;
 }
 
 stock createNumber(playerid) {
@@ -2012,7 +2050,7 @@ Callback:bwTimer(playerid) {
 		ClearAnimations(playerid);
 		setPlayerHealthEx(playerid, 5.0);
 		SetPlayerDrunkLevel(playerid, 10000);
-		TogglePlayerControllable(playerid, 1);
+		osrp_TogglePlayerControllable(playerid, 1);
 
 		strcat(mainStr, "Ockn¹³eœ(aœ) siê po odniesieniu powa¿nych obra¿eñ.\n");
 		strcat(mainStr, "Krêci Ci siê w g³owie. Udaj siê do szpitala, tam Ci z tym pomog¹.");

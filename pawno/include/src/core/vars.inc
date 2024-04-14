@@ -30,12 +30,13 @@ new actualRace[MAX_PLAYERS];
 new playerFuelPrice[MAX_PLAYERS]; // Do tablicy trafia cena paliwa dla danego gracza podczas uzywania funkcji tankuj
 new offerFrom[MAX_PLAYERS]; // Przechowuje id osoby ktora wyslala oferte
 new offerFor[MAX_PLAYERS]; // Przechowuje id osoby ktora otrzymala oferte
-new offerParams[MAX_PLAYERS][2]; // 0 - pieni¹dze, 1 - dodatkowe opcje
+new offerParams[MAX_PLAYERS][3]; // 0 - pieni¹dze, 1 - dodatkowe opcje, 2 - specjalna
 new offerType[MAX_PLAYERS];
 new groupOfferFor[MAX_PLAYERS];
 new groupOfferFrom[MAX_PLAYERS];
 new playerContacts[MAX_PLAYERS][MAX_CONTACTS];
 new playerContactsName[MAX_PLAYERS][MAX_CONTACTS][24];
+new cuffedBy[MAX_PLAYERS];
 new telEnterNumber[MAX_PLAYERS];
 new telEnterGroup[MAX_PLAYERS];
 new lastPmId[MAX_PLAYERS];
@@ -46,8 +47,10 @@ new gymObject[2];
 new called[MAX_PLAYERS];
 new usedLastItemTime[MAX_PLAYERS];
 new numberPresses[MAX_PLAYERS];
+new numberVehBlows[MAX_PLAYERS];
 new blockadeObjects[MAX_BLOCKADES];
 new chatEnabledId[MAX_PLAYERS];
+new fuelTimer[MAX_PLAYERS];
 
 //part time job
 new casualJob[MAX_PLAYERS];
@@ -75,6 +78,7 @@ new bool:isInBus[MAX_PLAYERS];
 new bool:usedCmdLogin[MAX_PLAYERS];
 new bool:usedCmdReport[MAX_PLAYERS];
 new bool:hasBelts[MAX_PLAYERS];
+new bool:isCuffed[MAX_PLAYERS];
 stock bool:hasBank[MAX_PLAYERS];
 new bool:isDizzines[MAX_PLAYERS];
 new bool:usedTelephone[MAX_PLAYERS];
@@ -88,6 +92,7 @@ new bool:isGym[MAX_PLAYERS];
 new bool:usedAdminToken[MAX_PLAYERS];
 new bool:pressedBarbell[MAX_PLAYERS];
 new bool:chatEnabled[MAX_PLAYERS];
+new bool:telephoneState[MAX_PLAYERS];
 
 // type - MySQL
 new MySQL:hMySQL;
@@ -120,7 +125,6 @@ new Text:usedRollersInfo[MAX_PLAYERS][2];
 new Text:hotelInfo[MAX_PLAYERS][3];
 new Text:collisionInfo[MAX_PLAYERS];
 new Text:afkPrivateMessage[MAX_PLAYERS][2];
-new Text:lastPlayerTD[MAX_PLAYERS][10];
 
 // type - Iterator
 new Iterator:vehItter<MAX_VEHICLES>;

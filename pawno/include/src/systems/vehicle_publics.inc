@@ -12,8 +12,10 @@
 #define __VEHICLE_PUBLICS_INC__
 #pragma library osrp
 
-sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {	
-	new srvVehId = actualVehicle[playerid];
+sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
+	new srvVehId = getServerVehicleIdForPlayerEx(vehicleid);
+
+	actualVehicle[playerid] = vVars[srvVehId][vUid];
 
 	if(isVehicleInUse(vehicleid) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid]) {
 		ClearAnimations(playerid);
@@ -27,7 +29,7 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 			SendClientMessage(playerid, COLOR_WHITE, "(!) Jako nowy gracz, mo¿esz byæ pasa¿erem tylko, gdy w pojeŸdzie jest kierowca.");
 		}
 	}
-	
+
 	if(!isBicycle(GetVehicleModel(vehicleid)) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid] && !ispassenger) {
 		ClearAnimations(playerid);
 
@@ -36,7 +38,7 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		strcat(mainStr, "By wyrobiæ prawko, kup telefon i zadzwoñ do nauki jazdy pod numerem 333.");
 		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 	}
-	
+
 	if(vVars[srvVehId][vLock]) {
 		ClearAnimations(playerid);
 		GameTextForPlayer(playerid, "~n~~n~~r~Pojazd jest zamkniety.~n~~w~/v zamknij", 6000, 3);
@@ -65,7 +67,7 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 	SendClientMessage(killerid, COLOR_WHITE, "Witma ! OnVehicleDeath");
 #endif
 
-	new srvVehId = actualVehicle[killerid];
+	new srvVehId = getServerVehicleIdForPlayer(killerid);
 
 	DestroyVehicle(vehicleid);
 	vVars[srvVehId][vSpawned] = false;
@@ -152,13 +154,6 @@ sampCallback:OnVehicleStreamIn(vehicleid, forplayerid) {
 #if defined DEBUG
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamIn");
 #endif
-
-	foreach(new v : vehItter) {
-		if(vVars[v][vId] == vehicleid) {
-			actualVehicle[forplayerid] = vVars[v][vUid];
-			break;
-		}
-	}
 	return 1;
 }
 
@@ -178,7 +173,5 @@ sampCallback:OnVehicleStreamOut(vehicleid, forplayerid) {
 		TextDrawShowForPlayer(forplayerid, collisionInfo[forplayerid]);
 		SetTimerEx("hideCollisionInfo", 10000, false, "i", forplayerid);
 	}
-
-	actualVehicle[forplayerid] = INVALID_SERVER_VEHICLE_ID;
 	return 1;
 }

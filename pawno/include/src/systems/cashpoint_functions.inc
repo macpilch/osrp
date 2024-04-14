@@ -61,10 +61,12 @@ stock searchPlayerCashpoint(playerid) {
 			mysql_free_result();
 			
 			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tStan konta (%d)\n2\tWyp³aæ pieni¹dze\n3\tWp³aæ pieni¹dze\n4\tDokonaj przelewu\n5\tSp³aæ d³ug ($0)", pVars[playerid][pBank]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tStan konta (%d)\n2\tWyp³aæ pieni¹dze\n3\tWp³aæ pieni¹dze\n4\tDokonaj przelewu\n5\tSp³aæ d³ug ($%d)", pVars[playerid][pBank], pVars[playerid][pPdp]);
 			ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT, DIALOG_STYLE_LIST, "Bankomat", mainStr, "OK", "Anuluj");
 			
 			actualCashpoint[playerid] = i;
+		} else if(playerToPoint(playerid, cVars[i][csDistance] * 2, cVars[i][csX], cVars[i][csY], cVars[i][csZ])) {
+			return GameTextForPlayer(playerid, "~n~~r~Podejdz blizej.", 5000, 3);
 		}
 	}
 	return 1;

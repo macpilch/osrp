@@ -45,7 +45,8 @@ enum GroupData {
 	gPayDay,
 	gDoor,
 	gFlags,
-	gColor
+	gColor,
+	gRegister
 };
 
 enum GroupItems {

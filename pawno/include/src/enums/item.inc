@@ -80,7 +80,8 @@ enum {
 	P_MASKASAM,
 	P_KANISTER,
 	P_KARNET,
-	P_HEROINA
+	P_HEROINA,
+	P_LANDSTALKER = 400
 };
 
 enum ItemData {

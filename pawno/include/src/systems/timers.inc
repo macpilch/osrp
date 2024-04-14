@@ -448,7 +448,7 @@ task globalTimer[1000]() {
 			}
 		}
 
-		new srvVehId = actualVehicle[i];
+		new srvVehId = getServerVehicleIdForPlayer(i);
 
 		if(!isBicycle(vVars[srvVehId][vModelId])) {
 			if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
@@ -545,8 +545,8 @@ task globalTimer[1000]() {
 					GetVehicleHealth(vVars[j][vId], vehHp);
 
 					if(vVars[j][vEngineHp] != vehHp) {
-						new reas[64];
-						
+						//new reas[64];
+
 						//format(reas, sizeof(reas), "~y~Manipulacja swiatlami~n~~w~Wymuszona naprawa swiatel V%d", vVars[j][vUid]);
 						//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, reas, 0);
 					}
@@ -642,7 +642,7 @@ task antiCheat[1000]() {
 				//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
 			}*/
 			
-			new srvVehId = actualVehicle[i];
+			new srvVehId = getServerVehicleIdForPlayer(i);
 			
 			if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
 				new reas[64];
@@ -674,7 +674,7 @@ task antiCheat[1000]() {
 					totalPos = floatabs((x - pVars[i][pX]) + (y - pVars[i][pY]));
 
 					format(reas, sizeof(reas), "Unfreeze~n~~w~Ruch o %0.1fj podczas zamrozenia pieszo.", totalPos);
-					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
+					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, reas, 0);
 				}
 			}
 		}

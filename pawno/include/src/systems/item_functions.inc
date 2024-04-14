@@ -80,7 +80,14 @@ stock addPlayerItem(playerid, itemid) {
 	iVars[freeId][iUid] = freeId + 1;
 	iVars[freeId][iId] = itemid;
 	iVars[freeId][iOUid] = pVars[playerid][pUid];
-	format(iVars[freeId][iName], 32, itemNames[itemid]);
+
+	// Przedmiot pojazdu
+	if(itemid >= 400) {
+		format(iVars[freeId][iName], 32, VehicleNames[itemid - 400]);
+	} else {
+		format(iVars[freeId][iName], 32, itemNames[itemid]);
+	}
+
 	iVars[freeId][iValue1] = 0;
 	iVars[freeId][iValue2] = 0;
 	iVars[freeId][iPosX] = 0.0;
@@ -88,13 +95,13 @@ stock addPlayerItem(playerid, itemid) {
 	iVars[freeId][iPosZ] = 0.0;
 	iVars[freeId][iUsed] = false;
 	iVars[freeId][iPlace] = ITEM_PLACE_PLAYER;
-	
+
 	Iter_Add(itemItter, freeId);
-	
+
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Items` (`UID`, `ID`, `OUID`, `Name`, `Value1`, `Value2`, `Used`, `Place`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d', '%d', '%d')", iVars[freeId][iUid], iVars[freeId][iId], iVars[freeId][iOUid], iVars[freeId][iName], iVars[freeId][iValue1], iVars[freeId][iValue2], iVars[freeId][iUsed], iVars[freeId][iPlace]);
 	mysql_query(queryStr);
-	
+
 	if(iVars[freeId][iId] == P_TELEFON || iVars[freeId][iId] == P_NKA8110) {
 		new number[7], numberStr[8];
 		
@@ -412,6 +419,19 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				sendMeMessage(playerid, mainStr);
 			}
 		}
+		case P_LANDSTALKER: {
+			if(!iVars[srvitemid][iUsed]) {
+				iVars[srvitemid][iUsed] = true;
+
+				addPlayerVehicle(playerid, itemid);
+				removePlayerItem(srvitemid);
+
+				strcat(mainStr, "Pojazd zosta³ odebrany i znajduje siê teraz\nna Twojej liœcie pojazdów - /v.");
+				ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+
+				iVars[srvitemid][iUsed] = false;
+			}
+		}
 	}
 	return 1;
 }
@@ -457,7 +477,7 @@ stock pickUpNearblyItems(playerid, where) {
 
 		ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PICKUP, DIALOG_STYLE_LIST, "Pobliskie przedmioty (/p podnies)", mainStr, "Podnieœ", "Zamknij");
 	} else if(where == ITEM_PLACE_VEHICLE) {
-		new srvVehId = actualVehicle[playerid];
+		new srvVehId = getServerVehicleIdForPlayer(playerid);
 
 		if(vVars[srvVehId][vOUid] != pVars[playerid][pUid]) {
 			return GameTextForPlayer(playerid, "~y~Ten pojazd nie nalezy do ciebie.", 5000, 3);

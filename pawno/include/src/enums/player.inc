@@ -47,6 +47,7 @@ enum PlayerData {
 	pBans,
 	pKicks,
 	pWarns,
+	pAJs,
 	pVw,
 	pInt,
 	pSkin,

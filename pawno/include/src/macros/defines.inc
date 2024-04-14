@@ -24,6 +24,10 @@
 #define RELEASED(%0) \
 	(((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
 
+#define GetDistanceBetweenPoints(%0,%1,%2,%3,%4,%5) (((%0 - %3) * (%0 - %3)) + ((%1 - %4) * (%1 - %4)) + ((%2 - %5) * (%2 - %5)))
+
+#pragma tabsize 0
+
 #undef MAX_PLAYERS
 #undef MAX_VEHICLES
 #undef MAX_OBJECTS
@@ -112,6 +116,10 @@
 #define BLOCK_OOC 1
 #define BLOCK_ACC 2
 #define BLOCK_VEH 4
+#define BLOCK_RUNNBLW 8
+#define BLOCK_WRITING 16
+#define BLOCK_RPACTN 32
+#define BLOCK_CURSE 64
 
 // Uprawnienia grupy (Flagi)
 #define GROUP_PERM_CHATOOC 1
@@ -128,7 +136,7 @@
 #define PEN_RUNNBLW 7
 #define PEN_WRITING 8
 #define PEN_RPACTN 9
-#define PEN_KLATWA 10
+#define PEN_CURSE 10
 
 #define INVALID_OFFER_TYPE -1
 #define O_POWITANIE 0
@@ -146,6 +154,7 @@
 #define O_VCARD 12
 #define O_PRZETRZY 13
 #define O_SPRZEDAZ 14
+#define O_NAPRAWE 15
 
 #define VEHICLE_OWNER_GROUP 0
 #define INVALID_ITEM_ID 0
@@ -170,7 +179,7 @@
 #define PART_TIME_JOB_COURIER 1
 
 // fuel tanks
-#define INVALID_SERVER_VEHICLE_ID 0
+#define INVALID_SERVER_VEHICLE_ID -1
 #define VEHICLE_FUEL_TANK_SMALL 20
 #define VEHICLE_FUEL_TANK_MEDIUM 40
 #define VEHICLE_FUEL_TANK_LARGE 60

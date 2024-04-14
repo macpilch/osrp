@@ -57,13 +57,14 @@ stock createNewBusStop(playerid, busstopname[]) {
 
 stock searchPlayerBusStop(playerid) {
 	foreach(new i : busstopItter) {
-		if(playerToPoint(playerid, 5.0, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ])) {
+		if(playerToPoint(playerid, 2.0, bVars[i][bsX], bVars[i][bsY], bVars[i][bsZ])) {
 			GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
-			
-			TogglePlayerControllable(playerid, 0);
 
-			InterpolateCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 100, 1500, CAMERA_MOVE);
-			InterpolateCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], 1500, CAMERA_MOVE);
+			TogglePlayerControllable(playerid, 0);
+			SetCameraBehindPlayer(playerid);
+
+			InterpolateCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 150, 2000, CAMERA_MOVE);
+			InterpolateCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], 2000, CAMERA_MOVE);
 
 			isInBus[playerid] = true;
 			actualBusStop[playerid] = i;

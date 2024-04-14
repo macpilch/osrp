@@ -249,7 +249,7 @@ CMD:klatwa(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	givePlayerPenalty(playerid, pId, PEN_KLATWA, reason, days);
+	givePlayerPenalty(playerid, pId, PEN_CURSE, reason, days);
 	return 1;
 }
 
@@ -419,13 +419,13 @@ CMD:rc(playerid, params[]) {
 		mainStr[0] = EOS;
 		format(mainStr, sizeof(mainStr), "> GM %s sprawdza %s.");
 		
-		TogglePlayerSpectating(playerid, 1);
+		TogglePlayerControllable(playerid, 1);
 		PlayerSpectatePlayer(playerid, pId);
 		
 		isSpectating[playerid] = true;
 	} else
 	{	
-		TogglePlayerSpectating(playerid, 0);
+		TogglePlayerControllable(playerid, 0);
 		
 		isSpectating[playerid] = false;
 	}
@@ -617,9 +617,7 @@ CMD:freeze(playerid, params[]) {
 	switch(freezeOnOff) {
 		case 0: {
 			GetPlayerPos(toPlayerid, pVars[toPlayerid][pX], pVars[toPlayerid][pY], pVars[toPlayerid][pZ]);
-			TogglePlayerControllable(toPlayerid, 1);
-			
-			isFreeze[toPlayerid] = false;
+			osrp_TogglePlayerControllable(toPlayerid, 1);
 			
 			SendClientMessage(toPlayerid, COLOR_GREEN, "Administracja odmrozi³a Ciê.");
 			
@@ -629,9 +627,7 @@ CMD:freeze(playerid, params[]) {
 		}
 		case 1: {
 			GetPlayerPos(toPlayerid, pVars[toPlayerid][pX], pVars[toPlayerid][pY], pVars[toPlayerid][pZ]);
-			TogglePlayerControllable(toPlayerid, 0);
-			
-			isFreeze[toPlayerid] = true;
+			osrp_TogglePlayerControllable(toPlayerid, 0);
 			
 			SendClientMessage(toPlayerid, COLOR_GREEN, "Administracja zamrozi³a Ciê.");
 			
@@ -686,6 +682,7 @@ CMD:startpos(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 
+	SetCameraBehindPlayer(pId);
 	SetPlayerVirtualWorld(pId, 0);
 	SetPlayerInterior(pId, 0);
 
@@ -757,7 +754,7 @@ CMD:apojazd(playerid, params[]) {
 		DestroyVehicle(vVars[vehUid - 1][vId]);
 		DestroyDynamic3DTextLabel(vVars[vehUid - 1][vDesc]);
 		
-		actualVehicle[playerid] = 0;
+		actualVehicle[playerid] = INVALID_SERVER_VEHICLE_ID;
 		Iter_Remove(vehItter, vehUid - 1);
 		
 		vVars[vehUid - 1][vUid] = 0;
@@ -867,9 +864,9 @@ CMD:setfuel(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 
-	new srvVehId = actualVehicle[toPlayerId];
+	new srvVehId = getServerVehicleIdForPlayer(toPlayerId);
 
-	if(actualVehicle[toPlayerId] == 0) {
+	if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Ten gracz nie u¿ywa ¿adnego pojazdu.");
 	}
 
@@ -1095,7 +1092,7 @@ CMD:naprawpojazd(playerid, params[]) {
 	}
 	
 	mainStr[0] = EOS;
-	new srvVehId = actualVehicle[toPlayerGive];
+	new srvVehId = getServerVehicleIdForPlayer(toPlayerGive);
 	
 	if(IsPlayerInAnyVehicle(toPlayerGive)) {
 		if(strfind(str, "karoseria", true) != -1) {
