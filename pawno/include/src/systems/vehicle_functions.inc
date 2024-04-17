@@ -66,7 +66,7 @@ stock saveVehicleValues() {
 }
 
 stock getServerVehicleIdForPlayer(playerid) {
-	new vid = INVALID_SERVER_VEHICLE_ID;
+	new vid = -1;
 
 	foreach(new i : vehItter) {
 		if(vVars[i][vUid] == actualVehicle[playerid]) {
@@ -78,7 +78,7 @@ stock getServerVehicleIdForPlayer(playerid) {
 }
 
 stock getServerVehicleIdForPlayerEx(vehicleid) {
-	new vid = INVALID_SERVER_VEHICLE_ID;
+	new vid = -1;
 
 	foreach(new i : vehItter) {
 		if(vehicleid == vVars[i][vId]) {
@@ -160,7 +160,7 @@ stock resetVehicleValues(playerid) {
 
 stock bool:checkPlayerVehicles(playerid) {
 	foreach(new i : vehItter) {
-		if(!strcmp(vVars[i][vCharName], pVars[playerid][pCharName], false) && vVars[i][vOUid] != VEHICLE_OWNER_GROUP) {
+		if(vVars[i][vOUid] == pVars[playerid][pUid] && vVars[i][vOUid] != VEHICLE_OWNER_GROUP) {
 			return true;
 		}
 	}

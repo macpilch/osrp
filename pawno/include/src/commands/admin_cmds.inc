@@ -367,7 +367,7 @@ CMD:unbw(playerid, params[]) {
 	}
 
 	setPlayerHealthEx(pId, 100.0);
-	TogglePlayerControllable(pId, 1);
+	osrp_TogglePlayerControllable(pId, 1);
 	SetPlayerDrunkLevel(pId, 0);
 	ClearAnimations(pId);
 
@@ -377,11 +377,15 @@ CMD:unbw(playerid, params[]) {
 	foreach(new i : Player) {
 		if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
 			if(isAdminDuty[i]) {
+				mainStr[0] = EOS;
+
 				if(playerid == pId) {
-					mainStr[0] = EOS;
 					format(mainStr, sizeof(mainStr), "%s zdj¹³ sobie BW.", pVars[playerid][pCharName]);
-					SendClientMessage(i, COLOR_GREEN, mainStr);
+				} else {
+					format(mainStr, sizeof(mainStr), "%s zdj¹³ BW %s.", pVars[playerid][pCharName], pVars[pId][pCharName]);
 				}
+
+				SendClientMessage(i, COLOR_GREEN, mainStr);
 			}
 		}
 	}
@@ -396,15 +400,35 @@ CMD:unbw(playerid, params[]) {
 	return 1;
 }
 
+CMD:ann(playerid, params[]) {
+	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+		return 0;
+	}
+
+	if(!isAdminDuty[playerid]) {
+		return 1;
+	}
+
+	new str[256];
+
+	if(sscanf(params, "s[256]", str)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ann [Text]");
+	}
+
+	format(str, sizeof(str), "~w~Gamemaster %s ~y~: ~r~%s", pVars[playerid][pCharName], str);
+	GameTextForAll(str, 10000, 6);
+	return 1;
+}
+
 CMD:rc(playerid, params[]) {
 	if(pVars[playerid][pRank] < SUPPORT_RANK) {
 		return 0;
 	}
-	
+
 	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
-	
+
 	new pId;
 
 	if(sscanf(params, "i", pId)) {
@@ -416,17 +440,35 @@ CMD:rc(playerid, params[]) {
 	}
 	
 	if(!isSpectating[playerid]) {
+		new vw, int;
+
 		mainStr[0] = EOS;
 		format(mainStr, sizeof(mainStr), "> GM %s sprawdza %s.");
-		
-		TogglePlayerControllable(playerid, 1);
-		PlayerSpectatePlayer(playerid, pId);
-		
+
+		vw = GetPlayerVirtualWorld(pId);
+		int = GetPlayerInterior(pId);
+
+		osrp_TogglePlayerControllable(playerid, 1);
+		TogglePlayerSpectating(playerid, 1);
+
+		if(GetPlayerState(pId) == PLAYER_STATE_DRIVER || GetPlayerState(pId) == PLAYER_STATE_PASSENGER) {
+			PlayerSpectateVehicle(playerid, GetPlayerVehicleID(pId));
+		} else {
+			PlayerSpectatePlayer(playerid, pId);
+		}
+
+		SetPlayerVirtualWorld(playerid, vw);
+		SetPlayerInterior(playerid, int);
+
 		isSpectating[playerid] = true;
 	} else
 	{	
-		TogglePlayerControllable(playerid, 0);
-		
+		TogglePlayerSpectating(playerid, 0);
+		osrp_TogglePlayerControllable(playerid, 0);
+
+		SetPlayerVirtualWorld(playerid, 0);
+		SetPlayerInterior(playerid, 0);
+
 		isSpectating[playerid] = false;
 	}
 	return 1;
@@ -866,12 +908,12 @@ CMD:setfuel(playerid, params[]) {
 
 	new srvVehId = getServerVehicleIdForPlayer(toPlayerId);
 
-	if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
+	if(actualVehicle[toPlayerId] == INVALID_SERVER_VEHICLE_ID) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Ten gracz nie u¿ywa ¿adnego pojazdu.");
 	}
 
 	vVars[srvVehId][vFuel] += fuel;
-	
+
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "Dodano %0.1f l paliwa do pojazdu %s.", fuel, VehicleNames[vVars[srvVehId][vModelId] - 400]);
 	SendClientMessage(playerid, COLOR_WHITE, mainStr);

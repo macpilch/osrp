@@ -27,10 +27,10 @@ stock initItemValues() {
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iiis[32]iifffii", iVars[i][iUid], iVars[i][iId], iVars[i][iOUid], iVars[i][iName], iVars[i][iValue1], iVars[i][iValue2], iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ], iVars[i][iUsed], iVars[i][iPlace]);
+		sscanf(queryStr, "p<|>iiiis[32]iifffii", iVars[i][iUid], iVars[i][iId], iVars[i][iOUid], iVars[i][iBUid], iVars[i][iName], iVars[i][iValue1], iVars[i][iValue2], iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ], iVars[i][iUsed], iVars[i][iPlace]);
 		
 		Iter_Add(itemItter, i);
-		printf("[DEBUG] SrvId: %d, Uid: %d, Id: %d, OUid: %d, Name: %s, Value1: %d, Value2: %d, PosX: %0.1f, PosY: %0.1f, PosZ: %0.1f, Used: %d, Place: %d", i, iVars[i][iUid], iVars[i][iId], iVars[i][iOUid], iVars[i][iName], iVars[i][iValue1], iVars[i][iValue2], iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ], iVars[i][iUsed], iVars[i][iPlace]);
+		printf("[DEBUG] SrvId: %d, Uid: %d, Id: %d, OUid: %d, BUid: %d, Name: %s, Value1: %d, Value2: %d, PosX: %0.1f, PosY: %0.1f, PosZ: %0.1f, Used: %d, Place: %d", i, iVars[i][iUid], iVars[i][iId], iVars[i][iOUid], iVars[i][iBUid], iVars[i][iName], iVars[i][iValue1], iVars[i][iValue2], iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ], iVars[i][iUsed], iVars[i][iPlace]);
 	}
 	
 	if(Iter_Count(itemItter)) {
@@ -80,6 +80,7 @@ stock addPlayerItem(playerid, itemid) {
 	iVars[freeId][iUid] = freeId + 1;
 	iVars[freeId][iId] = itemid;
 	iVars[freeId][iOUid] = pVars[playerid][pUid];
+	iVars[freeId][iBUid] = INVALID_ITEM_ID;
 
 	// Przedmiot pojazdu
 	if(itemid >= 400) {
@@ -143,9 +144,10 @@ stock removePlayerItem(srvitemid) {
 	
 	Iter_Remove(itemItter, srvitemid);
 	
-	iVars[srvitemid][iUid] = 0;
+	iVars[srvitemid][iUid] = INVALID_ITEM_ID;
 	iVars[srvitemid][iId] = -1;
-	iVars[srvitemid][iOUid] = 0;
+	iVars[srvitemid][iOUid] = INVALID_ITEM_ID;
+	iVars[srvitemid][iBUid] = INVALID_ITEM_ID;
 	format(iVars[srvitemid][iName], 32, NULL);
 	iVars[srvitemid][iValue1] = 0;
 	iVars[srvitemid][iValue2] = 0;
@@ -261,6 +263,37 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				iVars[srvitemid][iUsed] = false;
 			}
 		}
+		case P_TORBA: {
+			enum {
+				uid,
+				name[64]
+			}
+
+			new tmpIVars[MAX_ITEMS][2];
+			new count;
+
+			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "SELECT `UID`, `Name` FROM `osrp_Items` WHERE `OUID` = '%d' AND `BUID` = '%d' AND `Place` = '%d'", pVars[playerid][pUid], iVars[srvitemid][iBUid], ITEM_PLACE_BAG);
+			mysql_query(queryStr);
+
+			mysql_store_result();
+			mainStr[0] = EOS;
+			
+			while(mysql_fetch_row(queryStr, " ")) {
+				sscanf(queryStr, "is[64]", tmpIVars[count][uid], tmpIVars[count][name]);
+				format(mainStr, sizeof(mainStr), "{FFFFFF}%s\n%d\t\t%s", mainStr, tmpIVars[count][uid], tmpIVars[count][name]);
+
+				count++;
+			}
+
+			mysql_free_result();
+
+			if(!count) {
+				return GameTextForPlayer(playerid, "~w~Nie ma zadnych ~r~przedmiotow~w~.", 5000, 3);
+			}
+
+			ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_MORE_PUT_BAG_USE_ITEM, DIALOG_STYLE_LIST, "Dostêpne przedmioty", mainStr, "OK", "Zamknij");
+		}
 		case P_TELEFON, P_NKA8110: {
 			new pId = getPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
 
@@ -369,6 +402,25 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				strcat(mainStr, "Sk¹d wyci¹gasz/dok¹d chowasz broñ (np. \"z kabury\")?\n\n");
 				strcat(mainStr, "Mo¿esz pomin¹æ ten dialog i szybciej u¿ywaæ przedmiotów (/pomoc -> Przedmioty).");
 				ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PARAMETERS, DIALOG_STYLE_INPUT, "Parametry", mainStr, "U¿yj", "Anuluj");
+			} else {
+				if(!iVars[srvitemid][iUsed]) {
+					givePlayerWeapon(playerid, srvitemid);
+
+					mainStr[0] = EOS;
+					format(mainStr, sizeof(mainStr), "* %s wyci¹ga %s %s.", pVars[playerid][pCharName], itemNames[iVars[srvitemid][iId]], itemParms[playerid]);
+					sendMeMessage(playerid, mainStr);
+
+					iVars[srvitemid][iUsed] = true;
+				} else {
+					ResetPlayerWeapons(playerid);
+					saveItemWeaponAmmo(srvitemid);
+
+					format(mainStr, sizeof(mainStr), "* %s chowa %s %s.", pVars[playerid][pCharName], itemNames[iVars[srvitemid][iId]], itemParms[playerid]);
+					sendMeMessage(playerid, mainStr);
+
+					actualItem[playerid] = INVALID_ITEM_ID;
+					iVars[srvitemid][iUsed] = false;
+				}
 			}
 
 			//format(mainStr, sizeof(mainStr), "* %s uzupe³nia amunicjê swojej broni.", pVars[playerid][pCharName]);
@@ -434,6 +486,71 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 		}
 	}
 	return 1;
+}
+
+stock givePlayerWeapon(playerid, srvitemid) {
+	ResetPlayerWeapons(playerid);
+
+	switch(iVars[srvitemid][iId]) {
+		case P_KASTET: {
+			GivePlayerWeapon(playerid, WEAPON_BRASSKNUCKLE, 1);
+		}
+		case P_NITESTICK: {
+			GivePlayerWeapon(playerid, WEAPON_NITESTICK, 1);
+		}
+		case P_KNIFE: {
+			GivePlayerWeapon(playerid, WEAPON_KNIFE, 1);
+		}
+		case P_BASEBALL: {
+		GivePlayerWeapon(playerid, WEAPON_BAT, 1);
+		}
+		case P_COLT: {
+			GivePlayerWeapon(playerid, WEAPON_COLT45, loadItemWeaponAmmo(srvitemid));
+		}
+		case P_DEAGLE: {
+			GivePlayerWeapon(playerid, WEAPON_DEAGLE, loadItemWeaponAmmo(srvitemid));
+					}
+		case P_SHOTGUN: {
+			GivePlayerWeapon(playerid, WEAPON_SHOTGUN, loadItemWeaponAmmo(srvitemid));
+		}
+		case P_UZI: {
+			GivePlayerWeapon(playerid, WEAPON_UZI, loadItemWeaponAmmo(srvitemid));
+					}
+		case P_MP5: {
+			GivePlayerWeapon(playerid, WEAPON_MP5, loadItemWeaponAmmo(srvitemid));
+					}
+		case P_AK47: {
+			GivePlayerWeapon(playerid, WEAPON_AK47, loadItemWeaponAmmo(srvitemid));
+					}
+		case P_M4: {
+			GivePlayerWeapon(playerid, WEAPON_M4, loadItemWeaponAmmo(srvitemid));
+		}
+		case P_TEC9: {
+			GivePlayerWeapon(playerid, WEAPON_TEC9, loadItemWeaponAmmo(srvitemid));
+		}
+		case P_PARA: {
+			GivePlayerWeapon(playerid, WEAPON_PARACHUTE, 1);
+		}
+	}
+
+	if(pVars[playerid][pPisSkill] < 0 || pVars[playerid][pShtgSkill] < 0 || pVars[playerid][pDglSkill] < 0 || pVars[playerid][pM4Skill] < 0) {
+		SendClientMessage(playerid, COLOR_YELLOW, "Twoja postaæ nie ma doœwiadczenia w strzelaniu. Udaj siê na mecz ASG i");
+		SendClientMessage(playerid, COLOR_YELLOW, "fraguj innych danym rodzajem broni - im wiêcej æwiczysz, tym celniej i szybciej strzelasz.");
+	}
+}
+
+stock resetPlayerWeapon(playerid, srvitemid) {
+	new weap, ammo;
+	
+	ResetPlayerWeapons(playerid);
+	GetPlayerWeaponData(playerid, 0, weap, ammo);
+
+	SetPlayerArmedWeapon(playerid, weap);
+	
+	iVars[srvitemid][iValue1] = 0;
+	iVars[srvitemid][iValue2] = 0;
+	
+	saveItemWeaponAmmo(srvitemid);
 }
 
 stock loadItemWeaponAmmo(srvitemid) {

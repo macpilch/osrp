@@ -33,7 +33,7 @@ CMD:v(playerid, params[]) {
 	
 	if(sscanf(params, "s[32]", opt)) {
 		if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
-			format(queryStr, sizeof(queryStr), "SELECT `UID`, `ModelID` FROM `osrp_Vehicles` WHERE `CharName` = '%s'", pVars[playerid][pCharName]);
+			format(queryStr, sizeof(queryStr), "SELECT `UID`, `ModelID` FROM `osrp_Vehicles` WHERE `OUID` = '%d'", pVars[playerid][pUid]);
 			mysql_query(queryStr);
 			
 			mysql_store_result();
@@ -72,7 +72,7 @@ CMD:v(playerid, params[]) {
 
 			GetVehiclePos(vVars[srvVehId][vId], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ]);
 			
-			format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `UID` = '%d' AND `CharName` = '%s'", vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], vVars[srvVehId][vUid], pVars[playerid][pCharName]);
+			format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `UID` = '%d' AND `OUID` = '%d'", vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], vVars[srvVehId][vUid], pVars[playerid][pUid]);
 			mysql_query(queryStr);
 			
 			strcat(mainStr, "Pojazd zosta³ pomyœlnie zaparkowany w nowym miejscu.\n");

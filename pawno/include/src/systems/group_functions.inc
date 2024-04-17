@@ -144,6 +144,8 @@ stock showPlayerGroupOnlineMembers(playerid) {
 stock showPlayerGroupTasks(playerid) {
 	enum tmp {
 		uid,
+		caller[24],
+		date[64],
 		name[128]
 	};
 
@@ -152,15 +154,15 @@ stock showPlayerGroupTasks(playerid) {
 	new i;
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `UID`, `Name` FROM `osrp_GroupTasks` WHERE `GUID` = '%d'", gVars[srvGrpId][gUid]);
+	format(queryStr, sizeof(queryStr), "SELECT `UID`, `Caller`, `Date`, `Name` FROM `osrp_GroupTasks` WHERE `GUID` = '%d'", gVars[srvGrpId][gUid]);
 	mysql_query(queryStr);
 	
 	mysql_store_result();
 	mainStr[0] = EOS;
 	
 	while(mysql_fetch_row(queryStr, "|")) {
-		sscanf(queryStr, "p<|>is[128]", tmpTasks[i][uid], tmpTasks[i][name]);
-		format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, tmpTasks[i][uid], tmpTasks[i][name]);
+		sscanf(queryStr, "p<|>is[24]s[64]s[128]", tmpTasks[i][uid], tmpTasks[i][caller], tmpTasks[i][date], tmpTasks[i][name]);
+		format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s\t%s\t%s", mainStr, tmpTasks[i][uid], tmpTasks[i][caller], tmpTasks[i][date], tmpTasks[i][name]);
 
 		i++;
 	}
@@ -168,10 +170,10 @@ stock showPlayerGroupTasks(playerid) {
 	mysql_free_result();
 
 	if(!i) {
-		return GameTextForPlayer(playerid, "~r~Brak zadan dla grupy.", 5000, 3);
+		return GameTextForPlayer(playerid, "~y~Zaden gracz nie dzwonil do tej~n~grupy z ~r~zadaniem", 5000, 3);
 	}
 
-	ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_LIST, "Zadania", mainStr, "OK", "Anuluj");
+	ShowPlayerDialog(playerid, DIALOG_SHOW_GROUP_TASKS, DIALOG_STYLE_LIST, "Oczekuj¹ce ¿¹dania", mainStr, "Akceptuj", "Zamknij");
 	return 1;
 }
 

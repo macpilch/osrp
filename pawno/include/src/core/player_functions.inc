@@ -854,6 +854,27 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawBackgroundColor(showInfoGym[playerid][3], 255);
 	TextDrawFont(showInfoGym[playerid][3], 1);
 	TextDrawSetProportional(showInfoGym[playerid][3], 1);
+
+	/*Textdraw0 = TextDrawCreate(604.518737, 286.166656, "_");
+	TextDrawLetterSize(Textdraw0, 0.000000, 4.090743);
+	TextDrawTextSize(Textdraw0, 427.634216, 0.000000);
+	TextDrawAlignment(Textdraw0, 1);
+	TextDrawColor(Textdraw0, 0);
+	TextDrawUseBox(Textdraw0, true);
+	TextDrawBoxColor(Textdraw0, 102);
+	TextDrawSetShadow(Textdraw0, 0);
+	TextDrawSetOutline(Textdraw0, 0);
+	TextDrawFont(Textdraw0, 0);
+
+	Textdraw1 = TextDrawCreate(513.031066, 285.833404, "Aby uslyszyc grajaca tu muzyke,~n~w opcjach gry nie mozesz miec~n~wyciszonego radia.");
+	TextDrawLetterSize(Textdraw1, 0.294450, 1.331665);
+	TextDrawAlignment(Textdraw1, 2);
+	TextDrawColor(Textdraw1, -1);
+	TextDrawSetShadow(Textdraw1, 0);
+	TextDrawSetOutline(Textdraw1, 1);
+	TextDrawBackgroundColor(Textdraw1, 255);
+	TextDrawFont(Textdraw1, 1);
+	TextDrawSetProportional(Textdraw1, 1);*/
 	return 1;
 }
 
@@ -1367,7 +1388,7 @@ stock setPlayerBW(playerid, minutes) {
 	pVars[playerid][pBw] = minutes;
 	isBW[playerid] = true;
 
-	TogglePlayerControllable(playerid, 0);
+	osrp_TogglePlayerControllable(playerid, 0);
 	ApplyAnimation(playerid, "CRACK", "crckdeth1", 4.1, 0, 0, 0, 1, 0, 0);
 
 	SetPlayerDrunkLevel(playerid, 0);
@@ -1384,7 +1405,7 @@ stock setPlayerAJ(playerid, minutes) {
 
 stock setPlayerDetention(playerid, id, minutes, const reason[]) {
 	pVars[id][pDetention] = minutes * 60;
-	
+
 	foreach(new i : Player) {
 		foreach(new j : groupItter) {
 			if(isPlayerDuty[i] && pVars[i][pDuty] > 0 && pVars[i][pGroupNow] == gVars[j][gUid]) {
@@ -1553,26 +1574,17 @@ stock getPhoneNumberFromName(name[]) {
 	return number;
 }
 
-stock showTelephoneInterfaceForPlayer(playerid, dialogid) {
-	new str[256];
-	new pId;
-
-	strcat(mainStr, "{FFFFFF}333\tTaxi, restauracje i inne firmy\n777\tZamówienia\n911\tPomoc, s³u¿by porz¹dkowe\n-----\n");
-
+stock isValidPlayerNumberInContacts(playerid, number) {
+	if(!number) {
+		return 0;
+	}
+	
 	for(new i = 0; i < sizeof(playerContacts); i++) {
-		if(playerContacts[playerid][i] != 0) {
-			pId = getPhoneOwnerIdFromNumber(playerContacts[playerid][i]);
-
-			if(IsPlayerConnected(pId)) {
-				format(str, sizeof(str), "%s\n{FFFFFF}%d\t%d\t%s", str, playerContacts[playerid][i], playerContacts[playerid][i], playerContactsName[playerid][i]);
-			} else {
-				format(str, sizeof(str), "%s\n{FFFFFF}%d\t%d\t(Nieaktywny)", str, playerContacts[playerid][i], playerContacts[playerid][i]);
-			}
+		if(playerContacts[playerid][i] == number || number == 333 || number == 777 || number == 911) {
+			return 1;
 		}
 	}
-
-	strcat(mainStr, str);
-	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, "Telefon > Kontakty", mainStr, "Wybierz", "Anuluj");
+	return 0;
 }
 
 stock sendOfferToPlayer(playerid, id, params[], type) {
@@ -1760,9 +1772,9 @@ stock givePlayerMoneyEx(playerid, money) {
 }
 
 stock osrp_TogglePlayerControllable(playerid, toggle) {
-	TogglePlayerControllable(playerid, toggle);
-	
 	isFreeze[playerid] = bool:toggle;
+	
+	TogglePlayerControllable(playerid, toggle);
 }
 
 stock createNumber(playerid) {
@@ -1866,7 +1878,7 @@ Callback:hideAfkPrivateMessage(playerid) {
 }
 
 Callback:unFreezePlayer(playerid) {
-	TogglePlayerControllable(playerid, 1);
+	osrp_TogglePlayerControllable(playerid, 1);
 	return 1;
 }
 

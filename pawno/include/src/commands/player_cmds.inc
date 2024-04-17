@@ -88,7 +88,8 @@ CMD:w(playerid, params[]) {
 		//return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, "Proba ominiecia blokady OOC");
 	}
 
-	if(pVars[playerid][pBw] && !playerToPoint(pId, 20.0, pVars[pId][pX], pVars[pId][pY], pVars[pId][pZ])) {
+	GetPlayerPos(pId, pVars[pId][pX], pVars[pId][pY], pVars[pId][pZ]);
+	if(pVars[playerid][pBw] && !playerToPoint(playerid, 20.0, pVars[pId][pX], pVars[pId][pY], pVars[pId][pZ])) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Podczas BW mo¿esz wysy³aæ wiadomoœci wy³¹cznie na krótk¹ odleg³oœæ.");
 	}
 
@@ -209,16 +210,16 @@ CMD:d(playerid, params[]) {
 	if(gVars[srvGrpId][gType] != G_LSPD) {
 		return 1;
 	}
-	
+
 	new str[128];
-	
+
 	if(sscanf(params, "s[128]", str)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /d [tekst]");
 	}
-	
+
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "** (%s) %s: %s **", gVars[srvGrpId][gTag], pVars[playerid][pCharName], str);
-	
+
 	foreach(new i : groupItter) {
 		foreach(new j : Player) {
 			if(gVars[i][gType] == G_LSPD && isPlayerDuty[j]) {
@@ -598,7 +599,7 @@ CMD:login(playerid, params[]) {
 		return GameTextForPlayer(playerid, "~y~Odczekaj 3 minuty od ostatniej~n~utraty energii", 5000, 3);
 	}
 	
-	TogglePlayerControllable(playerid, 1);
+	osrp_TogglePlayerControllable(playerid, 1);
 	SetPlayerName(playerid, pVars[playerid][pAccName]);
 	GetPlayerName(playerid, pVars[playerid][pAccName], 24);
 
@@ -610,7 +611,10 @@ CMD:login(playerid, params[]) {
 	
 	savePlayerValues(playerid);
 	setPlayerDefaultValues(playerid);
+	
+	cameraTimer[playerid] = -1;
 	setPlayerCamerasView(playerid);
+
 	SetTimerEx("refreshCmds", 60000, false, "ii", playerid, 0);
 	
 	mainStr[0] = EOS;
@@ -691,7 +695,7 @@ CMD:p(playerid, params[]) {
 				pickUpNearblyItems(playerid, ITEM_PLACE_FLOOR);
 			}
 		} else {
-			//new parms[64];
+			new parms[64];
 			new srvItemId;
 
 			foreach(new i : itemItter) {
@@ -706,9 +710,10 @@ CMD:p(playerid, params[]) {
 				return GameTextForPlayer(playerid, "~r~Nie masz takiego przedmiotu.", 4000, 3);
 			}
 
-			/*if(!sscanf(params, "s[32]s[64]", name, parms)) {
+			if(!sscanf(params, "s[32]s[64]", name, parms)) {
 				format(itemParms[playerid], 64, parms);
-			}*/
+				printf("Parms: %s", parms);
+			}
 
 			enableItemProperties(playerid, srvItemId, iVars[srvItemId][iId]);
 		}
@@ -721,20 +726,20 @@ CMD:u(playerid, params[]) {
 }
 
 CMD:o(playerid, params[]) {
-	new type[16], cmdParams[2];
+	new type[16], cmdParams[3];
 	new pId;
 
-	if(sscanf(params, "s[16]iii", type, pId, cmdParams[0], cmdParams[1])) {
+	if(sscanf(params, "s[16]ii", type, pId, cmdParams[0])) {
 		SendClientMessage(playerid, COLOR_GRAY, "Tip: /o [Us³uga] [Gracz] {Opcjonalne parametry}");
 		//SendClientMessage(playerid, COLOR_WHITE, "Komenda /o s³u¿y do sk³adania ofert innym postaciom. Dostêpne oferty:");
 		//SendClientMessage(playerid, COLOR_WHITE, "Operator: u¿yj komendy /podaj, by zaoferowaæ produkt. Lider musi w³¹czyæ to w swoim panelu.");
 		//SendClientMessage(playerid, COLOR_WHITE, "Dostêpne dla ka¿dego: /o autowypozycz [Gracz], /o rp [Gracz], /o zasieg [Gracz].");
 		return 1;
 	}
-	
-	//if(offerFrom[pId] != INVALID_PLAYER_ID && offerType[pId] != INVALID_OFFER_TYPE) {
-		//return SendClientMessage(playerid, COLOR_GRAY, "Ktoœ w³aœnie oferuje coœ tej osobie. Poczekaj.");
-	//}
+
+	if(offerFrom[pId] != INVALID_PLAYER_ID && offerType[pId] != INVALID_OFFER_TYPE) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Ktoœ w³aœnie oferuje coœ tej osobie. Poczekaj.");
+	}
 
 	if(pId == playerid) {
 		return GameTextForPlayer(playerid, "~r~Nie mozesz sobie oferowac.", 5000, 3);
@@ -789,6 +794,14 @@ CMD:o(playerid, params[]) {
 	} else if(strfind(type, "wyscig", true) != -1) {
 		sendOfferToPlayer(playerid, pId, cmdParams, O_ZAPRWS);
 	} else if(strfind(type, "naprawe", true) != -1) {
+		if(sscanf(params, "s[16]ii", type, pId, cmdParams[0])) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /o naprawe [Gracz] [Cena robocizny] | Ca³kowity koszt naprawy jest zale¿ny od stanu pojazdu.");
+		}
+		
+		/*if() {
+			return SendClientMessage(playerid, COLOR_GRAY, "Poza obszarem stacji benzynowej/warsztatu mo¿esz naprawiaæ jedynie ca³kiem zniszczone pojazdy.");
+		}*/
+		
 		sendOfferToPlayer(playerid, pId, cmdParams, O_NAPRAWE);
 	} else if(strfind(type, "paintjob", true) != -1) {
 		
@@ -919,8 +932,8 @@ CMD:g(playerid, params[]) {
 		}
 	} else {
 		if(strfind(type, "info", true) != -1) {
-			new str[64];
-			
+			new str[128];
+
 			showPlayerGroupInfo(playerid);
 
 			format(str, sizeof(str), "Tip: /g %d [info/z/zadania/v/zapros/wypros/wplac/wyplac/magazyn/online/gps]", pVars[playerid][pGroupNow]);
@@ -998,7 +1011,11 @@ CMD:area(playerid, params[]) {
 	format(mainStr, sizeof(mainStr), "{FFFFFF}16\tPrzejmij sasiednia strefe\n---\n2\tPrzejmij neutraln¹ strefê");
 	format(mainStr, sizeof(mainStr), "{FFFFFF}2\tPrzejmij neutraln¹ strefê");
 	format(mainStr, sizeof(mainStr), "{FFFFFF}16\tPrzejmij sasiednia strefe\n---\n1\tPoka¿ informacje\n13\tPrzypisz obiekty (0, w tym 0/0 stworzonych)");
-	format(mainStr, sizeof(mainStr), "{FFFFFF}1\t\tPoka¿ informacje");
+	format(mainStr, sizeof(mainStr), "{FFFFFF}1\tPoka¿ informacje");
+	
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "Strefa: %d\nNale¿y do grupy: %s (UID %d)");
+	ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 	
 	ShowPlayerDialog(playerid, DIALOG_SHOW_AREAS, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
 	return 1;
@@ -1020,12 +1037,12 @@ CMD:drzwi(playerid, params[]) {
 		format(mainStr, sizeof(mainStr), "{FFFFFF}1\t\tPoka¿ informacje*\n34\tOchrona: %s", "brak");
 		ShowPlayerDialog(playerid, DIALOG_SHOW_DOORS_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
 	} else {
-		return ShowPlayerDialog(playerid, DIALOG_SHOW_DOORS_MENU, DIALOG_STYLE_LIST, "Subserwer", "{FFFFFF}11\tStwórz nowy budynek ($180/m2, min 100m2)", "OK", "Anuluj");
+		ShowPlayerDialog(playerid, DIALOG_SHOW_DOORS_MENU, DIALOG_STYLE_LIST, "Subserwer", "{FFFFFF}11\tStwórz nowy budynek ($180/m2, min 100m2)", "OK", "Anuluj");
 	}
 
-	strcat(mainStr, "Nie uda³o siê wykryæ budynku.\nNa pewno stoisz pod budynkiem, twarz¹ do œciany?\n");
-	strcat(mainStr, "Nie mo¿esz staæ dalej ni¿ 5m od œciany.");
-	ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+	//strcat(mainStr, "Nie uda³o siê wykryæ budynku.\nNa pewno stoisz pod budynkiem, twarz¹ do œciany?\n");
+	//strcat(mainStr, "Nie mo¿esz staæ dalej ni¿ 5m od œciany.");
+	//ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 	return 1;
 }
 
@@ -1318,7 +1335,7 @@ CMD:skuj(playerid, params[]) {
 		format(mainStr, sizeof(mainStr), "* %s sku³ %s.", pVars[playerid][pCharName], pVars[pId][pCharName]);
 	} else {
 		ClearAnimations(pId);
-		TogglePlayerControllable(pId, 1);
+		osrp_TogglePlayerControllable(pId, 1);
 
 		isCuffed[pId] = false;
 		cuffedBy[pId] = INVALID_PLAYER_ID;

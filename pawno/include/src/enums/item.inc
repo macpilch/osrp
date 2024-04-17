@@ -88,6 +88,7 @@ enum ItemData {
 	iUid,
 	iId,
 	iOUid,
+	iBUid,
 	iName[32],
 	iValue1,
 	iValue2,

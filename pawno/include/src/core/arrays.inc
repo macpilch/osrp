@@ -125,13 +125,13 @@ new animNames[][] = {
 new itemNames[][] = {
 	"Rolki", "Piwo", "Wino", "Sprunk", "Teczka", "Torba", "Notatnik", "Cygaro", "Ubranie", "Telefon", "Kostka",
 	"Maska", "Rêkawice", "Kamizelka", "Kwiaty", "Kastet", "Palka", "Nó¿", "Kij baseballowy", "Paralizator", "Tagger", "Pistolet",
-	"Deagle", "Glock 19", "Shotgun", "UZI", "MP5", "AK-47", "M4", "Tec9", "Spadochron", "Mat Wybuchowe", "Pizza", "Cheeseburger",
+	"Deagle", "Glock 19", "Shotgun", "UZI", "MP5", "AK-47", "M4", "TEC9", "Spadochron", "Mat Wybuchowe", "Pizza", "Cheeseburger",
 	"Zapiekanka", "Coca-Cola", "Cuba Libre", "Frytki", "Grove Burger", "Hamburger", "Herbata",
 	"Hot Dog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Longer", "Nachos z serem", "Naleœnik",
 	"Naleœniki", "P¹czek", "P¹czek Afro", "P¹czek Z³otawy", "Donut", "Sushi", "Woda Mineralna", "Discman",
 	"RadioParty", "CD", "Nokia 8110", "Vitamina C", "Zderzak przedni", "Zderzak tylny", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik",
-	"Maska samochodowa", "Œwiat³o (lewe przednie)", "Œwiat³o (prawe przednie)", "Œwiat³o (lewe tylne)", "Œwiat³o (prawe tylne)", "Kanister",
-	"Karnetsi³owy", "Heroina", "Canon 450D"
+	"Maska samochodowa", "Œwiat³o (LP)", "Œwiat³o (PP)", "Œwiat³o (LT)", "Œwiat³o (PT)", "Kanister",
+	"Karnetsiowy", "Heroina", "Canon 450D"
 };
 
 new VehicleNames[212][] = {

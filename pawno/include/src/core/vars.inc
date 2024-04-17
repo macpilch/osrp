@@ -46,6 +46,7 @@ new vehMapIcon[MAX_VEHICLES];
 new gymObject[2];
 new called[MAX_PLAYERS];
 new usedLastItemTime[MAX_PLAYERS];
+new hpSeconds[MAX_PLAYERS];
 new numberPresses[MAX_PLAYERS];
 new numberVehBlows[MAX_PLAYERS];
 new blockadeObjects[MAX_BLOCKADES];
