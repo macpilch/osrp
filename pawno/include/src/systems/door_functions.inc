@@ -57,7 +57,7 @@ stock saveDoorValues() {
 }
 
 stock getServerDoorIdForPlayer(playerid) {
-	new dId;
+	new dId = -1;
 	
 	foreach(new i : doorItter) {
 		if(dVars[i][dUid] == pVars[playerid][pDoor]) {
@@ -93,5 +93,14 @@ stock createNewDoor(playerid, ownerId, doorName[]) {
 	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Doors`(`UID`, `OUID`, `Name`, `VW`, `INT`) VALUES ('%d', '%d', '%s', '%d', '%d')",
 	dVars[freeId][dUid], dVars[freeId][dOUid], dVars[freeId][dName], dVars[freeId][dVw], dVars[freeId][dInt]);
 	mysql_query(queryStr);
+	return 1;
+}
+
+stock showMessageToPlayersInThisDoor(srvdoorid, const mess[]) {
+	foreach(new i : Player) {
+		if(pVars[i][pDoor] == dVars[srvdoorid][dUid]) {
+			sendDoMessage(i, mess);
+		}
+	}
 	return 1;
 }

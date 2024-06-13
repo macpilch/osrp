@@ -12,6 +12,19 @@
 #define __VEHICLE_INC__
 #pragma library osrp
 
+enum DoorTypes {
+	DOOR_LF,
+	DOOR_LR,
+	DOOR_RF,
+	DOOR_RR
+};
+
+enum DoorStates (<<= 1) {
+	DOOR_OPEN = 1,
+	DOOR_DAMAGE,
+	DOOR_REMOVE
+};
+
 enum VehicleData {
 	vUid, //id from database	
 	vId,   // id in game

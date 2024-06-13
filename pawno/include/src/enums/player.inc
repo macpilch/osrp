@@ -22,6 +22,15 @@ enum CharSurName {
 	bool:chSurUsed
 };
 
+enum PenaltiesData {
+	penSUID,
+	penOUID,
+	penType,
+	penDays,
+	penDate[64],
+	penReason[128]
+};
+
 enum PlayerData {
 	pUid,
 	pGUid,
@@ -33,10 +42,9 @@ enum PlayerData {
 	pIp[16],
 	pDateReg[64],
 	pLastDate[64],
+	pGS,
 	pBlock,
-	pGold,
 	pRank, // for ranks
-	pGM,
 	pSex,
 	pStrength,
 	pHours,
@@ -54,6 +62,8 @@ enum PlayerData {
 	pLastSkin,
 	pMoney,
 	pBank,
+	pWeapons[13],
+	pWeapSlot,
 	pBw,
 	pAj,
 	pAl,
@@ -72,6 +82,9 @@ enum PlayerData {
 	pGroupDesc[128],
 	pGroup[MAX_PLAYER_GROUPS],
 	pGroupNow,
+	pPayment[MAX_PLAYER_GROUPS],
+	pGroupActivity[64],
+	pGroupPerms[64],
 	pArea,
 	pDuty,
 	pStatus,
@@ -84,6 +97,8 @@ enum PlayerData {
 	pWalkAnim,
 	pScreen,
 	pStyleFight,
+	pDrugs, // 15 min dzialania
+	pDrugsTime,
 	Float:pX,
 	Float:pY,
 	Float:pZ,

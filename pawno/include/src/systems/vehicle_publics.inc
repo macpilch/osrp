@@ -55,6 +55,15 @@ sampCallback:OnPlayerExitVehicle(playerid, vehicleid) {
 #if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnPlayerExitVehicle");
 #endif
+
+	new srvVehId = getServerVehicleIdForPlayer(playerid);
+
+	if(vVars[srvVehId][vEngineHp] <= 300.0) {
+		mainStr[0] = EOS;
+		strcat(mainStr, "Ten pojazd jest ca³kowicie zniszczony po wybuchu, dachowaniu lub zwodowaniu.\nAby przywróciæ go do stanu u¿ywalnoœc, musisz poprosiæ kogoœ o zaholowanie\n");
+		strcat(mainStr, "do warsztatu lub na stacjê, gdzie zajm¹ siê nim mechanicy.\n\nAby zaakceptowaæ ofertê naprawy, najlepiej usi¹dŸ w œrodku, jako pasa¿er.");
+		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Zniszczony pojazd.", mainStr, "OK", "Zamknij");
+	}
 	return 1;
 }
 

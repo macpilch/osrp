@@ -26,7 +26,7 @@ stock initServerValues() {
 
 stock saveServerValues() {
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Settings` SET `AllAccounts` = '%d'", allAccounts);
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Settings` SET `AllAccounts` = '%d', `AllCharacters` = '%d'", allAccounts, allCharacters);
 	mysql_query(queryStr);
 	return 1;
 }

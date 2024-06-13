@@ -12,15 +12,13 @@
 #define __TIMERS_INC__
 #pragma library osrp
 
-task globalTimer[1000]() {
+Timer:globalTimer[1000]() {
 	foreach(new i : Player) {
 		playerAFKTime[i]++;
 
 		if(playerAFKTime[i] != 1) {
 			if(playerAFKTime[i] == 3) {
-				pVars[i][pStatus] += STAT_AFK;
-
-				updatePlayerGameStatus(i);
+				updatePlayerGameStatus(i, STAT_AFK);
 			}
 
 			/*if(isBW[i]) {
@@ -419,6 +417,12 @@ task globalTimer[1000]() {
 			}*/
 		}
 
+		GetPlayerHealth(i, pVars[i][pHp]);
+
+		if(pVars[i][pHp] <= 5.0 && !isBW[i]) {
+			setPlayerBW(i, 3);
+		}
+
 		// Narazie niech bedzie na 1
 		if(playerAFKTime[i] == 1) {
 			pVars[i][pSeconds]++;
@@ -438,6 +442,8 @@ task globalTimer[1000]() {
 
 						format(timerStr, sizeof(timerStr), "* Otrzymujesz $%d wyp³aty. *", gVars[srvGrpId][gPayDay]);
 						SendClientMessage(i, COLOR_WHITE, timerStr);
+						
+						PlayerPlaySound(i, 4201, 0.0, 0.0, 0.0);
 					}
 				}
 			}
@@ -519,7 +525,7 @@ task globalTimer[1000]() {
 
 						if(IsPlayerInVehicle(i, vVars[j][vId])) {
 							format(timerStr, sizeof(timerStr), "** W pojeŸdzie %s koñczy siê paliwo. **", VehicleNames[vVars[j][vModelId] - 400]);
-							sendMeMessage(i, timerStr); // COLOR_DO
+							sendDoMessage(i, timerStr);
 						}
 					}
 
@@ -535,7 +541,7 @@ task globalTimer[1000]() {
 						vVars[j][vEngine] = false;
 
 						if(IsPlayerInVehicle(i, vVars[j][vId])) {
-							sendMeMessage(i, "** Silnik zgas³ ze wzglêdu na z³y stan pojazdu. **"); // COLOR_DO
+							sendDoMessage(i, "** Silnik zgas³ ze wzglêdu na z³y stan pojazdu. **");
 						}
 					}
 				}
@@ -569,12 +575,24 @@ task globalTimer[1000]() {
 						}
 					}
 				}
+
+				// Przesuwanie pojazdu przez innego gracza
+				new Float:vx, Float:vy, Float:vz;
+				GetVehiclePos(vVars[j][vId], vx, vy, vz);
+
+				if(vVars[j][vOUid] != pVars[i][pUid] && ((floatabs(vVars[j][vX] - vx) >= 0.5 && floatabs(vVars[j][vY] - vy) >= 0.5) && vz)) {
+					DestroyVehicle(vVars[j][vId]);
+
+					vVars[j][vSpawned] = false;
+					vVars[j][vEngine] = false;
+					vVars[j][vLights] = false;
+				}
 			}
 		}
 	}
 }
 
-task saveAllValuesTimer[60000]() {
+Timer:saveAllValuesTimer[30000]() {
 	foreach(new i : Player) {
 		if(hasLogged[i] && isSpawned[i]) {
 			savePlayerValues(i);
@@ -587,7 +605,7 @@ task saveAllValuesTimer[60000]() {
 	saveVehicleValues();
 }
 
-task setRealTimeTimer[600000]() {
+Timer:setRealTimeTimer[600000]() {
 	new h, m, s;
 
 	gettime(h, m, s);
@@ -597,7 +615,7 @@ task setRealTimeTimer[600000]() {
 	}
 }
 
-task updateWebsiteDateTimer[1900]() {
+Timer:updateWebsiteDateTimer[1900]() {
 	new day, month, year;
 	
 	getdate(year, month, day);
@@ -611,16 +629,22 @@ task updateWebsiteDateTimer[1900]() {
 	TextDrawSetString(website, timerStr);
 }
 
-task townHallBellsTimer[59000]() {
+Timer:townHallBellsTimer[59000]() {
 	new hours, minutes, seconds;
 
 	gettime(hours, minutes, seconds);
+	timerStr[0] = EOS;
 
 	foreach(new i : Player) {
 		if(hours == 0 && minutes == 0) {
-			timerStr[0] = EOS;
-			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu wybi³y pó³noc. **");
-			SendClientMessage(i, COLOR_WHITE, timerStr);
+			format(timerStr, sizeof(timerStr), "* Dzwony w ratuszu bij¹ 12 razy. *");
+			SendClientMessage(i, COLOR_DO, timerStr);
+		} else if(hours == 1 && minutes == 0) {
+			format(timerStr, sizeof(timerStr), "* Dzwony w ratuszu bij¹ 1 raz. *");
+			SendClientMessage(i, COLOR_DO, timerStr);
+		} else if((hours > 1 && hours <= 23) && minutes == 0) {
+			format(timerStr, sizeof(timerStr), "* Dzwony w ratuszu bij¹ %d razy. *", hours);
+			SendClientMessage(i, COLOR_DO, timerStr);
 		}
 	}
 
@@ -629,52 +653,48 @@ task townHallBellsTimer[59000]() {
 	}
 }
 
-task antiCheat[1000]() {
+Timer:antiCheat[1000]() {
 	foreach(new i : Player) {
 		if(hasLogged[i] && isSpawned[i] && playerAFKTime[i] == 1) {
+			new reas[64];
+			new Float:x, Float:y, Float:z, Float:totalPos;
+			new srvVehId = getServerVehicleIdForPlayer(i);
+			
+			GetPlayerPos(i, x, y, z);
+			
 			/*if((x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y) && !isFreeze[i]) {
 				format(reas, sizeof(reas), "Cheat, AirBreak~n~~w~Cheat, AirBreak: d%f tc%d d3.s%d", 21.952901, 68927653, 2261);
-				//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
+				return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
 			}
 
 			if(getPlayerSpeed(i) > 30.0) {
 				format(reas, sizeof(reas), "Cheat, Teleport~n~~w~Cheat, Teleport: d%0.6f tc%d delta3s%d", 50.901912, 57113489, 2863);
-				//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
-			}*/
-			
-			new srvVehId = getServerVehicleIdForPlayer(i);
+				return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
+			}
 			
 			if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
-				new reas[64];
-				new Float:x, Float:y, Float:z;
-
 				GetVehicleVelocity(vVars[srvVehId][vId], x, y, z);
 
 				if(getVehicleSpeed(vVars[srvVehId][vId]) > 230) {
 					format(reas, sizeof(reas), "SpeedHack V %f %f %f", x, y, z);
 					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
 				}
-			}
+			}*/
 
 			if(isFreeze[i]) {
-				new reas[64];
-				new Float:x, Float:y, Float:z, Float:totalPos;
-
-				GetPlayerPos(i, x, y, z);
-
 				if(IsPlayerInAnyVehicle(i) && getVehicleSpeed(vVars[srvVehId][vId]) > 0 && (x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y) && GetTickCount() < enteredVehicleSec[i]) {
 					enteredVehicleSec[i] = 0;
 					totalPos = floatabs((x - pVars[i][pX]) + (y - pVars[i][pY]));
 
 					format(reas, sizeof(reas), "Unfreeze~n~~w~3x ruch o %0.1fj podczas zamrozenia w pojezdzie.", totalPos);
-					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, reas, 0);
+					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, 0, reas);
 				}
 
-				if((x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y) && GetPlayerState(i) == PLAYER_STATE_ONFOOT) {
+				if((pVars[i][pX] >= x || pVars[i][pX] <= x) && (pVars[i][pY] >= y || pVars[i][pY] <= y) && GetPlayerState(i) == PLAYER_STATE_ONFOOT) {
 					totalPos = floatabs((x - pVars[i][pX]) + (y - pVars[i][pY]));
 
 					format(reas, sizeof(reas), "Unfreeze~n~~w~Ruch o %0.1fj podczas zamrozenia pieszo.", totalPos);
-					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, reas, 0);
+					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, 0, reas);
 				}
 			}
 		}
@@ -688,10 +708,10 @@ task antiCheat[1000]() {
 	return 1;
 }
 
-task giveFreeMoneyTimer[590000]() {
+Timer:giveFreeMoneyTimer[590000]() {
 	foreach(new i : Player) {
 		if(pVars[i][pHours] < 1) {
-			givePlayerMoneyEx(i, 25);
+			osrp_GivePlayerMoney(i, 25);
 			GameTextForPlayer(i, "~w~+~g~$25", 2000, 6);
 			
 			for(new j = 0; j < sizeof(firstHoursInfo); j++) {
@@ -703,7 +723,7 @@ task giveFreeMoneyTimer[590000]() {
 	}
 }
 
-task remindPlayerPhoneTimer[300000]() {
+Timer:remindPlayPhoneTimer[300000]() {
 	static bool:hasPhone = true;
 	
 	foreach(new i : Player) {
@@ -719,7 +739,7 @@ task remindPlayerPhoneTimer[300000]() {
 	}
 }
 
-task getMoneyForHotelTimer[60000]() {
+Timer:getMoneyForHotelTimer[60000]() {
 	new h, m, s, numChars;
 	
 	gettime(h, m, s);

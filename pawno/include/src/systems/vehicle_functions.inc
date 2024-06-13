@@ -27,8 +27,30 @@ stock initVehicleValues() {
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iiiis[24]iiifffffiifiifs[64]s[32]", vVars[i][vUid], vVars[i][vId], vVars[i][vOUid], vVars[i][vGUid], vVars[i][vCharName], vVars[i][vModelId], vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vAngle], vVars[i][vFuel], 
-		vVars[i][vLock], vVars[i][vEngine], vVars[i][vEngineHp], vVars[i][vSpawned], vVars[i][vLights], vVars[i][vMileage], vVars[i][vDescInfo], vVars[i][vPlate]);
+		
+		sscanf(queryStr, "p<|>iiiis[24]iiifffffiifiifs[64]s[32]",
+			vVars[i][vUid],
+			vVars[i][vId],
+			vVars[i][vOUid],
+			vVars[i][vGUid],
+			vVars[i][vCharName],
+			vVars[i][vModelId],
+			vVars[i][vColor1],
+			vVars[i][vColor2],
+			vVars[i][vX],
+			vVars[i][vY],
+			vVars[i][vZ],
+			vVars[i][vAngle],
+			vVars[i][vFuel], 
+			vVars[i][vLock],
+			vVars[i][vEngine],
+			vVars[i][vEngineHp],
+			vVars[i][vSpawned],
+			vVars[i][vLights],
+			vVars[i][vMileage],
+			vVars[i][vDescInfo],
+			vVars[i][vPlate]
+		);
 		
 		Iter_Add(vehItter, i);
 		
@@ -136,37 +158,6 @@ stock addPlayerVehicle(playerid, modelid) {
 	mysql_query(queryStr);
 }
 
-stock resetVehicleValues(playerid) {
-	new srvVehId = getServerVehicleIdForPlayer(playerid);
-
-	if(vVars[srvVehId][vOUid] == pVars[playerid][pUid] && vVars[srvVehId][vSpawned]) {
-		DestroyVehicle(vVars[srvVehId][vId]);
-		DestroyDynamic3DTextLabel(vVars[srvVehId][vDesc]);
-
-		DestroyDynamicMapIcon(vehMapIcon[srvVehId]);
-		DestroyDynamicCP(vehCP[srvVehId]);
-
-		vehCP[srvVehId] = -1;
-		vehMapIcon[srvVehId] = -1;
-		actualVehicle[playerid] = 0;
-		vVars[srvVehId][vSpawned] = false;
-
-		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Spawned` = '%d' WHERE `UID` = '%d'", vVars[srvVehId][vSpawned], vVars[srvVehId][vUid]);
-		mysql_query(queryStr);
-	}
-	return 1;
-}
-
-stock bool:checkPlayerVehicles(playerid) {
-	foreach(new i : vehItter) {
-		if(vVars[i][vOUid] == pVars[playerid][pUid] && vVars[i][vOUid] != VEHICLE_OWNER_GROUP) {
-			return true;
-		}
-	}
-	return false;
-}
-
 Callback:vehicleLightsOn(playerid) {
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 		return 1;
@@ -220,6 +211,7 @@ stock vehicleEngineStatus(playerid) {
 		}
 	
 		vVars[srvVehId][vEngine] = false;
+		KillTimer(fuelTimer[playerid]);
 	}
 	return 1;
 }
@@ -235,6 +227,7 @@ Callback:vehicleEngineOn(playerid) {
 	if(vVars[srvVehId][vEngineHp] == 300.0 && (rand == 0 || rand == 2 || rand == 4)) {
 		mainStr[0] = EOS;
 		format(mainStr, sizeof(mainStr), "* %s próbuje uruchomiæ pojazd, ale silnik odmawia pos³uszeñstwa.", pVars[playerid][pCharName]);
+		//format(mainStr, sizeof(mainStr), "* %s próbuje uruchomiæ pojazd, ale silnik jest przegrzany.", pVars[playerid][pCharName]);
 		sendMeMessage(playerid, mainStr);
 	} else if(vVars[srvVehId][vEngineHp] > 300.0 || (vVars[srvVehId][vEngineHp] == 300.0 && (rand == 1 || rand == 3))) {
 		new engine, lights, alarm, doors, bonnet, boot, objective;
@@ -246,23 +239,25 @@ Callback:vehicleEngineOn(playerid) {
 			TextDrawShowForPlayer(playerid, vehicleFuelStatus[playerid][i]);
 		}
 
-		fuelTimer[playerid] = SetTimerEx("updateVehicleFuel", 1000, true, "if", playerid, vVars[srvVehId][vFuel]);
+		fuelTimer[playerid] = SetTimerEx("updateVehicleFuel", 1000, false, "if", playerid, vVars[srvVehId][vFuel]);
 
 		vVars[srvVehId][vEngine] = true;
 	}
 	return 1;
 }
 
+new Float:FuelProgress[MAX_PLAYERS] = { 609.585083, ... };
+
 Callback:updateVehicleFuel(playerid, Float:fuel) {
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 		return 1;
 	}
 
-	new Float:tmp = (596.085083 + 14.6) - 0.5;
+	FuelProgress[playerid] -= 0.1;
 
 	TextDrawDestroy(vehicleFuelStatus[playerid][2]);
 
-	vehicleFuelStatus[playerid][2] = TextDrawCreate(tmp, 59.833312, "_");
+	vehicleFuelStatus[playerid][2] = TextDrawCreate(FuelProgress[playerid], 59.833312, "_");
 	TextDrawLetterSize(vehicleFuelStatus[playerid][2], 0.000000, -0.115186);
 	TextDrawTextSize(vehicleFuelStatus[playerid][2], 548.981140, 0.000000);
 	TextDrawAlignment(vehicleFuelStatus[playerid][2], 1);
@@ -275,6 +270,7 @@ Callback:updateVehicleFuel(playerid, Float:fuel) {
 	TextDrawFont(vehicleFuelStatus[playerid][2], 0);
 	
 	TextDrawShowForPlayer(playerid, vehicleFuelStatus[playerid][2]);
+	SetTimerEx("updateVehicleFuel", 1000, false, "if", playerid, fuel);
 	return 1;
 }
 
@@ -388,6 +384,10 @@ stock bool:isVehicleInUse(vehicleid) {
 	return false;
 }
 
+/*stock getDoorState(doorstate, DoorTypes:type, DoorStates:states) {
+	return ((doorstate >> (8 * type)) & states);
+}*/
+
 stock Float:getVehicleDistance(vehicleid) {
 	new Float:vehDistance;
 	
@@ -429,21 +429,21 @@ stock getClosestVehicle(playerid, Float:dist = 1000.0) {
 		dist = 1000.0;
     }
 
-	new Float:X[2], Float:Y[2], Float:Z[2];
+	new Float:x[2], Float:y[2], Float:z[2];
     new Float:nearestPos = dist;
     new nearestVehicle = INVALID_VEHICLE_ID;
 
-    GetPlayerPos(playerid, X[0], Y[0], Z[0]);
+    GetPlayerPos(playerid, x[0], y[0], z[0]);
 
     for(new i = 0; i < MAX_VEHICLES; i++) {
         if(!IsVehicleStreamedIn(i, playerid) || i == GetPlayerVehicleID(playerid)) {
 			continue;
         }
 
-		GetVehiclePos(i, X[1], Y[1], Z[1]);
+		GetVehiclePos(i, x[1], y[1], z[1]);
 
-        if(nearestPos > GetDistanceBetweenPoints(X[0], Y[0], Z[0], X[1], Y[1], Z[1])) {
-			nearestPos = GetDistanceBetweenPoints(X[0], Y[0], Z[0], X[1], Y[1], Z[1]);
+        if(nearestPos > GetDistanceBetweenPoints(x[0], y[0], z[0], x[1], y[1], z[1])) {
+			nearestPos = GetDistanceBetweenPoints(x[0], y[0], z[0], x[1], y[1], z[1]);
 			nearestVehicle = i;
 		}
     }
@@ -727,31 +727,70 @@ stock isPlane(modelid) {
 	return 0;
 }
 
-Callback:addFuelToVehicle(playerid) {
-	new srvVehId = getServerVehicleIdForPlayer(playerid);
-	new Float:fuel = VEHICLE_FUEL_TANK_MEDIUM - vVars[srvVehId][vFuel];
-	
-	vVars[srvVehId][vFuel] += fuel;
-	
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "* Pojazd %s zosta³ zatankowany. *", VehicleNames[vVars[srvVehId][vModelId] - 400]);
-	sendMeMessage(playerid, mainStr); // COLOR_DO
+stock isFreeParkingPlaceForVehicle(srvvehid) {
+	foreach(new i : vehItter) {
+		if(srvvehid != i) {
+			if(vVars[i][vSpawned] && (floatabs(vVars[srvvehid][vX] - vVars[i][vX]) <= 10.0 && floatabs(vVars[srvvehid][vY] - vVars[i][vY]) <= 10.0 && floatabs(vVars[srvvehid][vZ] - vVars[i][vZ]) <= 10.0)) {
+				return 0;
+			}
+		}
+	}
 	return 1;
 }
 
-Callback:vehRepairEngineTimer(playerid, srvvehid, seconds) {
+Callback:addFuelToVehicle(playerid) {
+	new srvVehId = getServerVehicleIdForPlayer(playerid);
+	new Float:fuel = VEHICLE_FUEL_TANK_MEDIUM - vVars[srvVehId][vFuel];
+
+	vVars[srvVehId][vFuel] += fuel;
+
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "* Pojazd %s zosta³ zatankowany. *", VehicleNames[vVars[srvVehId][vModelId] - 400]);
+	sendDoMessage(playerid, mainStr);
+	return 1;
+}
+
+Callback:vehRepairEngineTimer(playerid, receiver, what, seconds) {
+	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT) {
+		GameTextForPlayer(playerid, "~r~Wysiadz z pojazdu.", 5000, 3);
+	}
+
+	if(GetPlayerState(receiver) == PLAYER_STATE_DRIVER) {
+		RemovePlayerFromVehicle(receiver);
+		GameTextForPlayer(receiver, "~y~Pojazd jest modyfikowany.", 5000, 3);
+	}
+
 	new str[32];
+
+	GameTextForPlayer(playerid, "~r~Zbyt daleko od pojazdu!~n~~w~Jezeli odejdziesz dalej,~n~anulujesz swoja prace.", 5000, 3);
 
 	if(seconds > 0) {
 		format(str, sizeof(str), "~w~Odliczanie: ~r~%d", seconds);
-		GameTextForPlayer(playerid, str, 3000, 5);
+		GameTextForPlayer(playerid, str, 1000, 5);
 
-		SetTimerEx("vehRepairEngineTimer", 3000, false, "iii", playerid, srvvehid, seconds -= 3);
+		SetTimerEx("vehRepairEngineTimer", 3000, false, "iiii", playerid, receiver, what, seconds -= 3);
 	} else {
-		vVars[srvvehid][vEngineHp] = 1000;
-		SetVehicleHealth(vVars[srvvehid][vId], vVars[srvvehid][vEngineHp]);
+		new parms[3];
 
-		GameTextForPlayer(playerid, "~r~Gotowe!~n~~w~Pojazd zostal naprawiony.", 5000, 3);
+		parms[OFFER_PARM_PRICE] = 0;
+		parms[OFFER_PARM_ETC] = what;
+		parms[OFFER_PARM_TYPE] = OFFER_NORMAL;
+
+		sendOfferToPlayer(playerid, receiver, parms, O_MODPOJAZDU);
 	}
 	return 1;
+}
+
+Callback:updatePlayerTaxiCourse(playerid, vehicleid) {
+	if(haveTaxiCourse[playerid] && haveTaxiCourse[offerFrom[playerid]] && taxiDriver[playerid] != INVALID_PLAYER_ID) {
+		new taxiStr[32];
+
+		taxiDistance[playerid] += (getVehicleDistance(vehicleid) * 10);
+		taxiCost[playerid] = taxiDistance[playerid] * offerParams[playerid][OFFER_PARM_ETC];
+
+		format(taxiStr, sizeof(taxiStr), "~y~~h~%d~w~m.__[~r~%d~w~]", taxiDistance[playerid], taxiCost[playerid]);
+		GameTextForPlayer(playerid, taxiStr, 3500, 3);
+
+		SetTimerEx("updatePlayerTaxiCourse", 3500, false, "ii", playerid, vehicleid);
+	}
 }

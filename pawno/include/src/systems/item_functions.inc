@@ -27,8 +27,22 @@ stock initItemValues() {
 		}
 		
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iiiis[32]iifffii", iVars[i][iUid], iVars[i][iId], iVars[i][iOUid], iVars[i][iBUid], iVars[i][iName], iVars[i][iValue1], iVars[i][iValue2], iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ], iVars[i][iUsed], iVars[i][iPlace]);
 		
+		sscanf(queryStr, "p<|>iiiis[32]iifffii",
+			iVars[i][iUid],
+			iVars[i][iId],
+			iVars[i][iOUid],
+			iVars[i][iBUid],
+			iVars[i][iName],
+			iVars[i][iValue1],
+			iVars[i][iValue2],
+			iVars[i][iPosX],
+			iVars[i][iPosY],
+			iVars[i][iPosZ],
+			iVars[i][iUsed],
+			iVars[i][iPlace]
+		);
+
 		Iter_Add(itemItter, i);
 		printf("[DEBUG] SrvId: %d, Uid: %d, Id: %d, OUid: %d, BUid: %d, Name: %s, Value1: %d, Value2: %d, PosX: %0.1f, PosY: %0.1f, PosZ: %0.1f, Used: %d, Place: %d", i, iVars[i][iUid], iVars[i][iId], iVars[i][iOUid], iVars[i][iBUid], iVars[i][iName], iVars[i][iValue1], iVars[i][iValue2], iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ], iVars[i][iUsed], iVars[i][iPlace]);
 	}
@@ -175,8 +189,12 @@ stock resetItemValues(playerid) {
 }
 
 stock enableItemProperties(playerid, srvitemid, itemid) {
+	if(getPlayerSpeed(playerid)) {
+		return GameTextForPlayer(playerid, "~y~Odczekaj 1 minute od ostatniego~n~biegania", 5000, 3);
+	}
+
 	mainStr[0] = EOS;
-	
+
 	switch(itemid) {
 		case P_ROLKI: {
 			if(!iVars[srvitemid][iUsed]) {
@@ -239,7 +257,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				iVars[srvitemid][iUsed] = false;
 			}
 		}
-		case P_CYGARO: {
+		case P_CYGARO, P_MARLBORO: {
 			if(!iVars[srvitemid][iUsed]) {
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_SMOKE_CIGGY);
 				
@@ -251,7 +269,20 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				iVars[srvitemid][iUsed] = false;
 			}
 		}
+		case P_NOTATNIK: {
+			//ShowPlayerDialog("Notatka", "AAAA\n\nDanny Walker.\n01.01.1970, 00:00", "OK", "Zamknij");
+
+			if(!strlen(playerNotes[playerid])) {
+				strcat(mainStr, "Nie posiadasz notatek.\n\nBy jak¹œ dopisaæ, wpisz jej treœæ w tym miejscu.");
+				strcat(mainStr, " Maksymalna d³ugoœæ to 64 znaki.");
+				ShowPlayerDialog(playerid, DIALOG_SET_NOTE_TEXT, DIALOG_STYLE_LIST, "Notes", mainStr, "Napisz", "Zamknij");
+			} else {
+				showPlayerNotes(playerid);
+			}
+		}
 		case P_UBRANIE: {
+			SendClientMessage(playerid, COLOR_GRAY, "Ten skin nie jest zgodny z ras¹ Twojej postaci.");
+			
 			if(!iVars[srvitemid][iUsed]) {
 				SetPlayerSkin(playerid, 21);
 				
@@ -264,35 +295,21 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			}
 		}
 		case P_TORBA: {
-			enum {
-				uid,
-				name[64]
-			}
-
-			new tmpIVars[MAX_ITEMS][2];
 			new count;
 
-			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "SELECT `UID`, `Name` FROM `osrp_Items` WHERE `OUID` = '%d' AND `BUID` = '%d' AND `Place` = '%d'", pVars[playerid][pUid], iVars[srvitemid][iBUid], ITEM_PLACE_BAG);
-			mysql_query(queryStr);
+			foreach(new i : itemItter) {
+				if(iVars[i][iOUid] == pVars[playerid][pUid] && iVars[i][iBUid] == iVars[srvitemid][iUid] && iVars[i][iPlace] == ITEM_PLACE_BAG) {
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t\0\t0\t%s", mainStr, iVars[i][iUid], iVars[i][iName]);
 
-			mysql_store_result();
-			mainStr[0] = EOS;
-			
-			while(mysql_fetch_row(queryStr, " ")) {
-				sscanf(queryStr, "is[64]", tmpIVars[count][uid], tmpIVars[count][name]);
-				format(mainStr, sizeof(mainStr), "{FFFFFF}%s\n%d\t\t%s", mainStr, tmpIVars[count][uid], tmpIVars[count][name]);
-
-				count++;
+					count++;
+				}
 			}
-
-			mysql_free_result();
 
 			if(!count) {
-				return GameTextForPlayer(playerid, "~w~Nie ma zadnych ~r~przedmiotow~w~.", 5000, 3);
+				return GameTextForPlayer(playerid, "~n~~w~Nie ma zadnych ~r~przedmiotow~w~.", 5000, 3);
 			}
 
-			ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_MORE_PUT_BAG_USE_ITEM, DIALOG_STYLE_LIST, "Dostêpne przedmioty", mainStr, "OK", "Zamknij");
+			ShowPlayerDialog(playerid, DIALOG_ITEMS_MORE_PUT_BAG_USE_ITEM, DIALOG_STYLE_LIST, "Przedmioty", mainStr, "Wyjmij", "Zamknij");
 		}
 		case P_TELEFON, P_NKA8110: {
 			new pId = getPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
@@ -319,7 +336,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				telEnterNumber[pId] = 0;
 				
 				GameTextForPlayer(playerid, "~r~Rozmowa zakonczona.", 5000, 3);
-				GameTextForPlayer(pId, "~r~Rozmowa zakonczona.", 5000, 3);
+				GameTextForPlayer(pId, "~r~Rozmowca rozlaczyl sie.", 5000, 3);
 			/*} else if() {
 				ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_MENU, DIALOG_STYLE_LIST, "Telefon - brak zasiegu", "{FFFFFF}(Brak zasiegu)\n7\tWy³¹cz", "OK", "Anuluj");
 				*/
@@ -337,6 +354,10 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			}
 		}
 		case P_KOSTKA: {
+			if(GetTickCount() < cubeUseTime[playerid]) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Mo¿esz losowaæ tylko 2 razy w ci¹gu 5 sekund.");
+			}
+			
 			iVars[srvitemid][iUsed] = true;
 			
 			new randNum = random(6) + 1;
@@ -346,16 +367,18 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			
 			actualItem[playerid] = INVALID_ITEM_ID;
 			iVars[srvitemid][iUsed] = false;
+			
+			cubeUseTime[playerid] = GetTickCount() + 5000;
 		}
 		case P_MASKA: {
 			if(!iVars[srvitemid][iUsed]) {
 				setPlayerHexName(playerid);
-				
+
 				strcat(mainStr, "Zak³adasz maskê.\nPamiêtaj, ¿e maj¹c maskê, nad postaci¹ widaæ Twój zaszyfrowany identyfikator.\n");
 				strcat(mainStr, "Oznacza to, ¿e ka¿dy gracz mo¿e wys³aæ na Ciebie raport, ka¿dy mo¿e napisaæ skargê.\n");
 				strcat(mainStr, "Nie jesteœ wiêc anonimowy(a), administracja zawsze mo¿e Ciê zidentyfikowaæ.");
 				ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
-				
+
 				iVars[srvitemid][iUsed] = true;
 			} else {
 				SetPlayerName(playerid, pVars[playerid][pCharName]);
@@ -364,7 +387,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				iVars[srvitemid][iUsed] = false;
 			}
 		}
-		case P_REKA: {
+		case P_REKAWICE: {
 			if(!iVars[srvitemid][iUsed]) {
 				format(mainStr, sizeof(mainStr), "* %s zak³ada %s.", pVars[playerid][pCharName], itemNames[itemid]);
 				sendMeMessage(playerid, mainStr);
@@ -398,10 +421,12 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			}
 		}
 		case P_KASTET, P_NITESTICK, P_KNIFE, P_BASEBALL, P_PARALIZ, P_COLT, P_DEAGLE, P_SHOTGUN, P_UZI, P_MP5, P_AK47, P_M4, P_TEC9, P_PARA: {
+			//SendClientMessage(playerid, COLOR_GRAY, "Ta broñ zepsu³a siê w wyniku eksploatacji.");
+			
 			if(!strlen(itemParms[playerid])) {
 				strcat(mainStr, "Sk¹d wyci¹gasz/dok¹d chowasz broñ (np. \"z kabury\")?\n\n");
 				strcat(mainStr, "Mo¿esz pomin¹æ ten dialog i szybciej u¿ywaæ przedmiotów (/pomoc -> Przedmioty).");
-				ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PARAMETERS, DIALOG_STYLE_INPUT, "Parametry", mainStr, "U¿yj", "Anuluj");
+				ShowPlayerDialog(playerid, DIALOG_ITEMS_PARAMETERS, DIALOG_STYLE_INPUT, "Parametry", mainStr, "U¿yj", "Anuluj");
 			} else {
 				if(!iVars[srvitemid][iUsed]) {
 					givePlayerWeapon(playerid, srvitemid);
@@ -412,6 +437,12 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 
 					iVars[srvitemid][iUsed] = true;
 				} else {
+					for(new i = 0; i < 13; i++) {
+						if(pVars[playerid][pWeapons][i]) {
+							pVars[playerid][pWeapons][i] = 0;
+						}
+					}
+					
 					ResetPlayerWeapons(playerid);
 					saveItemWeaponAmmo(srvitemid);
 
@@ -425,10 +456,37 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 
 			//format(mainStr, sizeof(mainStr), "* %s uzupe³nia amunicjê swojej broni.", pVars[playerid][pCharName]);
 		}
+		case P_ZDERZAKP, P_ZDERZAKT, P_BAGAZNIK, P_MASKASAM, P_SWIATLOLP, P_SWIATLOPP, P_SWIATLOLT, P_SWIATLOPT, P_OPONAMLP, P_OPONAMLT, P_OPONAMPP, P_OPONAMPT, P_ALIENSULTAN: {
+			iVars[srvitemid][iUsed] = true;
+
+			strcat(mainStr, "Podaj nastêpuj¹ce parametry oddzielone spacjami:\n[ID/Czêœæ nazwy gracza] [Cena]\n");
+			strcat(mainStr, "\tPrzyk³ad: John_Smith 50 (zamiast nicku wszêdzie mo¿na podaæ ID gracza)\n\n");
+			strcat(mainStr, "Mo¿esz pomin¹æ ten dialog i szybciej u¿ywaæ przedmiotów (/pomoc -> Przedmioty).");
+			ShowPlayerDialog(playerid, DIALOG_ITEMS_PARAMETERS, DIALOG_STYLE_INPUT, "Parametry", mainStr, "U¿yj", "Anuluj");
+
+			iVars[srvitemid][iUsed] = false;
+		}
+		case P_DRZWIKIER, P_DRZWIPAS: {
+			iVars[srvitemid][iUsed] = true;
+
+			SendClientMessage(playerid, COLOR_GRAY, "Parametry: [Gracz] [Cena]");
+
+			strcat(mainStr, "Na czacie pojawi³ siê tip podaj¹cy wymagane do u¿ycia tego przedmiotu parametry.\n");
+			strcat(mainStr, "Wpisz je proszê oddzielone spacjami (jak przy zwyk³ej komendzie).");
+			ShowPlayerDialog(playerid, DIALOG_ITEMS_PARAMETERS, DIALOG_STYLE_INPUT, "Ten przedmiot wymaga parametrów.", mainStr, "U¿yj", "Anuluj");
+
+			iVars[srvitemid][iUsed] = false;
+		}
 		case P_PIZZA, P_CHEESBURG, P_ZAPIEK, P_FRYTKI, P_GRVBURGER, P_HAMBGRG, P_HOTDOG, P_KEBAB, P_LODY, P_LODYWKBK, P_LONGER, P_NACHOSZS, P_NALESNIK, P_NALESNIKI, P_PACZEK, P_PACZEKAFRO, P_PACZEKZLT, P_DONUT, P_SUSHI: {
+			// * %s uleg³ przeterminowaniu. *
+			
+			if(iVars[srvitemid][iCraft]) {
+				return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Tego przedmiotu mo¿na u¿ywaæ tylko w celu craftingu.", "OK", "");
+			}
+			
 			iVars[srvitemid][iUsed] = true;
 			
-			setPlayerHealthEx(playerid, pVars[playerid][pHp] += random(10) + 5.0);
+			osrp_SetPlayerHealth(playerid, pVars[playerid][pHp] += random(10) + 5.0);
 			ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 0, 0, 0, 0, 1);
 			removePlayerItem(srvitemid);
 			
@@ -438,7 +496,11 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			actualItem[playerid] = INVALID_ITEM_ID;
 			iVars[srvitemid][iUsed] = false;
 		}
-		case P_WITAMINAC: {
+		case P_LEK, P_WITAMINAC: {
+			SendClientMessage(playerid, COLOR_GRAY, "Musisz byæ w aptece, która wyda³a ten lek, lub karetce, aby go u¿yæ.");
+
+			osrp_SetPlayerHealth(playerid, 40);
+
 			format(mainStr, sizeof(mainStr), "* %s aplikuje %s lek.", pVars[playerid][pCharName]);
 			sendMeMessage(playerid, mainStr);
 		}
@@ -455,7 +517,9 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 		case P_KARNET: {
 			if(!iVars[srvitemid][iUsed]) {
 				iVars[srvitemid][iUsed] = true;
-				isGym[playerid] = true;
+
+				acceptTraining[playerid] = true;
+				isGym[playerid] = false;
 
 				strcat(mainStr, "Zaakceptowano trening.\n\nU¿yj sprzêtu w silowni (/silownia), aby zwiekszyc swoja sile.\n\n");
 				strcat(mainStr, "Niektore narkotyki zwiekszaja szybkosc zdobywania sily, a inne czestotliwosc treningow!");
@@ -471,6 +535,24 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				sendMeMessage(playerid, mainStr);
 			}
 		}
+		case P_LINA: {
+			if(!iVars[srvitemid][iUsed]) {
+				iVars[srvitemid][iUsed] = true;
+
+				SendClientMessage(playerid, COLOR_GRAY, "Parametry: [Gracz, który siedzi w aucie do holowania]");
+
+				strcat(mainStr, "Na czacie pojawi³ siê tip podaj¹cy wymagane do u¿ycia tego przedmiotu parametry.\n");
+				strcat(mainStr, "Wpisz je proszê oddzielone spacjami (jak przy zwyk³ej komendzie).");
+				ShowPlayerDialog(playerid, DIALOG_ITEMS_PARAMETERS, DIALOG_STYLE_INPUT, "Ten przedmiot wymaga parametrów.", mainStr, "U¿yj", "Anuluj");
+			} else {
+				GameTextForPlayer(playerid, "~r~Pojazd odczepiony.", 5000, 3);
+
+				iVars[srvitemid][iUsed] = false;
+			}
+		}
+		case P_WYTRYCH: {
+			return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Aby u¿yæ tego przedmiotu, musisz byæ w grupie Tuska.", "OK", "");
+		}
 		case P_LANDSTALKER: {
 			if(!iVars[srvitemid][iUsed]) {
 				iVars[srvitemid][iUsed] = true;
@@ -485,51 +567,51 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			}
 		}
 	}
+	
+	// GameTextForPlayer(playerid, "~g~Tego przedmiotu nie mozna uzyc.", 5000, 3);
 	return 1;
 }
 
 stock givePlayerWeapon(playerid, srvitemid) {
-	ResetPlayerWeapons(playerid);
-
 	switch(iVars[srvitemid][iId]) {
 		case P_KASTET: {
-			GivePlayerWeapon(playerid, WEAPON_BRASSKNUCKLE, 1);
+			osrp_GivePlayerWeapon(playerid, WEAPON_BRASSKNUCKLE, 1);
 		}
 		case P_NITESTICK: {
-			GivePlayerWeapon(playerid, WEAPON_NITESTICK, 1);
+			osrp_GivePlayerWeapon(playerid, WEAPON_NITESTICK, 1);
 		}
 		case P_KNIFE: {
-			GivePlayerWeapon(playerid, WEAPON_KNIFE, 1);
+			osrp_GivePlayerWeapon(playerid, WEAPON_KNIFE, 1);
 		}
 		case P_BASEBALL: {
-		GivePlayerWeapon(playerid, WEAPON_BAT, 1);
+			osrp_GivePlayerWeapon(playerid, WEAPON_BAT, 1);
 		}
 		case P_COLT: {
-			GivePlayerWeapon(playerid, WEAPON_COLT45, loadItemWeaponAmmo(srvitemid));
+			osrp_GivePlayerWeapon(playerid, WEAPON_COLT45, loadItemWeaponAmmo(srvitemid));
 		}
 		case P_DEAGLE: {
-			GivePlayerWeapon(playerid, WEAPON_DEAGLE, loadItemWeaponAmmo(srvitemid));
+			osrp_GivePlayerWeapon(playerid, WEAPON_DEAGLE, loadItemWeaponAmmo(srvitemid));
 					}
 		case P_SHOTGUN: {
-			GivePlayerWeapon(playerid, WEAPON_SHOTGUN, loadItemWeaponAmmo(srvitemid));
+			osrp_GivePlayerWeapon(playerid, WEAPON_SHOTGUN, loadItemWeaponAmmo(srvitemid));
 		}
 		case P_UZI: {
-			GivePlayerWeapon(playerid, WEAPON_UZI, loadItemWeaponAmmo(srvitemid));
+			osrp_GivePlayerWeapon(playerid, WEAPON_UZI, loadItemWeaponAmmo(srvitemid));
 					}
 		case P_MP5: {
-			GivePlayerWeapon(playerid, WEAPON_MP5, loadItemWeaponAmmo(srvitemid));
+			osrp_GivePlayerWeapon(playerid, WEAPON_MP5, loadItemWeaponAmmo(srvitemid));
 					}
 		case P_AK47: {
-			GivePlayerWeapon(playerid, WEAPON_AK47, loadItemWeaponAmmo(srvitemid));
+			osrp_GivePlayerWeapon(playerid, WEAPON_AK47, loadItemWeaponAmmo(srvitemid));
 					}
 		case P_M4: {
-			GivePlayerWeapon(playerid, WEAPON_M4, loadItemWeaponAmmo(srvitemid));
+			osrp_GivePlayerWeapon(playerid, WEAPON_M4, loadItemWeaponAmmo(srvitemid));
 		}
 		case P_TEC9: {
-			GivePlayerWeapon(playerid, WEAPON_TEC9, loadItemWeaponAmmo(srvitemid));
+			osrp_GivePlayerWeapon(playerid, WEAPON_TEC9, loadItemWeaponAmmo(srvitemid));
 		}
 		case P_PARA: {
-			GivePlayerWeapon(playerid, WEAPON_PARACHUTE, 1);
+			osrp_GivePlayerWeapon(playerid, WEAPON_PARACHUTE, 1);
 		}
 	}
 
@@ -540,10 +622,12 @@ stock givePlayerWeapon(playerid, srvitemid) {
 }
 
 stock resetPlayerWeapon(playerid, srvitemid) {
-	new weap, ammo;
+	new weap, ammo, slot, weapid = GetPlayerWeapon(playerid);
+	
+	slot = getWeaponSlot(weapid);
 	
 	ResetPlayerWeapons(playerid);
-	GetPlayerWeaponData(playerid, 0, weap, ammo);
+	GetPlayerWeaponData(playerid, slot, weap, ammo);
 
 	SetPlayerArmedWeapon(playerid, weap);
 	
@@ -587,12 +671,6 @@ stock pickUpNearblyItems(playerid, where) {
 				}
 			}
 		}
-		
-		if(!count) {
-			return 1;
-		}
-
-		ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PICKUP, DIALOG_STYLE_LIST, "Pobliskie przedmioty (/p podnies)", mainStr, "Podnieœ", "Zamknij");
 	} else if(where == ITEM_PLACE_VEHICLE) {
 		new srvVehId = getServerVehicleIdForPlayer(playerid);
 
@@ -602,60 +680,46 @@ stock pickUpNearblyItems(playerid, where) {
 
 		foreach(new i : itemItter) {
 			if((iVars[i][iPlace] == ITEM_PLACE_VEHICLE && iVars[i][iOUid] == vVars[srvVehId][vUid]) && actualItem[playerid] == INVALID_ITEM_ID) {
-				format(mainStr, sizeof(mainStr), "%s{FFFFFF}%d\t%s\n", mainStr, iVars[i][iUid], iVars[i][iName]);
+				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, iVars[i][iUid], iVars[i][iName]);
 
 				count++;
 			}
-		}
-
-		if(!count) {
-			return 1;
-		}
-
-		ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS_PICKUP, DIALOG_STYLE_LIST, "Przedmioty w pojeŸdzie", mainStr, "Podnieœ", "Zamknij");	
+		}	
 	}
+
+	if(!count) {
+		return 1;
+	}
+
+	ShowPlayerDialog(playerid, DIALOG_ITEMS_PICKUP, DIALOG_STYLE_LIST, "Pobliskie przedmioty (/p podnies)", mainStr, "Podnieœ", "Zamknij");
 	return 1;
 }
 
 stock showPlayerDialogItems(playerid) {
-	enum tmp {
-		UID,
-		ID,
-		Name[32],
-		Val1,
-		Val2
-	}
-	
-	new tmpIVars[MAX_ITEMS][tmp];
-	new i;
-	
-	queryStr[0] = EOS;
+	new count;
+
 	mainStr[0] = EOS;
-	
-	format(queryStr, sizeof(queryStr), "SELECT `UID`, `ID`, `Name`, `Value1`, `Value2` FROM `osrp_Items` WHERE `OUID` = '%d' AND `Place` = '%d'", pVars[playerid][pUid], ITEM_PLACE_PLAYER);
-	mysql_query(queryStr);
-	
-	mysql_store_result();
-	
-	while(mysql_fetch_row(queryStr, "|")) {
-		sscanf(queryStr, "p<|>iis[32]ii", tmpIVars[i][UID], tmpIVars[i][ID], tmpIVars[i][Name], tmpIVars[i][Val1], tmpIVars[i][Val2]);
-		format(mainStr, sizeof(mainStr), "%s\n %s\t{000000}%d\t%d\t(%d, %d)", mainStr, tmpIVars[i][Name], tmpIVars[i][UID], tmpIVars[i][ID], tmpIVars[i][Val1], tmpIVars[i][Val2]);
-		
-		i++;
+
+	foreach(new i : itemItter) {
+		if(iVars[i][iOUid] == pVars[playerid][pUid] && iVars[i][iPlace] == ITEM_PLACE_PLAYER) {
+			format(mainStr, sizeof(mainStr), "%s\n %s\t{000000}%d\t%d\t(%d, %d)", mainStr, iVars[i][iName], iVars[i][iUid], iVars[i][iId], iVars[i][iValue1], iVars[i][iValue2]);
+
+			count++;
+		}
 	}
-	
-	if(!i) {
+
+	if(!count) {
 		strcat(mainStr, "Nie posiadasz jeszcze przedmiotów.\nMo¿na je zdobyæ od innych graczy, kupiæ\n");
 		strcat(mainStr, "w ró¿nych firmach lub znaleŸæ na ziemi.\nZdobyte przedmioty mo¿esz u¿yæ lub handlowaæ.");
 	}
-	
-	for(new j = 0; j < 2; j++) {
-		TextDrawShowForPlayer(playerid, itemTips[playerid][j]);
+
+	for(new i = 0; i < 2; i++) {
+		TextDrawShowForPlayer(playerid, itemTips[playerid][i]);
 	}
-	
+
 	SetTimerEx("hideItemTips", 4000, false, "i", playerid);
-	
-	format(mainStr, sizeof(mainStr), "Przedmioty znajduj¹ce siê przy Tobie:\n%s\nPodnieœ przedmiot...", mainStr);
+
+	format(mainStr, sizeof(mainStr), "Przedmioty znajduj¹ce siê przy Tobie:\n%s\nPodnieœ przedmiot...{000000}\t0\t0", mainStr);
 	ShowPlayerDialog(playerid, DIALOG_SHOW_ITEMS, DIALOG_STYLE_LIST, "Dostêpne przedmioty", mainStr, "U¿yj", "Wiêcej");
 	return 1;
 }

@@ -27,8 +27,9 @@ new gsVars[MAX_GAS_PUMPS][GasPumpData];
 new bVars[MAX_BUS_STOPS][BusStopData];
 new boVars[MAX_BOOTHS][BoothData];
 new gVars[MAX_GROUPS][GroupData];
-new gIVars[50][GroupItems];
-new gTVars[MAX_GROUP_TASKS][GroupTasks];
+new gIVars[50][GroupItem];
+new gTVars[MAX_GROUP_TASKS][GroupTask];
+new gOVars[100][GroupOrder];
 new dVars[MAX_DOORS][DoorData];
 //Cashpoints system
 new cVars[MAX_CASHPOINTS][CashpointData];
@@ -36,6 +37,7 @@ new cVars[MAX_CASHPOINTS][CashpointData];
 stock oVars[MAX_OBJECTS][ObjectData];
 new rcVars[MAX_RACES][RaceData];
 new aVars[MAX_AREAS][AreaData];
+new penVars[MAX_PENALTIES][PenaltiesData];
 
 new Float:startCameraPos[][] = {
 	{2485.5459,-1656.8232,13.3414}
@@ -64,13 +66,11 @@ new charManName[][CharName] = {
 	{"Ronan", false}, {"Rurik", false}, {"Santos", false}, {"Seamus", false}, {"Sergio", false}, {"Serguei", false}, {"Seriozha", false}, {"Shashenka", false},
 	{"Shouhei", false}, {"Slavik", false}, {"Sterling", false}, {"Takahiro", false}, {"Takumi", false}, {"Takuya", false}, {"Tariq", false}, {"Tate", false},
 	{"Tavion", false}, {"Thaddeus", false}, {"Theodore", false}, {"Titus", false}, {"Trevin", false}, {"Tristian", false}, {"Tristin", false}, {"Tsubasa", false},
-	{"Vance", false}, {"Volody", false}, {"Yadiel", false}, {"Yahir", false}, {"Yakov", false}, {"Yuuto", false}/*, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}*/
+	{"Vance", false}, {"Volody", false}, {"Yadiel", false}, {"Yahir", false}, {"Yakov", false}, {"Yuuto", false}
 };
 
 new charWomName[][CharName] = {
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}
+	{"AAAAAAAAAAA", false}, {"AAAAAAAAAAA", false}, {"AAAAAAAAAAA", false}, {"AAAAAAAAAAA", false}, {"AAAAAAAAAAA", false}, {"AAAAAAAAAAA", false}, {"AAAAAAAAAAA", false}
 };
 
 new charSur[][CharSurName] = {
@@ -92,21 +92,7 @@ new charSur[][CharSurName] = {
 	{"Cipollini", false}, {"Cirillo", false}, {"Citriniti", false}, {"Ciurro", false}, {"Civile", false}, {"Civitella", false}, {"Ciark", false}, {"Ciemente", false}, {"Colannino", false}, {"Coletti", false},
 	{"Collins", false}, {"Conchin", false}, {"Conficoni", false}, {"Conforto", false}, {"Conti", false}, {"Cornelio", false}, {"Corulla", false}, {"Costa", false}, {"Costanza", false}, {"Costanzo", false},
 	{"Cotone", false}, {"Cottone", false}, {"Cottone", false}, {"Covelli", false}, {"Cozzi", false}, {"Crescento", false}, {"Cricenti", false}, {"Crivaro", false}, {"Crivello", false}, {"Cruzzola", false},
-	{"Cuiccio", false}, {"Cupi", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false},
-	{"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}, {"", false}
+	{"Cuiccio", false}, {"Cupi", false}
 };
 
 new animNames[][] = {
@@ -123,15 +109,17 @@ new animNames[][] = {
 };
 
 new itemNames[][] = {
-	"Rolki", "Piwo", "Wino", "Sprunk", "Teczka", "Torba", "Notatnik", "Cygaro", "Ubranie", "Telefon", "Kostka",
-	"Maska", "Rêkawice", "Kamizelka", "Kwiaty", "Kastet", "Palka", "Nó¿", "Kij baseballowy", "Paralizator", "Tagger", "Pistolet",
-	"Deagle", "Glock 19", "Shotgun", "UZI", "MP5", "AK-47", "M4", "TEC9", "Spadochron", "Mat Wybuchowe", "Pizza", "Cheeseburger",
-	"Zapiekanka", "Coca-Cola", "Cuba Libre", "Frytki", "Grove Burger", "Hamburger", "Herbata",
-	"Hot Dog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Longer", "Nachos z serem", "Naleœnik",
-	"Naleœniki", "P¹czek", "P¹czek Afro", "P¹czek Z³otawy", "Donut", "Sushi", "Woda Mineralna", "Discman",
-	"RadioParty", "CD", "Nokia 8110", "Vitamina C", "Zderzak przedni", "Zderzak tylny", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik",
-	"Maska samochodowa", "Œwiat³o (LP)", "Œwiat³o (PP)", "Œwiat³o (LT)", "Œwiat³o (PT)", "Kanister",
-	"Karnetsiowy", "Heroina", "Canon 450D"
+	"Rolki", "Piwo", "Wino", "Vodka", "Sprunk", "Teczka", "Torba", "Notatnik", "Marlboro", "Cygaro", "Ubranie", "Telefon", "Kostka",
+	"Maska", "Rêkawice", "Kamizelka", "Kwiaty", "Kastet", "Pa³ka", "Nó¿", "Kij baseballowy", "Paralizator", "Tagger", "Pistolet",
+	"Desert Eagle", "Glock 19", "Shotgun", "UZI", "MP5", "AK-47", "M4", "TEC9", "Spadochron", "Mat Wybuchowe", "Batonik", "Bu³ka",
+	"Pizza", "Cheeseburger", "Sajgonki", "Sake Maki", "Zapiekanka", "Cappuccino", "Coca-Cola", "Cuba Libre", "Pepsi", "Energy drink",
+	"Mojito", "Frytki", "Grove Burger", "Hamburger", "Herbata", "Hot Dog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Lód czekoladowy",
+	"Lód œmietankowy", "Lód truskawkowy", "Kanapka z kurczakiem", "Longer", "Nachos z serem", "Naleœnik", "Naleœniki", "P¹czek", "P¹czek Afro",
+	"P¹czek Z³otawy", "Donut", "Sushi", "Lasagne", "Nuggetsy", "Spaghetti", "Taco", "Tortilla", "Woda Mineralna", "Discman", "Boombox", "RadioParty",
+	"CD", "Nokia 8110", "Lek", "Vitamina C", "Alarm", "Immobiliser", "Zderzak przedni", "Zderzak tylny", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik",
+	"Maska samochodowa", "Opona (LP)", "Opona (LT)", "Opona (PP)", "Opona (PT)", "Opona (LP/motor)", "Opona (LT/motor)", "Opona (PP/motor)",
+	"Opona (PT/motor)", "Œwiat³o (LP)", "Œwiat³o (PP)", "Œwiat³o (LT)", "Œwiat³o (PT)", "Alien Sultan", "Kanister", "Karnet", "Heroina", "Canon 450D",
+	"Linka holownicza", "Casio", "Karta pamieci", "Latarka", "Loteria", "Mebel", "Naboj lakieru", "Napis 3D", "Wytrych"
 };
 
 new VehicleNames[212][] = {
@@ -139,7 +127,7 @@ new VehicleNames[212][] = {
 	"Bravura",
 	"Buffalo",
 	"Linerunner",
-	"Pereniel",
+	"Perenniel",
 	"Sentinel",
 	"Dumper",
 	"Firetruck",
@@ -307,7 +295,7 @@ new VehicleNames[212][] = {
 	"Freight",
 	"Trailer",
 	"Kart",
-	"Mower",
+	"Kosiarka",
 	"Duneride",
 	"Sweeper",
 	"Broadway",

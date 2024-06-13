@@ -14,7 +14,7 @@
 #pragma library osrp
 
 CMD:ban(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -33,12 +33,12 @@ CMD:ban(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	givePlayerPenalty(playerid, pId, PEN_BAN, reason, 0);
+	givePlayerPenalty(playerid, pId, PEN_BAN, 0, reason);
 	return 1;
 }
 
 CMD:kick(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -57,12 +57,12 @@ CMD:kick(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	givePlayerPenalty(playerid, pId, PEN_KICK, reason, 0);
+	givePlayerPenalty(playerid, pId, PEN_KICK, 0, reason);
 	return 1;
 }
 
 CMD:warn(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -81,12 +81,12 @@ CMD:warn(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	givePlayerPenalty(playerid, pId, PEN_WARN, reason, 0);
+	givePlayerPenalty(playerid, pId, PEN_WARN, 0, reason);
 	return 1;
 }
 
 CMD:block(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -105,12 +105,12 @@ CMD:block(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	givePlayerPenalty(playerid, pId, PEN_BLCKACC, reason, 0);
+	givePlayerPenalty(playerid, pId, PEN_BLCKACC, 0, reason);
 	return 1;
 }
 
 CMD:norun(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -121,20 +121,20 @@ CMD:norun(playerid, params[]) {
 	new pId, days;
 	new reason[128];
 	
-	if(sscanf(params, "is[128]i", pId, reason, days)) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /norun [Gracz] [Powód] [Dni]");
+	if(sscanf(params, "iis[128]", pId, days, reason)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /norun [Gracz] [Dni] [Powód]");
 	}
 
 	if(!IsPlayerConnected(pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	givePlayerPenalty(playerid, pId, PEN_RUNNBLW, reason, days);
+	givePlayerPenalty(playerid, pId, PEN_RUNNBLW, days, reason);
 	return 1;
 }
 
 CMD:nob(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -145,20 +145,20 @@ CMD:nob(playerid, params[]) {
 	new pId, days;
 	new reason[128];
 	
-	if(sscanf(params, "is[128]i", pId, reason, days)) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /nob [Gracz] [Powód] [Dni]");
+	if(sscanf(params, "iis[128]", pId, days, reason)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /nob [Gracz] [Dni] [Powód]");
 	}
 
 	if(!IsPlayerConnected(pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	givePlayerPenalty(playerid, pId, PEN_BLCKOOC, reason, days);
+	givePlayerPenalty(playerid, pId, PEN_BLCKOOC, days, reason);
 	return 1;
 }
 
 CMD:now(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -177,12 +177,12 @@ CMD:now(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	givePlayerPenalty(playerid, pId, PEN_WRITING, reason, 0);
+	givePlayerPenalty(playerid, pId, PEN_WRITING, 0, reason);
 	return 1;
 }
 
 CMD:norp(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -193,20 +193,20 @@ CMD:norp(playerid, params[]) {
 	new pId, days;
 	new reason[128];
 	
-	if(sscanf(params, "is[128]i", pId, reason, days)) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /norp [Gracz] [Powód] [Dni]");
+	if(sscanf(params, "iis[128]", pId, days, reason)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /norp [Gracz] [Dni] [Powód]");
 	}
 
 	if(!IsPlayerConnected(pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	givePlayerPenalty(playerid, pId, PEN_RPACTN, reason, days);
+	givePlayerPenalty(playerid, pId, PEN_RPACTN, days, reason);
 	return 1;
 }
 
 CMD:noveh(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -217,20 +217,20 @@ CMD:noveh(playerid, params[]) {
 	new pId, days;
 	new reason[128];
 	
-	if(sscanf(params, "is[128]i", pId, reason, days)) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /noveh [Gracz] [Powód] [Dni]");
+	if(sscanf(params, "iis[128]", pId, days, reason)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /noveh [Gracz] [Dni] [Powód]");
 	}
 
 	if(!IsPlayerConnected(pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	givePlayerPenalty(playerid, pId, PEN_BLCKVEH, reason, days);
+	givePlayerPenalty(playerid, pId, PEN_BLCKVEH, days, reason);
 	return 1;
 }
 
 CMD:klatwa(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -241,20 +241,20 @@ CMD:klatwa(playerid, params[]) {
 	new pId, days;
 	new reason[128];
 	
-	if(sscanf(params, "is[128]i", pId, reason, days)) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /klatwa [Gracz] [Powód] [Dni]");
+	if(sscanf(params, "iis[128]", pId, days, reason)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /klatwa [Gracz] [Dni] [Powód]");
 	}
 
 	if(!IsPlayerConnected(pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	givePlayerPenalty(playerid, pId, PEN_CURSE, reason, days);
+	givePlayerPenalty(playerid, pId, PEN_CURSE, days, reason);
 	return 1;
 }
 
 CMD:aj(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -273,12 +273,12 @@ CMD:aj(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	givePlayerPenalty(playerid, pId, PEN_ADMJAIL, reason, 0);
+	givePlayerPenalty(playerid, pId, PEN_ADMJAIL, 0, reason);
 	return 1;
 }
 
 CMD:unaj(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -305,7 +305,7 @@ CMD:unaj(playerid, params[]) {
 }
 
 CMD:bw(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -326,7 +326,7 @@ CMD:bw(playerid, params[]) {
 	setPlayerBW(pId, time);
 	
 	foreach(new i : Player) {
-		if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
+		if(pVars[i][pRank] >= RANK_GAMEMASTER1 && pVars[i][pRank] <= RANK_ADMIN4) {
 			if(isAdminDuty[i]) {
 				if(playerid == pId) {
 					mainStr[0] = EOS;
@@ -348,7 +348,7 @@ CMD:bw(playerid, params[]) {
 }
 
 CMD:unbw(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -366,8 +366,9 @@ CMD:unbw(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 
-	setPlayerHealthEx(pId, 100.0);
-	osrp_TogglePlayerControllable(pId, 1);
+	osrp_SetPlayerHealth(pId, 100.0);
+	osrp_TogglePlayerControllable(pId, true);
+	
 	SetPlayerDrunkLevel(pId, 0);
 	ClearAnimations(pId);
 
@@ -375,7 +376,7 @@ CMD:unbw(playerid, params[]) {
 	isBW[pId] = false;
 	
 	foreach(new i : Player) {
-		if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
+		if(pVars[i][pRank] >= RANK_GAMEMASTER1 && pVars[i][pRank] <= RANK_ADMIN4) {
 			if(isAdminDuty[i]) {
 				mainStr[0] = EOS;
 
@@ -401,7 +402,7 @@ CMD:unbw(playerid, params[]) {
 }
 
 CMD:ann(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 
@@ -421,7 +422,7 @@ CMD:ann(playerid, params[]) {
 }
 
 CMD:rc(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 
@@ -448,7 +449,7 @@ CMD:rc(playerid, params[]) {
 		vw = GetPlayerVirtualWorld(pId);
 		int = GetPlayerInterior(pId);
 
-		osrp_TogglePlayerControllable(playerid, 1);
+		osrp_TogglePlayerControllable(playerid, true);
 		TogglePlayerSpectating(playerid, 1);
 
 		if(GetPlayerState(pId) == PLAYER_STATE_DRIVER || GetPlayerState(pId) == PLAYER_STATE_PASSENGER) {
@@ -464,7 +465,7 @@ CMD:rc(playerid, params[]) {
 	} else
 	{	
 		TogglePlayerSpectating(playerid, 0);
-		osrp_TogglePlayerControllable(playerid, 0);
+		osrp_TogglePlayerControllable(playerid, false);
 
 		SetPlayerVirtualWorld(playerid, 0);
 		SetPlayerInterior(playerid, 0);
@@ -475,7 +476,7 @@ CMD:rc(playerid, params[]) {
 }
 
 CMD:ooc(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 1;
 	}
 
@@ -491,13 +492,12 @@ CMD:ooc(playerid, params[]) {
 
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "[[ %s: %s ]]", pVars[playerid][pCharName], str);
-
-	SendClientMessageToAll(0xFFC3FFFF, mainStr);
+	sendClientMessageToAllOOC(playerid, 0xFFC3FFFF, mainStr);
 	return 1;
 }
 
 CMD:gm(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 1;
 	}
 	
@@ -515,7 +515,7 @@ CMD:gm(playerid, params[]) {
 	format(mainStr, sizeof(mainStr), "[[ %d.%s: %s ]]", playerid, pVars[playerid][pCharName], str);
 	
 	foreach(new i : Player) {
-		if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
+		if(pVars[i][pRank] >= RANK_GAMEMASTER1 && pVars[i][pRank] <= RANK_ADMIN4) {
 			if(isAdminDuty[i]) {
 				SendClientMessage(i, COLOR_WHITE, mainStr);
 			}
@@ -525,7 +525,7 @@ CMD:gm(playerid, params[]) {
 }
 
 CMD:tt(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -555,7 +555,7 @@ CMD:tt(playerid, params[]) {
 }
 
 CMD:givehealth(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -577,7 +577,7 @@ CMD:givehealth(playerid, params[]) {
 	SetPlayerHealth(toPlayerid, pVars[toPlayerid][pHp]);
 	
 	foreach(new i : Player) {
-		if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
+		if(pVars[i][pRank] >= RANK_GAMEMASTER1 && pVars[i][pRank] <= RANK_ADMIN4) {
 			if(isAdminDuty[i]) {
 				if(playerid == toPlayerid) {
 					mainStr[0] = EOS;
@@ -638,7 +638,7 @@ CMD:givearmour(playerid, params[]) {
 */
 
 CMD:freeze(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -658,31 +658,29 @@ CMD:freeze(playerid, params[]) {
 	
 	switch(freezeOnOff) {
 		case 0: {
-			GetPlayerPos(toPlayerid, pVars[toPlayerid][pX], pVars[toPlayerid][pY], pVars[toPlayerid][pZ]);
-			osrp_TogglePlayerControllable(toPlayerid, 1);
+			osrp_TogglePlayerControllable(toPlayerid, true);
 			
 			SendClientMessage(toPlayerid, COLOR_GREEN, "Administracja odmrozi³a Ciê.");
 			
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "Odmrozi³eœ gracza %s.", pVars[toPlayerid][pCharName2]);
-			SendClientMessage(playerid, COLOR_GREEN, mainStr);
 		}
 		case 1: {
-			GetPlayerPos(toPlayerid, pVars[toPlayerid][pX], pVars[toPlayerid][pY], pVars[toPlayerid][pZ]);
-			osrp_TogglePlayerControllable(toPlayerid, 0);
+			osrp_TogglePlayerControllable(toPlayerid, false);
 			
 			SendClientMessage(toPlayerid, COLOR_GREEN, "Administracja zamrozi³a Ciê.");
 			
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "Zamrozi³eœ gracza %s.", pVars[toPlayerid][pCharName2]);
-			SendClientMessage(playerid, COLOR_GREEN, mainStr);
 		}
 	}
+	
+	SendClientMessage(playerid, COLOR_GREEN, mainStr);
 	return 1;
 }
 
 CMD:god(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -706,7 +704,7 @@ CMD:god(playerid, params[]) {
 }
 
 CMD:startpos(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -733,7 +731,7 @@ CMD:startpos(playerid, params[]) {
 }
 
 CMD:giveweapon(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -757,7 +755,7 @@ CMD:giveweapon(playerid, params[]) {
 }
 
 CMD:apojazd(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -887,7 +885,7 @@ CMD:apojazd(playerid, params[]) {
 }
 
 CMD:setfuel(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -921,7 +919,7 @@ CMD:setfuel(playerid, params[]) {
 }
 
 CMD:aitem(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -949,7 +947,7 @@ CMD:aitem(playerid, params[]) {
 }
 
 CMD:adoor(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -973,7 +971,7 @@ CMD:adoor(playerid, params[]) {
 }
 
 CMD:abus(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -992,7 +990,7 @@ CMD:abus(playerid, params[]) {
 }
 
 CMD:acash(playerid, params[]) {	
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -1011,7 +1009,7 @@ CMD:acash(playerid, params[]) {
 }
 
 CMD:agroup(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -1022,8 +1020,8 @@ CMD:agroup(playerid, params[]) {
 	new name[32], tag[8];
 	new pId, type;
 	
-	if(sscanf(params, "is[8]s[32]i", pId, tag, name, type)) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /agroup [Gracz] [Tag] [Nazwa grupy] [Rodzaj]");
+	if(sscanf(params, "iis[8]s[32]", pId, type, tag, name)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /agroup [Gracz] [Rodzaj] [Tag] [Nazwa grupy]");
 	}
 
 	if(!IsPlayerConnected(pId)) {
@@ -1035,7 +1033,7 @@ CMD:agroup(playerid, params[]) {
 }
 
 CMD:anumber(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -1058,7 +1056,7 @@ CMD:anumber(playerid, params[]) {
 }
 
 CMD:askin(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -1091,7 +1089,7 @@ CMD:askin(playerid, params[]) {
 }
 
 CMD:dajprace(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -1114,7 +1112,7 @@ CMD:dajprace(playerid, params[]) {
 }
 
 CMD:naprawpojazd(playerid, params[]) {
-	if(pVars[playerid][pRank] < SUPPORT_RANK) {
+	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	

@@ -49,7 +49,7 @@ enum GroupData {
 	gRegister
 };
 
-enum GroupItems {
+enum GroupItem {
 	gIUid,
 	gIOUid,
 	gIId,
@@ -58,10 +58,15 @@ enum GroupItems {
 	gIAmount
 };
 
-enum GroupTasks {
+enum GroupTask {
 	gTUid,
 	gTGUid,
-	gTName[128],
+	gTDesc[128],
 	gTDate[64],
 	gTCaller[24]
+};
+
+enum GroupOrder {
+	gOUid,
+	gOName[32]
 };

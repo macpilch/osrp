@@ -13,7 +13,7 @@
 #pragma library osrp
 
 stock searchPlayerGym(playerid) {
-	if(!isGym[playerid]) {
+	if(!acceptTraining[playerid]) {
 		return 1;
 	}
 
@@ -21,12 +21,18 @@ stock searchPlayerGym(playerid) {
 		return GameTextForPlayer(playerid, "~r~Nie stoisz przy maszynie!", 5000, 3);
 	}
 
-	TogglePlayerControllable(playerid, 0);
+	if(pVars[playerid][pHp] < 100) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Odczekaj 3 minuty przed ostatnią utratą HP.");
+	}
+
+	osrp_TogglePlayerControllable(playerid, false);
 	SetPlayerFacingAngle(playerid, 90);
 	SetPlayerPos(playerid, 758.8672 + 1, -76.0945, 1000.6500);
 
 	ApplyAnimation(playerid, "benchpress", "gym_bp_geton", 1, 0, 0, 0, 1, 0, 1);
 	SetTimerEx("givePlayerGymBarBell", 4000, false, "i", playerid);
+
+	acceptTraining[playerid] = false;
 
 	for(new i = 0; i < 2; i++) {
 		TextDrawShowForPlayer(playerid, showInfoGym[playerid][i]);
@@ -38,6 +44,8 @@ Callback:givePlayerGymBarBell(playerid) {
 	if(!IsValidDynamicObject(gymObject[0])) {
 		return 1;
 	}
+
+	isGym[playerid] = true;
 
 	SetPlayerAttachedObject(playerid, 0, 2913, 6, 0, -0.04, -0.01, 0, 0, 0, 1, 1, 1);
 	return 1;

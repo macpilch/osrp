@@ -37,6 +37,7 @@
 #include "src\systems\vehicle_publics"
 #include "src\commands\admin_cmds"
 #include "src\commands\player_cmds"
+#include "src\commands\object_cmds"
 #include "src\commands\vehicle_cmds"
 #include "src\core\global_functions"
 #include "src\core\player_functions"

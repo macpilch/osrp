@@ -48,6 +48,10 @@ stock searchPlayerBooth(playerid) {
 	foreach(new i : boothItter) {
 		if(playerToPoint(playerid, boVars[i][boRange], boVars[i][boPosX], boVars[i][boPosY], boVars[i][boPosZ])) {
 			if(IsValidDynamicObject(boVars[i][boObject]) && boVars[i][boWorking]) {
+				if(pVars[playerid][pHours] > 20) {
+					return SendClientMessage(playerid, COLOR_GRAY, "Budki telefoniczne dostêpne s¹ tylko dla graczy, którzy przegrali mniej ni¿ 20 godzin.");
+				}
+
 				new countPlayers;
 
 				mainStr[0] = EOS;
