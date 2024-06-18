@@ -27,7 +27,7 @@ stock initDoorValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iis[32]ffffffiis[24]iiiiiiiiii", dVars[i][dUid], dVars[i][dOUid], dVars[i][dName], dVars[i][dEnterX], dVars[i][dEnterY], dVars[i][dEnterZ],
+		sscanf(queryStr, "p<|>iiis[32]ffffffiis[24]iiiiiiiiii", dVars[i][dUid], dVars[i][dOUid], dVars[i][dOType], dVars[i][dName], dVars[i][dEnterX], dVars[i][dEnterY], dVars[i][dEnterZ],
 		dVars[i][dExitX], dVars[i][dExitY], dVars[i][dExitZ], dVars[i][dOpen], dVars[i][dTax], dVars[i][dTaxDate], dVars[i][dTaxCost], dVars[i][dDimensions], dVars[i][dObjects],
 		dVars[i][dMaxObjects], dVars[i][dTexts], dVars[i][dMaxTexts], dVars[i][dSecurity], dVars[i][dVw], dVars[i][dInt], dVars[i][dType]);
 		Iter_Add(doorItter, i);
@@ -49,8 +49,8 @@ stock saveDoorValues() {
 	queryStr[0] = EOS;
 
 	foreach(new i : doorItter) {
-		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Doors` SET `OUID` = '%d', `Name` = '%s', `Open` = '%d', `VW` = '%d', `INT` = '%d' WHERE `UID` = '%d'", 
-		dVars[i][dOUid], dVars[i][dName], dVars[i][dOpen], dVars[i][dVw], dVars[i][dInt], i + 1);
+		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Doors` SET `OUID` = '%d', `OType` = '%d', `Name` = '%s', `Open` = '%d', `VW` = '%d', `INT` = '%d' WHERE `UID` = '%d'", 
+		dVars[i][dOUid], dVars[i][dOType], dVars[i][dName], dVars[i][dOpen], dVars[i][dVw], dVars[i][dInt], i + 1);
 		mysql_query(queryStr);
 	}
 	return 1;
@@ -84,14 +84,15 @@ stock createNewDoor(playerid, ownerId, doorName[]) {
 	
 	dVars[freeId][dUid] = freeId + 1;
 	dVars[freeId][dOUid] = ownerId;
+	dVars[freeId][dOType] = 0;
 	format(dVars[freeId][dName], 32, doorName);
 	
 	dVars[freeId][dVw] = pVars[playerid][pVw];
 	dVars[freeId][dInt] = pVars[playerid][pInt];
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Doors`(`UID`, `OUID`, `Name`, `VW`, `INT`) VALUES ('%d', '%d', '%s', '%d', '%d')",
-	dVars[freeId][dUid], dVars[freeId][dOUid], dVars[freeId][dName], dVars[freeId][dVw], dVars[freeId][dInt]);
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Doors`(`UID`, `OUID`, `OType`, `Name`, `VW`, `INT`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d')",
+	dVars[freeId][dUid], dVars[freeId][dOUid], dVars[freeId][dOType], dVars[freeId][dName], dVars[freeId][dVw], dVars[freeId][dInt]);
 	mysql_query(queryStr);
 	return 1;
 }

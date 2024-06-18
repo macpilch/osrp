@@ -34,6 +34,7 @@
 #include "src\core\arrays"
 #include "src\core\main_publics"
 #include "src\core\player_publics"
+#include "src\core\objects"
 #include "src\systems\vehicle_publics"
 #include "src\commands\admin_cmds"
 #include "src\commands\player_cmds"

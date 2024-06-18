@@ -68,5 +68,12 @@ enum GroupTask {
 
 enum GroupOrder {
 	gOUid,
-	gOName[32]
+	gOOUid,
+	gOName[32],
+	gOOwner[24],
+	gOCourier,
+	gOId,
+	gOPrice,
+	gOAmount,
+	bool:gOIsDeliver
 };

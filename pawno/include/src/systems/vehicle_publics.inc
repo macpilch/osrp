@@ -19,12 +19,12 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 
 	if(isVehicleInUse(vehicleid) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid]) {
 		ClearAnimations(playerid);
-		
+
 		SendClientMessage(playerid, COLOR_WHITE, "(!) Pamiêtaj, to RolePlay. Swój pojazd musisz kupiæ lub wypo¿yczyæ.");
 		SendClientMessage(playerid, COLOR_WHITE, "(!) Warto znaleŸæ pracê, aby zdobyæ pieni¹dze na zakup w³asnego pojazdu.");
-		
-		if(!pVars[playerid][pHours] && pVars[playerid][pMinutes] < 10) {
-			SendClientMessage(playerid, COLOR_WHITE, "(!) Zanim bêdzie Ciê staæ, u¿yj /budka, by dzwoniæ po taxi, lub /bus. Prowadziæ mo¿na po przegraniu 10min.");
+
+		if(pVars[playerid][pHours] < 3) {
+			SendClientMessage(playerid, COLOR_WHITE, "(!) Zanim bêdzie Ciê staæ, u¿yj /budka, by dzwoniæ po taxi, lub /bus. Prowadziæ mo¿na po przegraniu 3h.");
 		} else {
 			SendClientMessage(playerid, COLOR_WHITE, "(!) Jako nowy gracz, mo¿esz byæ pasa¿erem tylko, gdy w pojeŸdzie jest kierowca.");
 		}

@@ -22,6 +22,7 @@ enum {
 enum DoorData {
 	dUid,
 	dOUid,
+	dOType,
 	dName[32],
 	Float:dEnterX,
 	Float:dEnterY,

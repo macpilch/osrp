@@ -16,9 +16,9 @@ Timer:globalTimer[1000]() {
 	foreach(new i : Player) {
 		playerAFKTime[i]++;
 
-		if(playerAFKTime[i] != 1) {
-			if(playerAFKTime[i] == 3) {
-				updatePlayerGameStatus(i, STAT_AFK);
+		if(playerAFKTime[i] != 0) {
+			if(playerAFKTime[i] == 2) {
+				updatePlayerGameStatus(i);
 			}
 
 			/*if(isBW[i]) {
@@ -420,7 +420,7 @@ Timer:globalTimer[1000]() {
 		GetPlayerHealth(i, pVars[i][pHp]);
 
 		if(pVars[i][pHp] <= 5.0 && !isBW[i]) {
-			setPlayerBW(i, 3);
+			//setPlayerBW(i, 3);
 		}
 
 		// Narazie niech bedzie na 1
@@ -723,7 +723,7 @@ Timer:giveFreeMoneyTimer[590000]() {
 	}
 }
 
-Timer:remindPlayPhoneTimer[300000]() {
+/*Timer:remindPlayPhoneTimer[60000]() {
 	static bool:hasPhone = true;
 	
 	foreach(new i : Player) {
@@ -738,7 +738,7 @@ Timer:remindPlayPhoneTimer[300000]() {
 		}
 	}
 }
-
+*/
 Timer:getMoneyForHotelTimer[60000]() {
 	new h, m, s, numChars;
 	

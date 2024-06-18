@@ -13,12 +13,15 @@
 #pragma library osrp
 
 enum CashpointData {
-	csUid,
-	csName[32],
-	csObject,
-	bool:csIsOpen,
-	Float:csX,
-	Float:csY,
-	Float:csZ,
-	Float:csDistance
+	cUid,
+	cName[32],
+	cObject,
+	bool:cIsOpen,
+	Float:cX,
+	Float:cY,
+	Float:cZ,
+	Float:cRotX,
+	Float:cRotY,
+	Float:cRotZ,
+	Float:cDistance
 };

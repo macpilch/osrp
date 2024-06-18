@@ -13,11 +13,13 @@
 #pragma library osrp
 
 enum BusStopData {
-	bsUid,
-	bsName[32],
-	bsObject,
-	bsPrice,
-	Float:bsX,
-	Float:bsY,
-	Float:bsZ
+	bUid,
+	bName[32],
+	bObject,
+	Float:bX,
+	Float:bY,
+	Float:bZ,
+	Float:bRotX,
+	Float:bRotY,
+	Float:bRotZ
 };

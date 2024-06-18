@@ -29,6 +29,7 @@ new actualBusStop[MAX_PLAYERS]; //Zapisuje aktualny przystanek gracza po wpisani
 new actualCashpoint[MAX_PLAYERS]; // Zapisuje aktualny bankomat w zasiegu gracza
 new actualItem[MAX_PLAYERS];
 new actualGroupItemsSet[MAX_PLAYERS];
+new actualOrder[MAX_PLAYERS];
 new actualRace[MAX_PLAYERS];
 
 new playerFuelPrice[MAX_PLAYERS]; // Do tablicy trafia cena paliwa dla danego gracza podczas uzywania funkcji tankuj
@@ -68,6 +69,7 @@ new blockadeObjects[MAX_BLOCKADES];
 new chatEnabledId[MAX_PLAYERS];
 new fuelTimer[MAX_PLAYERS];
 new cubeUseTime[MAX_PLAYERS];
+new packageUseTime[MAX_PLAYERS];
 
 new playerNotes[MAX_PLAYERS];
 new playerNotesDesc[MAX_PLAYERS][64];
@@ -78,7 +80,7 @@ new taxiCost[MAX_PLAYERS];
 
 //part time job
 new casualJob[MAX_PLAYERS];
-new casualJobPickup;
+new casualJobsPickup;
 
 new calledCmds[MAX_PLAYERS];
 new calledSecsCmds[MAX_PLAYERS];
@@ -115,6 +117,7 @@ new bool:chatMessages[MAX_PLAYERS][2]; // 0 - PM, 1 - Grupowe
 new bool:drivingCourse[MAX_PLAYERS];
 new bool:showGroupsInfo[MAX_PLAYERS];
 new bool:insidedHotel[MAX_PLAYERS];
+new bool:deliveringPackage[MAX_PLAYERS];
 new bool:isRace[MAX_PLAYERS];
 new bool:isCollision[MAX_PLAYERS];
 new bool:isGym[MAX_PLAYERS];
@@ -138,6 +141,8 @@ new Text:website;
 new Text:penalty;
 new Text:helpInfo[MAX_PLAYERS][2];
 new Text:itemTips[MAX_PLAYERS][2];
+new Text:itemNoNearby[MAX_PLAYERS][2];
+new Text:itemGivePlayerTips[MAX_PLAYERS][2];
 new Text:scrimmageTips[MAX_PLAYERS][5];
 new Text:firstHoursInfo[3];
 new Text:showInfoGym[MAX_PLAYERS][4];
@@ -161,18 +166,20 @@ new Text:afkPrivateMessage[MAX_PLAYERS][2];
 new Text:buildingMusicInfo[MAX_PLAYERS][2];
 new Text:endBWTimeInfo[MAX_PLAYERS];
 new Text:taxiInfo[MAX_PLAYERS][3];
+new Text:courierInfo[MAX_PLAYERS];
+new Text:courierTips[MAX_PLAYERS][3];
 
 // type - Iterator
 new Iterator:vehItter<MAX_VEHICLES>;
 new Iterator:itemItter<MAX_ITEMS>;
 new Iterator:doorItter<MAX_DOORS>;
 new Iterator:boothItter<MAX_BOOTHS>;
-new Iterator:busstopItter<MAX_BUS_STOPS>;
+new Iterator:busStopItter<MAX_BUS_STOPS>;
 new Iterator:cashpointItter<MAX_CASHPOINTS>;
 new Iterator:groupItter<MAX_GROUPS>;
 new Iterator:groupItemsItter<50>;
 new Iterator:groupTasksItter<MAX_GROUP_TASKS>;
-stock Iterator:groupOrdersItter<100>;
+new Iterator:groupOrdersItter<100>;
 new Iterator:gasItter<MAX_PETROL_STATIONS>;
 new Iterator:raceItter<MAX_RACES>;
 new Iterator:areaItter<MAX_AREAS>;

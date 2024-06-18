@@ -206,7 +206,8 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				
 				format(mainStr, sizeof(mainStr), "* %s zak³ada rolki.", pVars[playerid][pCharName]);
 				sendMeMessage(playerid, mainStr);
-			
+
+				updatePlayerGameStatus(playerid);
 				iVars[srvitemid][iUsed] = true;
 			} else {
 				ClearAnimations(playerid);
@@ -214,7 +215,9 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				
 				format(mainStr, sizeof(mainStr), "* %s zdejmuje rolki.", pVars[playerid][pCharName]);
 				sendMeMessage(playerid, mainStr);
-				
+
+				updatePlayerGameStatus(playerid);
+
 				actualItem[playerid] = INVALID_ITEM_ID;
 				iVars[srvitemid][iUsed] = false;
 			}
@@ -295,21 +298,21 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			}
 		}
 		case P_TORBA: {
-			new count;
+			new countItems;
 
 			foreach(new i : itemItter) {
 				if(iVars[i][iOUid] == pVars[playerid][pUid] && iVars[i][iBUid] == iVars[srvitemid][iUid] && iVars[i][iPlace] == ITEM_PLACE_BAG) {
-					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t\0\t0\t%s", mainStr, iVars[i][iUid], iVars[i][iName]);
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t\%d\t%d\t%s", mainStr, iVars[i][iUid], iVars[i][iValue1], iVars[i][iValue2], iVars[i][iName]);
 
-					count++;
+					countItems++;
 				}
 			}
 
-			if(!count) {
+			if(!countItems) {
 				return GameTextForPlayer(playerid, "~n~~w~Nie ma zadnych ~r~przedmiotow~w~.", 5000, 3);
 			}
 
-			ShowPlayerDialog(playerid, DIALOG_ITEMS_MORE_PUT_BAG_USE_ITEM, DIALOG_STYLE_LIST, "Przedmioty", mainStr, "Wyjmij", "Zamknij");
+			ShowPlayerDialog(playerid, DIALOG_ITEMS_MORE_PUT_BAG_USE_ITEM, DIALOG_STYLE_LIST, "Dostêpne przedmioty", mainStr, "Wyjmij", "Zamknij");
 		}
 		case P_TELEFON, P_NKA8110: {
 			new pId = getPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
@@ -362,7 +365,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			
 			new randNum = random(6) + 1;
 			
-			format(mainStr, sizeof(mainStr), "* %s %s liczbê %d (z 1-6) u¿ywaj¹c Kostka. *", pVars[playerid][pCharName], pVars[playerid][pSex] ? ("wylosowa³a") : ("wylosowa³"), randNum);
+			format(mainStr, sizeof(mainStr), "* %s %s %d oczek na 6.", pVars[playerid][pCharName], pVars[playerid][pSex] ? ("wyrzuci³a") : ("wyrzuci³"), randNum);
 			sendMeMessage(playerid, mainStr);
 			
 			actualItem[playerid] = INVALID_ITEM_ID;
@@ -615,10 +618,8 @@ stock givePlayerWeapon(playerid, srvitemid) {
 		}
 	}
 
-	if(pVars[playerid][pPisSkill] < 0 || pVars[playerid][pShtgSkill] < 0 || pVars[playerid][pDglSkill] < 0 || pVars[playerid][pM4Skill] < 0) {
-		SendClientMessage(playerid, COLOR_YELLOW, "Twoja postaæ nie ma doœwiadczenia w strzelaniu. Udaj siê na mecz ASG i");
-		SendClientMessage(playerid, COLOR_YELLOW, "fraguj innych danym rodzajem broni - im wiêcej æwiczysz, tym celniej i szybciej strzelasz.");
-	}
+	SendClientMessage(playerid, COLOR_YELLOW, "Twoja postaæ nie ma doœwiadczenia w strzelaniu. Udaj siê na mecz ASG i");
+	SendClientMessage(playerid, COLOR_YELLOW, "fraguj innych danym rodzajem broni - im wiêcej æwiczysz, tym celniej i szybciej strzelasz.");
 }
 
 stock resetPlayerWeapon(playerid, srvitemid) {
@@ -658,7 +659,7 @@ stock saveItemWeaponAmmo(srvitemid) {
 }
 
 stock pickUpNearblyItems(playerid, where) {
-	new count;
+	new countItems;
 	mainStr[0] = EOS;
 
 	if(where == ITEM_PLACE_FLOOR) {
@@ -667,7 +668,7 @@ stock pickUpNearblyItems(playerid, where) {
 				if((iVars[i][iPlace] == ITEM_PLACE_FLOOR && iVars[i][iOUid] == INVALID_PLAYER_ID) && actualItem[playerid] == INVALID_ITEM_ID) {
 					format(mainStr, sizeof(mainStr), "%s{FFFFFF}%d\t%s\n", mainStr, iVars[i][iUid], iVars[i][iName]);
 
-					count++;
+					countItems++;
 				}
 			}
 		}
@@ -682,12 +683,17 @@ stock pickUpNearblyItems(playerid, where) {
 			if((iVars[i][iPlace] == ITEM_PLACE_VEHICLE && iVars[i][iOUid] == vVars[srvVehId][vUid]) && actualItem[playerid] == INVALID_ITEM_ID) {
 				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, iVars[i][iUid], iVars[i][iName]);
 
-				count++;
+				countItems++;
 			}
 		}	
 	}
 
-	if(!count) {
+	if(!countItems) {
+		for(new i = 0; i < 2; i++) {
+			TextDrawShowForPlayer(playerid, itemNoNearby[playerid][i]);
+		}
+
+		SetTimerEx("hideItemNoNearby", 4000, false, "i", playerid);
 		return 1;
 	}
 
@@ -696,7 +702,7 @@ stock pickUpNearblyItems(playerid, where) {
 }
 
 stock showPlayerDialogItems(playerid) {
-	new count;
+	new countItems;
 
 	mainStr[0] = EOS;
 
@@ -704,11 +710,11 @@ stock showPlayerDialogItems(playerid) {
 		if(iVars[i][iOUid] == pVars[playerid][pUid] && iVars[i][iPlace] == ITEM_PLACE_PLAYER) {
 			format(mainStr, sizeof(mainStr), "%s\n %s\t{000000}%d\t%d\t(%d, %d)", mainStr, iVars[i][iName], iVars[i][iUid], iVars[i][iId], iVars[i][iValue1], iVars[i][iValue2]);
 
-			count++;
+			countItems++;
 		}
 	}
 
-	if(!count) {
+	if(!countItems) {
 		strcat(mainStr, "Nie posiadasz jeszcze przedmiotów.\nMo¿na je zdobyæ od innych graczy, kupiæ\n");
 		strcat(mainStr, "w ró¿nych firmach lub znaleŸæ na ziemi.\nZdobyte przedmioty mo¿esz u¿yæ lub handlowaæ.");
 	}

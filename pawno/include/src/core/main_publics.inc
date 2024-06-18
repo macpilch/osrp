@@ -45,10 +45,13 @@ sampCallback:OSRP_OnGameModeInit() {
 	initBusStopValues();
 	initCashpointValues();
 	initGroupValues();
-	initGroupPermsValues();
-	initGroupItemsValues();
-	initGroupTasksValues();
+	initGroupPermValues();
+	initGroupItemValues();
+	initGroupTaskValues();
+	initGroupOrderValues();
 	initRaceValues();
+	createServerObjects();
+	createServer3DTexts();
 	
 	for(new i = 0; i < MAX_PLAYERS; i++) {
 		pVars[i][p3dInfo] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 0.15, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);
@@ -60,6 +63,7 @@ sampCallback:OSRP_OnGameModeInit() {
 	}
 	
 	gymObject[0] = CreateDynamicObject(2629, 758.8672, -76.0945, 1000.6500 - 1, 0.0, 0.0, 90.0, 2, 7, -1, 50.0);
+	casualJobsPickup = CreateDynamicPickup(1239, 1, 817.7484,-1334.3308,13.5469, 0, 0, -1, 40.0, -1, 0);
 
 	website = TextDrawCreate(8.433380, 427.000000, "_");
 	TextDrawLetterSize(website, 0.303351, 1.016664);

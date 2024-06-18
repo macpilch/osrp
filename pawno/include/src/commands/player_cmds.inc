@@ -848,16 +848,16 @@ CMD:login(playerid, params[]) {
 }
 
 CMD:stats(playerid, params[]) {
-	new tmpStr[64];
+	new title[64];
 	new srvAreaId = getServerAreaIdForPlayer(playerid);
 
 	mainStr[0] = EOS;
-	format(tmpStr, sizeof(tmpStr), "%s (UID %d, ID %d, Globalne %d) [%s]", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, pVars[playerid][pGUid], pVars[playerid][pIp]);
-	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nNa s³u¿bie:\t\t\t%dm\nAL:\t\t\t\t%d\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nSi³a:\t\t\t\t%d\nP³eæ:\t\t\t\t%s\nRz¹d:\t\t\t\t%d\nPrawko:\t\t\t%d\nHotel:\t\t\t\t%d\nPrzetrzymanie:\t\t\t%dh\nPDP:\t\t\t\t%d\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nTelefon:\t\t\t%d\nNumer konta:\t\t\t%d\nArea:\t\t\t\t%d (max %dkm/h)\nGrupy:\t\t\t\t%s\nSkin:\t\t\t\t%d\nWyje¿d¿one:\t\t\t%0.1fkm\nOstatni skin:\t\t\t%d\nDrzwi:\t\t\t\t%d\nAudio:\t\t\t\t%d", 
-	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pDuty], pVars[playerid][pAl], pVars[playerid][pAj], pVars[playerid][pBw] / 60, pVars[playerid][pHp], pVars[playerid][pStrength], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pGov], pVars[playerid][pDriverLicense], pVars[playerid][pHotel], pVars[playerid][pDetention], pVars[playerid][pPdp], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pTelNum], pVars[playerid][pBankAcc], pVars[playerid][pArea],
-	aVars[srvAreaId][aMaxSpeed], pVars[playerid][pGroupDesc], pVars[playerid][pSkin], pVars[playerid][pTraveled], pVars[playerid][pLastSkin], pVars[playerid][pDoor], pVars[playerid][pAudio]);
-	format(mainStr, sizeof(mainStr), "%s\n------\n1\tStyl rozmowy:\t\t%d\n2\tSzybki komputer:\t%s\n3\tAnimacja chodzenia:\t%s\n5\tStyl walki aktywny:\t%s", mainStr, pVars[playerid][pChatStyle], pVars[playerid][pComputer] ? ("T") : ("N"), pVars[playerid][pWalkAnim] ? ("") : ("Brak"), pVars[playerid][pStyleFight] ? ("T") : ("N"));
-	ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, tmpStr, mainStr, "OK", "Zamknij");
+	format(title, sizeof(title), "%s (UID %d, ID %d, Globalne %d) [%s]", pVars[playerid][pCharName], pVars[playerid][pUid], playerid, pVars[playerid][pGUid], pVars[playerid][pIp]);
+	format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t\t\t%dh %dm\nNa s³u¿bie:\t\t\t%dm\nAL:\t\t\t\t%d\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nSi³a:\t\t\t\t%d\nP³eæ:\t\t\t\t%s\nRz¹d:\t\t\t\t%d\nPrawko:\t\t\t%d\nHotel:\t\t\t\t%d\nPrzetrzymanie:\t\t\t%dh\nPDP:\t\t\t\t%d\nTelefon:\t\t\t%d (%d)\nNumer konta:\t\t\t%d\nUzale¿nienie:\t\t\t%0.1f\nPieni¹dze:\t\t\t$%d\nBank:\t\t\t\t$%d\nD³ug:\t\t\t\t%d\nArea:\t\t\t\t%d (max %dkm/h)\nGrupy:\t\t\t\t%s\nSkin:\t\t\t\t%d\nWyje¿d¿one:\t\t\t%dkm\n", 
+	pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pDuty], pVars[playerid][pAl], pVars[playerid][pAj], pVars[playerid][pBw] / 60, pVars[playerid][pHp], pVars[playerid][pStrength], pVars[playerid][pSex] ? ("K") : ("M"), pVars[playerid][pGov], pVars[playerid][pDrvLicAttempts], pVars[playerid][pHotel], pVars[playerid][pDetention], pVars[playerid][pPdp], pVars[playerid][pTelNum], pVars[playerid][pTelNetwork], pVars[playerid][pBankAcc], pVars[playerid][pAddiction],
+	pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pDebt], pVars[playerid][pArea], aVars[srvAreaId][aMaxSpeed], pVars[playerid][pGroupDesc], pVars[playerid][pSkin], pVars[playerid][pTraveled]);
+	format(mainStr, sizeof(mainStr), "%sOstatni skin:\t\t\t%d\nDrzwi:\t\t\t\t%d\nAudio:\t\t\t\t%d\n------\n1\tStyl rozmowy:\t\t%d\n2\tSzybki komputer:\t%s\n3\tAnimacja chodzenia:\t%s\n5\tStyl walki aktywny:\t%s", mainStr, pVars[playerid][pLastSkin], pVars[playerid][pDoor], pVars[playerid][pAudio], pVars[playerid][pChatStyle], pVars[playerid][pComputer] ? ("T") : ("N"), pVars[playerid][pWalkAnim] ? ("") : ("Brak"), pVars[playerid][pStyleFight] ? ("T") : ("N"));
+	ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, title, mainStr, "OK", "Zamknij");
 	return 1;
 }
 
@@ -1076,8 +1076,6 @@ CMD:o(playerid, params[]) {
 		if(sscanf(params, "s[16]iiii", type, pId, cmdParams[0], cmdParams[1], cmdParams[2])) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /o lakierowanie [Gracz] [Cena] [Kolor1] {Kolor2}");
 		}
-	} else if(strfind(type, "przejazd", true) != -1) {
-		
 	} else if(strfind(type, "autowypozycz", true) != -1) {
 		new time;
 		
@@ -1186,6 +1184,10 @@ CMD:zabierz(playerid, params[]) {
 }
 
 CMD:kamera(playerid, params[]) {
+	if(strfind(params, "koniec", true) != -1) {
+		return 1;
+	}
+
 	new count;
 
 	mainStr[0] = EOS;
@@ -1197,8 +1199,6 @@ CMD:kamera(playerid, params[]) {
 			count++;
 		}
 	}
-
-	mysql_free_result();
 
 	if(!count) {
 		return 1;
@@ -1731,42 +1731,99 @@ CMD:duty(playerid, params[]) {
 }
 
 CMD:paczka(playerid, params[]) {
+	new srvOrderId = getServerOrderIdForPlayer(playerid);
+
 	if(casualJob[playerid] != PART_TIME_JOB_COURIER) {
 		return 1;
 	}
-	
+
 	if(isPlayerOnDuty(playerid)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Najpierw zejdŸ ze s³u¿by grupy.");
 	}
-	
-	GameTextForPlayer(playerid, "~r~Odczekaj chwile przed ponownym~n~uzyciem tej funkcji.", 5000, 3);
-	
-	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
+
+	if(packageUseTime[playerid] > GetTickCount()) {
+		return GameTextForPlayer(playerid, "~r~Odczekaj chwile przed ponownym~n~uzyciem tej funkcji.", 5000, 3);
+	} else {
+		packageUseTime[playerid] = 0;
+	}
+
+	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER && !deliveringPackage[playerid]) {
 		return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Musisz znajdowaæ siê w pojeŸdzie, by odebraæ paczkê.", "OK", "");
 	}
-	
-	SendClientMessage(playerid, COLOR_GRAY, "Udaj siê pod drzwi budynku, do którego dostarczasz paczkê.");
-	
+
 	if(strfind(params, "anuluj", true) != -1) {
 		DisablePlayerCheckpoint(playerid);
+		TextDrawHideForPlayer(playerid, courierInfo[playerid]);
+
+		deliveringPackage[playerid] = false;
+		actualOrder[playerid] = 0;
+
+		gOVars[srvOrderId][gOCourier] = INVALID_PLAYER_ID;
+		gOVars[srvOrderId][gOIsDeliver] = false;
+		return 1;
 	}
-	
+
+	if(deliveringPackage[playerid]) {
+		new srvDoorId = getServerDoorIdFromOrder(playerid);
+
+		if(playerToPoint(playerid, 5.0, 89.8133,-303.0186,1.5781) && !gOVars[srvOrderId][gOIsDeliver]) {
+			DisablePlayerCheckpoint(playerid);
+			
+			SetPlayerCheckpoint(playerid, dVars[srvDoorId][dEnterX], dVars[srvDoorId][dEnterY], dVars[srvDoorId][dEnterZ], 2.0);
+			
+			gOVars[srvOrderId][gOIsDeliver] = true;
+			
+			for(new i = 0; i < 3; i++) {
+				TextDrawShowForPlayer(playerid, courierTips[playerid][i]);
+			}
+			
+			SetTimerEx("hideCourierTips", 10000, false, "i", playerid);
+			return 1;
+		}
+
+		if(dVars[srvDoorId][dUid] == gOVars[srvOrderId][gOOUid] && !playerToPoint(playerid, 2.0, dVars[srvDoorId][dEnterX], dVars[srvDoorId][dEnterY], dVars[srvDoorId][dEnterZ]) &&
+			gOVars[srvOrderId][gOIsDeliver]) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Udaj siê pod drzwi budynku, do którego dostarczasz paczkê.");
+		}
+
+		if(playerToPoint(playerid, 2.0, dVars[srvDoorId][dEnterX], dVars[srvDoorId][dEnterY], dVars[srvDoorId][dEnterZ]) && gOVars[srvOrderId][gOIsDeliver]) {
+			new srvGrpId;
+
+			DisablePlayerCheckpoint(playerid);
+			TextDrawHideForPlayer(playerid, courierInfo[playerid]);
+
+			deliveringPackage[playerid] = false;
+			actualOrder[playerid] = 0;
+
+			if(!strcmp(gOVars[srvOrderId][gOOwner], pVars[playerid][pCharName])) {
+				GameTextForPlayer(playerid, "~b~~h~Paczka dostarczona za darmo", 5000, 3);
+			} else {
+				GameTextForPlayer(playerid, "~w~Paczka dostarczona.~n~~g~~h~+$40", 5000, 3);
+				osrp_GivePlayerMoney(playerid, 40);
+			}
+
+			foreach(new i : groupItter) {
+				if(gOVars[srvOrderId][gOOUid] == gVars[i][gUid]) {
+					srvGrpId = i;
+					break;
+				}
+			}
+
+			//removeGroupOrder(srvOrderId);
+			addGroupSetItems(srvGrpId, gOVars[srvOrderId][gOId], itemNames[gOVars[srvOrderId][gOId]], gOVars[srvOrderId][gOPrice], gOVars[srvOrderId][gOAmount]);
+		}
+		return 1;
+	}
+
 	mainStr[0] = EOS;
-	
+
 	foreach(new i : groupOrdersItter) {
-		format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", gOVars[i][gOUid], gOVars[i][gOName]);
+		format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, gOVars[i][gOUid], gOVars[i][gOName]);
 	}
-	
+
 	ShowPlayerDialog(playerid, DIALOG_COURIER_SHOW_PACKAGES, DIALOG_STYLE_LIST, "Kurier > Paczki oczekuj¹ce na dostarczenie", mainStr, "Dostarcz", "Zamknij");
-	
-	GameTextForPlayer(playerid, "~w~Paczka dostarczona.~n~~g~~h~+$40", 5000, 3);
-	GameTextForPlayer(playerid, "~b~~h~Paczka dostarczona za darmo", 5000, 3);
-	osrp_GivePlayerMoney(playerid, 40);
-	
-	SendClientMessage(playerid, COLOR_GRAY, "Nie otrzymasz wynagrodzenia za tê paczkê, bo zamówi³a j¹ jedna z Twoich grup. (/paczka anuluj?)");
-	
-	SendClientMessage(playerid, COLOR_GRAY, "Nie otrzymasz pieniêdzy za tê dostawê, bo Twoja poprzednia paczka mia³a");
-	SendClientMessage(playerid, COLOR_GRAY, "tego samego adresata. Mo¿esz u¿yæ /paczka anuluj i wybraæ inn¹ paczkê.");
+
+	packageUseTime[playerid] = GetTickCount() + 10000;
 	return 1;
 }
 
@@ -1778,6 +1835,7 @@ CMD:skuj(playerid, params[]) {
 	}
 
 	mainStr[0] = EOS;
+
 	if(!isCuffed[pId]) {
 		isCuffed[pId] = true;
 		cuffedBy[pId] = playerid;

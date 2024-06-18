@@ -45,24 +45,25 @@ stock initGroupValues(){
 			gVars[i][gColor],
 			gVars[i][gRegister]
 		);
-		
+
 		Iter_Add(groupItter, i);
+
 		printf("[DEBUG] Id: %d, Uid: %d, OUid: %d, Name: %s, Tag: %s, Type: %d, Members: %d, VehLimit: %d, Money: %d, PayDay: %d, Doors: %d, Flags: %d, Register: %d",
 		i, gVars[i][gUid], gVars[i][gOUid], gVars[i][gName], gVars[i][gTag], gVars[i][gType], gVars[i][gMembers], gVars[i][gVehsLimit], gVars[i][gMoney], gVars[i][gPayDay],
 		gVars[i][gDoor], gVars[i][gFlags], gVars[i][gRegister]);
 	}
-	
+
 	if(Iter_Count(groupItter)) {
 		printf("[LOG]: Wczytano %d grup.", Iter_Count(groupItter));
 	} else {
 		printf("[LOG]: Brak grup.");
 	}
-	
+
 	mysql_free_result();
 	return 1;
 }
 
-stock initGroupPermsValues() {
+stock initGroupPermValues() {
 	new tmpFlags[4];
 	
 	printf("[LOG]: Zaczynam ladowac flagi grupy...");
@@ -93,13 +94,13 @@ stock initGroupPermsValues() {
 			gVars[i][gFlags] += GROUP_PERM_CHATOOC;
 		}
 
-		/*if(tmpFlags[1]) {
+		if(tmpFlags[1]) {
 			gVars[i][gFlags] += GROUP_PERM_CHATIC;
 		}
 
 		if(tmpFlags[2]) {
 			gVars[i][gFlags] += GROUP_PERM_MEGAPHONE;
-		}*/
+		}
 		
 		if(gVars[i][gFlags] & GROUP_PERM_CHATOOC) {
 			printf("Sraka");
@@ -108,7 +109,7 @@ stock initGroupPermsValues() {
 	return 1;
 }
 
-stock initGroupItemsValues() {
+stock initGroupItemValues() {
 	printf("[LOG]: Zaczynam ladowac przedmioty grupy...");
 
 	for(new i = 0; i < 50; i++) {
@@ -146,7 +147,7 @@ stock initGroupItemsValues() {
 	return 1;
 }
 
-stock initGroupTasksValues() {
+stock initGroupTaskValues() {
 	printf("[LOG]: Zaczynam ladowac zadania grupy...");
 
 	for(new i = 0; i < MAX_GROUP_TASKS; i++) {
@@ -173,7 +174,51 @@ stock initGroupTasksValues() {
 		Iter_Add(groupTasksItter, i);
 	}
 
+	if(Iter_Count(groupTasksItter)) {
+		printf("[LOG]: Wczytano %d zadan.", Iter_Count(groupTasksItter));
+	} else {
+		printf("[LOG]: Brak zadan.");
+	}
+
 	mysql_free_result();
+	return 1;
+}
+
+stock initGroupOrderValues() {
+	printf("[LOG]: Zaczynam ladowac zamowienia grupy...");
+	
+	for(new i = 0; i < 100; i++) {
+		queryStr[0] = EOS;
+		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_GroupOrders` WHERE `UID` = '%d'", i + 1);
+		mysql_query(queryStr);
+		
+		mysql_store_result();
+		
+		if(!mysql_num_rows()) {
+			break;
+		}
+		
+		mysql_fetch_row(queryStr, "|");
+		sscanf(queryStr, "p<|>iis[32]s[24]iii",
+			gOVars[i][gOUid],
+			gOVars[i][gOOUid],
+			gOVars[i][gOName],
+			gOVars[i][gOOwner],
+			gOVars[i][gOId],
+			gOVars[i][gOPrice],
+			gOVars[i][gOAmount]
+		);
+		
+		Iter_Add(groupOrdersItter, i);
+	}
+	
+	mysql_free_result();
+	
+	if(Iter_Count(groupOrdersItter)) {
+		printf("[LOG]: Wczytano %d zadan.", Iter_Count(groupOrdersItter));
+	} else {
+		printf("[LOG]: Brak zadan.");
+	}
 	return 1;
 }
 
@@ -351,6 +396,29 @@ stock removeGroupTask(srvgrpid, uid) {
 	format(gTVars[srvgrpid][gTCaller], 24, NULL);
 }
 
+stock removeGroupOrder(srvorderid) {
+	if(!Iter_Count(groupOrdersItter)) {
+		return 1;
+	}
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_GroupOrders` WHERE `UID` = '%d'", gOVars[srvorderid][gOUid]);
+	mysql_query(queryStr);
+	
+	Iter_Remove(groupOrdersItter, srvorderid);
+	
+	gOVars[srvorderid][gOUid] = 0;
+	gOVars[srvorderid][gOOUid] = 0;
+	format(gOVars[srvorderid][gOName], 32, NULL);
+	format(gOVars[srvorderid][gOOwner], 24, NULL);
+	gOVars[srvorderid][gOCourier] = INVALID_PLAYER_ID;
+	gOVars[srvorderid][gOId] = -1;
+	gOVars[srvorderid][gOPrice] = 0;
+	gOVars[srvorderid][gOAmount] = 0;
+	gOVars[srvorderid][gOIsDeliver] = false;
+	return 1;
+}
+
 stock createNewGroup(playerid, ownerid, type, tag[], name[]) {
 	new freeId;
 	
@@ -477,6 +545,31 @@ stock getServerGroupSetIdForPlayer(playerid) {
 	return gSId;
 }
 
+stock getServerOrderIdForPlayer(playerid) {
+	new id;
+
+	foreach(new i : groupOrdersItter) {
+		if(gOVars[i][gOUid] == actualOrder[playerid]) {
+			id = i;
+			break;
+		}
+	}
+	return id;
+}
+
+stock getServerDoorIdFromOrder(playerid) {
+	new srvOrderId = getServerOrderIdForPlayer(playerid);
+	new dId;
+
+	foreach(new i : doorItter) {
+		if(gOVars[srvOrderId][gOOUid] == dVars[i][dUid]) {
+			dId = i;
+			break;
+		}
+	}
+	return dId;
+}
+
 stock getFreePlayerGroupSlot(playerid) {	
 	for(new i = 0; i < MAX_PLAYER_GROUPS; i++) {
 		if(!pVars[playerid][pGroup][i]) {
@@ -494,8 +587,28 @@ stock giveGroupMoney(srvgrpid, money) {
 	mysql_query(queryStr);
 }
 
-stock addGroupSetItems() {
-	
+stock addGroupSetItems(srvgrpid, id, name[], price, amount) {
+	new freeId = -1;
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_GroupItems`");
+	mysql_query(queryStr);
+
+	mysql_store_result();
+
+	freeId = mysql_fetch_int();
+	mysql_free_result();
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_GroupItems` (`OUID`, `ID`, `Name`, `Price`, `Amount`) VALUES ('%d', '%d', '%s', '%d', '%d')", gVars[srvgrpid][gUid], id, name, price, amount);
+	mysql_query(queryStr);
+
+	gIVars[freeId][gIUid] = freeId;
+	gIVars[freeId][gIOUid] = gVars[srvgrpid][gUid];
+	gIVars[freeId][gIId] = id;
+	format(gIVars[freeId][gIName], 64, name);
+	gIVars[freeId][gIPrice] = price;
+	gIVars[freeId][gIAmount] = amount;
 	return 1;
 }
 
@@ -558,7 +671,7 @@ stock showPlayerGroupPriceListItems(playerid, id) {
 
 	foreach(new i : groupItemsItter) {
 		if(gIVars[i][gIOUid] == gVars[srvGrpId][gUid]) {
-			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s\t\t$%d\t%d", mainStr, gIVars[i][gIUid], gIVars[i][gIName], gIVars[i][gIPrice], gIVars[i][gIAmount]);
+			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t$%d\t%s (x%d)", mainStr, gIVars[i][gIUid], gIVars[i][gIPrice], gIVars[i][gIName], gIVars[i][gIAmount]);
 
 			count++;
 		}
@@ -573,7 +686,7 @@ stock showPlayerGroupPriceListItems(playerid, id) {
 	format(str, sizeof(str), "~n~~n~~n~~n~~n~~y~Cennik od ~b~%s", pVars[playerid][pCharName]);
 	GameTextForPlayer(playerid, str, 5000, 3);
 
-	ShowPlayerDialog(id, DIALOG_SHOW_GROUP_MENU, DIALOG_STYLE_LIST, "Menu", mainStr, "Wybierz", "Anuluj");
+	ShowPlayerDialog(id, DIALOG_DEFAULT, DIALOG_STYLE_LIST, "Menu", mainStr, "Wybierz", "Anuluj");
 	return 1;
 }
 
@@ -585,7 +698,7 @@ stock showPlayerGroupMenuItems(playerid) {
 
 	foreach(new i : groupItemsItter) {
 		if(gIVars[i][gIOUid] == gVars[srvGrpId][gUid]) {
-			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s\t\t$%d\t%d", mainStr, gIVars[i][gIUid], gIVars[i][gIName], gIVars[i][gIPrice], gIVars[i][gIAmount]);
+			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t$%d\t%s (x%d)", mainStr, gIVars[i][gIUid], gIVars[i][gIPrice], gIVars[i][gIName], gIVars[i][gIAmount]);
 
 			count++;
 		}

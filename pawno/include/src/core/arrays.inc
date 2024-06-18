@@ -110,10 +110,10 @@ new animNames[][] = {
 
 new itemNames[][] = {
 	"Rolki", "Piwo", "Wino", "Vodka", "Sprunk", "Teczka", "Torba", "Notatnik", "Marlboro", "Cygaro", "Ubranie", "Telefon", "Kostka",
-	"Maska", "Rêkawice", "Kamizelka", "Kwiaty", "Kastet", "Pa³ka", "Nó¿", "Kij baseballowy", "Paralizator", "Tagger", "Pistolet",
+	"Maska", "Czarna bandana", "Rêkawice", "Kamizelka", "Kwiaty", "Kastet", "Pa³ka", "Nó¿", "Kij baseballowy", "Paralizator", "Tagger", "Pistolet",
 	"Desert Eagle", "Glock 19", "Shotgun", "UZI", "MP5", "AK-47", "M4", "TEC9", "Spadochron", "Mat Wybuchowe", "Batonik", "Bu³ka",
 	"Pizza", "Cheeseburger", "Sajgonki", "Sake Maki", "Zapiekanka", "Cappuccino", "Coca-Cola", "Cuba Libre", "Pepsi", "Energy drink",
-	"Mojito", "Frytki", "Grove Burger", "Hamburger", "Herbata", "Hot Dog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Lód czekoladowy",
+	"Mojito", "Frytki", "Grove Burger", "Hamburger", "Herbata", "Hotdog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Lód czekoladowy",
 	"Lód œmietankowy", "Lód truskawkowy", "Kanapka z kurczakiem", "Longer", "Nachos z serem", "Naleœnik", "Naleœniki", "P¹czek", "P¹czek Afro",
 	"P¹czek Z³otawy", "Donut", "Sushi", "Lasagne", "Nuggetsy", "Spaghetti", "Taco", "Tortilla", "Woda Mineralna", "Discman", "Boombox", "RadioParty",
 	"CD", "Nokia 8110", "Lek", "Vitamina C", "Alarm", "Immobiliser", "Zderzak przedni", "Zderzak tylny", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik",

@@ -198,27 +198,27 @@ stock sendClientMessageToAllOOC(playerid, color, const str[]) {
 }
 
 stock createPlayerTextDraws(playerid) {
-	helpInfo[playerid][0] = TextDrawCreate(489.604492, 286.416625, "~w~Nie mozesz skorzystac z takiej~n~komendy. Uzyj ~y~/pomoc~w~, jezeli~n~szukasz pomocy.");
-	TextDrawLetterSize(helpInfo[playerid][0], 0.307100, 1.302500);
-	TextDrawAlignment(helpInfo[playerid][0], 2);
-	TextDrawColor(helpInfo[playerid][0], -1);
+	helpInfo[playerid][0] = TextDrawCreate(584.371887, 285.583312, "_");
+	TextDrawLetterSize(helpInfo[playerid][0], 0.000000, 4.090743);
+	TextDrawTextSize(helpInfo[playerid][0], 398.585662, 0.000000);
+	TextDrawAlignment(helpInfo[playerid][0], 1);
+	TextDrawColor(helpInfo[playerid][0], 0);
+	TextDrawUseBox(helpInfo[playerid][0], 1);
+	TextDrawBoxColor(helpInfo[playerid][0], 102);
 	TextDrawSetShadow(helpInfo[playerid][0], 0);
-	TextDrawSetOutline(helpInfo[playerid][0], 0);
-	TextDrawBackgroundColor(helpInfo[playerid][0], 255);
-	TextDrawFont(helpInfo[playerid][0], 1);
-	TextDrawSetProportional(helpInfo[playerid][0], 1);
+	TextDrawSetOutline(helpInfo[playerid][0], 1);
+	TextDrawFont(helpInfo[playerid][0], 0);	
 
-	helpInfo[playerid][1] = TextDrawCreate(584.371887, 285.583312, "_");
-	TextDrawLetterSize(helpInfo[playerid][1], 0.000000, 4.090743);
-	TextDrawTextSize(helpInfo[playerid][1], 398.585662, 0.000000);
-	TextDrawAlignment(helpInfo[playerid][1], 1);
-	TextDrawColor(helpInfo[playerid][1], 0);
-	TextDrawUseBox(helpInfo[playerid][1], 1);
-	TextDrawBoxColor(helpInfo[playerid][1], 102);
+	helpInfo[playerid][1] = TextDrawCreate(489.604492, 286.416625, "~w~Nie mozesz skorzystac z takiej~n~komendy. Uzyj ~y~/pomoc~w~, jezeli~n~szukasz pomocy.");
+	TextDrawLetterSize(helpInfo[playerid][1], 0.307100, 1.302500);
+	TextDrawAlignment(helpInfo[playerid][1], 2);
+	TextDrawColor(helpInfo[playerid][1], -1);
 	TextDrawSetShadow(helpInfo[playerid][1], 0);
 	TextDrawSetOutline(helpInfo[playerid][1], 1);
-	TextDrawFont(helpInfo[playerid][1], 0);
-	
+	TextDrawBackgroundColor(helpInfo[playerid][1], 255);
+	TextDrawFont(helpInfo[playerid][1], 1);
+	TextDrawSetProportional(helpInfo[playerid][1], 1);
+
 	itemTips[playerid][0] = TextDrawCreate(311.533660, 346.499847, "Istnieje szybsza metoda na uzywanie przedmiotow. Skrot:~n~~b~~h~~h~~h~/p [Czesc nazwy przedmiotu] [opcjonalnie parametry]");
 	TextDrawLetterSize(itemTips[playerid][0], 0.245764, 1.284998);
 	TextDrawAlignment(itemTips[playerid][0], 2);
@@ -238,7 +238,49 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawBackgroundColor(itemTips[playerid][1], 51);
 	TextDrawFont(itemTips[playerid][1], 1);
 	TextDrawSetProportional(itemTips[playerid][1], 1);
-	
+
+	itemNoNearby[playerid][0] = TextDrawCreate(601.238647, 283.833312, "_");
+	TextDrawLetterSize(itemNoNearby[playerid][0], 0.000000, 5.711111);
+	TextDrawTextSize(itemNoNearby[playerid][0], 404.207916, 0.000000);
+	TextDrawAlignment(itemNoNearby[playerid][0], 1);
+	TextDrawColor(itemNoNearby[playerid][0], 0);
+	TextDrawUseBox(itemNoNearby[playerid][0], 1);
+	TextDrawBoxColor(itemNoNearby[playerid][0], 102);
+	TextDrawSetShadow(itemNoNearby[playerid][0], 0);
+	TextDrawSetOutline(itemNoNearby[playerid][0], 0);
+	TextDrawFont(itemNoNearby[playerid][0], 0);
+
+	itemNoNearby[playerid][1] = TextDrawCreate(503.192047, 284.083374, "~w~Brak przedmiotow w poblizu.~n~~n~Skrot do ich podnoszenia:~n~~y~/p podnies");
+	TextDrawLetterSize(itemNoNearby[playerid][1], 0.330995, 1.331666);
+	TextDrawAlignment(itemNoNearby[playerid][1], 2);
+	TextDrawColor(itemNoNearby[playerid][1], -1);
+	TextDrawSetShadow(itemNoNearby[playerid][1], 0);
+	TextDrawSetOutline(itemNoNearby[playerid][1], 1);
+	TextDrawBackgroundColor(itemNoNearby[playerid][1], 255);
+	TextDrawFont(itemNoNearby[playerid][1], 1);
+	TextDrawSetProportional(itemNoNearby[playerid][1], 1);
+
+	itemGivePlayerTips[playerid][0] = TextDrawCreate(600.770141, 283.833312, "_");
+	TextDrawLetterSize(itemGivePlayerTips[playerid][0], 0.000000, 7.072222);
+	TextDrawTextSize(itemGivePlayerTips[playerid][0], 404.207916, 0.000000);
+	TextDrawAlignment(itemGivePlayerTips[playerid][0], 1);
+	TextDrawColor(itemGivePlayerTips[playerid][0], 0);
+	TextDrawUseBox(itemGivePlayerTips[playerid][0], 1);
+	TextDrawBoxColor(itemGivePlayerTips[playerid][0], 102);
+	TextDrawSetShadow(itemGivePlayerTips[playerid][0], 0);
+	TextDrawSetOutline(itemGivePlayerTips[playerid][0], 0);
+	TextDrawFont(itemGivePlayerTips[playerid][0], 0);
+
+	itemGivePlayerTips[playerid][1] = TextDrawCreate(499.443542, 284.666595, "~w~Pamietaj, przedmioty mozna~n~podawac skrotem:~n~~n~~y~/p [Nazwa przedmiotu]  daj~n~[Gracz]");
+	TextDrawLetterSize(itemGivePlayerTips[playerid][1], 0.323030, 1.395833);
+	TextDrawAlignment(itemGivePlayerTips[playerid][1], 2);
+	TextDrawColor(itemGivePlayerTips[playerid][1], -1);
+	TextDrawSetShadow(itemGivePlayerTips[playerid][1], 0);
+	TextDrawSetOutline(itemGivePlayerTips[playerid][1], 1);
+	TextDrawBackgroundColor(itemGivePlayerTips[playerid][1], 255);
+	TextDrawFont(itemGivePlayerTips[playerid][1], 1);
+	TextDrawSetProportional(itemGivePlayerTips[playerid][1], 1);
+
 	scrimmageTips[playerid][0] = TextDrawCreate(317.647064, 341.833251, "Dopoki nie odpowiesz kontratakiem, ten gracz nie moze Cie skrzywdzic.");
 	TextDrawLetterSize(scrimmageTips[playerid][0], 0.276353, 1.250000);
 	TextDrawAlignment(scrimmageTips[playerid][0], 2);
@@ -410,8 +452,8 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawLetterSize(vehicleDeath[playerid][0], 0.345051, 1.389999);
 	TextDrawAlignment(vehicleDeath[playerid][0], 2);
 	TextDrawColor(vehicleDeath[playerid][0], -1);
-	TextDrawSetShadow(vehicleDeath[playerid][0], 5);
-	TextDrawSetOutline(vehicleDeath[playerid][0], 0);
+	TextDrawSetShadow(vehicleDeath[playerid][0], 0);
+	TextDrawSetOutline(vehicleDeath[playerid][0], 1);
 	TextDrawBackgroundColor(vehicleDeath[playerid][0], 255);
 	TextDrawFont(vehicleDeath[playerid][0], 1);
 	TextDrawSetProportional(vehicleDeath[playerid][0], 1);
@@ -458,9 +500,9 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawFont(areaSpeedWarning[playerid][1], 1);
 	TextDrawSetProportional(areaSpeedWarning[playerid][1], 1);
 
-	courseDrivingInfo[playerid][0] = TextDrawCreate(585.308959, 298.416687, "_");
-	TextDrawLetterSize(courseDrivingInfo[playerid][0], 0.000000, 7.331479);
-	TextDrawTextSize(courseDrivingInfo[playerid][0], 398.585662, 0.000000);
+	courseDrivingInfo[playerid][0] = TextDrawCreate(603.112731, 283.833312, "_");
+	TextDrawLetterSize(courseDrivingInfo[playerid][0], 0.000000, 5.646298);
+	TextDrawTextSize(courseDrivingInfo[playerid][0], 404.676452, 0.000000);
 	TextDrawAlignment(courseDrivingInfo[playerid][0], 1);
 	TextDrawColor(courseDrivingInfo[playerid][0], 0);
 	TextDrawUseBox(courseDrivingInfo[playerid][0], 1);
@@ -469,8 +511,8 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawSetOutline(courseDrivingInfo[playerid][0], 0);
 	TextDrawFont(courseDrivingInfo[playerid][0], 0);
 
-	courseDrivingInfo[playerid][1] = TextDrawCreate(489.604614, 301.000000, "Rozpoczyna sie Twoj kurs prawa~n~jazdy. Wykonuj polecenia~n~instruktora, albo wyrzuci Cie on~n~z pojazdu bez zwrotu pieniedzy.");
-	TextDrawLetterSize(courseDrivingInfo[playerid][1], 0.298667, 1.582500);
+	courseDrivingInfo[playerid][1] = TextDrawCreate(500.380767, 284.083343, "Rozpoczyna sie Twoj kurs prawa~n~jazdy. Wykonuj polecenia~n~instruktora, albo wyrzuci Cie on~n~z pojazdu bez zwrotu pieniedzy.");
+	TextDrawLetterSize(courseDrivingInfo[playerid][1], 0.328184, 1.395833);
 	TextDrawAlignment(courseDrivingInfo[playerid][1], 2);
 	TextDrawColor(courseDrivingInfo[playerid][1], -1);
 	TextDrawSetShadow(courseDrivingInfo[playerid][1], 0);
@@ -484,7 +526,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawAlignment(oocWarning[playerid][0], 2);
 	TextDrawColor(oocWarning[playerid][0], -1);
 	TextDrawSetShadow(oocWarning[playerid][0], 0);
-	TextDrawSetOutline(oocWarning[playerid][0], 0);
+	TextDrawSetOutline(oocWarning[playerid][0], 1);
 	TextDrawBackgroundColor(oocWarning[playerid][0], 255);
 	TextDrawFont(oocWarning[playerid][0], 1);
 	TextDrawSetProportional(oocWarning[playerid][0], 1);
@@ -516,7 +558,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawAlignment(vehicleSpawn[playerid][0], 2);
 	TextDrawColor(vehicleSpawn[playerid][0], -1);
 	TextDrawSetShadow(vehicleSpawn[playerid][0], 0);
-	TextDrawSetOutline(vehicleSpawn[playerid][0], 0);
+	TextDrawSetOutline(vehicleSpawn[playerid][0], 1);
 	TextDrawBackgroundColor(vehicleSpawn[playerid][0], 255);
 	TextDrawFont(vehicleSpawn[playerid][0], 1);
 	TextDrawSetProportional(vehicleSpawn[playerid][0], 1);
@@ -967,6 +1009,47 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawFont(taxiInfo[playerid][2], 1);
 	TextDrawSetProportional(taxiInfo[playerid][2], 1);
 
+	courierInfo[playerid] = TextDrawCreate(309.224121, 341.833374, "~w~Numer paczki: ~r~1234567~n~~w~Adresat: ~r~steeZ~n~~n~~w~Miejsce dostarczenia:~n~");
+	TextDrawLetterSize(courierInfo[playerid], 0.262122, 1.296666);
+	TextDrawAlignment(courierInfo[playerid], 2);
+	TextDrawColor(courierInfo[playerid], -1);
+	TextDrawSetShadow(courierInfo[playerid], 0);
+	TextDrawSetOutline(courierInfo[playerid], 1);
+	TextDrawBackgroundColor(courierInfo[playerid], 51);
+	TextDrawFont(courierInfo[playerid], 1);
+	TextDrawSetProportional(courierInfo[playerid], 1);
+
+	courierTips[playerid][0] = TextDrawCreate(600.770141, 284.416687, "_");
+	TextDrawLetterSize(courierTips[playerid][0], 0.000000, 8.368514);
+	TextDrawTextSize(courierTips[playerid][0], 403.739410, 0.000000);
+	TextDrawAlignment(courierTips[playerid][0], 1);
+	TextDrawColor(courierTips[playerid][0], 0);
+	TextDrawUseBox(courierTips[playerid][0], 1);
+	TextDrawBoxColor(courierTips[playerid][0], 102);
+	TextDrawSetShadow(courierTips[playerid][0], 0);
+	TextDrawSetOutline(courierTips[playerid][0], 0);
+	TextDrawFont(courierTips[playerid][0], 0);
+
+	courierTips[playerid][1] = TextDrawCreate(501.786254, 284.083343, "~g~Paczka odebrana.~n~~w~Zawiez ja do adresata.~n~~n~");
+	TextDrawLetterSize(courierTips[playerid][1], 0.327715, 1.419166);
+	TextDrawAlignment(courierTips[playerid][1], 2);
+	TextDrawColor(courierTips[playerid][1], -1);
+	TextDrawSetShadow(courierTips[playerid][1], 0);
+	TextDrawSetOutline(courierTips[playerid][1], 1);
+	TextDrawBackgroundColor(courierTips[playerid][1], 255);
+	TextDrawFont(courierTips[playerid][1], 1);
+	TextDrawSetProportional(courierTips[playerid][1], 1);
+
+	courierTips[playerid][2] = TextDrawCreate(500.380676, 321.416687, "Organizacje moga odebrac~n~paczke nieprzytomnym -~n~ komenda /paczka [Gracz].");
+	TextDrawLetterSize(courierTips[playerid][2], 0.327247, 1.378333);
+	TextDrawAlignment(courierTips[playerid][2], 2);
+	TextDrawColor(courierTips[playerid][2], -1);
+	TextDrawSetShadow(courierTips[playerid][2], 0);
+	TextDrawSetOutline(courierTips[playerid][2], 1);
+	TextDrawBackgroundColor(courierTips[playerid][2], 255);
+	TextDrawFont(courierTips[playerid][2], 1);
+	TextDrawSetProportional(courierTips[playerid][2], 1);
+
 	/*
 	Textdraw0 = TextDrawCreate(600.770141, 285.000000, "_");
 	TextDrawLetterSize(Textdraw0, 0.000000, 4.090743);
@@ -998,48 +1081,6 @@ TextDrawSetOutline(Textdraw26, 1);
 TextDrawBackgroundColor(Textdraw26, 51);
 TextDrawFont(Textdraw26, 1);
 TextDrawSetProportional(Textdraw26, 1);
-
-Textdraw27 = TextDrawCreate(601.238647, 283.833312, "_");
-TextDrawLetterSize(Textdraw27, 0.000000, 5.711111);
-TextDrawTextSize(Textdraw27, 404.207916, 0.000000);
-TextDrawAlignment(Textdraw27, 1);
-TextDrawColor(Textdraw27, 0);
-TextDrawUseBox(Textdraw27, true);
-TextDrawBoxColor(Textdraw27, 102);
-TextDrawSetShadow(Textdraw27, 0);
-TextDrawSetOutline(Textdraw27, 0);
-TextDrawFont(Textdraw27, 0);
-
-Textdraw28 = TextDrawCreate(503.192047, 284.083374, "~w~Brak przedmiotow w poblizu.~n~~n~Skrot do ich podnoszenia:~n~~y~/p podnies");
-TextDrawLetterSize(Textdraw28, 0.330995, 1.331666);
-TextDrawAlignment(Textdraw28, 2);
-TextDrawColor(Textdraw28, -1);
-TextDrawSetShadow(Textdraw28, 0);
-TextDrawSetOutline(Textdraw28, 1);
-TextDrawBackgroundColor(Textdraw28, 255);
-TextDrawFont(Textdraw28, 1);
-TextDrawSetProportional(Textdraw28, 1);
-
-Textdraw28 = TextDrawCreate(600.770141, 283.833312, "_");
-TextDrawLetterSize(Textdraw28, 0.000000, 7.072222);
-TextDrawTextSize(Textdraw28, 404.207916, 0.000000);
-TextDrawAlignment(Textdraw28, 1);
-TextDrawColor(Textdraw28, 0);
-TextDrawUseBox(Textdraw28, true);
-TextDrawBoxColor(Textdraw28, 102);
-TextDrawSetShadow(Textdraw28, 0);
-TextDrawSetOutline(Textdraw28, 0);
-TextDrawFont(Textdraw28, 0);
-
-Textdraw29 = TextDrawCreate(499.443542, 284.666595, "~w~Pamietaj, przedmioty mozna~n~podawac skrotem:~n~~n~~y~/p [Nazwa przedmiotu]  daj~n~[Gracz]");
-TextDrawLetterSize(Textdraw29, 0.323030, 1.395833);
-TextDrawAlignment(Textdraw29, 2);
-TextDrawColor(Textdraw29, -1);
-TextDrawSetShadow(Textdraw29, 0);
-TextDrawSetOutline(Textdraw29, 1);
-TextDrawBackgroundColor(Textdraw29, 51);
-TextDrawFont(Textdraw29, 1);
-TextDrawSetProportional(Textdraw29, 1);
 
 Textdraw26 = TextDrawCreate(308.286743, 341.250000, "~w~Obiekt ~r~458:4089346~w~.__Model: ~y~19467~w~.__Owner: ~y~16:11984");
 TextDrawLetterSize(Textdraw26, 0.262122, 1.168331);
@@ -1173,31 +1214,101 @@ TextDrawSetShadow(Textdraw29, 0);
 TextDrawSetOutline(Textdraw29, 0);
 TextDrawBackgroundColor(Textdraw29, 51);
 TextDrawFont(Textdraw29, 1);
+
+Textdraw26 = TextDrawCreate(574.064453, 284.416687, "usebox");
+TextDrawLetterSize(Textdraw26, 0.000000, 1.433333);
+TextDrawTextSize(Textdraw26, 395.774505, 0.000000);
+TextDrawAlignment(Textdraw26, 1);
+TextDrawColor(Textdraw26, 0);
+TextDrawUseBox(Textdraw26, true);
+TextDrawBoxColor(Textdraw26, 102);
+TextDrawSetShadow(Textdraw26, 0);
+TextDrawSetOutline(Textdraw26, 0);
+TextDrawFont(Textdraw26, 0);
+
+Textdraw27 = TextDrawCreate(486.325317, 284.666625, "~w~Do konca tagowania: 500");
+TextDrawLetterSize(Textdraw27, 0.302882, 1.209164);
+TextDrawAlignment(Textdraw27, 2);
+TextDrawColor(Textdraw27, -1);
+TextDrawSetShadow(Textdraw27, 0);
+TextDrawSetOutline(Textdraw27, 0);
+TextDrawBackgroundColor(Textdraw27, 51);
+TextDrawFont(Textdraw27, 1);
+TextDrawSetProportional(Textdraw27, 1);
 	*/
 	return 1;
 }
 
 stock loadPlayerValues(playerid) {
-	new charDesc[128], tmpChrName[24];
-	
+	new charDesc[64], tmpChrName[24];
+
 	PlayerPlaySound(playerid, 0, 0.0, 0.0, 0.0);
 	mysql_real_escape_string(pVars[playerid][pCharName], tmpChrName);
-	
+
 	queryStr[0] = EOS;
-	strcat(queryStr, "SELECT `GUID`, `CharId`, `IP`, `Rank`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `HP`, `AP`, `Bans`, `Kicks`, `Warns`, `VW`, `INT`, `Skin`, `LastSkin`, `Money`, `Bank`, `BW`, `AJ`, `AL`, `DriverLicense`, `PisSkill`, `DglSkill`, `ShtgSkill`, `M4Skill`,");
-	format(queryStr, sizeof(queryStr), "%s`GOV`, `Hotel`, `IdCard`, `Detention`, `PDP`, `TelNum`, `BankAcc`, `GroupDesc`, `Group0`, `Group1`, `Group2`, `Group3`, `Group4`, `Duty`, `Traveled`, `Audio`, `ChatStyle`, `Computer`, `WalkAnim`, `Screen`, `StyleFight`, `X`, `Y`, `Z`, `Desc` FROM `osrp_Players` WHERE `CharName` = '%s'", queryStr, tmpChrName);
+	strcat(queryStr, "SELECT `GUID`, `CharId`, `IP`, `GS`, `Rank`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `HP`, `AP`, `VW`, `INT`, `Skin`, `LastSkin`, `Money`, `Bank`, `Debt`, `BW`, `AJ`, `AL`, `DrvLicAttempts`, `GOV`, `Hotel`, `IdCard`, `DriverLicense`, `Detention`, `PDP`, `TelNum`,");
+	format(queryStr, sizeof(queryStr), "%s`TelNetwork`, `BankAcc`, `GroupDesc`, `Group0`, `Group1`, `Group2`, `Group3`, `Group4`, `CasualJob`, `Traveled`, `Addiction`, `Audio`, `ChatStyle`, `Computer`, `WalkAnim`, `StyleFight`, `X`, `Y`, `Z`, `Desc` FROM `osrp_Players` WHERE `CharName` = '%s'", queryStr, tmpChrName);
 	mysql_query(queryStr);
-	
+
 	mysql_store_result();
-	
 	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>iis[16]iiiiiiffiiiiiiiiiiiiiiiiiiiiiiiis[128]iiiiiifiiiiiiifffs[128]", pVars[playerid][pGUid], pVars[playerid][pCharId], pVars[playerid][pIp], pVars[playerid][pRank], pVars[playerid][pSex], pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds],
-	pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pBans], pVars[playerid][pKicks], pVars[playerid][pWarns], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pAl],
-	pVars[playerid][pDriverLicense], pVars[playerid][pPisSkill], pVars[playerid][pDglSkill], pVars[playerid][pShtgSkill], pVars[playerid][pM4Skill], pVars[playerid][pGov], pVars[playerid][pHotel], pVars[playerid][pIdCard], pVars[playerid][pDetention], pVars[playerid][pPdp], pVars[playerid][pTelNum], pVars[playerid][pBankAcc],
-	pVars[playerid][pGroupDesc], pVars[playerid][pGroup][0], pVars[playerid][pGroup][1], pVars[playerid][pGroup][2], pVars[playerid][pGroup][3], pVars[playerid][pGroup][4], /*casualJob[playerid],*/ pVars[playerid][pDuty], pVars[playerid][pTraveled], pVars[playerid][pAudio], pVars[playerid][pChatStyle], pVars[playerid][pComputer],
-	pVars[playerid][pWalkAnim], pVars[playerid][pScreen], pVars[playerid][pStyleFight], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], charDesc);
+
+	sscanf(queryStr, "p<|>iis[16]iiiiiiiffiiiiiiiiiiiiiiiiiiiis[128]iiiiiiffiiiiifffs[64]",
+		pVars[playerid][pGUid],
+		pVars[playerid][pCharId],
+		pVars[playerid][pIp],
+		pVars[playerid][pGS],
+		pVars[playerid][pRank],
+		pVars[playerid][pSex],
+		pVars[playerid][pStrength],
+		pVars[playerid][pHours],
+		pVars[playerid][pMinutes],
+		pVars[playerid][pSeconds],
+		pVars[playerid][pHp],
+		pVars[playerid][pAp],
+		pVars[playerid][pVw],
+		pVars[playerid][pInt],
+		pVars[playerid][pSkin],
+		pVars[playerid][pLastSkin],
+		pVars[playerid][pMoney],
+		pVars[playerid][pBank],
+		pVars[playerid][pDebt],
+		pVars[playerid][pBw],
+		pVars[playerid][pAj],
+		pVars[playerid][pAl],
+		pVars[playerid][pDrvLicAttempts], 
+		pVars[playerid][pGov],
+		pVars[playerid][pHotel],
+		pVars[playerid][pIdCard],
+		pVars[playerid][pDriverLicense],
+		pVars[playerid][pDetention],
+		pVars[playerid][pPdp],
+		pVars[playerid][pTelNum],
+		pVars[playerid][pTelNetwork],
+		pVars[playerid][pBankAcc],
+		pVars[playerid][pGroupDesc],
+		pVars[playerid][pGroup][0],
+		pVars[playerid][pGroup][1],
+		pVars[playerid][pGroup][2],
+		pVars[playerid][pGroup][3],
+		pVars[playerid][pGroup][4],
+		casualJob[playerid],
+		pVars[playerid][pTraveled],
+		pVars[playerid][pAddiction],
+		pVars[playerid][pAudio],
+		pVars[playerid][pChatStyle],
+		pVars[playerid][pComputer],
+		pVars[playerid][pWalkAnim],
+		pVars[playerid][pStyleFight],
+		pVars[playerid][pX],
+		pVars[playerid][pY],
+		pVars[playerid][pZ],
+		charDesc
+	);
+
 	mysql_free_result();
-	
+
+	SetPlayerScore(playerid, pVars[playerid][pGS]);
 	UpdateDynamic3DTextLabelText(pVars[playerid][pCharDesc], COLOR_PURPLE, charDesc);
 	return 1;
 }
@@ -1495,6 +1606,7 @@ stock setPlayerDefaultValues(playerid) {
 	preloadAnimLib(playerid, "BEACH");
 	preloadAnimLib(playerid, "FOOD");
 
+	pVars[playerid][pGS] = 0;
 	pVars[playerid][pBlock] = 0;
 	pVars[playerid][pRank] = 0;
 	pVars[playerid][pSex] = MAN_SEX;
@@ -1514,6 +1626,7 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pLastSkin] = 0;
 	pVars[playerid][pMoney] = 0;
 	pVars[playerid][pBank] = 0;
+	pVars[playerid][pDebt] = 0;
 	pVars[playerid][pWeapons][0] = 0;
 	pVars[playerid][pWeapons][1] = 0;
 	pVars[playerid][pWeapons][2] = 0;
@@ -1531,17 +1644,15 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pBw] = 0;
 	pVars[playerid][pAj] = 0;
 	pVars[playerid][pAl] = 0;
-	pVars[playerid][pDriverLicense] = 0;
-	pVars[playerid][pPisSkill] = 0;
-	pVars[playerid][pDglSkill] = 0;
-	pVars[playerid][pShtgSkill] = 0;
-	pVars[playerid][pM4Skill] = 0;
+	pVars[playerid][pDrvLicAttempts] = 0;
 	pVars[playerid][pGov] = 0;
 	pVars[playerid][pHotel] = 0;
 	pVars[playerid][pIdCard] = 0;
+	pVars[playerid][pDriverLicense] = 0;
 	pVars[playerid][pDetention] = 0;
 	pVars[playerid][pPdp] = 0;
 	pVars[playerid][pTelNum] = 0;
+	pVars[playerid][pTelNetwork] = 0;
 	pVars[playerid][pBankAcc] = 0;
 	pVars[playerid][pGroup][0] = 0;
 	pVars[playerid][pGroup][1] = 0;
@@ -1553,17 +1664,17 @@ stock setPlayerDefaultValues(playerid) {
 	pVars[playerid][pDuty] = 0;
 	pVars[playerid][pStatus] = 0;
 	pVars[playerid][pTraveled] = 0.0;
+	pVars[playerid][pAddiction] = 0.0;
 	pVars[playerid][pDoor] = 0;
-	pVars[playerid][pAudio] = 0;
-	pVars[playerid][pChatStyle] = 0;
-	pVars[playerid][pComputer] = 0;
-	pVars[playerid][pWalkAnim] = 0;
-	pVars[playerid][pScreen] = 0;
-	pVars[playerid][pStyleFight] = 0;
+	pVars[playerid][pAudio] = 1;
+	pVars[playerid][pChatStyle] = 1;
+	pVars[playerid][pComputer] = 1;
+	pVars[playerid][pWalkAnim] = 1;
+	pVars[playerid][pStyleFight] = 1;
 	pVars[playerid][pX] = DEFAULT_POS_X;
 	pVars[playerid][pY] = DEFAULT_POS_Y;
 	pVars[playerid][pZ] = DEFAULT_POS_Z;
-	
+
 	playerCps[playerid] = 0;
 	playerRcPosition[playerid] = 0;
 	playerAFKTime[playerid] = 0;
@@ -1645,6 +1756,7 @@ stock resetPlayerValues(playerid) {
 	format(pVars[playerid][pLastDate], 64, NULL);
 	format(pVars[playerid][pGroupDesc], 128, NULL);
 
+	pVars[playerid][pGS] = 0;
 	pVars[playerid][pBlock] = 0;
 	pVars[playerid][pRank] = 0;
 	pVars[playerid][pSex] = 0;
@@ -1657,26 +1769,40 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pBans] = 0;
 	pVars[playerid][pKicks] = 0;
 	pVars[playerid][pWarns] = 0;
+	pVars[playerid][pAJs] = 0;
 	pVars[playerid][pVw] = 0;
 	pVars[playerid][pInt] = 0;
 	pVars[playerid][pSkin] = 0;
 	pVars[playerid][pLastSkin] = 0;
 	pVars[playerid][pMoney] = 0;
 	pVars[playerid][pBank] = 0;
+	pVars[playerid][pDebt] = 0;
+	pVars[playerid][pWeapons][0] = 0;
+	pVars[playerid][pWeapons][1] = 0;
+	pVars[playerid][pWeapons][2] = 0;
+	pVars[playerid][pWeapons][3] = 0;
+	pVars[playerid][pWeapons][4] = 0;
+	pVars[playerid][pWeapons][5] = 0;
+	pVars[playerid][pWeapons][6] = 0;
+	pVars[playerid][pWeapons][7] = 0;
+	pVars[playerid][pWeapons][8] = 0;
+	pVars[playerid][pWeapons][9] = 0;
+	pVars[playerid][pWeapons][10] = 0;
+	pVars[playerid][pWeapons][11] = 0;
+	pVars[playerid][pWeapons][12] = 0;
+	pVars[playerid][pWeapSlot] = 0;
 	pVars[playerid][pBw] = 0;
 	pVars[playerid][pAj] = 0;
 	pVars[playerid][pAl] = 0;
-	pVars[playerid][pDriverLicense] = 0;
-	pVars[playerid][pPisSkill] = 0;
-	pVars[playerid][pDglSkill] = 0;
-	pVars[playerid][pShtgSkill] = 0;
-	pVars[playerid][pM4Skill] = 0;
+	pVars[playerid][pDrvLicAttempts] = 0;
 	pVars[playerid][pGov] = 0;
 	pVars[playerid][pHotel] = 0;
 	pVars[playerid][pIdCard] = 0;
+	pVars[playerid][pDriverLicense] = 0;
 	pVars[playerid][pDetention] = 0;
 	pVars[playerid][pPdp] = 0;
 	pVars[playerid][pTelNum] = 0;
+	pVars[playerid][pTelNetwork] = 0;
 	pVars[playerid][pBankAcc] = 0;
 	pVars[playerid][pGroup][0] = 0;
 	pVars[playerid][pGroup][1] = 0;
@@ -1686,12 +1812,12 @@ stock resetPlayerValues(playerid) {
 	pVars[playerid][pArea] = 0;
 	pVars[playerid][pDuty] = 0;
 	pVars[playerid][pTraveled] = 0.0;
+	pVars[playerid][pAddiction] = 0.0;
 	pVars[playerid][pDoor] = 0;
 	pVars[playerid][pAudio] = 0;
 	pVars[playerid][pChatStyle] = 0;
 	pVars[playerid][pComputer] = 0;
 	pVars[playerid][pWalkAnim] = 0;
-	pVars[playerid][pScreen] = 0;
 	pVars[playerid][pStyleFight] = 0;
 	pVars[playerid][pX] = 0.0;
 	pVars[playerid][pY] = 0.0;
@@ -1763,14 +1889,14 @@ stock resetPlayerValues(playerid) {
 
 stock savePlayerValues(playerid) {
 	new tmpChrName[24];
-	
+
 	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
-	
+
 	pVars[playerid][pVw] = GetPlayerVirtualWorld(playerid);
 	pVars[playerid][pInt] = GetPlayerInterior(playerid);
-	
+
 	mysql_real_escape_string(pVars[playerid][pCharName], tmpChrName);
-	
+
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `HP` = '%f', `AP` = '%f', `VW` = '%d', `INT` = '%d', `Skin` = '%d', `LastSkin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `DriverLicense` = '%d', `Hotel` = '%d', `TelNum` = '%d', `GroupDesc` = '%s', `Group0` = '%d', `Group1` = '%d', `Group2` = '%d', `Group3` = '%d', `Group4` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'",
 	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pHotel], pVars[playerid][pTelNum], pVars[playerid][pGroupDesc],
@@ -1849,20 +1975,59 @@ Callback:dtTimer(playerid) {
 	return 1;
 }
 
-stock updatePlayerGameStatus(playerid, status) {	
-	//new srvItemId = getServerItemIdForPlayer(playerid);
+stock updatePlayerGameStatus(playerid) {	
+	new srvItemId = getServerItemIdForPlayer(playerid);
 	new srvGrpId = getServerGroupIdForPlayer(playerid);
 	static h, mins, secs;
 
-	pVars[playerid][pStatus] += status;
+	if(pVars[playerid][pHours] > 20) {
+		format(pVars[playerid][p3dInfoStr], 64, "%s (%d)", pVars[playerid][pCharName], playerid);
+	} else {
+		format(pVars[playerid][p3dInfoStr], 64, "%s (%d, %dh)", pVars[playerid][pCharName], playerid, pVars[playerid][pHours]);
+	}
 
-	if(pVars[playerid][pStatus] & STAT_CLEAR) {
+	if(playerAFKTime[playerid] == 3 && !(pVars[playerid][pStatus] & STAT_AFK)) {
+		gettime(h, mins, secs);
+
+		pVars[playerid][pStatus] += STAT_AFK;
+	} else if(!playerAFKTime[playerid] && (pVars[playerid][pStatus] & STAT_AFK)) {
+		pVars[playerid][pStatus] -= STAT_AFK;
+	}
+
+	if((iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) && !(pVars[playerid][pStatus] & STAT_ROLLERS)) {
+		pVars[playerid][pStatus] += STAT_ROLLERS;
+	} else if((iVars[srvItemId][iId] == P_ROLKI && !iVars[srvItemId][iUsed]) && (pVars[playerid][pStatus] & STAT_ROLLERS)) {
+		pVars[playerid][pStatus] -= STAT_ROLLERS;
+	}
+
+	if(hasBelts[playerid] && !(pVars[playerid][pStatus] & STAT_BELTS)) {
+		pVars[playerid][pStatus] += STAT_BELTS;
+	} else if(!hasBelts[playerid] && (pVars[playerid][pStatus] & STAT_BELTS)) {
+		pVars[playerid][pStatus] -= STAT_BELTS;
+	}
+
+	if(pVars[playerid][pStatus] & STAT_AFK) {
+		format(pVars[playerid][pStatusStr], 32, "(AFK od %02d:%02d)", h, mins);
+		format(pVars[playerid][p3dInfoStr], 64, "%s\n%s", pVars[playerid][p3dInfoStr], pVars[playerid][pStatusStr]);
+	}
+
+	if(pVars[playerid][pStatus] & STAT_ROLLERS) {
+		format(pVars[playerid][pStatusStr], 32, "(rolki)");
+		format(pVars[playerid][p3dInfoStr], 64, "%s\n%s", pVars[playerid][p3dInfoStr], pVars[playerid][pStatusStr]);
+	}
+
+	if(pVars[playerid][pStatus] & STAT_BELTS) {
+		format(pVars[playerid][pStatusStr], 32, "(pasy)");
+		format(pVars[playerid][p3dInfoStr], 64, "%s\n%s", pVars[playerid][p3dInfoStr], pVars[playerid][pStatusStr]);
+	}
+
+	/*if(pVars[playerid][pStatus] & 1) {
 		format(pVars[playerid][pStatusStr], 128, NULL);
-	} else if(pVars[playerid][pStatus] & STAT_NONE) {
+	} else if(pVars[playerid][pStatus] & 2) {
 		if(pVars[playerid][pHours] > 20) {
-			format(pVars[playerid][pStatusStr], 128, "%s (%d)", pVars[playerid][pCharName], playerid);
+			
 		} else {
-			format(pVars[playerid][pStatusStr], 128, "%s (%d, %dh)", pVars[playerid][pCharName], playerid, pVars[playerid][pHours]);
+			
 		}		
 	} else if(pVars[playerid][pStatus] & STAT_AFK) {
 		if(playerAFKTime[playerid] == 3) {
@@ -1870,7 +2035,7 @@ stock updatePlayerGameStatus(playerid, status) {
 		}
 
 		if((pVars[playerid][pStatus] & STAT_BW) && (pVars[playerid][pStatus] & STAT_DUTY)) {
-			format(pVars[playerid][pStatusStr], 128, "%s\n(AFK od %02d:%02d, %s)\n[%s]", pVars[playerid][pStatusStr], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
+			format(pVars[playerid][pStatusStr], 128, "%s\n, %s)\n[%s]", pVars[playerid][pStatusStr], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
 		} else if(pVars[playerid][pStatus] & STAT_BW) {
 			format(pVars[playerid][pStatusStr], 128, "%s\n(AFK od %02d:%02d, %s)", pVars[playerid][pStatusStr], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
 		}
@@ -1922,9 +2087,28 @@ stock updatePlayerGameStatus(playerid, status) {
 		format(pVars[playerid][pStatusStr], 128, "%s\n[%s]", pVars[playerid][pStatusStr], gVars[srvGrpId][gName]);	
 	} else if(pVars[playerid][pStatus] & STAT_GLOVES) {
 		format(pVars[playerid][pStatusStr], 128, "%s\n(rêkawice)", pVars[playerid][pStatusStr]);
-	}
+	}*/
 
-	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_CHAT, pVars[playerid][pStatusStr]);
+	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_CHAT, pVars[playerid][p3dInfoStr]);
+}
+
+stock resetPlayerGameStatus(playerid) {
+	format(pVars[playerid][p3dInfoStr], 64, NULL);
+	format(pVars[playerid][pStatusStr], 32, NULL);
+
+	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_CHAT, pVars[playerid][p3dInfoStr]);
+
+	pVars[playerid][pStatus] -= STAT_AFK;
+	pVars[playerid][pStatus] -= STAT_BW;
+	pVars[playerid][pStatus] -= STAT_DAMAGE;
+	pVars[playerid][pStatus] -= STAT_ROLLERS;
+	pVars[playerid][pStatus] -= STAT_DRUNK;
+	pVars[playerid][pStatus] -= STAT_DRUGS;
+	pVars[playerid][pStatus] -= STAT_STRENGTH;
+	pVars[playerid][pStatus] -= STAT_BELTS;
+	pVars[playerid][pStatus] -= STAT_DETENTION;
+	pVars[playerid][pStatus] -= STAT_DUTY;
+	pVars[playerid][pStatus] -= STAT_GLOVES;
 }
 
 stock getPlayerStrengthPower(playerid) {
@@ -2014,9 +2198,9 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 	new srvGrpId = getServerGroupIdForPlayer(playerid);
 
 	if(isPlayerOnDuty(playerid)) {
-		format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
-	} else {
 		format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[srvGrpId][gName]);
+	} else {
+		format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
 	}
 
 	switch(type) {
@@ -2644,6 +2828,20 @@ Callback:hideItemTips(playerid) {
 	return 1;
 }
 
+Callback:hideItemNoNearby(playerid) {
+	for(new i = 0; i < 2; i++) {
+		TextDrawHideForPlayer(playerid, itemNoNearby[playerid][i]);
+	}
+	return 1;
+}
+
+Callback:hideItemGivePlayerTips(playerid) {
+	for(new i = 0; i < 2; i++) {
+		TextDrawHideForPlayer(playerid, itemGivePlayerTips[playerid][i]);
+	}
+	return 1;
+}
+
 Callback:hideScrimmageTips(playerid, numid) {
 	switch(numid) {
 		case 0: {
@@ -2675,6 +2873,13 @@ Callback:hideCourseDrivingInfo(playerid) {
 Callback:hideBuildingMusicInfo(playerid) {
 	for(new i = 0; i < 2; i++) {
 		TextDrawHideForPlayer(playerid, buildingMusicInfo[playerid][i]);
+	}
+	return 1;
+}
+
+Callback:hideCourierTips(playerid) {
+	for(new i = 0; i < 3; i++) {
+		TextDrawHideForPlayer(playerid, courierTips[playerid][i]);
 	}
 	return 1;
 }
