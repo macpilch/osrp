@@ -75,7 +75,7 @@ stock onEnterRaceCheckpoint(playerid) {
 	if(playerCps[playerid] != 0 && playerCps[playerid] < rcVars[srvRcId][rcCps] - 1) {
 		DisablePlayerRaceCheckpoint(playerid);
 		SetPlayerRaceCheckpoint(playerid, 0, rcVars[srvRcId][rcCpX][playerCps[playerid]], rcVars[srvRcId][rcCpY][playerCps[playerid]], rcVars[srvRcId][rcCpZ][playerCps[playerid]], rcVars[srvRcId][rcCpX][playerCps[playerid] + 1], rcVars[srvRcId][rcCpY][playerCps[playerid] + 1], rcVars[srvRcId][rcCpZ][playerCps[playerid] + 1], 5.0);
-		
+
 		foreach(new i : Player) {
 			if(isRace[i]) {
 				if(playerCps[i] > playerCps[playerid]) {

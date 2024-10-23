@@ -71,10 +71,10 @@ stock searchPlayerBusStop(playerid) {
 		if(playerToPoint(playerid, 2.0, bVars[i][bX], bVars[i][bY], bVars[i][bZ])) {
 			GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 
-			osrp_TogglePlayerControllable(playerid, false);
+			OSRP_TogglePlayerControllable(playerid, false);
 			SetCameraBehindPlayer(playerid);
 
-			InterpolateCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ] + 150, 2000, CAMERA_MOVE);
+			InterpolateCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY] + 10, pVars[playerid][pZ] + 150, 2000, CAMERA_MOVE);
 			InterpolateCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], 2000, CAMERA_MOVE);
 
 			isInBus[playerid] = true;

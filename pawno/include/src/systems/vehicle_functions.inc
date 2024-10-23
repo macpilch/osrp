@@ -76,8 +76,10 @@ stock initVehicleValues() {
 
 stock saveVehicleValues() {
 	foreach(new i : vehItter) {
-		GetVehiclePos(vVars[i][vId], vVars[i][vX], vVars[i][vY], vVars[i][vZ]);
-		GetVehicleZAngle(vVars[i][vId], vVars[i][vAngle]);
+		if(vVars[i][vId] != INVALID_VEHICLE_ID) {
+			GetVehiclePos(vVars[i][vId], vVars[i][vX], vVars[i][vY], vVars[i][vZ]);
+			GetVehicleZAngle(vVars[i][vId], vVars[i][vAngle]);
+		}
 
 		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Color1` = '%d', `Color2` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Angle` = '%f', `Fuel` = '%f', `Lock` = '%d', `Engine` = '%d', `EngineHealth` = '%f', `Spawned` = '%d', `Lights` = '%d', `Mileage` = '%f', `Desc` = '%s', `Plate` = '%s' WHERE `UID` = '%d'",
@@ -139,9 +141,9 @@ stock addPlayerVehicle(playerid, modelid) {
 	vVars[freeId][vLock] = false;
 	vVars[freeId][vSpawned] = false;
 	vVars[freeId][vMileage] = 0.0;
-	vVars[freeId][vX] = 0.0;
-	vVars[freeId][vY] = 0.0;
-	vVars[freeId][vZ] = 0.0;
+	vVars[freeId][vX] = DEFAULT_POS_X;
+	vVars[freeId][vY] = DEFAULT_POS_Y;
+	vVars[freeId][vZ] = DEFAULT_POS_Z;
 	vVars[freeId][vEngineHp] = 1000.0;
 	vVars[freeId][vEngine] = false;
 	vVars[freeId][vLights] = false;
@@ -162,12 +164,12 @@ Callback:vehicleLightsOn(playerid) {
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 		return 1;
 	}
-	
+
 	new engine, lights, alarm, doors, bonnet, boot, objective, srvVehId = getServerVehicleIdForPlayer(playerid);
-	
+
 	GetVehicleParamsEx(vVars[srvVehId][vId], engine, lights, alarm, doors, bonnet, boot, objective);
 	SetVehicleParamsEx(vVars[srvVehId][vId], engine, 1, alarm, doors, bonnet, boot, objective);
-	
+
 	vVars[srvVehId][vLights] = true;
 	return 1;
 }
@@ -176,12 +178,12 @@ Callback:vehicleLightsOff(playerid) {
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 		return 1;
 	}
-	
+
 	new engine, lights, alarm, doors, bonnet, boot, objective, srvVehId = getServerVehicleIdForPlayer(playerid);
-	
+
 	GetVehicleParamsEx(vVars[srvVehId][vId], engine, lights, alarm, doors, bonnet, boot, objective);
 	SetVehicleParamsEx(vVars[srvVehId][vId], engine, 0, alarm, doors, bonnet, boot, objective);
-	
+
 	vVars[srvVehId][vLights] = false;
 	return 1;
 }
@@ -193,7 +195,7 @@ stock vehicleEngineStatus(playerid) {
 		if(!vVars[srvVehId][vFuel]) {
 			return GameTextForPlayer(playerid, "~r~Brak paliwa w pojezdzie.", 5000, 3);
 		}
-		
+
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~n~~n~~g~Trwa odpalanie silnika...", 3000, 3);
 		SetTimerEx("vehicleEngineOn", 3000, false, "i", playerid);
 	} else {
@@ -201,17 +203,18 @@ stock vehicleEngineStatus(playerid) {
 
 		GetVehicleParamsEx(vVars[srvVehId][vId], engine, lights, alarm, doors, bonnet, boot, objective);
 		SetVehicleParamsEx(vVars[srvVehId][vId], 0, lights, alarm, doors, bonnet, boot, objective);		
-	
+
+		KillTimer(fuelTimer[playerid]);
+
 		for(new i = 0; i < 3; i++) {
 			TextDrawHideForPlayer(playerid, vehicleFuelStatus[playerid][i]);
 		}
-	
+
 		for(new i = 0; i < 2; i++) {
 			TextDrawShowForPlayer(playerid, vehicleTips[playerid][i]);
 		}
-	
+
 		vVars[srvVehId][vEngine] = false;
-		KillTimer(fuelTimer[playerid]);
 	}
 	return 1;
 }
@@ -240,7 +243,6 @@ Callback:vehicleEngineOn(playerid) {
 		}
 
 		fuelTimer[playerid] = SetTimerEx("updateVehicleFuel", 1000, false, "if", playerid, vVars[srvVehId][vFuel]);
-
 		vVars[srvVehId][vEngine] = true;
 	}
 	return 1;
@@ -384,9 +386,171 @@ stock bool:isVehicleInUse(vehicleid) {
 	return false;
 }
 
-/*stock getDoorState(doorstate, DoorTypes:type, DoorStates:states) {
-	return ((doorstate >> (8 * type)) & states);
-}*/
+stock getPanel(vehicleid, panelid) {
+	new panels, doors, lights, tires, p1, p2;
+
+	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
+	decode_panels(panels, p1, p2);
+
+	switch(panelid) {
+		case FRONT_PANEL: return p1;
+		case BACK_PANEL: return p2;
+	}
+	return -1;
+}
+
+stock setPanel(vehicleid, panelid, status) {
+	new panels, doors, lights, tires, p1, p2;
+
+	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
+	decode_panels(panels, p1, p2);
+
+	switch(panelid) {
+        case FRONT_PANEL: panels = encode_panels(0, 0, 0, 0, 0, status, p2);
+        case BACK_PANEL: panels = encode_panels(0, 0, 0, 0, 0, p1, status);
+	}
+
+    UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
+	return 1;
+}
+
+stock getLight(vehicleid, lightid) {
+	new panels, doors, lights, tires, l1, l2, l3, l4;
+
+	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
+	decode_lights(lights, l1, l2, l3, l4);
+
+	switch(lightid) {
+		case F_L_LIGHT: return l1;
+		case B_L_LIGHT: return l2;
+		case F_R_LIGHT: return l3;
+		case B_R_LIGHT: return l4;
+	}
+	return -1;
+}
+
+stock setLight(vehicleid, lightid, status) {
+	new panels, doors, lights, tires, l1, l2, l3, l4;
+
+	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
+	decode_lights(lights, l1, l2, l3, l4);
+
+	switch(lightid) {
+		case F_L_LIGHT: lights = encode_lights(status, l2, l3, l4);
+		case B_L_LIGHT: lights = encode_lights(l1, status, l3, l4);
+		case F_R_LIGHT: lights = encode_lights(l1, l2, status, l4);
+		case B_R_LIGHT: lights = encode_lights(l1, l2, l3, status);
+	}
+
+	UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
+	return 1;
+}
+
+stock getTire(vehicleid, tireid) {
+	new panels, doors, lights, tires, t1, t2, t3, t4;
+
+	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
+	decode_tires(tires, t1, t2, t3, t4);
+
+	switch(tireid) {
+		case F_L_TIRE: return t1;
+		case B_L_TIRE: return t2;
+		case F_R_TIRE: return t3;
+		case B_R_TIRE: return t4;
+	}
+	return -1;
+}
+
+stock setTire(vehicleid, tireid, status) {
+	new panels, doors, lights, tires, t1, t2, t3, t4;
+
+	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
+	decode_tires(tires, t1, t2, t3, t4);
+
+	switch(tireid) {
+        case F_L_TIRE: tires = encode_tires(status, t2, t3, t4);
+        case B_L_TIRE: tires = encode_tires(t1, status, t3, t4);
+        case F_R_TIRE: tires = encode_tires(t1, t2, status, t4);
+        case B_R_TIRE: tires = encode_tires(t1, t2, t3, status);
+    }
+
+    UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
+}
+
+stock getDoor(vehicleid, doorid) {
+	new panels, doors, lights, tires, d1, d2, d3, d4;
+
+	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
+	decode_doors(doors, d1, d2, d3, d4);
+
+	switch(doorid) {
+		case F_L_DOOR: return d1;
+		case B_L_DOOR: return d2;
+		case F_R_DOOR: return d3;
+		case B_R_DOOR: return d4;
+	}
+	return -1;
+}
+
+stock setDoor(vehicleid, doorid, status) {
+	new panels, doors, lights, tires, d1, d2, d3, d4;
+
+	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
+	decode_doors(doors, d1, d2, d3, d4);
+
+	switch(doorid) {
+		case F_L_DOOR: doors = encode_doors(status, d2, d3, d4, 0, 0);
+		case B_L_DOOR: doors = encode_doors(d1, status, d3, d4, 0, 0);
+		case F_R_DOOR: doors = encode_doors(d1, d2, status, d4, 0, 0);
+		case B_R_DOOR: doors = encode_doors(d1, d2, d3, status, 0, 0);
+	}
+
+	UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
+}
+
+stock encode_tires(tire1, tire2, tire3, tire4) {
+	return tire1 | (tire2 << 1) | (tire3 << 2) | (tire4 << 3);
+}
+
+stock encode_panels(flp, frp, rlp, rrp, windshield, front_bumper, rear_bumper) {
+    return flp | (frp << 4) | (rlp << 8) | (rrp << 12) | (windshield << 16) | (front_bumper << 20) | (rear_bumper << 24);
+}
+
+stock encode_doors(bonnet, boot, driver_door, passenger_door, behind_driver_door, behind_passenger_door) {
+    #pragma unused behind_driver_door
+    #pragma unused behind_passenger_door
+    return bonnet | (boot << 8) | (driver_door << 16) | (passenger_door << 24);
+}
+
+stock encode_lights(light1, light2, light3, light4) {
+    return light1 | (light2 << 1) | (light3 << 2) | (light4 << 3);
+}
+
+stock decode_lights(lights, &light1, &light2, &light3, &light4) {
+	light1 = lights & 1;
+	light2 = lights >> 1 & 1;
+	light3 = lights >> 2 & 1;
+	light4 = lights >> 3 & 1;
+}
+
+stock decode_panels(panels, &front_bumper, &rear_bumper) {
+	front_bumper = panels >> 20 & 15;
+	rear_bumper = panels >> 24 & 15;
+}
+
+stock decode_doors(doors, &bonnet, &boot, &driver_door, &passenger_door) {
+	bonnet = doors & 7;
+	boot = doors >> 8 & 7;
+	driver_door = doors >> 16 & 7;
+	passenger_door = doors >> 24 & 7;
+}
+
+stock decode_tires(tires, &tire1, &tire2, &tire3, &tire4) {
+	tire1 = tires & 1;
+	tire2 = tires >> 1 & 1;
+	tire3 = tires >> 2 & 1;
+	tire4 = tires >> 3 & 1;
+}
 
 stock Float:getVehicleDistance(vehicleid) {
 	new Float:vehDistance;
@@ -730,7 +894,7 @@ stock isPlane(modelid) {
 stock isFreeParkingPlaceForVehicle(srvvehid) {
 	foreach(new i : vehItter) {
 		if(srvvehid != i) {
-			if(vVars[i][vSpawned] && (floatabs(vVars[srvvehid][vX] - vVars[i][vX]) <= 10.0 && floatabs(vVars[srvvehid][vY] - vVars[i][vY]) <= 10.0 && floatabs(vVars[srvvehid][vZ] - vVars[i][vZ]) <= 10.0)) {
+			if(vVars[i][vSpawned] && (floatabs(vVars[srvvehid][vX] - vVars[i][vX]) <= 5.0 && floatabs(vVars[srvvehid][vY] - vVars[i][vY]) <= 5.0 && floatabs(vVars[srvvehid][vZ] - vVars[i][vZ]) <= 5.0)) {
 				return 0;
 			}
 		}
@@ -747,6 +911,8 @@ Callback:addFuelToVehicle(playerid) {
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "* Pojazd %s zosta³ zatankowany. *", VehicleNames[vVars[srvVehId][vModelId] - 400]);
 	sendDoMessage(playerid, mainStr);
+	
+	resetOfferData(playerid);
 	return 1;
 }
 
@@ -766,7 +932,7 @@ Callback:vehRepairEngineTimer(playerid, receiver, what, seconds) {
 
 	if(seconds > 0) {
 		format(str, sizeof(str), "~w~Odliczanie: ~r~%d", seconds);
-		GameTextForPlayer(playerid, str, 1000, 5);
+		GameTextForPlayer(playerid, str, 1000, 6);
 
 		SetTimerEx("vehRepairEngineTimer", 3000, false, "iiii", playerid, receiver, what, seconds -= 3);
 	} else {
@@ -782,15 +948,18 @@ Callback:vehRepairEngineTimer(playerid, receiver, what, seconds) {
 }
 
 Callback:updatePlayerTaxiCourse(playerid, vehicleid) {
-	if(haveTaxiCourse[playerid] && haveTaxiCourse[offerFrom[playerid]] && taxiDriver[playerid] != INVALID_PLAYER_ID) {
-		new taxiStr[32];
-
-		taxiDistance[playerid] += (getVehicleDistance(vehicleid) * 10);
-		taxiCost[playerid] = taxiDistance[playerid] * offerParams[playerid][OFFER_PARM_ETC];
-
-		format(taxiStr, sizeof(taxiStr), "~y~~h~%d~w~m.__[~r~%d~w~]", taxiDistance[playerid], taxiCost[playerid]);
-		GameTextForPlayer(playerid, taxiStr, 3500, 3);
-
-		SetTimerEx("updatePlayerTaxiCourse", 3500, false, "ii", playerid, vehicleid);
+	if(!haveTaxiCourse[playerid] && !haveTaxiCourse[offerFrom[playerid]] && taxiDriver[playerid] == INVALID_PLAYER_ID) {
+		return 1;
 	}
+
+	new taxiStr[64];
+
+	taxiDistance[playerid] += (getVehicleDistance(vehicleid) * 10);
+	taxiCost[playerid] = taxiDistance[playerid] * offerParams[playerid][OFFER_PARM_ETC];
+
+	format(taxiStr, sizeof(taxiStr), "~y~~h~%d~w~m.__[~r~%d~w~]", taxiDistance[playerid], taxiCost[playerid]);
+	GameTextForPlayer(playerid, taxiStr, 3500, 6);
+
+	SetTimerEx("updatePlayerTaxiCourse", 3500, false, "ii", playerid, vehicleid);
+	return 1;
 }

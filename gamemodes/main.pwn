@@ -14,8 +14,6 @@
 #include <YSI\y_timers>
 #include <foreach>
 
-#define DEBUG
-
 #include "src\macros\defines"
 #include "src\macros\dialogs"
 #include "src\enums\player"

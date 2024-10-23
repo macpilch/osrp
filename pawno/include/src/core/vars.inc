@@ -61,6 +61,7 @@ new usedLastItemTime[MAX_PLAYERS];
 new usedLastTaskTime[MAX_PLAYERS];
 new hpSeconds[MAX_PLAYERS];
 new numberPresses[MAX_PLAYERS];
+new antiCheatGym[MAX_PLAYERS];
 new numberBlows[MAX_PLAYERS];
 new fightAttacker[MAX_PLAYERS];
 new lastBlowTime[MAX_PLAYERS];
@@ -129,6 +130,8 @@ new bool:telephoneState[MAX_PLAYERS];
 new bool:isPlayerFight[MAX_PLAYERS];
 new bool:haveTaxiCourse[MAX_PLAYERS];
 new bool:selectChatStyle[MAX_PLAYERS];
+new bool:gpsEnabled[MAX_PLAYERS];
+new bool:spawnFreeze[MAX_PLAYERS];
 
 // type - MySQL
 new MySQL:hMySQL;
@@ -168,6 +171,7 @@ new Text:endBWTimeInfo[MAX_PLAYERS];
 new Text:taxiInfo[MAX_PLAYERS][3];
 new Text:courierInfo[MAX_PLAYERS];
 new Text:courierTips[MAX_PLAYERS][3];
+new Text:specialServicesInfo[MAX_PLAYERS];
 
 // type - Iterator
 new Iterator:vehItter<MAX_VEHICLES>;

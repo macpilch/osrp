@@ -71,6 +71,7 @@ enum PlayerData {
 	pDrvLicAttempts,
 	pGov,
 	pHotel,
+	pHotelPaid,
 	pIdCard,
 	pDriverLicense,
 	pDetention,
@@ -88,6 +89,7 @@ enum PlayerData {
 	pDuty,
 	pStatus,
 	pStatusStr[32],
+	pOldStatusStr[32],
 	p3dInfoStr[64],
 	Float:pTraveled,
 	Float:pAddiction,
@@ -99,6 +101,7 @@ enum PlayerData {
 	pStyleFight,
 	pDrugs, // 15 min dzialania
 	pDrugsTime,
+	bool:pMusic,
 	Float:pX,
 	Float:pY,
 	Float:pZ,

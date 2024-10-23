@@ -67,7 +67,6 @@ static stock sendDistanceMessage(playerid, Float:range, skipPlayer, const wholeS
 			}
 		}
 	}
-	return 1;
 }
 
 stock sendChatMessage(playerid, const mess[]) {
@@ -548,7 +547,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawAlignment(damageRedScreen[playerid], 1);
 	TextDrawColor(damageRedScreen[playerid], 0);
 	TextDrawUseBox(damageRedScreen[playerid], 1);
-	TextDrawBoxColor(damageRedScreen[playerid], 0xFF000044);
+	TextDrawBoxColor(damageRedScreen[playerid], 0xFF0000AA);
 	TextDrawSetShadow(damageRedScreen[playerid], 0);
 	TextDrawSetOutline(damageRedScreen[playerid], 1);
 	TextDrawFont(damageRedScreen[playerid], 0);
@@ -1050,6 +1049,16 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawFont(courierTips[playerid][2], 1);
 	TextDrawSetProportional(courierTips[playerid][2], 1);
 
+	specialServicesInfo[playerid] = TextDrawCreate(312.503692, 341.249908, "Pamietaj, na liscie znajduja sie tylko te grupy, w ktorych~n~jest ktos, kto moglby odebrac Twoje zgloszenie.");
+	TextDrawLetterSize(specialServicesInfo[playerid], 0.251347, 1.279165);
+	TextDrawAlignment(specialServicesInfo[playerid], 2);
+	TextDrawColor(specialServicesInfo[playerid], -1);
+	TextDrawSetShadow(specialServicesInfo[playerid], 0);
+	TextDrawSetOutline(specialServicesInfo[playerid], 1);
+	TextDrawBackgroundColor(specialServicesInfo[playerid], 51);
+	TextDrawFont(specialServicesInfo[playerid], 1);
+	TextDrawSetProportional(specialServicesInfo[playerid], 1);
+
 	/*
 	Textdraw0 = TextDrawCreate(600.770141, 285.000000, "_");
 	TextDrawLetterSize(Textdraw0, 0.000000, 4.090743);
@@ -1071,16 +1080,6 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawBackgroundColor(Textdraw1, 255);
 	TextDrawFont(Textdraw1, 1);
 	TextDrawSetProportional(Textdraw1, 1);
-	
-Textdraw26 = TextDrawCreate(312.503692, 341.249908, "Pamietaj, na liscie znajduja sie tylko te grupy, w ktorych~n~jest ktos, kto moglby odebrac Twoje zgloszenie.");
-TextDrawLetterSize(Textdraw26, 0.251347, 1.279165);
-TextDrawAlignment(Textdraw26, 2);
-TextDrawColor(Textdraw26, -1);
-TextDrawSetShadow(Textdraw26, 0);
-TextDrawSetOutline(Textdraw26, 1);
-TextDrawBackgroundColor(Textdraw26, 51);
-TextDrawFont(Textdraw26, 1);
-TextDrawSetProportional(Textdraw26, 1);
 
 Textdraw26 = TextDrawCreate(308.286743, 341.250000, "~w~Obiekt ~r~458:4089346~w~.__Model: ~y~19467~w~.__Owner: ~y~16:11984");
 TextDrawLetterSize(Textdraw26, 0.262122, 1.168331);
@@ -1236,7 +1235,6 @@ TextDrawBackgroundColor(Textdraw27, 51);
 TextDrawFont(Textdraw27, 1);
 TextDrawSetProportional(Textdraw27, 1);
 	*/
-	return 1;
 }
 
 stock loadPlayerValues(playerid) {
@@ -1310,7 +1308,6 @@ stock loadPlayerValues(playerid) {
 
 	SetPlayerScore(playerid, pVars[playerid][pGS]);
 	UpdateDynamic3DTextLabelText(pVars[playerid][pCharDesc], COLOR_PURPLE, charDesc);
-	return 1;
 }
 
 stock loadPlayerContacts(playerid) {
@@ -1544,24 +1541,13 @@ stock givePlayerGamerScore(playerid, victim, score, const reason[]) {
 
 	format(mainStr, sizeof(mainStr), "{A52A2A}> Otrzymujesz GamerScore %d od %s. Powód: %s", score, pVars[playerid][pCharName], reason);
 
-	osrp_SetPlayerScore(victim, score);
+	OSRP_SetPlayerScore(victim, score);
 
 	SendClientMessage(victim, COLOR_WHITE, mainStr);
 	TextDrawSetString(penalty, str);
 	TextDrawShowForAll(penalty);
 
 	SetTimer("hidePenalty", 20000, false);
-	return 1;
-}
-
-Callback:kickPlayer(playerid) {
-	Kick(playerid);
-	return 1;
-}
-
-Callback:hidePenalty() {
-	TextDrawHideForAll(penalty);
-	return 1;
 }
 
 stock setPlayerDefaultValues(playerid) {
@@ -1739,7 +1725,6 @@ stock setPlayerDefaultValues(playerid) {
 	}
 
 	exit3dInfo[playerid] = Text3D:INVALID_3DTEXT_ID;
-	return 1;
 }
 
 stock resetPlayerValues(playerid) {
@@ -1884,7 +1869,6 @@ stock resetPlayerValues(playerid) {
 	}
 	
 	exit3dInfo[playerid] = Text3D:INVALID_3DTEXT_ID;
-	return 1;
 }
 
 stock savePlayerValues(playerid) {
@@ -1902,7 +1886,6 @@ stock savePlayerValues(playerid) {
 	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pHotel], pVars[playerid][pTelNum], pVars[playerid][pGroupDesc],
 	pVars[playerid][pGroup][0], pVars[playerid][pGroup][1], pVars[playerid][pGroup][2], pVars[playerid][pGroup][3], pVars[playerid][pGroup][4], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], tmpChrName);
 	mysql_query(queryStr);
-	return 1;
 }
 
 stock setPlayerBW(playerid, minutes) {
@@ -1915,12 +1898,13 @@ stock setPlayerBW(playerid, minutes) {
 	pVars[playerid][pBw] = minutes;
 	isBW[playerid] = true;
 
-	osrp_TogglePlayerControllable(playerid, false);
+	OSRP_TogglePlayerControllable(playerid, 0);
+
+	ClearAnimations(playerid);
 	ApplyAnimation(playerid, "CRACK", "crckdeth1", 4.1, 0, 0, 0, 1, 0, 0);
 
 	SetPlayerDrunkLevel(playerid, 0);
 	SetTimerEx("bwTimer", 1000, false, "i", playerid);
-	return 1;
 }
 
 stock setPlayerAJ(playerid, minutes) {
@@ -1933,52 +1917,17 @@ stock setPlayerAJ(playerid, minutes) {
 stock setPlayerDetention(playerid, id, minutes, const reason[]) {
 	pVars[id][pDetention] = minutes * 60;
 
-	foreach(new i : Player) {
-		foreach(new j : groupItter) {
-			if(isPlayerOnDuty(i) && pVars[i][pGroupNow] == gVars[j][gUid]) {
-				if(gVars[j][gType] == G_LSPD) {
-					mainStr[0] = EOS;
-					format(mainStr, sizeof(mainStr), "%s przetrzymuje %s na %dmin. Powód: %s", pVars[playerid][pCharName], pVars[id][pCharName], minutes, reason);
-					SendClientMessage(i, COLOR_WHITE, mainStr);
-				}
-			}
-		}
-	}
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "%s przetrzymuje %s na %dmin. Powód: %s", pVars[playerid][pCharName], pVars[id][pCharName], minutes, reason);
+	sendClientMessageToGroup(G_LSPD, mainStr);
 	return 1;
 }
 
-Callback:dtTimer(playerid) {
-	if(pVars[playerid][pDetention] > 0) {
-		mainStr[0] = EOS;
-		format(mainStr, sizeof(mainStr), "~w~Przetrzymanie na: ~g~%d~w~min", pVars[playerid][pDetention]);
-		GameTextForPlayer(playerid, mainStr, 5000, 1);
-
-		pVars[playerid][pDetention]--;
-		SetTimerEx("dtTimer", 59000, false, "i", playerid);
-	} else {
-		pVars[playerid][pDetention] = 0;
-
-		foreach(new i : Player) {
-			foreach(new j : groupItter) {
-				if(isPlayerOnDuty(i) && pVars[i][pGroupNow] == gVars[j][gUid]) {
-					if(gVars[j][gType] == G_LSPD) {
-						mainStr[0] = EOS;
-						format(mainStr, sizeof(mainStr), "Przetrzymanie %s koñczy siê.", pVars[playerid][pCharName]);
-						SendClientMessage(i, COLOR_WHITE, mainStr);
-					}
-				}
-			}
-		}
-		
-		SendClientMessage(playerid, COLOR_WHITE, "Twoje przetrzymanie w budynku dobieg³o koñca. Mo¿esz teraz wyjœæ.");
-	}
-	return 1;
-}
-
-stock updatePlayerGameStatus(playerid) {	
+stock updatePlayerGameStatus(playerid) {
 	new srvItemId = getServerItemIdForPlayer(playerid);
 	new srvGrpId = getServerGroupIdForPlayer(playerid);
-	static h, mins, secs;
+	new drunkLevel = GetPlayerDrunkLevel(playerid);
+	new str[32];
 
 	if(pVars[playerid][pHours] > 20) {
 		format(pVars[playerid][p3dInfoStr], 64, "%s (%d)", pVars[playerid][pCharName], playerid);
@@ -1986,18 +1935,38 @@ stock updatePlayerGameStatus(playerid) {
 		format(pVars[playerid][p3dInfoStr], 64, "%s (%d, %dh)", pVars[playerid][pCharName], playerid, pVars[playerid][pHours]);
 	}
 
-	if(playerAFKTime[playerid] == 3 && !(pVars[playerid][pStatus] & STAT_AFK)) {
-		gettime(h, mins, secs);
+	if(pVars[playerid][pRank] == RANK_GOLD) {
+		format(pVars[playerid][p3dInfoStr], 64, "%s\n(GOLD)", pVars[playerid][p3dInfoStr]);
+	}
 
+	if(playerAFKTime[playerid] == 2 && !(pVars[playerid][pStatus] & STAT_AFK)) {
 		pVars[playerid][pStatus] += STAT_AFK;
-	} else if(!playerAFKTime[playerid] && (pVars[playerid][pStatus] & STAT_AFK)) {
+	} else if(playerAFKTime[playerid] != 2 && (pVars[playerid][pStatus] & STAT_AFK)) {
 		pVars[playerid][pStatus] -= STAT_AFK;
+	}
+
+	if(isBW[playerid] && !(pVars[playerid][pStatus] & STAT_BW)) {
+		pVars[playerid][pStatus] += STAT_BW;
+	} else if(!isBW[playerid] && (pVars[playerid][pStatus] & STAT_BW)) {
+		pVars[playerid][pStatus] -= STAT_BW;
 	}
 
 	if((iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) && !(pVars[playerid][pStatus] & STAT_ROLLERS)) {
 		pVars[playerid][pStatus] += STAT_ROLLERS;
-	} else if((iVars[srvItemId][iId] == P_ROLKI && !iVars[srvItemId][iUsed]) && (pVars[playerid][pStatus] & STAT_ROLLERS)) {
+	} else if((srvItemId == INVALID_ITEM_ID && !iVars[srvItemId][iUsed]) && (pVars[playerid][pStatus] & STAT_ROLLERS)) {
 		pVars[playerid][pStatus] -= STAT_ROLLERS;
+	}
+
+	if((drunkLevel >= 2000 && !isDizzines[playerid] && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4 && iVars[srvItemId][iUsed])) && !(pVars[playerid][pStatus] & STAT_DRUNK)) {
+		pVars[playerid][pStatus] += STAT_DRUNK;
+	} else if(drunkLevel <= 2000 && (pVars[playerid][pStatus] & STAT_DRUNK)) {
+		pVars[playerid][pStatus] -= STAT_DRUNK;
+	}
+
+	if(pVars[playerid][pStrength] > 3000 && !(pVars[playerid][pStatus] & STAT_STRENGTH)) {
+		pVars[playerid][pStatus] += STAT_STRENGTH;
+	} else if(pVars[playerid][pStrength] <= 3000 && (pVars[playerid][pStatus] & STAT_STRENGTH)) {
+		pVars[playerid][pStatus] -= STAT_STRENGTH;
 	}
 
 	if(hasBelts[playerid] && !(pVars[playerid][pStatus] & STAT_BELTS)) {
@@ -2006,88 +1975,127 @@ stock updatePlayerGameStatus(playerid) {
 		pVars[playerid][pStatus] -= STAT_BELTS;
 	}
 
+	if(pVars[playerid][pDetention] > 0 && !(pVars[playerid][pStatus] & STAT_DETENTION)) {
+		pVars[playerid][pStatus] += STAT_DETENTION;
+	} else if(!pVars[playerid][pDetention] && (pVars[playerid][pStatus] & STAT_DETENTION)) {
+		pVars[playerid][pStatus] -= STAT_DETENTION;
+	}
+
+	if(pVars[playerid][pMusic] && !(pVars[playerid][pStatus] & STAT_MUSIC)) {
+		pVars[playerid][pStatus] += STAT_MUSIC;
+	} else if(!pVars[playerid][pMusic] && (pVars[playerid][pStatus] & STAT_MUSIC)) {
+		pVars[playerid][pStatus] -= STAT_MUSIC;
+	}
+
 	if(pVars[playerid][pStatus] & STAT_AFK) {
-		format(pVars[playerid][pStatusStr], 32, "(AFK od %02d:%02d)", h, mins);
-		format(pVars[playerid][p3dInfoStr], 64, "%s\n%s", pVars[playerid][p3dInfoStr], pVars[playerid][pStatusStr]);
+		new h, m, sec;
+		gettime(h, m, sec);
+		
+		if(!strlen(pVars[playerid][pStatusStr])) {
+			format(pVars[playerid][pStatusStr], 32, "AFK od %02d:%02d", h, m);
+		} else {
+			format(pVars[playerid][pStatusStr], 32, "%s, AFK od %02d:%02d", pVars[playerid][pStatusStr], h, m);
+		}
+		
+		format(str, sizeof(str), "(%s)", pVars[playerid][pStatusStr]);
+	}
+
+	if(pVars[playerid][pStatus] & STAT_BW) {
+		if(!strlen(pVars[playerid][pStatusStr])) {
+			format(pVars[playerid][pStatusStr], 32, "%s", pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+		} else {
+			format(pVars[playerid][pStatusStr], 32, "%s, %s", pVars[playerid][pStatusStr], pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
+		}
 	}
 
 	if(pVars[playerid][pStatus] & STAT_ROLLERS) {
-		format(pVars[playerid][pStatusStr], 32, "(rolki)");
-		format(pVars[playerid][p3dInfoStr], 64, "%s\n%s", pVars[playerid][p3dInfoStr], pVars[playerid][pStatusStr]);
+		if(!strlen(pVars[playerid][pStatusStr])) {
+			format(pVars[playerid][pStatusStr], 32, "rolki");
+		} else {
+			format(pVars[playerid][pStatusStr], 32, "%s, rolki", pVars[playerid][pStatusStr]);
+		}
+		
+		format(str, sizeof(str), "(%s)", pVars[playerid][pStatusStr]);
+	} else if(!(pVars[playerid][pStatus] & STAT_ROLLERS)) {
+		format(str, sizeof(str), pVars[playerid][pOldStatusStr]);
+		format(pVars[playerid][pStatusStr], 32, NULL);
+	}
+
+	if(pVars[playerid][pStatus] & STAT_DRUNK) {
+		if(!strlen(pVars[playerid][pStatusStr])) {
+			format(pVars[playerid][pStatusStr], 32, "podpity");
+		} else {
+			format(pVars[playerid][pStatusStr], 32, "%s, podpity", pVars[playerid][pStatusStr]);
+		}
+	}
+
+	if(pVars[playerid][pStatus] & STAT_DRUGS) {
+		if(!strlen(pVars[playerid][pStatusStr])) {
+			format(pVars[playerid][pStatusStr], 32, "naæpany");
+		} else {
+			format(pVars[playerid][pStatusStr], 32, "%s, naæpany", pVars[playerid][pStatusStr]);
+		}
+	}
+
+	if(pVars[playerid][pStatus] & STAT_STRENGTH) {
+		if(!strlen(pVars[playerid][pStatusStr])) {
+			format(pVars[playerid][pStatusStr], 32, "%dj", pVars[playerid][pStrength]);
+		} else {
+			format(pVars[playerid][pStatusStr], 32, "%s, %d", pVars[playerid][pStatusStr], pVars[playerid][pStrength]);
+		}
 	}
 
 	if(pVars[playerid][pStatus] & STAT_BELTS) {
-		format(pVars[playerid][pStatusStr], 32, "(pasy)");
-		format(pVars[playerid][p3dInfoStr], 64, "%s\n%s", pVars[playerid][p3dInfoStr], pVars[playerid][pStatusStr]);
+		if(!strlen(pVars[playerid][pStatusStr])) {
+			format(pVars[playerid][pStatusStr], 32, "pasy");
+		} else {
+			format(pVars[playerid][pStatusStr], 32, "%s, pasy", pVars[playerid][pStatusStr]);
+		}
+	}
+	
+	if(pVars[playerid][pStatus] & STAT_DETENTION) {
+		if(!strlen(pVars[playerid][pStatusStr])) {
+			format(pVars[playerid][pStatusStr], 32, "przetrzymywany");
+		} else {
+			format(pVars[playerid][pStatusStr], 32, "%s, przetrzymywany", pVars[playerid][pStatusStr]);
+		}
 	}
 
-	/*if(pVars[playerid][pStatus] & 1) {
-		format(pVars[playerid][pStatusStr], 128, NULL);
-	} else if(pVars[playerid][pStatus] & 2) {
-		if(pVars[playerid][pHours] > 20) {
-			
+	if(pVars[playerid][pStatus] & STAT_GLOVES) {
+		if(!strlen(pVars[playerid][pStatusStr])) {
+			format(pVars[playerid][pStatusStr], 32, "rêkawice");
 		} else {
-			
-		}		
-	} else if(pVars[playerid][pStatus] & STAT_AFK) {
-		if(playerAFKTime[playerid] == 3) {
-			gettime(h, mins, secs);
+			format(pVars[playerid][pStatusStr], 32, "%s, rêkawice", pVars[playerid][pStatusStr]);
 		}
-
-		if((pVars[playerid][pStatus] & STAT_BW) && (pVars[playerid][pStatus] & STAT_DUTY)) {
-			format(pVars[playerid][pStatusStr], 128, "%s\n, %s)\n[%s]", pVars[playerid][pStatusStr], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
-		} else if(pVars[playerid][pStatus] & STAT_BW) {
-			format(pVars[playerid][pStatusStr], 128, "%s\n(AFK od %02d:%02d, %s)", pVars[playerid][pStatusStr], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
-		}
-
-		format(pVars[playerid][pStatusStr], 128, "%s\n(AFK od %02d:%02d)", pVars[playerid][pStatusStr], h, mins);
-	} else if(pVars[playerid][pStatus] & STAT_BW) { 
-		format(pVars[playerid][pStatusStr], 128, "%s (%d)\n(%s)", pVars[playerid][pCharName], playerid, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
-	} else if(pVars[playerid][pStatus] & STAT_DAMAGE) {
-		format(pVars[playerid][pStatusStr], 128, "{FF0000}%s", pVars[playerid][pStatusStr]);
-	} else if(pVars[playerid][pStatus] & STAT_ROLLERS) {
-		if((pVars[playerid][pStatus] & STAT_BW) && (pVars[playerid][pStatus] & STAT_DUTY)) {
-			format(pVars[playerid][pStatusStr], 128, "%s\n(rolki, %s)\n[%s]", pVars[playerid][pStatusStr], pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
-		} else if(pVars[playerid][pStatus] & STAT_AFK && pVars[playerid][pStatus] & STAT_BW && pVars[playerid][pStatus] & STAT_DUTY) {
-			format(pVars[playerid][pStatusStr], 128, "%s\n(rolki, AFK od %02d:%02d, %s)\n[%s]", pVars[playerid][pStatusStr], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
-		} else if(pVars[playerid][pStatus] & STAT_AFK && pVars[playerid][pStatus] & STAT_BW) {
-			format(pVars[playerid][pStatusStr], 128, "%s\n(rolki, AFK od %02d:%02d, %s)", pVars[playerid][pStatusStr], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
-		}
-
-		format(pVars[playerid][pStatusStr], 128, "%s\n(rolki)", pVars[playerid][pStatusStr]);
-	} else if(pVars[playerid][pStatus] & STAT_DRUNK) {
-		if((pVars[playerid][pStatus] & STAT_BW) && (pVars[playerid][pStatus] & STAT_DUTY)) {
-			format(pVars[playerid][pStatusStr], 128, "%s\n(podpity, %s)\n[%s]", pVars[playerid][pStatusStr], pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
-		} else if((pVars[playerid][pStatus] & STAT_AFK) && (pVars[playerid][pStatus] & STAT_BW) && (pVars[playerid][pStatus] & STAT_DUTY)) {
-			format(pVars[playerid][pStatusStr], 128, "%s\n(podpity, AFK od %02d:%02d, %s)\n[%s]", pVars[playerid][pStatusStr], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
-		} else if((pVars[playerid][pStatus] & STAT_AFK) && (pVars[playerid][pStatus] & STAT_BW)) {
-			format(pVars[playerid][pStatusStr], 128, "%s\n(podpity, AFK od %02d:%02d, %s)", pVars[playerid][pStatusStr], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
-		} else if((pVars[playerid][pStatus] & STAT_AFK) && (pVars[playerid][pStatus] & STAT_BELTS) && (pVars[playerid][pStatus] & STAT_DUTY)) {
-			format(pVars[playerid][pStatusStr], 128, "%s\n(podpity, AFK od %02d:%02d, pasy)\n[%s]", pVars[playerid][pStatusStr], h, mins, gVars[srvGrpId][gName]);
-		} else if((pVars[playerid][pStatus] & STAT_AFK) && (pVars[playerid][pStatus] & STAT_BELTS)) {
-			format(pVars[playerid][pStatusStr], 128, "%s\n(podpity, AFK od %02d:%02d, pasy)", pVars[playerid][pStatusStr], h, mins);
-		}
-
-		format(pVars[playerid][pStatusStr], 128, "%s\n(podpity)", pVars[playerid][pStatusStr]);
-	} else if(pVars[playerid][pStatus] & STAT_DRUGS) {
-		format(pVars[playerid][pStatusStr], 128, "%s\n(naæpany)", pVars[playerid][pStatusStr]);
-	} else if(pVars[playerid][pStatus] & STAT_STRENGTH) {
-		if((pVars[playerid][pStatus] & STAT_AFK) && (pVars[playerid][pStatus] & STAT_BW) && (pVars[playerid][pStatus] & STAT_DUTY)) {
-			format(pVars[playerid][pStatusStr], 128, "%s\n(%dj, AFK od %02d:%02d, %s)\n[%s]", pVars[playerid][pStatusStr], pVars[playerid][pStrength], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"), gVars[srvGrpId][gName]);
-		} else if((pVars[playerid][pStatus] & STAT_AFK) && (pVars[playerid][pStatus] & STAT_BW)) {
-			format(pVars[playerid][pStatusStr], 128, "%s\n(%dj, AFK od %02d:%02d, %s)", pVars[playerid][pStatusStr], pVars[playerid][pStrength], h, mins, pVars[playerid][pSex] ? ("nieprzytomna") : ("nieprzytomny"));
-		}
+	}
 	
-		format(pVars[playerid][pStatusStr], 128, "%s\n(%dj)", pVars[playerid][pStatusStr], pVars[playerid][pStrength]);
-	} else if(pVars[playerid][pStatus] & STAT_BELTS) {
-		format(pVars[playerid][pStatusStr], 128, "%s\n(pasy)", pVars[playerid][pStatusStr]);
-	} else if(pVars[playerid][pStatus] & STAT_DETENTION) {
-		format(pVars[playerid][pStatusStr], 128, "%s\n(przetrzymywany)", pVars[playerid][pStatusStr]);
-	} else if(pVars[playerid][pStatus] & STAT_DUTY) {
-		format(pVars[playerid][pStatusStr], 128, "%s\n[%s]", pVars[playerid][pStatusStr], gVars[srvGrpId][gName]);	
-	} else if(pVars[playerid][pStatus] & STAT_GLOVES) {
-		format(pVars[playerid][pStatusStr], 128, "%s\n(rêkawice)", pVars[playerid][pStatusStr]);
-	}*/
+	if(pVars[playerid][pStatus] & STAT_MUSIC) {
+		if(!strlen(pVars[playerid][pStatusStr])) {
+			format(pVars[playerid][pStatusStr], 32, "s³ucha muzyki");
+		} else {
+			format(pVars[playerid][pStatusStr], 32, "%s, s³ucha muzyki", pVars[playerid][pStatusStr]);
+		}
+		
+		format(str, sizeof(str), pVars[playerid][pStatusStr]);
+	}
+	
+	if(pVars[playerid][pStatus] & STAT_DRIVING) {
+		if(!strlen(pVars[playerid][pStatusStr])) {
+			format(pVars[playerid][pStatusStr], 32, "nauka jazdy");
+		} else {
+			format(pVars[playerid][pStatusStr], 32, "%s, nauka jazdy", pVars[playerid][pStatusStr]);
+		}
+	}
+	
+	if(pVars[playerid][pGroup] != -1 && isPlayerOnDuty(playerid)) {
+		if(strlen(pVars[playerid][pStatusStr])) {
+			format(pVars[playerid][p3dInfoStr], 64, "%s\n%s\n[%s]", pVars[playerid][p3dInfoStr], str, gVars[srvGrpId][gName]);
+		} else {
+			format(pVars[playerid][p3dInfoStr], 64, "%s\n[%s]", pVars[playerid][p3dInfoStr], gVars[srvGrpId][gName]);
+		}
+	} else {
+		format(pVars[playerid][p3dInfoStr], 64, "%s\n%s", pVars[playerid][p3dInfoStr], str);
+	}
 
 	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_CHAT, pVars[playerid][p3dInfoStr]);
 }
@@ -2098,17 +2106,18 @@ stock resetPlayerGameStatus(playerid) {
 
 	UpdateDynamic3DTextLabelText(pVars[playerid][p3dInfo], COLOR_CHAT, pVars[playerid][p3dInfoStr]);
 
+	pVars[playerid][pStatus] -= STAT_NONE;
 	pVars[playerid][pStatus] -= STAT_AFK;
 	pVars[playerid][pStatus] -= STAT_BW;
-	pVars[playerid][pStatus] -= STAT_DAMAGE;
 	pVars[playerid][pStatus] -= STAT_ROLLERS;
 	pVars[playerid][pStatus] -= STAT_DRUNK;
 	pVars[playerid][pStatus] -= STAT_DRUGS;
 	pVars[playerid][pStatus] -= STAT_STRENGTH;
 	pVars[playerid][pStatus] -= STAT_BELTS;
 	pVars[playerid][pStatus] -= STAT_DETENTION;
-	pVars[playerid][pStatus] -= STAT_DUTY;
 	pVars[playerid][pStatus] -= STAT_GLOVES;
+	pVars[playerid][pStatus] -= STAT_MUSIC;
+	pVars[playerid][pStatus] -= STAT_DRIVING;
 }
 
 stock getPlayerStrengthPower(playerid) {
@@ -2194,10 +2203,10 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 	offerParams[playerid][OFFER_PARM_TYPE] = offerParams[id][OFFER_PARM_TYPE] = params[OFFER_PARM_TYPE];
 
 	GameTextForPlayer(playerid, "~y~Oferta wyslana.~n~~w~Poczekaj na odpowiedz.", 4000, 3);
-
-	new srvGrpId = getServerGroupIdForPlayer(playerid);
+	new srvGrpId;
 
 	if(isPlayerOnDuty(playerid)) {
+		srvGrpId = getServerGroupIdForPlayer(playerid);
 		format(str, sizeof(str), "Oferta od %s (%s):", pVars[playerid][pCharName], gVars[srvGrpId][gName]);
 	} else {
 		format(str, sizeof(str), "Oferta od %s:", pVars[playerid][pCharName]);
@@ -2211,7 +2220,9 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Poca³unek\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][OFFER_PARM_PRICE]);
 		}
 		case O_ZAPRGRP: {
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", gVars[pVars[id][pGroupNow]][gUid], gVars[pVars[id][pGroupNow]][gName], offerParams[id][OFFER_PARM_PRICE]);			
+			srvGrpId = getServerGroupIdForPlayer(id);
+			
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Zaproszenie do grupy %d (%s)\n\nKoszt: $%d. Czy akceptujesz te ofertê?", gVars[srvGrpId][gUid], gVars[srvGrpId][gName], offerParams[id][OFFER_PARM_PRICE]);
 		}
 		case O_ZAPRWS: {
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Udzia³ w wyœcigu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][OFFER_PARM_PRICE]);
@@ -2234,7 +2245,7 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 		case O_ZAKUPPRZED: {
 			new srvItemId = getServerItemIdForPlayer(playerid);
 
-			format(mainStr, sizeof(mainStr), "{FFFFFF}Zakup przedmiotu: %s (%d,%d)\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", iVars[srvItemId][iName], offerParams[id][OFFER_PARM_PRICE]);
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Zakup przedmiotu: %s (%d,%d)\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", iVars[srvItemId][iName], iVars[srvItemId][iValue1], iVars[srvItemId][iValue2], offerParams[id][OFFER_PARM_PRICE]);
 			//format(mainStr, sizeof(mainStr), "{FFFFFF}Zakup przedmiotu: Maska (1,3000)\n(!) Przedmiotu mo¿e u¿ywaæ tylko zamawiaj¹ca grupa.\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", iVars[srvItemId][iName], offerParams[id][OFFER_PARM_PRICE]);
 		}
 		case O_ZAKUPBRONI: {
@@ -2273,6 +2284,7 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 		}
 		case O_ZAKUPPOJ: {
 			new srvVehId = getServerVehicleIdForPlayer(playerid);
+			new str2[64];
 			
 			actualVehicle[id] = vVars[srvVehId][vUid];
 			
@@ -2280,8 +2292,8 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			vVars[srvVehId][vUid], vVars[srvVehId][vOUid], vVars[srvVehId][vModelId], vVars[srvVehId][vId], vVars[srvVehId][vColor1], vVars[srvVehId][vColor2], vVars[srvVehId][vEngineHp]);
 			TextDrawSetString(vehicleStats[id][0], mainStr);
 			
-			format(str, sizeof(str), "~b~Przebieg~w~: %0.1fkm ~b~Paliwo~w~: %0.1f", vVars[srvVehId][vMileage], vVars[srvVehId][vFuel]);
-			TextDrawSetString(vehicleStats[id][1], str);
+			format(str2, sizeof(str2), "~b~Przebieg~w~: %0.1fkm ~b~Paliwo~w~: %0.1f", vVars[srvVehId][vMileage], vVars[srvVehId][vFuel]);
+			TextDrawSetString(vehicleStats[id][1], str2);
 			
 			for(new i = 0; i < 3; i++) {
 				TextDrawShowForPlayer(id, vehicleStats[id][i]);
@@ -2291,7 +2303,7 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 			
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "{FFFFFF}U¿ywany pojazd: %s\nPrzebieg: %dkm (im wiêkszy, tym wiêksze spalanie)\nSuma napraw: %dhp (po przekroczeniu 11500.0 nie mo¿na dalej naprawiaæ)\nHP: %d\n\n", VehicleNames[vVars[srvVehId][vModelId] - 400], vVars[srvVehId][vMileage], 0, vVars[srvVehId][vEngineHp]);
-			format(mainStr, sizeof(mainStr), "Koszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][OFFER_PARM_PRICE]);
+			format(mainStr, sizeof(mainStr), "%sKoszt: $%d. Czy akceptujesz tê ofertê?", mainStr, offerParams[id][OFFER_PARM_PRICE]);
 		}
 		case O_WYMIENPOJ: {
 			new srvVehId = getServerVehicleIdForPlayer(id);
@@ -2387,6 +2399,21 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 	return 1;
 }
 
+stock resetOfferData(playerid) {
+	offerType[playerid] = INVALID_OFFER_TYPE;
+	offerType[offerFor[playerid]] = INVALID_OFFER_TYPE;
+
+	offerParams[offerFrom[playerid]][OFFER_PARM_PRICE] = 0;
+	offerParams[offerFrom[playerid]][OFFER_PARM_ETC] = 0;
+	offerParams[offerFrom[playerid]][OFFER_PARM_TYPE] = OFFER_NORMAL;
+
+	offerFor[offerFor[playerid]] = INVALID_PLAYER_ID;
+	offerFor[playerid] = INVALID_PLAYER_ID;
+
+	offerFrom[offerFrom[playerid]] = INVALID_PLAYER_ID;
+	offerFrom[playerid] = INVALID_PLAYER_ID;
+}
+
 stock showPlayerNotes(playerid) {
 	mainStr[0] = EOS;
 
@@ -2476,26 +2503,35 @@ stock preloadAnimLib(playerid, animlib[]) {
 	ApplyAnimation(playerid, animlib, "NULL", 0.0, 0, 0, 0, 0, 0, 0);
 }
 
-stock osrp_SetPlayerHealth(playerid, Float:health) {
+stock OSRP_SetPlayerHealth(playerid, Float:health) {
 	pVars[playerid][pHp] = health;
 
 	SetPlayerHealth(playerid, pVars[playerid][pHp]);
 }
 
-stock osrp_SetPlayerArmour(playerid, Float:armour) {
+stock OSRP_SetPlayerArmour(playerid, Float:armour) {
 	pVars[playerid][pAp] = armour;
 
 	SetPlayerArmour(playerid, pVars[playerid][pAp]);
 }
 
-stock osrp_GivePlayerMoney(playerid, money) {
+stock OSRP_GivePlayerMoney(playerid, money) {
 	ResetPlayerMoney(playerid);
 
 	pVars[playerid][pMoney] += money;
 	GivePlayerMoney(playerid, pVars[playerid][pMoney]);
 }
 
-stock osrp_GivePlayerWeapon(playerid, weaponid, ammo) {
+stock OSRP_SetPlayerScore(playerid, score) {
+	if(GetPlayerScore(playerid) > pVars[playerid][pGS]) {
+		SetPlayerScore(playerid, 0);
+	}
+
+	pVars[playerid][pGS] += score;
+	SetPlayerScore(playerid, pVars[playerid][pGS]);
+}
+
+stock OSRP_GivePlayerWeapon(playerid, weaponid, ammo) {
 	new weapons, ammo2, slot;
 
 	pVars[playerid][pWeapSlot] = getWeaponSlot(weaponid);
@@ -2516,11 +2552,32 @@ stock osrp_GivePlayerWeapon(playerid, weaponid, ammo) {
 	GivePlayerWeapon(playerid, weaponid, ammo);
 }
 
-stock osrp_TogglePlayerControllable(playerid, bool:toggle) {
-	isFreeze[playerid] = toggle;
-
+stock OSRP_TogglePlayerControllable(playerid, toggle) {
 	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
-	return TogglePlayerControllable(playerid, toggle);
+	TogglePlayerControllable(playerid, toggle);
+
+	if(toggle) {
+		isFreeze[playerid] = false;
+	} else {
+		isFreeze[playerid] = true;
+	}
+}
+
+stock OSRP_TogglePlayerSpectating(playerid, bool:toggle) {
+	isSpectating[playerid] = toggle;
+	return TogglePlayerSpectating(playerid, toggle);
+}
+
+stock OSRP_SetPlayerVirtualWorld(playerid, vw) {
+	SetPlayerVirtualWorld(playerid, vw);
+	
+	pVars[playerid][pVw] = vw;
+}
+
+stock OSRP_SetPlayerInterior(playerid, int) {
+	SetPlayerInterior(playerid, int);
+	
+	pVars[playerid][pInt] = int;
 }
 
 stock createNumber(playerid) {
@@ -2683,6 +2740,44 @@ stock getWeaponSlot(weaponid) {
 }
 
 // Callbacks
+Callback:fightCheckTimer(playerid) {
+	if(lastBlowTime[playerid] > GetTickCount()) {
+		SetTimerEx("fightCheckTimer", 1000, false, "i", playerid);
+	} else {
+		lastBlowTime[playerid] = 0;
+	}
+}
+
+Callback:kickPlayer(playerid) {
+	Kick(playerid);
+	return 1;
+}
+
+Callback:hidePenalty() {
+	TextDrawHideForAll(penalty);
+	return 1;
+}
+
+Callback:dtTimer(playerid) {
+	if(pVars[playerid][pDetention] > 0) {
+		mainStr[0] = EOS;
+		format(mainStr, sizeof(mainStr), "~w~Przetrzymanie na: ~g~%d~w~min", pVars[playerid][pDetention]);
+		GameTextForPlayer(playerid, mainStr, 5000, 1);
+
+		pVars[playerid][pDetention]--;
+		SetTimerEx("dtTimer", 59000, false, "i", playerid);
+	} else {
+		pVars[playerid][pDetention] = 0;
+
+		mainStr[0] = EOS;
+		format(mainStr, sizeof(mainStr), "Przetrzymanie %s koñczy siê.", pVars[playerid][pCharName]);
+		sendClientMessageToGroup(G_LSPD, mainStr);
+
+		SendClientMessage(playerid, COLOR_WHITE, "Twoje przetrzymanie w budynku dobieg³o koñca. Mo¿esz teraz wyjœæ.");
+	}
+	return 1;
+}
+
 Callback:hideAfkPrivateMessage(playerid) {
 	for(new i = 0; i < sizeof(afkPrivateMessage); i++) {
 		TextDrawHideForPlayer(playerid, afkPrivateMessage[playerid][i]);
@@ -2695,7 +2790,11 @@ Callback:unFreezePlayer(playerid) {
 		GameTextForPlayer(playerid, "~r~Atak zabroniony", 5000, 3);
 	}
 
-	osrp_TogglePlayerControllable(playerid, true);
+	if(spawnFreeze[playerid]) {
+		spawnFreeze[playerid] = false;
+	}
+
+	OSRP_TogglePlayerControllable(playerid, 1);
 	return 1;
 }
 
@@ -2784,16 +2883,16 @@ Callback:dismissCall(playerid, receiver) {
 }
 
 Callback:healthDamage(playerid) {
-	updatePlayerGameStatus(playerid, STAT_DAMAGE);
+	updatePlayerGameStatus(playerid);
 	TextDrawShowForPlayer(playerid, damageRedScreen[playerid]);
-	
+
 	SetTimerEx("hideHealthDamage", 1000, false, "i", playerid);
 	return 1;
 }
 
 Callback:hideHealthDamage(playerid) {
-	updatePlayerGameStatus(playerid, -STAT_DAMAGE);
-	
+	updatePlayerGameStatus(playerid);
+
 	TextDrawHideForPlayer(playerid, damageRedScreen[playerid]);
 	return 1;
 }
@@ -2884,6 +2983,10 @@ Callback:hideCourierTips(playerid) {
 	return 1;
 }
 
+Callback:hideSpecialServicesInfo(playerid) {
+	return TextDrawHideForPlayer(playerid, specialServicesInfo[playerid]);
+}
+
 Callback:destroyExit3dInfo(playerid) {
 	DestroyDynamic3DTextLabel(exit3dInfo[playerid]);
 }
@@ -2894,7 +2997,7 @@ Callback:bwTimer(playerid) {
 	if(pVars[playerid][pBw] > 0) {
 		format(mainStr, sizeof(mainStr), "~w~Koniec bw za: ~g~%d~w~min.", pVars[playerid][pBw]);
 		GameTextForPlayer(playerid, mainStr, 1000, 1);
-		
+
 		pVars[playerid][pBw]--;
 		SetTimerEx("bwTimer", 59000, false, "i", playerid);
 	} else {
@@ -2902,9 +3005,10 @@ Callback:bwTimer(playerid) {
 		isBW[playerid] = false;
 
 		ClearAnimations(playerid);
-		osrp_SetPlayerHealth(playerid, 6.0);
+		OSRP_SetPlayerHealth(playerid, 7.0);
+
 		SetPlayerDrunkLevel(playerid, 10000);
-		osrp_TogglePlayerControllable(playerid, true);
+		OSRP_TogglePlayerControllable(playerid, 1);
 
 		strcat(mainStr, "Ockn¹³eœ(aœ) siê po odniesieniu powa¿nych obra¿eñ.\n");
 		strcat(mainStr, "Krêci Ci siê w g³owie. Udaj siê do szpitala, tam Ci z tym pomog¹.");

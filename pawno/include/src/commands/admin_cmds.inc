@@ -366,8 +366,8 @@ CMD:unbw(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 
-	osrp_SetPlayerHealth(pId, 100.0);
-	osrp_TogglePlayerControllable(pId, true);
+	OSRP_SetPlayerHealth(pId, 100.0);
+	OSRP_TogglePlayerControllable(pId, true);
 	
 	SetPlayerDrunkLevel(pId, 0);
 	ClearAnimations(pId);
@@ -449,7 +449,7 @@ CMD:rc(playerid, params[]) {
 		vw = GetPlayerVirtualWorld(pId);
 		int = GetPlayerInterior(pId);
 
-		osrp_TogglePlayerControllable(playerid, true);
+		OSRP_TogglePlayerControllable(playerid, true);
 		TogglePlayerSpectating(playerid, 1);
 
 		if(GetPlayerState(pId) == PLAYER_STATE_DRIVER || GetPlayerState(pId) == PLAYER_STATE_PASSENGER) {
@@ -465,7 +465,7 @@ CMD:rc(playerid, params[]) {
 	} else
 	{	
 		TogglePlayerSpectating(playerid, 0);
-		osrp_TogglePlayerControllable(playerid, false);
+		OSRP_TogglePlayerControllable(playerid, false);
 
 		SetPlayerVirtualWorld(playerid, 0);
 		SetPlayerInterior(playerid, 0);
@@ -658,7 +658,7 @@ CMD:freeze(playerid, params[]) {
 	
 	switch(freezeOnOff) {
 		case 0: {
-			osrp_TogglePlayerControllable(toPlayerid, true);
+			OSRP_TogglePlayerControllable(toPlayerid, 1);
 			
 			SendClientMessage(toPlayerid, COLOR_GREEN, "Administracja odmrozi³a Ciê.");
 			
@@ -666,7 +666,7 @@ CMD:freeze(playerid, params[]) {
 			format(mainStr, sizeof(mainStr), "Odmrozi³eœ gracza %s.", pVars[toPlayerid][pCharName2]);
 		}
 		case 1: {
-			osrp_TogglePlayerControllable(toPlayerid, false);
+			OSRP_TogglePlayerControllable(toPlayerid, 0);
 			
 			SendClientMessage(toPlayerid, COLOR_GREEN, "Administracja zamrozi³a Ciê.");
 			

@@ -47,6 +47,7 @@ stock initGroupValues(){
 		);
 
 		Iter_Add(groupItter, i);
+		gVars[i][gVehsCount] = 0;
 
 		printf("[DEBUG] Id: %d, Uid: %d, OUid: %d, Name: %s, Tag: %s, Type: %d, Members: %d, VehLimit: %d, Money: %d, PayDay: %d, Doors: %d, Flags: %d, Register: %d",
 		i, gVars[i][gUid], gVars[i][gOUid], gVars[i][gName], gVars[i][gTag], gVars[i][gType], gVars[i][gMembers], gVars[i][gVehsLimit], gVars[i][gMoney], gVars[i][gPayDay],
@@ -307,7 +308,7 @@ stock showPlayerGroupVehicles(playerid) {
 		Spawned
 	};
 	
-	new tmpVVars[100][tmpData];
+	new tmpVVars[10][tmpData];
 	new srvGrpId = getServerGroupIdForPlayer(playerid);
 	new i;
 
@@ -330,8 +331,10 @@ stock showPlayerGroupVehicles(playerid) {
 		i++;
 	}
 
+	mysql_free_result();
+
 	if(!i) {
-		return 1;
+		
 	}
 
 	ShowPlayerDialog(playerid, DIALOG_GROUP_VEHICLE_SELECT, DIALOG_STYLE_LIST, "Wybór pojazdu (* = zespawnowany)", mainStr, "(Un)spawn", "Wiêcej");
@@ -404,9 +407,9 @@ stock removeGroupOrder(srvorderid) {
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_GroupOrders` WHERE `UID` = '%d'", gOVars[srvorderid][gOUid]);
 	mysql_query(queryStr);
-	
+
 	Iter_Remove(groupOrdersItter, srvorderid);
-	
+
 	gOVars[srvorderid][gOUid] = 0;
 	gOVars[srvorderid][gOOUid] = 0;
 	format(gOVars[srvorderid][gOName], 32, NULL);
@@ -437,57 +440,7 @@ stock createNewGroup(playerid, ownerid, type, tag[], name[]) {
 	format(gVars[freeId][gName], 32, name);
 	format(gVars[freeId][gTag], 8, tag);
 	
-	switch(type) {
-		case G_LSPD: {
-			gVars[freeId][gType] = G_LSPD;
-		}
-		case G_LSFD: {
-			gVars[freeId][gType] = G_LSFD;
-		}
-		case G_GOV: {
-			gVars[freeId][gType] = G_GOV;
-		}
-		case G_FBI: {
-			gVars[freeId][gType] = G_FBI;
-		}
-		case G_CRIMINAL: {
-			gVars[freeId][gType] = G_CRIMINAL;
-		}
-		case G_RADIO: {
-			gVars[freeId][gType] = G_RADIO;
-		}
-		case G_BAR: {
-			gVars[freeId][gType] = G_BAR;
-		}
-		case G_SALON: {
-			gVars[freeId][gType] = G_SALON;
-		}
-		case G_MECH: {
-			gVars[freeId][gType] = G_MECH;
-		}
-		case G_GYM: {
-			gVars[freeId][gType] = G_GYM;
-		}
-		case G_SECTY: {
-			gVars[freeId][gType] = G_SECTY;
-		}
-		case G_TAXI: {
-			gVars[freeId][gType] = G_TAXI;
-		}
-		case G_SHOP: {
-			gVars[freeId][gType] = G_SHOP;
-		}
-		case G_DRVRLIC: {
-			gVars[freeId][gType] = G_DRVRLIC;
-		}
-		case G_MOBILE: {
-			gVars[freeId][gType] = G_MOBILE;
-		}
-		case G_SHOOT: {
-			gVars[freeId][gType] = G_SHOOT;
-		}
-	}
-	
+	gVars[freeId][gType] = type;
 	gVars[freeId][gMembers]++;
 	gVars[freeId][gVehsLimit] = 5;
 	gVars[freeId][gMoney] = 0;
@@ -580,7 +533,11 @@ stock getFreePlayerGroupSlot(playerid) {
 }
 
 stock giveGroupMoney(srvgrpid, money) {
-	gVars[srvgrpid][gMoney] += money;
+	if(money > 0) {
+		gVars[srvgrpid][gMoney] += money;
+	} else {
+		gVars[srvgrpid][gMoney] -= money;
+	}
 
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Groups` SET `Money` = '%d' WHERE `UID` = '%d'", gVars[srvgrpid][gMoney], gVars[srvgrpid][gUid]);
@@ -648,7 +605,7 @@ stock showPlayerGroupMagazineItems(playerid) {
 
 	foreach(new i : groupItemsItter) {
 		if(gIVars[i][gIOUid] == gVars[srvGrpId][gUid]) {
-			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s\tx%d", mainStr, gIVars[i][gIUid], gIVars[i][gIName], gIVars[i][gIAmount]);
+			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s\t\tx%d", mainStr, gIVars[i][gIUid], gIVars[i][gIName], gIVars[i][gIAmount]);
 
 			count++;
 		}
@@ -719,9 +676,28 @@ stock bool:isPlayerOnDuty(playerid) {
 	return false;
 }
 
+stock isPlayerInGroupType(playerid, type) {
+	new srvGrpId = getServerGroupIdForPlayer(playerid);
+
+	if(gVars[srvGrpId][gType] == type) {
+		return 1;
+	}
+	return 0;
+}
+
 stock isPlayerInAnyGroup(playerid) {
 	if(!pVars[playerid][pGroup][0] && !pVars[playerid][pGroup][1] && !pVars[playerid][pGroup][2] && !pVars[playerid][pGroup][3] && !pVars[playerid][pGroup][4]) {
 		return 0;
 	}
 	return 1;
+}
+
+stock sendClientMessageToGroup(type, const str[]) {
+	foreach(new i : Player) {
+		foreach(new j : groupItter) {
+			if(isPlayerOnDuty(i) && pVars[i][pGroupNow] == gVars[j][gUid] && gVars[j][gType] == type) {
+				SendClientMessage(i, COLOR_WHITE, str);
+			}
+		}
+	}
 }

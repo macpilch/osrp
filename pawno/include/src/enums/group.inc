@@ -41,6 +41,7 @@ enum GroupData {
 	gType,
 	gMembers,
 	gVehsLimit,
+	gVehsCount,
 	gMoney,
 	gPayDay,
 	gDoor,

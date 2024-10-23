@@ -22,10 +22,9 @@ stock searchPlayerGym(playerid) {
 	}
 
 	if(pVars[playerid][pHp] < 100) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Odczekaj 3 minuty przed ostatniÄ… utratÄ… HP.");
+		return SendClientMessage(playerid, COLOR_GRAY, "Odczekaj 3 minuty przed ostatni¹ utrat¹ HP.");
 	}
 
-	osrp_TogglePlayerControllable(playerid, false);
 	SetPlayerFacingAngle(playerid, 90);
 	SetPlayerPos(playerid, 758.8672 + 1, -76.0945, 1000.6500);
 
@@ -57,6 +56,8 @@ Callback:updatePressedBarbell(playerid) {
 	} else {
 		pressedBarbell[playerid] = false;
 	}
+	
+	antiCheatGym[playerid] = 0;
 	return 1;
 }
 

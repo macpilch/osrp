@@ -175,9 +175,9 @@ stock removePlayerItem(srvitemid) {
 
 stock resetItemValues(playerid) {
 	foreach(new i : itemItter) {
-		if(iVars[i][iOUid] == pVars[playerid][pUid] && iVars[i][iUsed]) {
+		if(iVars[i][iOUid] == pVars[playerid][pUid]) {
 			iVars[i][iUsed] = false;
-		
+
 			queryStr[0] = EOS;
 			format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `Used` = '%d' WHERE `UID` = '%d'", iVars[i][iUsed], iVars[i][iUid]);
 			mysql_query(queryStr);
@@ -190,7 +190,7 @@ stock resetItemValues(playerid) {
 
 stock enableItemProperties(playerid, srvitemid, itemid) {
 	if(getPlayerSpeed(playerid)) {
-		return GameTextForPlayer(playerid, "~y~Odczekaj 1 minute od ostatniego~n~biegania", 5000, 3);
+		//return GameTextForPlayer(playerid, "~y~Odczekaj 1 minute od ostatniego~n~biegania", 5000, 3);
 	}
 
 	mainStr[0] = EOS;
@@ -201,25 +201,25 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				for(new i = 0; i < 2; i++) {
 					TextDrawShowForPlayer(playerid, usedRollersInfo[playerid][i]);
 				}
-				
+
 				SetTimerEx("hideUsedRollersInfo", 5000, false, "i", playerid);
-				
+
 				format(mainStr, sizeof(mainStr), "* %s zak³ada rolki.", pVars[playerid][pCharName]);
 				sendMeMessage(playerid, mainStr);
 
-				updatePlayerGameStatus(playerid);
 				iVars[srvitemid][iUsed] = true;
+				updatePlayerGameStatus(playerid);
 			} else {
 				ClearAnimations(playerid);
 				SetPlayerSkin(playerid, pVars[playerid][pSkin]);
-				
+
 				format(mainStr, sizeof(mainStr), "* %s zdejmuje rolki.", pVars[playerid][pCharName]);
 				sendMeMessage(playerid, mainStr);
 
-				updatePlayerGameStatus(playerid);
-
 				actualItem[playerid] = INVALID_ITEM_ID;
 				iVars[srvitemid][iUsed] = false;
+
+				updatePlayerGameStatus(playerid);
 			}
 		}
 		case P_PIWO: {
@@ -480,7 +480,8 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 
 			iVars[srvitemid][iUsed] = false;
 		}
-		case P_PIZZA, P_CHEESBURG, P_ZAPIEK, P_FRYTKI, P_GRVBURGER, P_HAMBGRG, P_HOTDOG, P_KEBAB, P_LODY, P_LODYWKBK, P_LONGER, P_NACHOSZS, P_NALESNIK, P_NALESNIKI, P_PACZEK, P_PACZEKAFRO, P_PACZEKZLT, P_DONUT, P_SUSHI: {
+		case P_PIZZA, P_CHEESBURG, P_ZAPIEK, P_FRYTKI, P_GRVBURGER, P_HAMBGRG, P_HOTDOG, P_KEBAB, P_LODY, P_LODYWKBK, P_LONGER, P_NACHOSZS, P_NALESNIK, P_NALESNIKI, P_PACZEK,
+			 P_PACZEKAFRO, P_PACZEKZLT, P_DONUT, P_SUSHI: {
 			// * %s uleg³ przeterminowaniu. *
 			
 			if(iVars[srvitemid][iCraft]) {
@@ -489,7 +490,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			
 			iVars[srvitemid][iUsed] = true;
 			
-			osrp_SetPlayerHealth(playerid, pVars[playerid][pHp] += random(10) + 5.0);
+			OSRP_SetPlayerHealth(playerid, pVars[playerid][pHp] += random(10) + 5.0);
 			ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 0, 0, 0, 0, 1);
 			removePlayerItem(srvitemid);
 			
@@ -502,7 +503,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 		case P_LEK, P_WITAMINAC: {
 			SendClientMessage(playerid, COLOR_GRAY, "Musisz byæ w aptece, która wyda³a ten lek, lub karetce, aby go u¿yæ.");
 
-			osrp_SetPlayerHealth(playerid, 40);
+			OSRP_SetPlayerHealth(playerid, 40);
 
 			format(mainStr, sizeof(mainStr), "* %s aplikuje %s lek.", pVars[playerid][pCharName]);
 			sendMeMessage(playerid, mainStr);
@@ -578,43 +579,43 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 stock givePlayerWeapon(playerid, srvitemid) {
 	switch(iVars[srvitemid][iId]) {
 		case P_KASTET: {
-			osrp_GivePlayerWeapon(playerid, WEAPON_BRASSKNUCKLE, 1);
+			OSRP_GivePlayerWeapon(playerid, WEAPON_BRASSKNUCKLE, 1);
 		}
 		case P_NITESTICK: {
-			osrp_GivePlayerWeapon(playerid, WEAPON_NITESTICK, 1);
+			OSRP_GivePlayerWeapon(playerid, WEAPON_NITESTICK, 1);
 		}
 		case P_KNIFE: {
-			osrp_GivePlayerWeapon(playerid, WEAPON_KNIFE, 1);
+			OSRP_GivePlayerWeapon(playerid, WEAPON_KNIFE, 1);
 		}
 		case P_BASEBALL: {
-			osrp_GivePlayerWeapon(playerid, WEAPON_BAT, 1);
+			OSRP_GivePlayerWeapon(playerid, WEAPON_BAT, 1);
 		}
 		case P_COLT: {
-			osrp_GivePlayerWeapon(playerid, WEAPON_COLT45, loadItemWeaponAmmo(srvitemid));
+			OSRP_GivePlayerWeapon(playerid, WEAPON_COLT45, loadItemWeaponAmmo(srvitemid));
 		}
 		case P_DEAGLE: {
-			osrp_GivePlayerWeapon(playerid, WEAPON_DEAGLE, loadItemWeaponAmmo(srvitemid));
-					}
+			OSRP_GivePlayerWeapon(playerid, WEAPON_DEAGLE, loadItemWeaponAmmo(srvitemid));
+		}
 		case P_SHOTGUN: {
-			osrp_GivePlayerWeapon(playerid, WEAPON_SHOTGUN, loadItemWeaponAmmo(srvitemid));
+			OSRP_GivePlayerWeapon(playerid, WEAPON_SHOTGUN, loadItemWeaponAmmo(srvitemid));
 		}
 		case P_UZI: {
-			osrp_GivePlayerWeapon(playerid, WEAPON_UZI, loadItemWeaponAmmo(srvitemid));
-					}
+			OSRP_GivePlayerWeapon(playerid, WEAPON_UZI, loadItemWeaponAmmo(srvitemid));
+		}
 		case P_MP5: {
-			osrp_GivePlayerWeapon(playerid, WEAPON_MP5, loadItemWeaponAmmo(srvitemid));
-					}
+			OSRP_GivePlayerWeapon(playerid, WEAPON_MP5, loadItemWeaponAmmo(srvitemid));
+		}
 		case P_AK47: {
-			osrp_GivePlayerWeapon(playerid, WEAPON_AK47, loadItemWeaponAmmo(srvitemid));
-					}
+			OSRP_GivePlayerWeapon(playerid, WEAPON_AK47, loadItemWeaponAmmo(srvitemid));
+		}
 		case P_M4: {
-			osrp_GivePlayerWeapon(playerid, WEAPON_M4, loadItemWeaponAmmo(srvitemid));
+			OSRP_GivePlayerWeapon(playerid, WEAPON_M4, loadItemWeaponAmmo(srvitemid));
 		}
 		case P_TEC9: {
-			osrp_GivePlayerWeapon(playerid, WEAPON_TEC9, loadItemWeaponAmmo(srvitemid));
+			OSRP_GivePlayerWeapon(playerid, WEAPON_TEC9, loadItemWeaponAmmo(srvitemid));
 		}
 		case P_PARA: {
-			osrp_GivePlayerWeapon(playerid, WEAPON_PARACHUTE, 1);
+			OSRP_GivePlayerWeapon(playerid, WEAPON_PARACHUTE, 1);
 		}
 	}
 

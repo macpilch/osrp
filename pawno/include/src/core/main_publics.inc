@@ -19,7 +19,7 @@ sampCallback:OSRP_OnGameModeInit() {
 	DisableInteriorEnterExits();
 	ManualVehicleEngineAndLights();
 	ShowNameTags(0);
-	AddPlayerClass(0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0);
+	AddPlayerClassEx(0, 0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0);
 	SetWeather(10);
 	SetWorldTime(20);
 	SetGravity(0.008);

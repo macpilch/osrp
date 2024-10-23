@@ -102,17 +102,19 @@
 
 #define CAMERA_SPEED 5000
 
-#define STAT_AFK 1
-#define STAT_BW 2
-#define STAT_DAMAGE 4
+// Statusy (Flagi)
+#define STAT_NONE 1
+#define STAT_AFK 2
+#define STAT_BW 4
 #define STAT_ROLLERS 8
 #define STAT_DRUNK 16
 #define STAT_DRUGS 32
 #define STAT_STRENGTH 64
 #define STAT_BELTS 128
 #define STAT_DETENTION 256
-#define STAT_DUTY 512
-#define STAT_GLOVES 1024
+#define STAT_GLOVES 512
+#define STAT_MUSIC 1024
+#define STAT_DRIVING 2048
 
 // Blokady gracza (Flagi)
 #define BLOCK_BAN 1
@@ -299,11 +301,29 @@
 #define P_WYTRYCH 116
 #define	P_LANDSTALKER 400
 
+#define F_L_TIRE 0
+#define B_L_TIRE 1
+#define F_R_TIRE 2
+#define B_R_TIRE 3
+
+#define F_L_LIGHT 0
+#define B_L_LIGHT 1
+#define F_R_LIGHT 2
+#define B_R_LIGHT 3
+
+#define F_L_DOOR 0
+#define B_L_DOOR 1
+#define F_R_DOOR 2
+#define B_R_DOOR 3
+
+#define FRONT_PANEL 6
+#define BACK_PANEL 7
+
 #define REPAIR_ENGINE 0
-#define REPAIR_DOORLF 1
-#define REPAIR_DOORLR 2
-#define REPAIR_DOORRF 3
-#define REPAIR_DOORRR 4
+#define REPAIR_DOOR_LF 1
+#define REPAIR_DOOR_LR 2
+#define REPAIR_DOOR_RF 3
+#define REPAIR_DOOR_RR 4
 
 #define VEHICLE_OWNER_GROUP 0
 #define INVALID_ITEM_ID 0
