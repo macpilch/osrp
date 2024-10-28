@@ -74,7 +74,7 @@ Timer:globalTimer[1000]() {
 
 		new srvVehId = getServerVehicleIdForPlayer(i);
 
-		if(!isBicycle(vVars[srvVehId][vModelId])) {
+		if(srvVehId != -1 && !isBicycle(vVars[srvVehId][vModelId])) {
 			if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
 				if(hasBelts[i]) {
 					format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%0.1f~w~ KM~n~~w~Paliwo: ~b~%0.1f~w~ L~n~Pasy: ~g~zapiete", getVehicleSpeed(vVars[srvVehId][vId]), vVars[srvVehId][vMileage], vVars[srvVehId][vFuel]);
@@ -203,28 +203,28 @@ Timer:globalTimer[1000]() {
 				}
 			}
 		}
-		
+
 		// GPS
 		if(gpsEnabled[i]) {
 			new count;
-			new players[20], mapicons[20];
-			new Float:x[20], Float:y[20], Float:z[20];
-			
+			new players[100];
+			new Float:x[100], Float:y[100], Float:z[100];
+
 			if(isPlayerInGroupType(i, G_LSPD)) {
 				if(IsPlayerInAnyVehicle(i)) {
 					players[count] = i;
 					count++;
 				}
 			}
-			
+
 			new vehicleid;
-			
+
 			for(new j = 0; j < count; j++) {
 				vehicleid = GetPlayerVehicleID(players[j]);
 				GetVehiclePos(vehicleid, x[j], y[j], z[j]);
 
-				DestroyDynamicMapIcon(mapicons[j]);
-				mapicons[j] = CreateDynamicMapIcon(x[j], y[j], z[j], 30, COLOR_WHITE, 0, 0, -1, 4000, MAPICON_GLOBAL, -1, 0);
+				DestroyDynamicMapIcon(gpsMapIcons[i][j]);
+				gpsMapIcons[i][j] = CreateDynamicMapIcon(x[j], y[j], z[j], 30, COLOR_WHITE, 0, 0, -1, 4000, MAPICON_GLOBAL, -1, 0);
 			}
 		}
 	}
@@ -304,12 +304,12 @@ Timer:antiCheat[1000]() {
 			/*if((x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y) && !isFreeze[i]) {
 				format(reas, sizeof(reas), "Cheat, AirBreak~n~~w~Cheat, AirBreak: d%f tc%d d3.s%d");
 				givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, 0, reas);
-			}*/
+			}
 
 			if(getPlayerSpeed(i) > 50.0) {
 				format(reas, sizeof(reas), "Cheat, Teleport~n~~w~Cheat, Teleport: d%0.6f tc%d delta3s%d");
 				givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, 0, reas);
-			}
+			}*/
 			
 			if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
 				GetVehicleVelocity(vVars[srvVehId][vId], x, y, z);

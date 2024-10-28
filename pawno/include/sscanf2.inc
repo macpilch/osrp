@@ -102,6 +102,7 @@
  */
 
 /// <p/>
+
 #define SSCANF_NO_NICE_FEATURES
 #define SSCANF_STATIC__
 #if defined __PawnBuild

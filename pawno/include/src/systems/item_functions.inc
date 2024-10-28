@@ -119,20 +119,24 @@ stock addPlayerItem(playerid, itemid) {
 
 	if(iVars[freeId][iId] == P_TELEFON || iVars[freeId][iId] == P_NKA8110) {
 		new number[7], numberStr[8];
-		
+
+		iVars[freeId][iValue1] = 1;
+		iVars[freeId][iValue2] = 1;
+		telephoneState[playerid] = true;
+
 		for(new i = 0; i < sizeof(number); i++) {
 			number[i] = random(10);
 			
 			format(numberStr, sizeof(numberStr), "%s%d", numberStr, number[i]);
 		}
-		
+
 		pVars[playerid][pTelNum] = strval(numberStr);
-		
+
 		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `TelNum` = '%d' WHERE `UID` = '%d'", pVars[playerid][pTelNum], pVars[playerid][pUid]);
+		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `TelNum` = '%d', `Value1` = '%d', `Value2` = '%d' WHERE `UID` = '%d'", pVars[playerid][pTelNum], iVars[freeId][iValue1], iVars[freeId][iValue2], pVars[playerid][pUid]);
 		mysql_query(queryStr);
 	}
-	
+
 	if(iVars[freeId][iId] >= P_COLT && iVars[freeId][iId] <= P_TEC9) {
 		iVars[freeId][iValue1] = 50;
 		

@@ -15,21 +15,22 @@
 
 stock initGroupValues(){
 	printf("[LOG]: Zaczynam ladowac grupy...");
-	
+
 	for(new i = 0; i < MAX_GROUPS; i++) {
 		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Groups` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
-		
+
 		mysql_store_result();
-		
+
 		if(!mysql_num_rows()) {
 			break; 
 		}
-		
+
 		mysql_fetch_row(queryStr, "|");
-		
-		sscanf(queryStr, "p<|>iis[32]s[8]s[32]iiiiiiiii",
+		new tmpColor;
+
+		sscanf(queryStr, "p<|>iis[32]s[8]s[32]iiiiiiii",
 			gVars[i][gUid],
 			gVars[i][gOUid],
 			gVars[i][gName],
@@ -39,18 +40,19 @@ stock initGroupValues(){
 			gVars[i][gMembers],
 			gVars[i][gVehsLimit],
 			gVars[i][gMoney],
-			gVars[i][gPayDay],
 			gVars[i][gDoor],
 			gVars[i][gFlags],
-			gVars[i][gColor],
+			tmpColor,
 			gVars[i][gRegister]
 		);
 
 		Iter_Add(groupItter, i);
+
+		gVars[i][gColor] = decimalToHex(tmpColor);
 		gVars[i][gVehsCount] = 0;
 
-		printf("[DEBUG] Id: %d, Uid: %d, OUid: %d, Name: %s, Tag: %s, Type: %d, Members: %d, VehLimit: %d, Money: %d, PayDay: %d, Doors: %d, Flags: %d, Register: %d",
-		i, gVars[i][gUid], gVars[i][gOUid], gVars[i][gName], gVars[i][gTag], gVars[i][gType], gVars[i][gMembers], gVars[i][gVehsLimit], gVars[i][gMoney], gVars[i][gPayDay],
+		printf("[DEBUG] Id: %d, Uid: %d, OUid: %d, Name: %s, Tag: %s, Type: %d, Members: %d, VehLimit: %d, Money: %d, Doors: %d, Flags: %d, Register: %d",
+		i, gVars[i][gUid], gVars[i][gOUid], gVars[i][gName], gVars[i][gTag], gVars[i][gType], gVars[i][gMembers], gVars[i][gVehsLimit], gVars[i][gMoney],
 		gVars[i][gDoor], gVars[i][gFlags], gVars[i][gRegister]);
 	}
 
@@ -65,13 +67,13 @@ stock initGroupValues(){
 }
 
 stock initGroupPermValues() {
-	new tmpFlags[4];
-	
+	new tmpFlags[5];
+
 	printf("[LOG]: Zaczynam ladowac flagi grupy...");
-	
+
 	foreach(new i : groupItter) {
 		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "SELECT `FlagOOC`,`FlagIC`,`FlagMegaphone`,`FlagNone` FROM `osrp_GroupPerms` WHERE `UID` = '%d'", gVars[i][gUid]);
+		format(queryStr, sizeof(queryStr), "SELECT `FlagOOC`,`FlagIC`,`FlagMegaphone`,`FlagGPS`,`FlagNone` FROM `osrp_GroupPerms` WHERE `UID` = '%d'", gVars[i][gUid]);
 		mysql_query(queryStr);
 
 		mysql_store_result();
@@ -81,15 +83,14 @@ stock initGroupPermValues() {
 		}
 
 		mysql_fetch_row(queryStr, " ");
-		
-		sscanf(queryStr, "iiii",
+
+		sscanf(queryStr, "iiiii",
 			tmpFlags[0],
 			tmpFlags[1],
 			tmpFlags[2],
-			tmpFlags[3]
+			tmpFlags[3],
+			tmpFlags[4]
 		);
-		
-		printf("Flagi: %d", tmpFlags[0]);
 
 		if(tmpFlags[0]) {
 			gVars[i][gFlags] += GROUP_PERM_CHATOOC;
@@ -102,11 +103,13 @@ stock initGroupPermValues() {
 		if(tmpFlags[2]) {
 			gVars[i][gFlags] += GROUP_PERM_MEGAPHONE;
 		}
-		
-		if(gVars[i][gFlags] & GROUP_PERM_CHATOOC) {
-			printf("Sraka");
+
+		if(tmpFlags[3]) {
+			gVars[i][gFlags] += GROUP_PERM_GPS;
 		}
 	}
+
+	mysql_free_result();
 	return 1;
 }
 
@@ -117,15 +120,15 @@ stock initGroupItemValues() {
 		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_GroupItems` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
-		
+
 		mysql_store_result();
-		
+
 		if(!mysql_num_rows()) {
 			break;
 		}
-		
+
 		mysql_fetch_row(queryStr, "|");
-		
+
 		sscanf(queryStr, "p<|>iiis[64]ii",
 			gIVars[i][gIUid],
 			gIVars[i][gIOUid],
@@ -134,7 +137,7 @@ stock initGroupItemValues() {
 			gIVars[i][gIPrice],
 			gIVars[i][gIAmount]
 		);
-		
+
 		Iter_Add(groupItemsItter, i);
 	}
 
@@ -163,7 +166,7 @@ stock initGroupTaskValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-		
+
 		sscanf(queryStr, "p<|>iis[128]s[64]s[24]",
 			gTVars[i][gTUid],
 			gTVars[i][gTGUid],
@@ -187,18 +190,18 @@ stock initGroupTaskValues() {
 
 stock initGroupOrderValues() {
 	printf("[LOG]: Zaczynam ladowac zamowienia grupy...");
-	
+
 	for(new i = 0; i < 100; i++) {
 		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_GroupOrders` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
-		
+
 		mysql_store_result();
-		
+
 		if(!mysql_num_rows()) {
 			break;
 		}
-		
+
 		mysql_fetch_row(queryStr, "|");
 		sscanf(queryStr, "p<|>iis[32]s[24]iii",
 			gOVars[i][gOUid],
@@ -209,17 +212,45 @@ stock initGroupOrderValues() {
 			gOVars[i][gOPrice],
 			gOVars[i][gOAmount]
 		);
-		
+
 		Iter_Add(groupOrdersItter, i);
 	}
-	
+
 	mysql_free_result();
-	
+
 	if(Iter_Count(groupOrdersItter)) {
-		printf("[LOG]: Wczytano %d zadan.", Iter_Count(groupOrdersItter));
+		printf("[LOG]: Wczytano %d zamowien.", Iter_Count(groupOrdersItter));
 	} else {
-		printf("[LOG]: Brak zadan.");
+		printf("[LOG]: Brak zamowien.");
 	}
+	return 1;
+}
+
+stock initGroupVehicleValues() {
+	printf("[LOG]: Zaczynam ladowac uprawnienia do pojazdow grupy...");
+
+	for(new i = 0; i < 10; i++) {
+		queryStr[0] = EOS;
+		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_GroupVehicles` WHERE `UID` = '%d'", i + 1);
+		mysql_query(queryStr);
+
+		mysql_store_result();
+
+		if(!mysql_num_rows()) {
+			break;
+		}
+
+		mysql_fetch_row(queryStr, "|");
+		sscanf(queryStr, "p<|>iiiii",
+			gVVars[i][gVUid],
+			gVVars[i][gVGUid],
+			gVVars[i][gVOUid],
+			gVVars[i][gVVehs][0],
+			gVVars[i][gVVehs][1]
+		);
+	}
+
+	mysql_free_result();
 	return 1;
 }
 
@@ -301,40 +332,25 @@ stock showPlayerGroupTasks(playerid) {
 }
 
 stock showPlayerGroupVehicles(playerid) {
-	enum tmpData {
-		UID,
-		ID,
-		Float:Health,
-		Spawned
-	};
-	
-	new tmpVVars[10][tmpData];
+	new vehs;
 	new srvGrpId = getServerGroupIdForPlayer(playerid);
-	new i;
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `UID`, `ID`, `EngineHealth`, `Spawned` FROM `osrp_Vehicles` WHERE `GUID` = '%d' AND `OUID` = '%d'", gVars[srvGrpId][gUid], VEHICLE_OWNER_GROUP);
-	mysql_query(queryStr);
-	
-	mysql_store_result();
 	mainStr[0] = EOS;
-	
-	while(mysql_fetch_row(queryStr, "|")) {
-		sscanf(queryStr, "p<|>iifi", tmpVVars[i][UID], tmpVVars[i][ID], tmpVVars[i][Health], tmpVVars[i][Spawned]);
-		
-		if(tmpVVars[i][Spawned]) {
-			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d  %0.1f  %s*", mainStr, tmpVVars[i][UID], tmpVVars[i][Health], VehicleNames[tmpVVars[i][ID] - 400]);
-		} else {
-			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d  %0.1f  %s", mainStr, tmpVVars[i][UID], tmpVVars[i][Health], VehicleNames[tmpVVars[i][ID] - 400]);
+
+	foreach(new i : vehItter) {
+		if(vVars[i][vOUid] == VEHICLE_OWNER_GROUP && vVars[i][vGUid] == gVars[srvGrpId][gUid]) {
+			if(vVars[i][vSpawned]) {
+				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d  %0.1f  %s*", mainStr, vVars[i][vUid], vVars[i][vEngineHp], VehicleNames[vVars[i][vModelId] - 400]);
+			} else {
+				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d  %0.1f  %s", mainStr, vVars[i][vUid], vVars[i][vEngineHp], VehicleNames[vVars[i][vModelId] - 400]);
+			}
+
+			vehs++;
 		}
-		
-		i++;
 	}
 
-	mysql_free_result();
-
-	if(!i) {
-		
+	if(!vehs) {
+		return GameTextForPlayer(playerid, "Ta grupa nie posiada pojazdow.", 5000, 3);
 	}
 
 	ShowPlayerDialog(playerid, DIALOG_GROUP_VEHICLE_SELECT, DIALOG_STYLE_LIST, "Wybór pojazdu (* = zespawnowany)", mainStr, "(Un)spawn", "Wiêcej");
@@ -446,7 +462,7 @@ stock createNewGroup(playerid, ownerid, type, tag[], name[]) {
 	gVars[freeId][gMoney] = 0;
 	gVars[freeId][gPayDay] = 0;
 	gVars[freeId][gDoor] = 0;
-	gVars[freeId][gColor] = 0x0000FFFF;
+	format(gVars[freeId][gColor], 7, "FF0000");
 	gVars[freeId][gFlags] += GROUP_PERM_CHATOOC;
 	gVars[freeId][gFlags] += GROUP_PERM_CHATIC;
 	pVars[ownerid][pGroupNow] = gVars[freeId][gUid];
@@ -667,6 +683,25 @@ stock showPlayerGroupMenuItems(playerid) {
 
 	ShowPlayerDialog(playerid, DIALOG_SHOW_GROUP_MENU, DIALOG_STYLE_LIST, "Menu", mainStr, "Wybierz", "Anuluj");
 	return 1;
+}
+
+stock doesPlayerHaveVehicleLicense(playerid, srvvehid) {
+	new srvGrpId = getServerGroupIdForPlayer(playerid);
+
+	if(srvGrpId == -1) {
+		return 0;
+	}
+
+	new j;
+
+	for(new i = 0; i < 10; i++) {
+		if(gVVars[i][gVGUid] == gVars[srvGrpId][gUid] && gVVars[i][gVOUid] == pVars[playerid][pUid] && vVars[srvvehid][vOUid] == VEHICLE_OWNER_GROUP && gVVars[i][gVVehs][j] == vVars[srvvehid][vUid]) {
+			return 1;
+		}
+
+		j++;
+	}
+	return 0;
 }
 
 stock bool:isPlayerOnDuty(playerid) {

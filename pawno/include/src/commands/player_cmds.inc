@@ -261,13 +261,13 @@ CMD:r(playerid, params[]) {
 }
 
 CMD:czat(playerid, params[]) {
-	new pId;
-	
-	if(sscanf(params, "i", pId)) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /czat [Gracz]");
-	}
-	
 	if(!chatEnabled[playerid]) {
+		new pId;
+
+		if(sscanf(params, "i", pId)) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /czat [Gracz]");
+		}
+
 		SendClientMessage(playerid, COLOR_YELLOW, "Czat z graczem uruchomiony. Od teraz zamiast u¿ywaæ /w [Gracz], po prostu zacznij pisaæ.");
 		SendClientMessage(playerid, COLOR_YELLOW, "Aby anulowaæ czat, po prostu wpisz /czat.");
 
@@ -838,15 +838,15 @@ CMD:login(playerid, params[]) {
 
 	hasLogged[playerid] = true;
 	usedCmdLogin[playerid] = true;
-	
+
 	savePlayerValues(playerid);
 	setPlayerDefaultValues(playerid);
-	
+
 	cameraTimer[playerid] = -1;
 	setPlayerCamerasView(playerid);
 
 	SetTimerEx("refreshCmds", 60000, false, "ii", playerid, 0);
-	
+
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", pVars[playerid][pCharName]);
 	ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");	
@@ -975,16 +975,16 @@ CMD:o(playerid, params[]) {
 	}
 
 	if(pId == playerid) {
-		//return GameTextForPlayer(playerid, "~r~Nie mozesz sobie oferowac.", 5000, 3);
+		return GameTextForPlayer(playerid, "~r~Nie mozesz sobie oferowac.", 5000, 3);
 	}
 
-	if(offerFor[pId] != INVALID_PLAYER_ID && offerType[pId] != INVALID_OFFER_TYPE) {
-		//return SendClientMessage(playerid, COLOR_GRAY, "Ktoœ w³aœnie oferuje coœ tej osobie. Poczekaj.");
+	if(offerFrom[pId] != INVALID_PLAYER_ID && offerType[pId] != INVALID_OFFER_TYPE) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Ktoœ w³aœnie oferuje coœ tej osobie. Poczekaj.");
 	}
 
-	/*if() {
+	if(getPlayerSpeed(pId)) {
 		SendClientMessage(playerid, COLOR_GRAY, "Poczekaj a¿ ta osoba przestanie biegaæ.");
-	}*/
+	}
 
 	if(GetPlayerState(pId) == PLAYER_STATE_DRIVER && getVehicleSpeed(GetPlayerVehicleID(pId))) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Ta osoba prowadzi pojazd. Musi siê zatrzymaæ.");
@@ -994,19 +994,19 @@ CMD:o(playerid, params[]) {
 
 	if(strfind(type, "naukajazdy", true) != -1) {
 		new price;
-		
+
 		if(sscanf(params, "s[32]ii", type, pId, price)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /o naukajazdy [Gracz] [Cena kursu]");
 		}
 
-		/*if(!isPlayerOnDuty(playerid) || gVars[srvGrpId][gType] != G_DRVRLIC) {
+		if(!isPlayerOnDuty(playerid) || gVars[srvGrpId][gType] != G_DRVRLIC) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie nadano Ci uprawnieñ do nauczania jazdy lub nie jesteœ na s³u¿bie grupy.");
 		}
 
 		if(pVars[pId][pMinutes] < 10) {
 			SendClientMessage(playerid, COLOR_GRAY, "Ten gracz nie przegra³ jeszcze 10min.");
 			return GameTextForPlayer(playerid, "~b~Musisz byc na sluzbie grupy,  by~n~to zrobic.", 5000, 3);
-		}*/
+		}
 
 		cmdParams[OFFER_PARM_PRICE] = price;
 		cmdParams[OFFER_PARM_ETC] = 0;
@@ -1331,7 +1331,7 @@ CMD:g(playerid, params[]) {
 		if(strfind(type, "info", true) != -1) {
 			showPlayerGroupInfo(playerid);
 
-			format(str, sizeof(str), "Tip: /g %d [info/z/zadania/v/zapros/wypros/wplac/wyplac/magazyn/online/gps]", pVars[playerid][pGroupNow]);
+			format(str, sizeof(str), "Tip: /g %d [info/z/zadania/v/zapros/wypros/wplac/wyplac/magazyn/online/gps]", slot);
 			SendClientMessage(playerid, COLOR_GRAY, str);
 			return 1;
 		} else if(strfind(type, "zadania", true) != -1) {
@@ -1344,8 +1344,8 @@ CMD:g(playerid, params[]) {
 			new pId;
 			new cmdParams[3];
 
-			if(sscanf(params, "i", pId)) {
-				format(str, sizeof(str), "Tip: /g %d zapros [Gracz]", pVars[playerid][pGroupNow]);
+			if(sscanf(params, "is[16]i", slot, type, pId)) {
+				format(str, sizeof(str), "Tip: /g %d zapros [Gracz]", slot);
 				return SendClientMessage(playerid, COLOR_GRAY, str);
 			}
 
@@ -1379,8 +1379,8 @@ CMD:g(playerid, params[]) {
 		} else if(strfind(type, "wplac", true) != -1) {
 			new money;
 			
-			if(sscanf(params, "i", money)) {
-				format(str, sizeof(str), "Tip: /g %d wplac [Kwota]", pVars[playerid][pGroupNow]);
+			if(sscanf(params, "is[16]i", slot, type, money)) {
+				format(str, sizeof(str), "Tip: /g %d wplac [Kwota]", slot);
 				return SendClientMessage(playerid, COLOR_GRAY, str);
 			}
 			
@@ -1396,8 +1396,8 @@ CMD:g(playerid, params[]) {
 		} else if(strfind(type, "wyplac", true) != -1) {
 			new money;
 			
-			if(sscanf(params, "i", money)) {
-				format(str, sizeof(str), "Tip: /g %d wyplac [Kwota]", pVars[playerid][pGroupNow]);
+			if(sscanf(params, "is[16]i", slot, type, money)) {
+				format(str, sizeof(str), "Tip: /g %d wyplac [Kwota]", slot);
 				return SendClientMessage(playerid, COLOR_GRAY, str);
 			}
 
@@ -1421,7 +1421,7 @@ CMD:g(playerid, params[]) {
 			if(!IsPlayerInAnyVehicle(playerid)) {
 				return 1;
 			}
-			
+
 			if(!gpsEnabled[playerid]) {
 				format(mainStr, sizeof(mainStr), "* %s aktywuje namierzanie GPS.", pVars[playerid][pCharName]);
 				//format(mainStr, sizeof(mainStr), "* %s zmienia czêstotliwoœæ w CB Radiu.", pVars[playerid][pCharName]);
@@ -1430,11 +1430,11 @@ CMD:g(playerid, params[]) {
 			} else {
 				format(mainStr, sizeof(mainStr), "* %s wy³¹cza namierzanie GPS.", pVars[playerid][pCharName]);
 				//format(mainStr, sizeof(mainStr), "* %s zmienia czêstotliwoœæ w CB Radiu.", pVars[playerid][pCharName]);
-				
+
 				gpsEnabled[playerid] = false;
-				
-				for(new i = 0; i < 20; i++) {
-					RemovePlayerMapIcon(playerid, 30);
+
+				for(new i = 0; i < 100; i++) {
+					DestroyDynamicMapIcon(gpsMapIcons[playerid][i]);
 				}
 			}
 			
@@ -1513,9 +1513,9 @@ CMD:drzwi(playerid, params[]) {
 CMD:zamknij(playerid, params[]) {
 	new srvDoorId = getServerDoorIdForPlayer(playerid);
 
-	/*if(playerToPoint(playerid, 2.0, dVars[srvDoorId][dExitX], dVars[srvDoorId][dExitY], dVars[srvDoorId][dExitZ]) || playerToPoint(playerid, 2.0, dVars[srvDoorId][dEnterX], dVars[srvDoorId][dEnterY], dVars[srvDoorId][dEnterZ])) {
+	if(playerToPoint(playerid, 2.0, dVars[srvDoorId][dExitX], dVars[srvDoorId][dExitY], dVars[srvDoorId][dExitZ]) || playerToPoint(playerid, 2.0, dVars[srvDoorId][dEnterX], dVars[srvDoorId][dEnterY], dVars[srvDoorId][dEnterZ])) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie znajdujesz siê w pobli¿u drzwi wyjœciowych.");
-	}*/
+	}
 
 	if(dVars[srvDoorId][dOUid] != pVars[playerid][pUid]) {
 		return GameTextForPlayer(playerid, "~w~Nie posiadasz klucza~n~~r~~h~do tych drzwi.", 5000, 3);
@@ -1631,6 +1631,20 @@ CMD:raport(playerid, params[]) {
 CMD:pokoj(playerid, params[]) {
 	if(insidedHotel[playerid]) {
 		return GameTextForPlayer(playerid, "~g~Znajdujesz sie juz w hotelu.", 5000, 3);
+	}
+
+	if(strfind(params, "wymelduj", true) != -1) {
+		pVars[playerid][pHotel] = 0;
+		pVars[playerid][pHotelPaid] = 0;
+
+		insidedHotel[playerid] = false;
+
+		queryStr[0] = EOS;
+		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Hotel` = '%d', `HotelPaid` = '%d' WHERE `UID` = '%d'", pVars[playerid][pHotel], pVars[playerid][pHotelPaid], pVars[playerid][pUid]);
+		mysql_query(queryStr);
+
+		GameTextForPlayer(playerid, "~g~Zostales wymeldowany z hotelu.", 5000, 3);
+		return 1;
 	}
 
 	new srvDoorId = getServerDoorIdForPlayer(playerid);

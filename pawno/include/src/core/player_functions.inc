@@ -1873,7 +1873,12 @@ stock resetPlayerValues(playerid) {
 
 stock savePlayerValues(playerid) {
 	new tmpChrName[24];
+	new day, m, yr, sec, mins, hr;
 
+	getdate(yr, m, day);
+	gettime(hr, mins, sec);
+
+	format(pVars[playerid][pLastDate], 64, "%02d/%02d/%d %02d:%02d:%02d", day, m, yr, hr, mins, sec);
 	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
 
 	pVars[playerid][pVw] = GetPlayerVirtualWorld(playerid);
@@ -1882,10 +1887,13 @@ stock savePlayerValues(playerid) {
 	mysql_real_escape_string(pVars[playerid][pCharName], tmpChrName);
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Strength` = '%d', `Hours` = '%d', `Minutes` = '%d', `Seconds` = '%d', `HP` = '%f', `AP` = '%f', `VW` = '%d', `INT` = '%d', `Skin` = '%d', `LastSkin` = '%d', `Money` = '%d', `Bank` = '%d', `Bw` = '%d', `Aj` = '%d', `DriverLicense` = '%d', `Hotel` = '%d', `TelNum` = '%d', `GroupDesc` = '%s', `Group0` = '%d', `Group1` = '%d', `Group2` = '%d', `Group3` = '%d', `Group4` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f' WHERE `CharName` = '%s'",
-	pVars[playerid][pStrength], pVars[playerid][pHours], pVars[playerid][pMinutes], pVars[playerid][pSeconds], pVars[playerid][pHp], pVars[playerid][pAp], pVars[playerid][pVw], pVars[playerid][pInt], pVars[playerid][pSkin], pVars[playerid][pLastSkin], pVars[playerid][pMoney], pVars[playerid][pBank], pVars[playerid][pBw], pVars[playerid][pAj], pVars[playerid][pDriverLicense], pVars[playerid][pHotel], pVars[playerid][pTelNum], pVars[playerid][pGroupDesc],
-	pVars[playerid][pGroup][0], pVars[playerid][pGroup][1], pVars[playerid][pGroup][2], pVars[playerid][pGroup][3], pVars[playerid][pGroup][4], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], tmpChrName);
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `LastDate`='%s',`GS`='%d',`Rank`='%d',`Sex`='%d',`Strength`='%d',`Hours`='%d',`Minutes`='%d',`Seconds`='%d',`HP`='%f',`AP`='%f',`Bans`='%d',`Kicks`='%d',`Warns`='%d',`AJS`='%d',`VW`='%d',`INT`='%d',`Skin`='%d',`LastSkin`='%d',`Money`='%d',`Bank`='%d',`Debt`='%d',`BW`='%d',`AJ`='%d',`AL`='%d',`DrvLicAttempts`='%d',`GOV`='%d',`Hotel`='%d',`IdCard`='%d',`DriverLicense`='%d',`Detention`='%d',`PDP`='%d',`TelNum`='%d',`TelNetwork`='%d',",
+	pVars[playerid][pLastDate],pVars[playerid][pGS],pVars[playerid][pRank],pVars[playerid][pSex],pVars[playerid][pStrength],pVars[playerid][pHours],pVars[playerid][pMinutes],pVars[playerid][pSeconds],pVars[playerid][pHp],pVars[playerid][pAp],pVars[playerid][pBans],pVars[playerid][pKicks],pVars[playerid][pWarns],pVars[playerid][pAJs],pVars[playerid][pVw],pVars[playerid][pInt],pVars[playerid][pSkin],pVars[playerid][pLastSkin],pVars[playerid][pMoney],pVars[playerid][pBank],pVars[playerid][pDebt],
+	pVars[playerid][pBw],pVars[playerid][pAj],pVars[playerid][pAl],pVars[playerid][pDrvLicAttempts],pVars[playerid][pGov],pVars[playerid][pHotel],pVars[playerid][pIdCard],pVars[playerid][pDriverLicense],pVars[playerid][pDetention],pVars[playerid][pPdp],pVars[playerid][pTelNum],pVars[playerid][pTelNetwork]);
+	format(queryStr, sizeof(queryStr), "%s`BankAcc`='%d',`GroupDesc`='%s',`Group0`='%d',`Group1`='%d',`Group2`='%d',`Group3`='%d',`Group4`='%d',`CasualJob`='%d',`Traveled`='%f',`Addiction`='%f',`Audio`='%d',`ChatStyle`='%d',`Computer`='%d',`WalkAnim`='%d',`StyleFight`='%d',`X`='%f',`Y`='%f',`Z`='%f' WHERE `CharName` = '%s'", queryStr,pVars[playerid][pBankAcc],pVars[playerid][pGroupDesc],pVars[playerid][pGroup][0],pVars[playerid][pGroup][1],pVars[playerid][pGroup][2],pVars[playerid][pGroup][3],
+	pVars[playerid][pGroup][4],casualJob[playerid],pVars[playerid][pTraveled],pVars[playerid][pAddiction],pVars[playerid][pAudio],pVars[playerid][pChatStyle],pVars[playerid][pComputer],pVars[playerid][pWalkAnim],pVars[playerid][pStyleFight],pVars[playerid][pX],pVars[playerid][pY],pVars[playerid][pZ],pVars[playerid][pCharName]);
 	mysql_query(queryStr);
+	return 1;
 }
 
 stock setPlayerBW(playerid, minutes) {
@@ -2154,8 +2162,8 @@ stock getPhoneOwnerNameFromNumber(number) {
 }
 
 stock getPhoneOwnerIdFromNumber(number) {
-	new pId;
-	
+	new pId = -1;
+
 	foreach(new i : Player) {
 		if(pVars[i][pTelNum] == number) {
 			pId = i;
@@ -2426,25 +2434,32 @@ stock showPlayerNotes(playerid) {
 }
 
 stock setPlayerHexName(playerid) {
-    new quotient, remainder, i;
-    new hexName[24], str[64];
+    new hexName[7], str[64];
 
-    quotient = pVars[playerid][pUid];
+	hexName = decimalToHex(pVars[playerid][pUid]);
+
+	format(str, sizeof(str), "%s %s", pVars[playerid][pSex] ? ("Nieznajoma") : ("Nieznajomy"), hexName);
+	SetPlayerName(playerid, str);
+}
+
+stock decimalToHex(dec) {
+	new quotient, remainder, i;
+	new hex[7];
+
+	quotient = dec;
 
     while(quotient != 0) {
         remainder = quotient % 16;
 		
         if(remainder < 10) {
-            hexName[i++] = remainder + 48;
+            hex[i++] = remainder + 48;
         } else {
-            hexName[i++] = remainder + 55;
+            hex[i++] = remainder + 55;
 		}
 		
         quotient /= 16;
     }
-
-	format(str, sizeof(str), "%s %s", pVars[playerid][pSex] ? ("Nieznajoma") : ("Nieznajomy"), hexName);
-	SetPlayerName(playerid, str);
+	return hex;
 }
 
 stock resetPlayerTextDraws(playerid) {
@@ -2988,7 +3003,7 @@ Callback:hideSpecialServicesInfo(playerid) {
 }
 
 Callback:destroyExit3dInfo(playerid) {
-	DestroyDynamic3DTextLabel(exit3dInfo[playerid]);
+	return DestroyDynamic3DTextLabel(exit3dInfo[playerid]);
 }
 
 Callback:bwTimer(playerid) {

@@ -67,9 +67,9 @@
 		forward %0(%1); public %0(%1)
 
 #define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "osrp"
-#define MYSQL_PASS "4Lx4V3@qP~bHpvw"
-#define MYSQL_DB "osrp"
+#define MYSQL_USER "server_798"
+#define MYSQL_PASS "t9vzcaesui"
+#define MYSQL_DB "server_798_osrp"
 
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_RED 0xFF0000FF
@@ -130,6 +130,7 @@
 #define GROUP_PERM_CHATOOC 1
 #define GROUP_PERM_CHATIC 2
 #define GROUP_PERM_MEGAPHONE 4
+#define GROUP_PERM_GPS 8
 
 #define PEN_BAN 0
 #define PEN_KICK 1

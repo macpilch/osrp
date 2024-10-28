@@ -79,6 +79,8 @@ new taxiDriver[MAX_PLAYERS];
 new taxiDistance[MAX_PLAYERS];
 new taxiCost[MAX_PLAYERS];
 
+new gpsMapIcons[MAX_PLAYERS][100];
+
 //part time job
 new casualJob[MAX_PLAYERS];
 new casualJobsPickup;

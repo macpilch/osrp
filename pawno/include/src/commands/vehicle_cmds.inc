@@ -32,29 +32,17 @@ CMD:v(playerid, params[]) {
 
 	if(sscanf(params, "s[32]", opt)) {
 		if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
-			enum Values {
-				UID = 0,
-				ModelID
-			};
+			new vehs;
 
-			new tmpVVars[10][Values];
-			new i;
+			foreach(new i : vehItter) {
+				if(vVars[i][vOUid] == pVars[playerid][pUid] && vVars[i][vGUid] == VEHICLE_OWNER_GROUP) {
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d  %s", mainStr, vVars[i][vUid], VehicleNames[vVars[i][vModelId] - 400]);
 
-			format(queryStr, sizeof(queryStr), "SELECT `UID`, `ModelID` FROM `osrp_Vehicles` WHERE `OUID` = '%d' AND `GUID` = '%d'", pVars[playerid][pUid], VEHICLE_OWNER_GROUP);
-			mysql_query(queryStr);
-
-			mysql_store_result();
-
-			while(mysql_fetch_row(queryStr, "|")) {
-				sscanf(queryStr, "p<|>ii", tmpVVars[i][UID], tmpVVars[i][ModelID]);
-				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d  %s", mainStr, tmpVVars[i][UID], VehicleNames[tmpVVars[i][ModelID] - 400]);
-
-				i++;
+					vehs++;
+				}
 			}
 
-			mysql_free_result();
-
-			if(!i) {
+			if(!vehs) {
 				strcat(mainStr, "W tym miejscu pojawi sie lista posiadanych przez Ciebie pojazdów.\n\n");
 				strcat(mainStr, "Kup nowy pojazd w salonie samochodowym lub u?ywany od innego gracza.\n\n");
 				strcat(mainStr, "Pojazdom mo?na dodawaa komponenty i zabezpieczenia w warsztatach.");
@@ -100,7 +88,7 @@ CMD:v(playerid, params[]) {
 				return 1;
 			}
 
-			if(vVars[srvVehId][vOUid] != pVars[playerid][pUid]) {
+			if(vVars[srvVehId][vOUid] != pVars[playerid][pUid] && !vVars[srvVehId][vGUid]) {
 				return GameTextForPlayer(playerid, "~r~Nie posiadasz kluczykow do tego~n~pojazdu.", 5000, 3);
 			}
 
@@ -151,15 +139,18 @@ closevehicle:
 			GetVehicleHealth(vVars[srvVehId][vId], vHp);
 			actualVehicle[playerid] = vVars[srvVehId][vUid];
 
-			if(vVars[srvVehId][vOUid] != pVars[playerid][pUid]) {
+			if(vVars[srvVehId][vOUid] != pVars[playerid][pUid] && !vVars[srvVehId][vGUid]) {
 				format(mainStr, sizeof(mainStr), "~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
 				vVars[srvVehId][vModelId], vVars[srvVehId][vId], vVars[srvVehId][vColor1], vVars[srvVehId][vColor2], vHp);
-				TextDrawSetString(vehicleStats[playerid][0], mainStr);
+			} else if(vVars[srvVehId][vGUid] && !vVars[srvVehId][vOUid]) {
+				format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~11:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
+				vVars[srvVehId][vUid], vVars[srvVehId][vOUid], vVars[srvVehId][vModelId], vVars[srvVehId][vId], vVars[srvVehId][vColor1], vVars[srvVehId][vColor2], vHp);
 			} else {
 				format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~9:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
 				vVars[srvVehId][vUid], vVars[srvVehId][vOUid], vVars[srvVehId][vModelId], vVars[srvVehId][vId], vVars[srvVehId][vColor1], vVars[srvVehId][vColor2], vHp);
-				TextDrawSetString(vehicleStats[playerid][0], mainStr);				
 			}
+
+			TextDrawSetString(vehicleStats[playerid][0], mainStr);
 
 			format(str, sizeof(str), "~b~Przebieg~w~: %0.1fkm ~b~Paliwo~w~: %0.1f", vVars[srvVehId][vMileage], vVars[srvVehId][vFuel]);
 			TextDrawSetString(vehicleStats[playerid][1], str);

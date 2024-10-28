@@ -17,7 +17,7 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 
 	actualVehicle[playerid] = vVars[srvVehId][vUid];
 
-	if(isVehicleInUse(vehicleid) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid]) {
+	if(isVehicleInUse(vehicleid) && !pVars[playerid][pDriverLicense] && !drivingCourse[playerid]) {
 		ClearAnimations(playerid);
 
 		SendClientMessage(playerid, COLOR_WHITE, "(!) Pamiêtaj, to RolePlay. Swój pojazd musisz kupiæ lub wypo¿yczyæ.");
@@ -30,7 +30,7 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		}
 	}
 
-	if(!isBicycle(GetVehicleModel(vehicleid)) && pVars[playerid][pDriverLicense] < 1 && !drivingCourse[playerid] && !ispassenger) {
+	if(!isBicycle(GetVehicleModel(vehicleid)) && !pVars[playerid][pDriverLicense] && !drivingCourse[playerid] && !ispassenger) {
 		ClearAnimations(playerid);
 
 		mainStr[0] = EOS;
@@ -44,9 +44,9 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		GameTextForPlayer(playerid, "~n~~n~~r~Pojazd jest zamkniety.~n~~w~/v zamknij", 6000, 3);
 	}
 
-	if(vVars[srvVehId][vOUid] != pVars[playerid][pUid] && pVars[playerid][pDriverLicense] && !drivingCourse[playerid]) {
+	if((vVars[srvVehId][vOUid] != pVars[playerid][pUid] && !vVars[srvVehId][vGUid]) && pVars[playerid][pDriverLicense]) {
 		ClearAnimations(playerid);
-		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Nie mozesz prowadzic tego~n~pojazdu.", 6000, 3);		
+		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Nie mozesz prowadzic tego~n~pojazdu.", 6000, 3);
 	}
 	return 1;
 }
@@ -85,9 +85,10 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 
 	GetVehiclePos(vVars[srvVehId][vId], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ]);
 	GetVehicleZAngle(vVars[srvVehId][vId], vVars[srvVehId][vAngle]);
+	GetVehicleHealth(vVars[srvVehId][vId], vVars[srvVehId][vEngineHp]);
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Spawned` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Angle` = '%f' WHERE `UID` = '%d'", vVars[srvVehId][vSpawned], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], vVars[srvVehId][vAngle], vVars[srvVehId][vUid]);
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Spawned` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Angle` = '%f', `EngineHealth` = '%f' WHERE `UID` = '%d'", vVars[srvVehId][vSpawned], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], vVars[srvVehId][vAngle], vVars[srvVehId][vEngineHp], vVars[srvVehId][vUid]);
 	mysql_query(queryStr);
 
 	for(new i = 0; i < 3; i++) {
@@ -146,12 +147,12 @@ sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 		mainStr[0] = EOS;
 		format(mainStr, sizeof(mainStr), "~w~Kolizja z ~r~%s~w~?", pVars[pId][pCharName]);
 		TextDrawSetString(collisionInfo[playerid], mainStr);
-		
+
 		TextDrawShowForPlayer(playerid, collisionInfo[playerid]);
 		SetTimerEx("hideCollisionInfo", 10000, false, "i", playerid);
 	}
 
-	if(drivingCourse[playerid] && offerType[playerid] == O_PRAWKO) {
+	if(drivingCourse[playerid] && drivingCourse[offerFrom[playerid]]) {
 		if(GetPlayerMoney(playerid) <= 0) {
 			GameTextForPlayer(playerid, "~r~Brak pieniedzy na pokrycie~n~zniszczen.", 5000, 3);
 		}

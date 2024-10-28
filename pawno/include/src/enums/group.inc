@@ -46,7 +46,7 @@ enum GroupData {
 	gPayDay,
 	gDoor,
 	gFlags,
-	gColor,
+	gColor[7],
 	gRegister
 };
 
@@ -77,4 +77,11 @@ enum GroupOrder {
 	gOPrice,
 	gOAmount,
 	bool:gOIsDeliver
+};
+
+enum GroupVehicle {
+	gVUid,
+	gVGUid,
+	gVOUid,
+	gVVehs[10]
 };

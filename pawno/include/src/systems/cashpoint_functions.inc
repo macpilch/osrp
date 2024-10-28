@@ -123,17 +123,19 @@ stock createNewCashpoint(playerid, cashpointname[]) {
 }
 
 stock generateBankAccountNumber(playerid) {
-	new tmpAccNum[9];
+	new tmpAccNum[8], accNum[9];
 
-	for(new i = 0; i < sizeof(tmpAccNum) - 1; i++) {
-		tmpAccNum[i] = random(10);
+	for(new i = 0; i < sizeof(tmpAccNum); i++) {
+		tmpAccNum[i] = random(10) + 1;
+
+		format(accNum, sizeof(accNum), "%s%d", accNum, tmpAccNum[i]);
 	}
 
-	pVars[playerid][pBankAcc] = strval(tmpAccNum);
-	printf("[DEBUG]: %s\n", tmpAccNum);
+	pVars[playerid][pBankAcc] = strval(accNum);
+	printf("[DEBUG]: %s\n", accNum);
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `BankAcc` = '%d' WHERE `UID` = '%s'", pVars[playerid][pBankAcc], pVars[playerid][pUid]);
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `BankAcc` = '%d' WHERE `UID` = '%d'", pVars[playerid][pBankAcc], pVars[playerid][pUid]);
 	mysql_query(queryStr);
 	return 1;
 }

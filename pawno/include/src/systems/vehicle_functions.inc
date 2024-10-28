@@ -76,15 +76,16 @@ stock initVehicleValues() {
 
 stock saveVehicleValues() {
 	foreach(new i : vehItter) {
-		if(vVars[i][vId] != INVALID_VEHICLE_ID) {
+		if(vVars[i][vId] != INVALID_VEHICLE_ID && vVars[i][vSpawned]) {
 			GetVehiclePos(vVars[i][vId], vVars[i][vX], vVars[i][vY], vVars[i][vZ]);
 			GetVehicleZAngle(vVars[i][vId], vVars[i][vAngle]);
-		}
+			GetVehicleHealth(vVars[i][vId], vVars[i][vEngineHp]);
 
-		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Color1` = '%d', `Color2` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Angle` = '%f', `Fuel` = '%f', `Lock` = '%d', `Engine` = '%d', `EngineHealth` = '%f', `Spawned` = '%d', `Lights` = '%d', `Mileage` = '%f', `Desc` = '%s', `Plate` = '%s' WHERE `UID` = '%d'",
-		vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vAngle], vVars[i][vFuel], vVars[i][vLock], vVars[i][vEngine], vVars[i][vEngineHp], vVars[i][vSpawned], vVars[i][vLights], vVars[i][vMileage], vVars[i][vDescInfo], vVars[i][vPlate], i + 1);
-		mysql_query(queryStr);
+			queryStr[0] = EOS;
+			format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Color1` = '%d', `Color2` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Angle` = '%f', `Fuel` = '%f', `Lock` = '%d', `Engine` = '%d', `EngineHealth` = '%f', `Spawned` = '%d', `Lights` = '%d', `Mileage` = '%f', `Desc` = '%s', `Plate` = '%s' WHERE `UID` = '%d'",
+			vVars[i][vColor1], vVars[i][vColor2], vVars[i][vX], vVars[i][vY], vVars[i][vZ], vVars[i][vAngle], vVars[i][vFuel], vVars[i][vLock], vVars[i][vEngine], vVars[i][vEngineHp], vVars[i][vSpawned], vVars[i][vLights], vVars[i][vMileage], vVars[i][vDescInfo], vVars[i][vPlate], vVars[i][vUid]);
+			mysql_query(queryStr);
+		}
 	}
 	return 1;
 }
@@ -270,9 +271,11 @@ Callback:updateVehicleFuel(playerid, Float:fuel) {
 	TextDrawSetOutline(vehicleFuelStatus[playerid][2], 1);
 	TextDrawBackgroundColor(vehicleFuelStatus[playerid][2], 16711935);
 	TextDrawFont(vehicleFuelStatus[playerid][2], 0);
-	
-	TextDrawShowForPlayer(playerid, vehicleFuelStatus[playerid][2]);
-	SetTimerEx("updateVehicleFuel", 1000, false, "if", playerid, fuel);
+
+	if(vVars[getServerVehicleIdForPlayer(playerid)][vEngine]) {
+		TextDrawShowForPlayer(playerid, vehicleFuelStatus[playerid][2]);
+		SetTimerEx("updateVehicleFuel", 1000, false, "if", playerid, fuel);
+	}
 	return 1;
 }
 

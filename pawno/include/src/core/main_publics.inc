@@ -49,6 +49,7 @@ sampCallback:OSRP_OnGameModeInit() {
 	initGroupItemValues();
 	initGroupTaskValues();
 	initGroupOrderValues();
+	initGroupVehicleValues();
 	initRaceValues();
 	createServerObjects();
 	createServer3DTexts();
