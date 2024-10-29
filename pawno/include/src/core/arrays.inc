@@ -114,16 +114,16 @@ new animNames[][] = {
 
 new itemNames[][] = {
 	"Rolki", "Piwo", "Wino", "Vodka", "Sprunk", "Teczka", "Torba", "Notatnik", "Marlboro", "Cygaro", "Ubranie", "Telefon", "Kostka",
-	"Maska", "Czarna bandana", "Rêkawice", "Kamizelka", "Kwiaty", "Kastet", "Pa³ka", "Nó¿", "Kij baseballowy", "Paralizator", "Tagger", "Pistolet",
-	"Desert Eagle", "Glock 19", "Shotgun", "UZI", "MP5", "AK-47", "M4", "TEC9", "Spadochron", "Mat Wybuchowe", "Batonik", "Bu³ka",
-	"Pizza", "Cheeseburger", "Sajgonki", "Sake Maki", "Zapiekanka", "Cappuccino", "Coca-Cola", "Cuba Libre", "Pepsi", "Energy drink",
-	"Mojito", "Frytki", "Grove Burger", "Hamburger", "Herbata", "Hotdog", "Kawa", "Kebab", "Lody", "Lody w kubku", "Lód czekoladowy",
-	"Lód œmietankowy", "Lód truskawkowy", "Kanapka z kurczakiem", "Longer", "Nachos z serem", "Naleœnik", "Naleœniki", "P¹czek", "P¹czek Afro",
-	"P¹czek Z³otawy", "Donut", "Sushi", "Lasagne", "Nuggetsy", "Spaghetti", "Taco", "Tortilla", "Woda Mineralna", "Discman", "Boombox", "RadioParty",
-	"CD", "Nokia 8110", "Lek", "Vitamina C", "Alarm", "Immobiliser", "Zderzak przedni", "Zderzak tylny", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik",
-	"Maska samochodowa", "Opona (LP)", "Opona (LT)", "Opona (PP)", "Opona (PT)", "Opona (LP/motor)", "Opona (LT/motor)", "Opona (PP/motor)",
-	"Opona (PT/motor)", "Œwiat³o (LP)", "Œwiat³o (PP)", "Œwiat³o (LT)", "Œwiat³o (PT)", "Alien Sultan", "Kanister", "Karnet", "Heroina", "Canon 450D",
-	"Linka holownicza", "Casio", "Karta pamieci", "Latarka", "Loteria", "Mebel", "Naboj lakieru", "Napis 3D", "Wytrych"
+	"Maska", "Czarnabandana", "Rêkawice", "Kamizelka", "Kwiaty", "Kastet", "Pa³ka", "Nó¿", "Kijbaseballowy", "Paralizator", "Tagger", "Pistolet",
+	"DesertEagle", "Glock19", "Shotgun", "UZI", "MP5", "AK-47", "M4", "TEC9", "Spadochron", "MatWybuchowe", "Batonik", "Bu³ka",
+	"Pizza", "Cheeseburger", "Sajgonki", "SakeMaki", "Zapiekanka", "Cappuccino", "Coca-Cola", "CubaLibre", "Pepsi", "Energy drink",
+	"Mojito", "Frytki", "GroveBurger", "Hamburger", "Herbata", "Hotdog", "Kawa", "Kebab", "Lody", "Lodywkubku", "Lódczekoladowy",
+	"Lódœmietankowy", "Lódtruskawkowy", "Kanapkazkurczakiem", "Longer", "Nachoszserem", "Naleœnik", "Naleœniki", "P¹czek", "P¹czekAfro",
+	"P¹czekZ³otawy", "Donut", "Sushi", "Lasagne", "Nuggetsy", "Spaghetti", "Taco", "Tortilla", "WodaMineralna", "Discman", "Boombox", "RadioParty",
+	"CD", "Nokia8110", "Lek", "VitaminaC", "Alarm", "Immobiliser", "Zderzakprzedni", "Zderzaktylny", "Drzwikierowcy", "Drzwipasa¿era", "Baga¿nik",
+	"Maskasamochodowa", "Opona(LP)", "Opona(LT)", "Opona(PP)", "Opona(PT)", "Opona(LP/motor)", "Opona(LT/motor)", "Opona(PP/motor)",
+	"Opona(PT/motor)", "Œwiat³o(LP)", "Œwiat³o(PP)", "Œwiat³o(LT)", "Œwiat³o(PT)", "AlienSultan", "Kanister", "Karnet", "Heroina", "Canon450D",
+	"Linkaholownicza", "Casio", "Kartapamieci", "Latarka", "Loteria", "Mebel", "Nabojlakieru", "Napis3D", "Wytrych"
 };
 
 new VehicleNames[212][] = {

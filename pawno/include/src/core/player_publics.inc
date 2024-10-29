@@ -1250,14 +1250,14 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 		
 		case DIALOG_LOGIN_PASS: {
 			mainStr[0] = EOS;
-			
+
 			if(!response) {
 				format(mainStr, sizeof(mainStr), "1.\tChcesz now¹ postaæ? Kliknij STWÓRZ.\n2.\tMasz ju¿ postaæ? Wpisz jej nick poni¿ej.");
 				return ShowPlayerDialog(playerid, DIALOG_LOGIN_CHANGE_CHAR, DIALOG_STYLE_INPUT, "Zmiana postaci", mainStr, "Zmieñ", "STWÓRZ");
 			}
-			
+
 			static loginAttempts;
-			
+
 			if(!strcmp(pVars[playerid][pPass], inputtext, false) && strlen(inputtext)) {
 				OSRP_TogglePlayerSpectating(playerid, false);
 				SetTimerEx("setICNameForPlayer", 1000, false, "i", playerid);
@@ -2114,8 +2114,13 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			}
 
 			new tmpUid, itemid, srvItemId;
+			new name[32];
 
-			tmpUid = strval(inputtext);
+			if(!listitem) {
+				return 1;
+			}
+
+			sscanf(inputtext, "s[32]i", name, tmpUid);
 
 			foreach(new i : itemItter) {
 				if(tmpUid == iVars[i][iUid]) {
@@ -2145,9 +2150,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			itemsCount = mysql_fetch_int();
 			mysql_free_result();
 
-			if(!listitem) {
-				return 1;
-			} else if(itemsCount > listitem - 1) {
+			if(itemsCount > listitem - 1) {
 				enableItemProperties(playerid, srvItemId, itemid);
 			} else {
 				pickUpNearblyItems(playerid, ITEM_PLACE_FLOOR);
