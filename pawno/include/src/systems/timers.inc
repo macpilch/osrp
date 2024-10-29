@@ -298,9 +298,9 @@ Timer:antiCheat[1000]() {
 			new reas[64];
 			new Float:x, Float:y, Float:z, Float:totalPos;
 			new srvVehId = getServerVehicleIdForPlayer(i);
-			
+
 			GetPlayerPos(i, x, y, z);
-			
+
 			/*if((x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y) && !isFreeze[i]) {
 				format(reas, sizeof(reas), "Cheat, AirBreak~n~~w~Cheat, AirBreak: d%f tc%d d3.s%d");
 				givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, 0, reas);
@@ -320,7 +320,7 @@ Timer:antiCheat[1000]() {
 				}
 			}
 
-			if(isFreeze[i]) {
+			if(isFreeze[i] && !numberBlows[i]) {
 				if(IsPlayerInAnyVehicle(i) && getVehicleSpeed(vVars[srvVehId][vId]) > 0 && (x > pVars[i][pX] || x < pVars[i][pX]) && (pVars[i][pY] > y || pVars[i][pY] < y) && GetTickCount() < enteredVehicleSec[i]) {
 					enteredVehicleSec[i] = 0;
 					totalPos = floatabs((x - pVars[i][pX]) + (y - pVars[i][pY]));

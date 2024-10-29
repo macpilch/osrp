@@ -68,7 +68,7 @@ stock saveItemValues() {
 }
 
 stock getServerItemIdForPlayer(playerid) {
-	new iid;
+	new iid = -1;
 
 	foreach(new i : itemItter) {
 		if(iVars[i][iUid] == actualItem[playerid]) {
@@ -670,7 +670,7 @@ stock pickUpNearblyItems(playerid, where) {
 	if(where == ITEM_PLACE_FLOOR) {
 		foreach(new i : itemItter) {
 			if(playerToPoint(playerid, 5.0, iVars[i][iPosX], iVars[i][iPosY], iVars[i][iPosZ])) {
-				if((iVars[i][iPlace] == ITEM_PLACE_FLOOR && iVars[i][iOUid] == INVALID_PLAYER_ID) && actualItem[playerid] == INVALID_ITEM_ID) {
+				if((iVars[i][iPlace] == ITEM_PLACE_FLOOR && iVars[i][iOUid] == INVALID_PLAYER_ID && !iVars[i][iUsed]) && actualItem[playerid] == INVALID_ITEM_ID) {
 					format(mainStr, sizeof(mainStr), "%s{FFFFFF}%d\t%s\n", mainStr, iVars[i][iUid], iVars[i][iName]);
 
 					countItems++;
@@ -680,12 +680,16 @@ stock pickUpNearblyItems(playerid, where) {
 	} else if(where == ITEM_PLACE_VEHICLE) {
 		new srvVehId = getServerVehicleIdForPlayer(playerid);
 
+		if(srvVehId == -1) {
+			return 1;
+		}
+
 		if(vVars[srvVehId][vOUid] != pVars[playerid][pUid]) {
 			return GameTextForPlayer(playerid, "~y~Ten pojazd nie nalezy do ciebie.", 5000, 3);
 		}
 
 		foreach(new i : itemItter) {
-			if((iVars[i][iPlace] == ITEM_PLACE_VEHICLE && iVars[i][iOUid] == vVars[srvVehId][vUid]) && actualItem[playerid] == INVALID_ITEM_ID) {
+			if((iVars[i][iPlace] == ITEM_PLACE_VEHICLE && iVars[i][iOUid] == vVars[srvVehId][vUid] && !iVars[i][iUsed]) && actualItem[playerid] == INVALID_ITEM_ID) {
 				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, iVars[i][iUid], iVars[i][iName]);
 
 				countItems++;
@@ -713,7 +717,7 @@ stock showPlayerDialogItems(playerid) {
 
 	foreach(new i : itemItter) {
 		if(iVars[i][iOUid] == pVars[playerid][pUid] && iVars[i][iPlace] == ITEM_PLACE_PLAYER) {
-			format(mainStr, sizeof(mainStr), "%s\n %s\t{000000}%d\t%d\t(%d, %d)", mainStr, iVars[i][iName], iVars[i][iUid], iVars[i][iId], iVars[i][iValue1], iVars[i][iValue2]);
+			format(mainStr, sizeof(mainStr), "%s\n{000000}%d  {FFFFFF}%s", mainStr, iVars[i][iUid], iVars[i][iName]);
 
 			countItems++;
 		}

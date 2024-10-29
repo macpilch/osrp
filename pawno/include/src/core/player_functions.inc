@@ -1244,14 +1244,14 @@ stock loadPlayerValues(playerid) {
 	mysql_real_escape_string(pVars[playerid][pCharName], tmpChrName);
 
 	queryStr[0] = EOS;
-	strcat(queryStr, "SELECT `GUID`, `CharId`, `IP`, `GS`, `Rank`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `HP`, `AP`, `VW`, `INT`, `Skin`, `LastSkin`, `Money`, `Bank`, `Debt`, `BW`, `AJ`, `AL`, `DrvLicAttempts`, `GOV`, `Hotel`, `IdCard`, `DriverLicense`, `Detention`, `PDP`, `TelNum`,");
+	strcat(queryStr, "SELECT `GUID`, `CharId`, `IP`, `GS`, `Rank`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `HP`, `AP`, `VW`, `INT`, `Skin`, `LastSkin`, `Money`, `Bank`, `Debt`, `BW`, `AJ`, `AL`, `DrvLicAttempts`, `GOV`, `Hotel`, `HotelPaid`, `IdCard`, `DriverLicense`, `Detention`, `PDP`, `TelNum`,");
 	format(queryStr, sizeof(queryStr), "%s`TelNetwork`, `BankAcc`, `GroupDesc`, `Group0`, `Group1`, `Group2`, `Group3`, `Group4`, `CasualJob`, `Traveled`, `Addiction`, `Audio`, `ChatStyle`, `Computer`, `WalkAnim`, `StyleFight`, `X`, `Y`, `Z`, `Desc` FROM `osrp_Players` WHERE `CharName` = '%s'", queryStr, tmpChrName);
 	mysql_query(queryStr);
 
 	mysql_store_result();
 	mysql_fetch_row(queryStr, "|");
 
-	sscanf(queryStr, "p<|>iis[16]iiiiiiiffiiiiiiiiiiiiiiiiiiiis[128]iiiiiiffiiiiifffs[64]",
+	sscanf(queryStr, "p<|>iis[16]iiiiiiiffiiiiiiiiiiiiiiiiiiiiis[128]iiiiiiffiiiiifffs[64]",
 		pVars[playerid][pGUid],
 		pVars[playerid][pCharId],
 		pVars[playerid][pIp],
@@ -1277,6 +1277,7 @@ stock loadPlayerValues(playerid) {
 		pVars[playerid][pDrvLicAttempts], 
 		pVars[playerid][pGov],
 		pVars[playerid][pHotel],
+		pVars[playerid][pHotelPaid],
 		pVars[playerid][pIdCard],
 		pVars[playerid][pDriverLicense],
 		pVars[playerid][pDetention],
@@ -1397,7 +1398,7 @@ stock bool:isPlayerBanned(playerid) {
 	return false;
 }
 
-stock givePlayerPenalty(playerid, victim, type, days, const reason[]) {
+stock givePlayerPenalty(playerid, victim, type, days, reason[]) {
 	new str[256], date[64], suitable[24];
 	new h, m, s, day, month, year;
 
@@ -1412,7 +1413,7 @@ stock givePlayerPenalty(playerid, victim, type, days, const reason[]) {
 	if(playerid == INVALID_PLAYER_ID) {
 		format(suitable, sizeof(suitable), "System");
 	} else {
-		format(suitable, sizeof(suitable), "%s", pVars[playerid][pCharName]);
+		format(suitable, sizeof(suitable), pVars[playerid][pCharName]);
 	}
 
 	switch(type) {
@@ -1424,10 +1425,9 @@ stock givePlayerPenalty(playerid, victim, type, days, const reason[]) {
 				pc_cmd_duty(victim, "");
 			}
 
-			pVars[playerid][pBlock] += BLOCK_BAN;
 			pVars[victim][pBans]++;
 
-			savePlayerValues(playerid);
+			savePlayerValues(victim);
 			SetTimerEx("kickPlayer", 500, false, "i", victim);
 		}
 		case PEN_KICK: {
@@ -1440,7 +1440,7 @@ stock givePlayerPenalty(playerid, victim, type, days, const reason[]) {
 
 			pVars[victim][pKicks]++;
 
-			savePlayerValues(playerid);
+			savePlayerValues(victim);
 			SetTimerEx("kickPlayer", 500, false, "i", victim);
 		}
 		case PEN_ADMJAIL: {
@@ -1517,7 +1517,7 @@ stock givePlayerPenalty(playerid, victim, type, days, const reason[]) {
 		}
 	}
 
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Penalties` (`SUID`, `OUID`, `Type`, `Days`, `Date`, `Reason`) VALUES ('%d', '%d', '%d', '%d', '%s', '%s')", pVars[playerid][pUid], pVars[victim][pUid], type, days, date, reason);
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Penalties` (`SUID`, `OUID`, `Type`, `Days`, `Date`, `Reason`) VALUES ('%d', '%d', '%d', '%d', '%s', '%s')", playerid == INVALID_PLAYER_ID ? INVALID_PLAYER_ID : pVars[playerid][pUid], pVars[victim][pUid], type, days, date, reason);
 	mysql_query(queryStr);
 
 	SendClientMessage(victim, COLOR_WHITE, mainStr);
@@ -1909,7 +1909,7 @@ stock setPlayerBW(playerid, minutes) {
 	OSRP_TogglePlayerControllable(playerid, 0);
 
 	ClearAnimations(playerid);
-	ApplyAnimation(playerid, "CRACK", "crckdeth1", 4.1, 0, 0, 0, 1, 0, 0);
+	ApplyAnimation(playerid, "CRACK", "crckdeth1", 4.1, 0, 0, 0, 1, 0);
 
 	SetPlayerDrunkLevel(playerid, 0);
 	SetTimerEx("bwTimer", 1000, false, "i", playerid);
@@ -1959,13 +1959,13 @@ stock updatePlayerGameStatus(playerid) {
 		pVars[playerid][pStatus] -= STAT_BW;
 	}
 
-	if((iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) && !(pVars[playerid][pStatus] & STAT_ROLLERS)) {
+	if((srvItemId != -1 && iVars[srvItemId][iId] == P_ROLKI && iVars[srvItemId][iUsed]) && !(pVars[playerid][pStatus] & STAT_ROLLERS)) {
 		pVars[playerid][pStatus] += STAT_ROLLERS;
-	} else if((srvItemId == INVALID_ITEM_ID && !iVars[srvItemId][iUsed]) && (pVars[playerid][pStatus] & STAT_ROLLERS)) {
+	} else if((srvItemId != -1 && srvItemId == INVALID_ITEM_ID && !iVars[srvItemId][iUsed]) && (pVars[playerid][pStatus] & STAT_ROLLERS)) {
 		pVars[playerid][pStatus] -= STAT_ROLLERS;
 	}
 
-	if((drunkLevel >= 2000 && !isDizzines[playerid] && (iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4 && iVars[srvItemId][iUsed])) && !(pVars[playerid][pStatus] & STAT_DRUNK)) {
+	if((drunkLevel >= 2000 && !isDizzines[playerid] && (srvItemId != -1 && iVars[srvItemId][iId] <= P_COLT && iVars[srvItemId][iId] >= P_M4 && iVars[srvItemId][iUsed])) && !(pVars[playerid][pStatus] & STAT_DRUNK)) {
 		pVars[playerid][pStatus] += STAT_DRUNK;
 	} else if(drunkLevel <= 2000 && (pVars[playerid][pStatus] & STAT_DRUNK)) {
 		pVars[playerid][pStatus] -= STAT_DRUNK;
@@ -2755,11 +2755,17 @@ stock getWeaponSlot(weaponid) {
 }
 
 // Callbacks
-Callback:fightCheckTimer(playerid) {
-	if(lastBlowTime[playerid] > GetTickCount()) {
-		SetTimerEx("fightCheckTimer", 1000, false, "i", playerid);
+Callback:fightCheckTimer(playerid, attacker) {
+	if(lastBlowTime[attacker] > GetTickCount()) {
+		SetTimerEx("fightCheckTimer", 1000, false, "i", attacker);
 	} else {
-		lastBlowTime[playerid] = 0;
+		isPlayerFight[attacker] = false;
+		isPlayerFight[playerid] = false;
+
+		lastBlowTime[attacker] = 0;
+
+		numberBlows[attacker] = 0;
+		numberBlows[playerid] = 0;
 	}
 }
 
@@ -3003,7 +3009,10 @@ Callback:hideSpecialServicesInfo(playerid) {
 }
 
 Callback:destroyExit3dInfo(playerid) {
-	return DestroyDynamic3DTextLabel(exit3dInfo[playerid]);
+	if(IsValidDynamic3DTextLabel(exit3dInfo[playerid])) {
+		DestroyDynamic3DTextLabel(exit3dInfo[playerid]);
+	}
+	return 1;
 }
 
 Callback:bwTimer(playerid) {
@@ -3020,8 +3029,9 @@ Callback:bwTimer(playerid) {
 		isBW[playerid] = false;
 
 		ClearAnimations(playerid);
-		OSRP_SetPlayerHealth(playerid, 7.0);
+		ApplyAnimation(playerid, "MD_END", "END_SC1_PLY", 4.1, 0, 1, 1, 0, 0, 1);
 
+		OSRP_SetPlayerHealth(playerid, 7.0);
 		SetPlayerDrunkLevel(playerid, 10000);
 		OSRP_TogglePlayerControllable(playerid, 1);
 
