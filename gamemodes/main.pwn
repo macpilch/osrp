@@ -30,6 +30,7 @@
 #include "src\enums\race"
 #include "src\core\vars"
 #include "src\core\arrays"
+#include "ini_reader"
 #include "src\core\main_publics"
 #include "src\core\player_publics"
 #include "src\core\objects"

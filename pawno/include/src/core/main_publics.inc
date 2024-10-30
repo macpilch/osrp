@@ -25,8 +25,10 @@ sampCallback:OSRP_OnGameModeInit() {
 	SetGravity(0.008);
 	SetGameModeText("macpilch: osrp.com");
 	
+	ReadIni();
+	
 	hMySQL = mysql_init(LOG_ONLY_ERRORS, 1);
-	mySQLConnect = mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB, hMySQL, 1);
+	mySQLConnect = mysql_connect(gDB_HOST, gDB_NAME, gDB_PASS, gDB_DBNAME, hMySQL, 1);
 	
 	if(mySQLConnect) {
 		printf("[LOG]: MYSQL DB Enabled!");
