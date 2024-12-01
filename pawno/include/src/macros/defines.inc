@@ -58,6 +58,7 @@
 #define MAX_CONTACTS 10
 #define MAX_BLOCKADES 5
 #define MAX_PENALTIES 100
+#define MAX_ANIMATIONS 135
 
 // Callbacks
 #define sampCallback:%0(%1) \
@@ -65,11 +66,6 @@
 
 #define Callback:%0(%1) \
 		forward %0(%1); public %0(%1)
-
-#define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "server_798"
-#define MYSQL_PASS "t9vzcaesui"
-#define MYSQL_DB "server_798_osrp"
 
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_RED 0xFF0000FF
@@ -102,20 +98,6 @@
 
 #define CAMERA_SPEED 5000
 
-// Statusy (Flagi)
-#define STAT_NONE 1
-#define STAT_AFK 2
-#define STAT_BW 4
-#define STAT_ROLLERS 8
-#define STAT_DRUNK 16
-#define STAT_DRUGS 32
-#define STAT_STRENGTH 64
-#define STAT_BELTS 128
-#define STAT_DETENTION 256
-#define STAT_GLOVES 512
-#define STAT_MUSIC 1024
-#define STAT_DRIVING 2048
-
 // Blokady gracza (Flagi)
 #define BLOCK_BAN 1
 #define BLOCK_OOC 2
@@ -143,6 +125,7 @@
 #define PEN_WRITING 8
 #define PEN_RPACTN 9
 #define PEN_CURSE 10
+#define PEN_SCORE 11
 
 #define OFFER_PARM_PRICE 0
 #define OFFER_PARM_ETC 1
@@ -329,6 +312,12 @@
 #define VEHICLE_OWNER_GROUP 0
 #define INVALID_ITEM_ID 0
 
+#define VEH_ACCESSORIES_ALARM 1
+#define VEH_ACCESSORIES_IMMOBILISER 2
+#define VEH_ACCESSORIES_CBRADIO 4
+#define VEH_ACCESSORIES_AUDIO 8
+#define VEH_ACCESSORIES_LIMITER 16
+
 #define ITEM_PLACE_PLAYER 0
 #define ITEM_PLACE_FLOOR 1
 #define ITEM_PLACE_VEHICLE 2
@@ -362,7 +351,6 @@
 // Number plate
 #define VEHICLE_NUMBER_PLATE_NULL ""
 
-forward Float:getVehicleDistance(vehicleid);
 forward bool:checkPlayerVehicles(playerid);
 forward bool:isVehicleInUse(vehicleid);
 forward bool:isPlayerBanned(playerid);

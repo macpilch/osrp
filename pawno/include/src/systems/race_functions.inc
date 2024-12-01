@@ -30,9 +30,9 @@ stock initRaceValues() {
 		}
 		
 		mysql_fetch_row(queryStr, ",");
-		sscanf(queryStr, "p<,>is[64]iiii", rcVars[i][rcUid], rcVars[i][rcName], rcVars[i][rcCreated], rcVars[i][rcBesetments], rcVars[i][rcCps], rcVars[i][rcPlayers]);
+		sscanf(queryStr, "p<,>is[64]iiii", tRace[i][rcUid], tRace[i][rcName], tRace[i][rcCreated], tRace[i][rcBesetments], tRace[i][rcCps], tRace[i][rcPlayers]);
 		
-		cps = rcVars[i][rcCps];
+		cps = tRace[i][rcCps];
 		
 		for(new j = 0; j < cps; j++) {
 			format(tmpQuery, sizeof(tmpQuery), "SELECT `CP%d` FROM `osrp_Races` WHERE `UID` = '%d'", j, i + 1);
@@ -41,14 +41,14 @@ stock initRaceValues() {
 			mysql_store_result();
 			
 			mysql_fetch_row(queryStr, " ");
-			sscanf(queryStr, "fff", rcVars[i][rcCpX][j], rcVars[i][rcCpY][j], rcVars[i][rcCpZ][j]);
+			sscanf(queryStr, "fff", tRace[i][rcCpX][j], tRace[i][rcCpY][j], tRace[i][rcCpZ][j]);
 			
-			if(rcVars[i][rcCpX][j] == 0 && rcVars[i][rcCpY][j] == 0 && rcVars[i][rcCpZ][j] == 0) {
+			if(tRace[i][rcCpX][j] == 0 && tRace[i][rcCpY][j] == 0 && tRace[i][rcCpZ][j] == 0) {
 				continue;
 			}
 			
 #if defined DEBUG
-			printf("[DEBUG]: Cp%d %f, %f, %f", j, rcVars[i][rcCpX][j], rcVars[i][rcCpY][j], rcVars[i][rcCpZ][j]);
+			printf("[DEBUG]: Cp%d %f, %f, %f", j, tRace[i][rcCpX][j], tRace[i][rcCpY][j], tRace[i][rcCpZ][j]);
 #endif
 		}
 		
@@ -72,9 +72,9 @@ stock onEnterRaceCheckpoint(playerid) {
 	playerCps[playerid]++;
 	playerRcPosition[playerid] = 1;
 
-	if(playerCps[playerid] != 0 && playerCps[playerid] < rcVars[srvRcId][rcCps] - 1) {
+	if(playerCps[playerid] != 0 && playerCps[playerid] < tRace[srvRcId][rcCps] - 1) {
 		DisablePlayerRaceCheckpoint(playerid);
-		SetPlayerRaceCheckpoint(playerid, 0, rcVars[srvRcId][rcCpX][playerCps[playerid]], rcVars[srvRcId][rcCpY][playerCps[playerid]], rcVars[srvRcId][rcCpZ][playerCps[playerid]], rcVars[srvRcId][rcCpX][playerCps[playerid] + 1], rcVars[srvRcId][rcCpY][playerCps[playerid] + 1], rcVars[srvRcId][rcCpZ][playerCps[playerid] + 1], 5.0);
+		SetPlayerRaceCheckpoint(playerid, 0, tRace[srvRcId][rcCpX][playerCps[playerid]], tRace[srvRcId][rcCpY][playerCps[playerid]], tRace[srvRcId][rcCpZ][playerCps[playerid]], tRace[srvRcId][rcCpX][playerCps[playerid] + 1], tRace[srvRcId][rcCpY][playerCps[playerid] + 1], tRace[srvRcId][rcCpZ][playerCps[playerid] + 1], 5.0);
 
 		foreach(new i : Player) {
 			if(isRace[i]) {
@@ -85,9 +85,9 @@ stock onEnterRaceCheckpoint(playerid) {
 				}
 			}
 		}
-	} else if(playerCps[playerid] == rcVars[srvRcId][rcCps] - 1) {
+	} else if(playerCps[playerid] == tRace[srvRcId][rcCps] - 1) {
 		DisablePlayerRaceCheckpoint(playerid);
-		SetPlayerRaceCheckpoint(playerid, 1, rcVars[srvRcId][rcCpX][playerCps[playerid]], rcVars[srvRcId][rcCpY][playerCps[playerid]], rcVars[srvRcId][rcCpZ][playerCps[playerid]], 0.0, 0.0, 0.0, 5.0);
+		SetPlayerRaceCheckpoint(playerid, 1, tRace[srvRcId][rcCpX][playerCps[playerid]], tRace[srvRcId][rcCpY][playerCps[playerid]], tRace[srvRcId][rcCpZ][playerCps[playerid]], 0.0, 0.0, 0.0, 5.0);
 	
 		foreach(new i : Player) {
 			if(isRace[i]) {
@@ -98,7 +98,7 @@ stock onEnterRaceCheckpoint(playerid) {
 				}
 			}
 		}		
-	} else if(playerCps[playerid] == rcVars[srvRcId][rcCps]) {
+	} else if(playerCps[playerid] == tRace[srvRcId][rcCps]) {
 		DisablePlayerRaceCheckpoint(playerid);
 		mainStr[0] = EOS;
 
@@ -106,12 +106,12 @@ stock onEnterRaceCheckpoint(playerid) {
 		GameTextForPlayer(playerid, mainStr, 5000, 3);
 
 		mainStr[0] = EOS;
-		format(mainStr, sizeof(mainStr), "%s koñczy wyœcig z czasem %0.2fs.", pVars[playerid][pCharName], playerRcActualTime[playerid]);
+		format(mainStr, sizeof(mainStr), "%s koñczy wyœcig z czasem %0.2fs.", tPlayer[playerid][pCharName], playerRcActualTime[playerid]);
 		sendOtherMessage(playerid, mainStr);
 	}
 
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "~n~~n~~n~~n~~n~~n~~p~Okrazenie ~w~1/%d~n~~b~Checkpoint ~w~%d/%d~n~~y~~h~%0.2fs ~w~[%d/%d]", rcVars[srvRcId][rcBesetments], playerCps[playerid], rcVars[srvRcId][rcCps], playerRcActualTime[playerid], playerRcPosition[playerid], numPlayerRace);
+	format(mainStr, sizeof(mainStr), "~n~~n~~n~~n~~n~~n~~p~Okrazenie ~w~1/%d~n~~b~Checkpoint ~w~%d/%d~n~~y~~h~%0.2fs ~w~[%d/%d]", tRace[srvRcId][rcBesetments], playerCps[playerid], tRace[srvRcId][rcCps], playerRcActualTime[playerid], playerRcPosition[playerid], numPlayerRace);
 	GameTextForPlayer(playerid, mainStr, 10000, 3);
 	return 1;
 }
@@ -159,7 +159,7 @@ stock getServerRaceIdForPlayer(playerid) {
 	new rId;
 	
 	foreach(new i : raceItter) {
-		if(rcVars[i][rcUid] == actualRace[playerid]) {
+		if(tRace[i][rcUid] == actualRace[playerid]) {
 			rId = i;
 			break;
 		}

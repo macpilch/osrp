@@ -6,6 +6,10 @@
 	Modified: 16.08.2023
 */
 
+#if !defined DEBUG
+#define DEBUG
+#endif
+
 #include <a_samp>
 #include <Pawn.CMD>
 #include <mysql>
@@ -18,6 +22,7 @@
 #include "src\macros\dialogs"
 #include "src\enums\player"
 #include "src\enums\vehicle"
+#include "src\enums\anim"
 #include "src\enums\area"
 #include "src\enums\group"
 #include "src\enums\item"
@@ -30,7 +35,9 @@
 #include "src\enums\race"
 #include "src\core\vars"
 #include "src\core\arrays"
+#include "ini_reader"
 #include "src\core\main_publics"
+#include "src\core\misc_functions"
 #include "src\core\player_publics"
 #include "src\core\objects"
 #include "src\systems\vehicle_publics"
@@ -41,6 +48,7 @@
 #include "src\core\global_functions"
 #include "src\core\player_functions"
 #include "src\systems\vehicle_functions"
+#include "src\systems\anim_functions"
 #include "src\systems\area_functions"
 #include "src\systems\item_functions"
 #include "src\systems\door_functions"

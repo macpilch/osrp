@@ -22,7 +22,7 @@ enum CharSurName {
 	bool:chSurUsed
 };
 
-enum PenaltiesData {
+enum PenaltyData {
 	penSUID,
 	penOUID,
 	penType,
@@ -66,6 +66,7 @@ enum PlayerData {
 	pWeapons[13],
 	pWeapSlot,
 	pBw,
+	pBwTimer,
 	pAj,
 	pAl,
 	pDrvLicAttempts,
@@ -87,11 +88,9 @@ enum PlayerData {
 	pGroupPerms[64],
 	pArea,
 	pDuty,
-	pStatus,
-	pStatusStr[32],
-	pOldStatusStr[32],
-	p3dInfoStr[64],
-	Float:pTraveled,
+	pStatus[64],
+	p3dInfoStr[128],
+	pTraveled,
 	Float:pAddiction,
 	pDoor,
 	pAudio,

@@ -14,12 +14,14 @@
 
 stock initServerValues() {
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `AllAccounts` FROM `osrp_Settings`");
+	format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Settings`");
 	mysql_query(queryStr);
 
 	mysql_store_result();
 
-	allAccounts = mysql_fetch_int();
+	mysql_fetch_row(queryStr, " ");
+	sscanf(queryStr, "ii", allAccounts, allCharacters);
+
 	mysql_free_result();
 	return 1;
 }

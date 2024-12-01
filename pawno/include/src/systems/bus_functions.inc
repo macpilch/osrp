@@ -29,20 +29,20 @@ stock initBusStopValues() {
 		mysql_fetch_row(queryStr, "|");
 
 		sscanf(queryStr, "p<|>is[32]ffffff",
-			bVars[i][bUid],
-			bVars[i][bName],
-			bVars[i][bX],
-			bVars[i][bY],
-			bVars[i][bZ],
-			bVars[i][bRotX],
-			bVars[i][bRotY],
-			bVars[i][bRotZ]
+			tBusStop[i][bUid],
+			tBusStop[i][bName],
+			tBusStop[i][bX],
+			tBusStop[i][bY],
+			tBusStop[i][bZ],
+			tBusStop[i][bRotX],
+			tBusStop[i][bRotY],
+			tBusStop[i][bRotZ]
 		);
 
 		Iter_Add(busStopItter, i);
-		bVars[i][bObject] = CreateDynamicObject(1257, bVars[i][bX], bVars[i][bY], bVars[i][bZ], bVars[i][bRotX], bVars[i][bRotY], bVars[i][bRotZ], 0, 0, -1, 100.0);
+		tBusStop[i][bObject] = CreateDynamicObject(1257, tBusStop[i][bX], tBusStop[i][bY], tBusStop[i][bZ], tBusStop[i][bRotX], tBusStop[i][bRotY], tBusStop[i][bRotZ], 0, 0, -1, 100.0);
 
-		printf("[DEBUG] Uid: %d,  Name: %s", i + 1, bVars[i][bName]);
+		printf("[DEBUG] Uid: %d,  Name: %s", i + 1, tBusStop[i][bName]);
 	}
 
 	if(Iter_Count(busStopItter)) {
@@ -58,24 +58,24 @@ stock initBusStopValues() {
 stock createNewBusStop(playerid, busstopname[]) {
 	new price = 1;
 	
-	GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+	GetPlayerPos(playerid, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ]);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_BusStops`(`Name`, `Price`, `X`, `Y`, `Z`) VALUES ('%s', '%d', '%f', '%f', '%f')", busstopname, price, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_BusStops`(`Name`, `Price`, `X`, `Y`, `Z`) VALUES ('%s', '%d', '%f', '%f', '%f')", busstopname, price, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ]);
 	mysql_query(queryStr);
 	return 1;
 }
 
 stock searchPlayerBusStop(playerid) {
 	foreach(new i : busStopItter) {
-		if(playerToPoint(playerid, 2.0, bVars[i][bX], bVars[i][bY], bVars[i][bZ])) {
-			GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+		if(playerToPoint(playerid, 2.0, tBusStop[i][bX], tBusStop[i][bY], tBusStop[i][bZ])) {
+			GetPlayerPos(playerid, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ]);
 
 			OSRP_TogglePlayerControllable(playerid, false);
 			SetCameraBehindPlayer(playerid);
 
-			InterpolateCameraPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY] + 10, pVars[playerid][pZ] + 150, 2000, CAMERA_MOVE);
-			InterpolateCameraLookAt(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ], 2000, CAMERA_MOVE);
+			InterpolateCameraPos(playerid, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ], tPlayer[playerid][pX], tPlayer[playerid][pY] + 10, tPlayer[playerid][pZ] + 150, 2000, CAMERA_MOVE);
+			InterpolateCameraLookAt(playerid, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ], tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ], 2000, CAMERA_MOVE);
 
 			isInBus[playerid] = true;
 			actualBusStop[playerid] = i;
@@ -91,10 +91,10 @@ stock teleportToBusStop(playerid, busstopid) {
 		if(actualBusStop[playerid] == i) {
 			
 		} else if(busstopid == i) {
-			format(mainStr, sizeof(mainStr), "* %s wsiad³ do autobusu jad¹cego w kierunku przystanku nr %d", bVars[i][bUid]);
+			format(mainStr, sizeof(mainStr), "* %s wsiad³ do autobusu jad¹cego w kierunku przystanku nr %d", tBusStop[i][bUid]);
 			sendMeMessage(playerid, mainStr);
 			
-			SetPlayerPos(playerid, bVars[i][bX], bVars[i][bY], bVars[i][bZ]);
+			SetPlayerPos(playerid, tBusStop[i][bX], tBusStop[i][bY], tBusStop[i][bZ]);
 			
 			actualBusStop[playerid] = -1;
 		}

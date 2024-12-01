@@ -17,7 +17,6 @@ enum VehicleData {
 	vId,   // id in game
 	vOUid,  // vehicle owner
 	vGUid, // group uid
-	vCharName[24], // vehicle owner name
 	vModelId, // vehicle modelid
 	vColor1,
 	vColor2,
@@ -32,13 +31,9 @@ enum VehicleData {
 	bool:vSpawned,
 	bool:vLights,
 	bool:vWindow,
-	bool:vAlarm,
-	bool:vImmo,
-	bool:vCBRadio,
-	bool:vAudio,
-	bool:vLimiter,
+	vAccessories,
 	Float:vRepair,
-	Float:vMileage, // Przebieg
+	vMileage, // Przebieg
 	Text3D:vDesc,
 	vDescInfo[64],
 	vPlate[32]

@@ -14,7 +14,7 @@
 #pragma library osrp
 
 CMD:ban(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -38,7 +38,7 @@ CMD:ban(playerid, params[]) {
 }
 
 CMD:kick(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -62,7 +62,7 @@ CMD:kick(playerid, params[]) {
 }
 
 CMD:warn(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -86,7 +86,7 @@ CMD:warn(playerid, params[]) {
 }
 
 CMD:block(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -110,7 +110,7 @@ CMD:block(playerid, params[]) {
 }
 
 CMD:norun(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -134,7 +134,7 @@ CMD:norun(playerid, params[]) {
 }
 
 CMD:nob(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -158,7 +158,7 @@ CMD:nob(playerid, params[]) {
 }
 
 CMD:now(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -182,7 +182,7 @@ CMD:now(playerid, params[]) {
 }
 
 CMD:norp(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -206,7 +206,7 @@ CMD:norp(playerid, params[]) {
 }
 
 CMD:noveh(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -230,7 +230,7 @@ CMD:noveh(playerid, params[]) {
 }
 
 CMD:klatwa(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -254,7 +254,7 @@ CMD:klatwa(playerid, params[]) {
 }
 
 CMD:aj(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -278,7 +278,7 @@ CMD:aj(playerid, params[]) {
 }
 
 CMD:unaj(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -296,25 +296,49 @@ CMD:unaj(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	pVars[pId][pAj] = 0;
+	tPlayer[pId][pAj] = 0;
 	
-	SetPlayerPos(playerid, pVars[pId][pX], pVars[pId][pY], pVars[pId][pZ]);
+	SetPlayerPos(playerid, tPlayer[pId][pX], tPlayer[pId][pY], tPlayer[pId][pZ]);
 	SetPlayerVirtualWorld(pId, 0);
 	SetPlayerInterior(pId, 0);
 	return 1;
 }
 
-CMD:bw(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+CMD:score(playerid, params[]) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
-	
+
 	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
-	
+
+	new pId, amount;
+	new reason[128];
+
+	if(sscanf(params, "iis[128]", pId, amount, reason)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /score [Gracz] [Iloœæ] [Powód]");
+	}
+
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+	}
+
+	givePlayerPenalty(playerid, pId, PEN_SCORE, amount, reason);
+	return 1;
+}
+
+CMD:bw(playerid, params[]) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
+		return 0;
+	}
+
+	if(!isAdminDuty[playerid]) {
+		return 1;
+	}
+
 	new pId, time;
-	
+
 	if(sscanf(params, "ii", pId, time)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /bw [Gracz] [Czas] {W minutach}");
 	}
@@ -322,42 +346,42 @@ CMD:bw(playerid, params[]) {
 	if(!IsPlayerConnected(pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
-	
+
 	setPlayerBW(pId, time);
-	
+
 	foreach(new i : Player) {
-		if(pVars[i][pRank] >= RANK_GAMEMASTER1 && pVars[i][pRank] <= RANK_ADMIN4) {
+		if(tPlayer[i][pRank] >= RANK_GAMEMASTER1 && tPlayer[i][pRank] <= RANK_ADMIN4) {
 			if(isAdminDuty[i]) {
 				if(playerid == pId) {
 					mainStr[0] = EOS;
-					format(mainStr, sizeof(mainStr), "%s nada³ sobie BW.", pVars[playerid][pCharName]);
+					format(mainStr, sizeof(mainStr), "%s nada³ sobie BW.", tPlayer[playerid][pCharName]);
 					SendClientMessage(i, COLOR_GREEN, mainStr);
 				}
 			}
 		}
 	}
-	
+
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "%s nada³(a) Ci BW.", pVars[playerid][pCharName]);
+	format(mainStr, sizeof(mainStr), "%s nada³(a) Ci BW.", tPlayer[playerid][pCharName]);
 	SendClientMessage(pId, COLOR_GREEN, mainStr);
-	
+
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "Nada³eœ(aœ) BW postaci %s.", pVars[pId][pCharName]);
+	format(mainStr, sizeof(mainStr), "Nada³eœ(aœ) BW postaci %s.", tPlayer[pId][pCharName]);
 	SendClientMessage(playerid, COLOR_GREEN, mainStr);
 	return 1;
 }
 
 CMD:unbw(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
-	
+
 	if(!isAdminDuty[playerid]) {
 		return 1;
 	}
-	
+
 	new pId;
-	
+
 	if(sscanf(params, "i", pId)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /unbw [Gracz]");
 	}
@@ -368,41 +392,44 @@ CMD:unbw(playerid, params[]) {
 
 	OSRP_SetPlayerHealth(pId, 100.0);
 	OSRP_TogglePlayerControllable(pId, true);
-	
+
+	KillTimer(tPlayer[pId][pBwTimer]);
 	SetPlayerDrunkLevel(pId, 0);
 	ClearAnimations(pId);
 
-	pVars[pId][pBw] = 0;
+	SetCameraBehindPlayer(pId);
+
+	tPlayer[pId][pBw] = 0;
 	isBW[pId] = false;
-	
+
 	foreach(new i : Player) {
-		if(pVars[i][pRank] >= RANK_GAMEMASTER1 && pVars[i][pRank] <= RANK_ADMIN4) {
+		if(tPlayer[i][pRank] >= RANK_GAMEMASTER1 && tPlayer[i][pRank] <= RANK_ADMIN4) {
 			if(isAdminDuty[i]) {
 				mainStr[0] = EOS;
 
 				if(playerid == pId) {
-					format(mainStr, sizeof(mainStr), "%s zdj¹³ sobie BW.", pVars[playerid][pCharName]);
+					format(mainStr, sizeof(mainStr), "%s zdj¹³ sobie BW.", tPlayer[playerid][pCharName]);
 				} else {
-					format(mainStr, sizeof(mainStr), "%s zdj¹³ BW %s.", pVars[playerid][pCharName], pVars[pId][pCharName]);
+					format(mainStr, sizeof(mainStr), "%s zdj¹³ BW %s.", tPlayer[playerid][pCharName], tPlayer[pId][pCharName]);
 				}
 
 				SendClientMessage(i, COLOR_GREEN, mainStr);
 			}
 		}
 	}
-	
+
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "%s zdj¹³(ê³a) Ci BW.", pVars[playerid][pCharName]);
+	format(mainStr, sizeof(mainStr), "%s zdj¹³(ê³a) Ci BW.", tPlayer[playerid][pCharName]);
 	SendClientMessage(pId, COLOR_GREEN, mainStr);
-	
+
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "Zdj¹³eœ(e³aœ) BW postaci %s.", pVars[pId][pCharName]);
+	format(mainStr, sizeof(mainStr), "Zdj¹³eœ(e³aœ) BW postaci %s.", tPlayer[pId][pCharName]);
 	SendClientMessage(playerid, COLOR_GREEN, mainStr);
 	return 1;
 }
 
 CMD:ann(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 
@@ -416,13 +443,13 @@ CMD:ann(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ann [Text]");
 	}
 
-	format(str, sizeof(str), "~w~Gamemaster %s ~y~: ~r~%s", pVars[playerid][pCharName], str);
+	format(str, sizeof(str), "~w~Gamemaster %s ~y~: ~r~%s", tPlayer[playerid][pCharName], str);
 	GameTextForAll(str, 10000, 6);
 	return 1;
 }
 
 CMD:rc(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 
@@ -476,7 +503,7 @@ CMD:rc(playerid, params[]) {
 }
 
 CMD:ooc(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 1;
 	}
 
@@ -491,13 +518,13 @@ CMD:ooc(playerid, params[]) {
 	}
 
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "[[ %s: %s ]]", pVars[playerid][pCharName], str);
+	format(mainStr, sizeof(mainStr), "[[ %s: %s ]]", tPlayer[playerid][pCharName], str);
 	sendClientMessageToAllOOC(playerid, 0xFFC3FFFF, mainStr);
 	return 1;
 }
 
 CMD:gm(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 1;
 	}
 	
@@ -512,10 +539,10 @@ CMD:gm(playerid, params[]) {
 	}
 	
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "[[ %d.%s: %s ]]", playerid, pVars[playerid][pCharName], str);
+	format(mainStr, sizeof(mainStr), "[[ %d.%s: %s ]]", playerid, tPlayer[playerid][pCharName], str);
 	
 	foreach(new i : Player) {
-		if(pVars[i][pRank] >= RANK_GAMEMASTER1 && pVars[i][pRank] <= RANK_ADMIN4) {
+		if(tPlayer[i][pRank] >= RANK_GAMEMASTER1 && tPlayer[i][pRank] <= RANK_ADMIN4) {
 			if(isAdminDuty[i]) {
 				SendClientMessage(i, COLOR_WHITE, mainStr);
 			}
@@ -525,7 +552,7 @@ CMD:gm(playerid, params[]) {
 }
 
 CMD:tt(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -543,19 +570,63 @@ CMD:tt(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
+	new int, vw;
+
+	vw = GetPlayerVirtualWorld(pId);
+	int = GetPlayerInterior(pId);
+
 	SetCameraBehindPlayer(pId);
-	SetPlayerPos(playerid, pVars[pId][pX], pVars[pId][pY], pVars[pId][pZ] + 2.0);
-	
+	SetPlayerPos(playerid, tPlayer[pId][pX], tPlayer[pId][pY], tPlayer[pId][pZ] + 2.0);
+	SetPlayerInterior(playerid, int);
+	SetPlayerVirtualWorld(playerid, vw);
+
 	SendClientMessage(pId, COLOR_GREEN, "Administracja teleportowa³a siê do Ciebie.");
+
+	mainStr[0] = EOS;
+	format(mainStr, sizeof(mainStr), "Teleportowa³eœ siê do %s", tPlayer[pId][pCharName]);
+	SendClientMessage(playerid, COLOR_GREEN, mainStr);
+	return 1;
+}
+
+CMD:tp(playerid, params[]) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
+		return 0;
+	}
+	
+	if(!isAdminDuty[playerid]) {
+		return 1;
+	}
+	
+	new pId;
+	
+	if(sscanf(params, "i", pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /tp [Gracz]");
+	}
+
+	if(!IsPlayerConnected(pId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+	}
+	
+	new int, vw;
+
+	vw = GetPlayerVirtualWorld(playerid);
+	int = GetPlayerInterior(playerid);
+
+	SetCameraBehindPlayer(playerid);
+	SetPlayerPos(pId, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ] + 2.0);
+	SetPlayerInterior(pId, int);
+	SetPlayerVirtualWorld(pId, vw);
+	
+	SendClientMessage(pId, COLOR_GREEN, "Administracja teleportowa³a Ciebie do siebie.");
 	
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "Teleportowa³eœ siê do %s", pVars[pId][pCharName]);
+	format(mainStr, sizeof(mainStr), "Teleportowa³eœ %s do siebie.", tPlayer[pId][pCharName]);
 	SendClientMessage(playerid, COLOR_GREEN, mainStr);
 	return 1;
 }
 
 CMD:givehealth(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -573,15 +644,15 @@ CMD:givehealth(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	pVars[toPlayerid][pHp] = hp;
-	SetPlayerHealth(toPlayerid, pVars[toPlayerid][pHp]);
+	tPlayer[toPlayerid][pHp] = hp;
+	SetPlayerHealth(toPlayerid, tPlayer[toPlayerid][pHp]);
 	
 	foreach(new i : Player) {
-		if(pVars[i][pRank] >= RANK_GAMEMASTER1 && pVars[i][pRank] <= RANK_ADMIN4) {
+		if(tPlayer[i][pRank] >= RANK_GAMEMASTER1 && tPlayer[i][pRank] <= RANK_ADMIN4) {
 			if(isAdminDuty[i]) {
 				if(playerid == toPlayerid) {
 					mainStr[0] = EOS;
-					format(mainStr, sizeof(mainStr), "%s do³adowa³ sobie ¿ycie.", pVars[playerid][pCharName]);
+					format(mainStr, sizeof(mainStr), "%s do³adowa³ sobie ¿ycie.", tPlayer[playerid][pCharName]);
 					SendClientMessage(i, COLOR_GREEN, mainStr);
 				}
 			}
@@ -589,18 +660,18 @@ CMD:givehealth(playerid, params[]) {
 	}
 	
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "Otrzyma³eœ zdrowie od admina %s.", pVars[playerid][pAccName]);
+	format(mainStr, sizeof(mainStr), "Otrzyma³eœ zdrowie od admina %s.", tPlayer[playerid][pAccName]);
 	SendClientMessage(toPlayerid, COLOR_GREEN, mainStr);
 	
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "Da³eœ zdrowie postaci %s.", pVars[toPlayerid][pCharName2]);
+	format(mainStr, sizeof(mainStr), "Da³eœ zdrowie postaci %s.", tPlayer[toPlayerid][pCharName2]);
 	SendClientMessage(playerid, COLOR_GREEN, mainStr);
 	return 1;
 }
 
 /* Komenda do dawania pancerza, do poprawy gdy bedzie item kamizelki
 CMD:givearmour(playerid, params[]) {
-	if(pVars[playerid][pRank] >= SUPPORT_RANK && pVars[playerid][pRank] <= HEADADMIN_RANK) {
+	if(tPlayer[playerid][pRank] >= SUPPORT_RANK && tPlayer[playerid][pRank] <= HEADADMIN_RANK) {
 		if(isAdminDuty[playerid]) {
 			new toPlayerid, hp; // id player to give armour
 			
@@ -608,26 +679,26 @@ CMD:givearmour(playerid, params[]) {
 				return SendClientMessage(playerid, COLOR_WHITE, "{FF0000}[CMD]{FFFFFF}: Poprawnie u¿ycie komendy to /givearmour [Id gracza][iloœæ pancerza].");
 			}
 			
-			pVars[toPlayerid][pHp] = hp;
+			tPlayer[toPlayerid][pHp] = hp;
 			
-			SetPlayerArmour(toPlayerid, pVars[toPlayerid][pHp]);
+			SetPlayerArmour(toPlayerid, tPlayer[toPlayerid][pHp]);
 			
 			mainStr[0] = EOS;
 			
 			foreach(new i : Player) {
-				if(pVars[i][pRank] >= SUPPORT_RANK && pVars[i][pRank] <= HEADADMIN_RANK) {
+				if(tPlayer[i][pRank] >= SUPPORT_RANK && tPlayer[i][pRank] <= HEADADMIN_RANK) {
 					if(isAdminDuty[i]) {
 						if(toPlayerid == playerid) {
-							format(mainStr, sizeof(mainStr), "%s do³adowa³ sobie ¿ycie.", pVars[playerid][pCharName]);
+							format(mainStr, sizeof(mainStr), "%s do³adowa³ sobie ¿ycie.", tPlayer[playerid][pCharName]);
 							SendClientMessage(i, COLOR_WHITE, mainStr);
 						}
 					}
 				}
 			}
 			
-			format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{00FF00}: Otrzymales zdrowie od admina %s", pVars[playerid][pAccName]);
+			format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{00FF00}: Otrzymales zdrowie od admina %s", tPlayer[playerid][pAccName]);
 			SendClientMessage(toPlayerid, COLOR_WHITE, mainStr);
-			format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{00FF00}: Dales zdrowie graczowi %s", pVars[toPlayerid][pCharName2]);
+			format(mainStr, sizeof(mainStr), "{00FF00}[Admin]{00FF00}: Dales zdrowie graczowi %s", tPlayer[toPlayerid][pCharName2]);
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 		} 
 	} else {
@@ -638,7 +709,7 @@ CMD:givearmour(playerid, params[]) {
 */
 
 CMD:freeze(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -663,7 +734,7 @@ CMD:freeze(playerid, params[]) {
 			SendClientMessage(toPlayerid, COLOR_GREEN, "Administracja odmrozi³a Ciê.");
 			
 			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "Odmrozi³eœ gracza %s.", pVars[toPlayerid][pCharName2]);
+			format(mainStr, sizeof(mainStr), "Odmrozi³eœ gracza %s.", tPlayer[toPlayerid][pCharName2]);
 		}
 		case 1: {
 			OSRP_TogglePlayerControllable(toPlayerid, 0);
@@ -671,7 +742,7 @@ CMD:freeze(playerid, params[]) {
 			SendClientMessage(toPlayerid, COLOR_GREEN, "Administracja zamrozi³a Ciê.");
 			
 			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "Zamrozi³eœ gracza %s.", pVars[toPlayerid][pCharName2]);
+			format(mainStr, sizeof(mainStr), "Zamrozi³eœ gracza %s.", tPlayer[toPlayerid][pCharName2]);
 		}
 	}
 	
@@ -680,7 +751,7 @@ CMD:freeze(playerid, params[]) {
 }
 
 CMD:god(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -689,13 +760,13 @@ CMD:god(playerid, params[]) {
 	}
 	
 	if(!isGodMode[playerid]) {
-		GetPlayerHealth(playerid, pVars[playerid][pHp]);
+		GetPlayerHealth(playerid, tPlayer[playerid][pHp]);
 		SetPlayerHealth(playerid, 9999999);
 		SendClientMessage(playerid, COLOR_GREEN, "W³¹czono godmode.");
 		
 		isGodMode[playerid] = true;
 	} else {
-		SetPlayerHealth(playerid, pVars[playerid][pHp]);
+		SetPlayerHealth(playerid, tPlayer[playerid][pHp]);
 		SendClientMessage(playerid, COLOR_GREEN, "Wy³¹czono godmode.");
 		
 		isGodMode[playerid] = false;
@@ -704,7 +775,7 @@ CMD:god(playerid, params[]) {
 }
 
 CMD:startpos(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -731,7 +802,7 @@ CMD:startpos(playerid, params[]) {
 }
 
 CMD:giveweapon(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -755,7 +826,7 @@ CMD:giveweapon(playerid, params[]) {
 }
 
 CMD:apojazd(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -791,101 +862,106 @@ CMD:apojazd(playerid, params[]) {
 		format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Vehicles` WHERE `UID` = '%d'", vehUid);
 		mysql_query(queryStr);
 		
-		DestroyVehicle(vVars[vehUid - 1][vId]);
-		DestroyDynamic3DTextLabel(vVars[vehUid - 1][vDesc]);
+		DestroyVehicle(tVehicle[vehUid - 1][vId]);
+		DestroyDynamic3DTextLabel(tVehicle[vehUid - 1][vDesc]);
 		
 		actualVehicle[playerid] = INVALID_SERVER_VEHICLE_ID;
 		Iter_Remove(vehItter, vehUid - 1);
 		
-		vVars[vehUid - 1][vUid] = 0;
-		vVars[vehUid - 1][vId] = 0;
-		vVars[vehUid - 1][vOUid] = 0;
-		vVars[vehUid - 1][vGUid] = 0;
-		format(vVars[vehUid - 1][vCharName], 24, NULL);
-		format(vVars[vehUid - 1][vDescInfo], 64, NULL);
-		format(vVars[vehUid - 1][vPlate], 32, NULL);
-		vVars[vehUid - 1][vModelId] = 0;
-		vVars[vehUid - 1][vColor1] = 0;
-		vVars[vehUid - 1][vColor2] = 0;
-		vVars[vehUid - 1][vX] = 0.0;
-		vVars[vehUid - 1][vY] = 0.0;
-		vVars[vehUid - 1][vZ] = 0.0;
-		vVars[vehUid - 1][vFuel] = 0.0;
-		vVars[vehUid - 1][vLock] = false;
-		vVars[vehUid - 1][vEngine] = false;
-		vVars[vehUid - 1][vLights] = false;
-		vVars[vehUid - 1][vEngineHp] = 0.0;
-		vVars[vehUid - 1][vSpawned] = false;
-		vVars[vehUid - 1][vMileage] = 0;
+		tVehicle[vehUid - 1][vUid] = 0;
+		tVehicle[vehUid - 1][vId] = 0;
+		tVehicle[vehUid - 1][vOUid] = 0;
+		tVehicle[vehUid - 1][vGUid] = 0;
+		format(tVehicle[vehUid - 1][vDescInfo], 64, NULL);
+		format(tVehicle[vehUid - 1][vPlate], 32, NULL);
+		tVehicle[vehUid - 1][vModelId] = 0;
+		tVehicle[vehUid - 1][vColor1] = 0;
+		tVehicle[vehUid - 1][vColor2] = 0;
+		tVehicle[vehUid - 1][vX] = 0.0;
+		tVehicle[vehUid - 1][vY] = 0.0;
+		tVehicle[vehUid - 1][vZ] = 0.0;
+		tVehicle[vehUid - 1][vFuel] = 0.0;
+		tVehicle[vehUid - 1][vLock] = false;
+		tVehicle[vehUid - 1][vEngine] = false;
+		tVehicle[vehUid - 1][vLights] = false;
+		tVehicle[vehUid - 1][vWindow] = false;
+		tVehicle[vehUid - 1][vAccessories] = 0;
+		tVehicle[vehUid - 1][vEngineHp] = 0.0;
+		tVehicle[vehUid - 1][vSpawned] = false;
+		tVehicle[vehUid - 1][vMileage] = 0;
+		tVehicle[vehUid - 1][vRepair] = 0.0;
 	} else {
 		modelId = getVehicleModelIdFromName(vehName);
-		
+
 		if(modelId == -1) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Podany pojazd nie istnieje.");
 		}
-		
+
 		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Vehicles`");
 		mysql_query(queryStr);
-		
+
 		mysql_store_result();
-		
+
 		freeId = mysql_fetch_int();
 	#if defined DEBUG
 		printf("freeId: %d", freeId);
 	#endif
 		mysql_free_result();
-		
-		GetPlayerPos(playerid, pVars[playerid][pX], pVars[playerid][pY], pVars[playerid][pZ]);
+
+		GetPlayerPos(playerid, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ]);
+		GetPlayerFacingAngle(playerid, tVehicle[freeId][vAngle]);
 		Iter_Add(vehItter, freeId);
-		
-		vehicleId = CreateVehicle(modelId, pVars[playerid][pX] + 2.0, pVars[playerid][pY] + 2.0, pVars[playerid][pZ] + 2.0, 0.0, color1, color2, 0);
-		
-		vVars[freeId][vUid] = freeId + 1;
-		vVars[freeId][vId] = vehicleId;
-		vVars[freeId][vOUid] = pVars[playerid][pUid];
-		vVars[freeId][vGUid] = 0;
-		format(vVars[freeId][vCharName], 24, "%s", pVars[playerid][pCharName]);
-		vVars[freeId][vModelId] = modelId;
-		vVars[freeId][vColor1] = color1;
-		vVars[freeId][vColor2] = color2;
-		vVars[freeId][vLock] = false;
-		vVars[freeId][vSpawned] = true;
-		vVars[freeId][vMileage] = 0.0;
-		vVars[freeId][vX] = pVars[playerid][pX];
-		vVars[freeId][vY] = pVars[playerid][pY];
-		vVars[freeId][vZ] = pVars[playerid][pZ];
-		vVars[freeId][vEngineHp] = 1000.0;
-		
-		actualVehicle[playerid] = vVars[freeId][vUid];
-		
-		if(!isBicycle(vVars[freeId][vModelId])) {
-			vVars[freeId][vEngine] = false;
-			vVars[freeId][vLights] = false;
-			vVars[freeId][vFuel] = VEHICLE_FUEL_TANK_MEDIUM;
-			
-			format(vVars[freeId][vPlate], 32, "Test.");
-			SetVehicleNumberPlate(vVars[freeId][vId], vVars[freeId][vPlate]);
-			SetVehicleToRespawn(vVars[freeId][vId]);
+
+		vehicleId = CreateVehicle(modelId, tPlayer[playerid][pX] + 2.0, tPlayer[playerid][pY] + 2.0, tPlayer[playerid][pZ] + 2.0, tVehicle[freeId][vAngle], color1, color2, 0);
+
+		tVehicle[freeId][vUid] = freeId + 1;
+		tVehicle[freeId][vId] = vehicleId;
+		tVehicle[freeId][vOUid] = tPlayer[playerid][pUid];
+		tVehicle[freeId][vGUid] = 0;
+		tVehicle[freeId][vModelId] = modelId;
+		tVehicle[freeId][vColor1] = color1;
+		tVehicle[freeId][vColor2] = color2;
+		tVehicle[freeId][vX] = tPlayer[playerid][pX];
+		tVehicle[freeId][vY] = tPlayer[playerid][pY];
+		tVehicle[freeId][vZ] = tPlayer[playerid][pZ];
+		tVehicle[freeId][vLock] = false;
+		tVehicle[freeId][vSpawned] = true;
+		tVehicle[freeId][vMileage] = 0;
+
+		tVehicle[freeId][vEngineHp] = 1000.0;
+		actualVehicle[playerid] = tVehicle[freeId][vUid];
+
+		if(!isBicycle(tVehicle[freeId][vModelId])) {
+			tVehicle[freeId][vEngine] = false;
+			tVehicle[freeId][vLights] = false;
+			tVehicle[freeId][vWindow] = false;
+			tVehicle[freeId][vAccessories] = 0;
+			tVehicle[freeId][vRepair] = 0.0;
+			tVehicle[freeId][vFuel] = VEHICLE_FUEL_TANK_MEDIUM;
+
+			format(tVehicle[freeId][vPlate], 32, "Test.");
+			SetVehicleNumberPlate(tVehicle[freeId][vId], tVehicle[freeId][vPlate]);
+			SetVehicleToRespawn(tVehicle[freeId][vId]);
 		} else {
 			SetVehicleParamsEx(vehicleId, 1, 0, 0, 0, 0, 0, 0);
 		}
-		
-		SetVehicleHealth(vVars[freeId][vId], vVars[freeId][vEngineHp]);
-		
-		format(vVars[freeId][vDescInfo], 64, NULL);
-		UpdateDynamic3DTextLabelText(vVars[freeId][vDesc], COLOR_WHITE, vVars[freeId][vDescInfo]);
-		
+
+		SetVehicleHealth(tVehicle[freeId][vId], tVehicle[freeId][vEngineHp]);
+
+		format(tVehicle[freeId][vDescInfo], 64, NULL);
+		UpdateDynamic3DTextLabelText(tVehicle[freeId][vDesc], COLOR_WHITE, tVehicle[freeId][vDescInfo]);
+
 		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`UID`, `ID`, `OUID`, `CharName`, `ModelID`, `Color1`, `Color2`, `X`, `Y`, `Z`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d', '%d', '%f', '%f', '%f')",
-		vVars[freeId][vUid], vVars[freeId][vId], vVars[freeId][vOUid], vVars[freeId][vCharName], vVars[freeId][vModelId], vVars[freeId][vColor1], vVars[freeId][vColor2], vVars[freeId][vX], vVars[freeId][vY], vVars[freeId][vZ]);
+		format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`UID`, `ID`, `OUID`, `ModelID`, `Color1`, `Color2`, `X`, `Y`, `Z`) VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%f', '%f', '%f')",
+		tVehicle[freeId][vUid], tVehicle[freeId][vId], tVehicle[freeId][vOUid], tVehicle[freeId][vModelId], tVehicle[freeId][vColor1], tVehicle[freeId][vColor2], tVehicle[freeId][vX], tVehicle[freeId][vY], tVehicle[freeId][vZ]);
 		mysql_query(queryStr);
 	}
 	return 1;
 }
 
 CMD:setfuel(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -910,16 +986,16 @@ CMD:setfuel(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Ten gracz nie u¿ywa ¿adnego pojazdu.");
 	}
 
-	vVars[srvVehId][vFuel] += fuel;
+	tVehicle[srvVehId][vFuel] += fuel;
 
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "Dodano %0.1f l paliwa do pojazdu %s.", fuel, VehicleNames[vVars[srvVehId][vModelId] - 400]);
+	format(mainStr, sizeof(mainStr), "Dodano %0.1f l paliwa do pojazdu %s.", fuel, VehicleNames[tVehicle[srvVehId][vModelId] - 400]);
 	SendClientMessage(playerid, COLOR_WHITE, mainStr);
 	return 1;
 }
 
 CMD:aitem(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -941,13 +1017,13 @@ CMD:aitem(playerid, params[]) {
 	SendClientMessage(pId, COLOR_GREEN, "Dosta³eœ przedmiot od administracji.");
 	
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "Da³eœ(aœ) przedmiot %s graczowi %s.", itemNames[itemid], pVars[pId][pCharName]);
+	format(mainStr, sizeof(mainStr), "Da³eœ(aœ) przedmiot %s graczowi %s.", itemNames[itemid], tPlayer[pId][pCharName]);
 	SendClientMessage(playerid, COLOR_GREEN, mainStr);			
 	return 1;
 }
 
 CMD:adoor(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -971,7 +1047,7 @@ CMD:adoor(playerid, params[]) {
 }
 
 CMD:abus(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -990,7 +1066,7 @@ CMD:abus(playerid, params[]) {
 }
 
 CMD:acash(playerid, params[]) {	
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -1009,7 +1085,7 @@ CMD:acash(playerid, params[]) {
 }
 
 CMD:agroup(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -1033,7 +1109,7 @@ CMD:agroup(playerid, params[]) {
 }
 
 CMD:anumber(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -1056,7 +1132,7 @@ CMD:anumber(playerid, params[]) {
 }
 
 CMD:askin(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -1074,22 +1150,22 @@ CMD:askin(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 	}
 	
-	pVars[toPlayerGive][pLastSkin] = pVars[toPlayerGive][pSkin];
-	pVars[toPlayerGive][pSkin] = skinid;
-	SetPlayerSkin(toPlayerGive, pVars[toPlayerGive][pSkin]);
+	tPlayer[toPlayerGive][pLastSkin] = tPlayer[toPlayerGive][pSkin];
+	tPlayer[toPlayerGive][pSkin] = skinid;
+	SetPlayerSkin(toPlayerGive, tPlayer[toPlayerGive][pSkin]);
 	
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "Ustawiono skina graczowi %s.", pVars[toPlayerGive][pCharName]);
+	format(mainStr, sizeof(mainStr), "Ustawiono skina graczowi %s.", tPlayer[toPlayerGive][pCharName]);
 	SendClientMessage(playerid, COLOR_GREEN, mainStr);
 	
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "Ustawiono Ci skina przez admina %s.", pVars[playerid][pCharName]);
+	format(mainStr, sizeof(mainStr), "Ustawiono Ci skina przez admina %s.", tPlayer[playerid][pCharName]);
 	SendClientMessage(playerid, COLOR_GREEN, mainStr);
 	return 1;
 }
 
 CMD:dajprace(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -1112,7 +1188,7 @@ CMD:dajprace(playerid, params[]) {
 }
 
 CMD:naprawpojazd(playerid, params[]) {
-	if(pVars[playerid][pRank] < RANK_GAMEMASTER1) {
+	if(tPlayer[playerid][pRank] < RANK_GAMEMASTER1) {
 		return 0;
 	}
 	
@@ -1136,16 +1212,16 @@ CMD:naprawpojazd(playerid, params[]) {
 	
 	if(IsPlayerInAnyVehicle(toPlayerGive)) {
 		if(strfind(str, "karoseria", true) != -1) {
-			RepairVehicle(vVars[srvVehId][vId]);
-			SetVehicleHealth(vVars[srvVehId][vId], vVars[srvVehId][vEngineHp]);
+			RepairVehicle(tVehicle[srvVehId][vId]);
+			SetVehicleHealth(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngineHp]);
 			
-			format(mainStr, sizeof(mainStr), "Naprawi³eœ karoserie pojazdu o ID: %d.", vVars[srvVehId][vId]);
+			format(mainStr, sizeof(mainStr), "Naprawi³eœ karoserie pojazdu o ID: %d.", tVehicle[srvVehId][vId]);
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);	
 		} else if(strfind(str, "silnik", true) != -1) {
-			vVars[srvVehId][vEngineHp] = 1000.0;
-			SetVehicleHealth(vVars[srvVehId][vId], vVars[srvVehId][vEngineHp]);
+			tVehicle[srvVehId][vEngineHp] = 1000.0;
+			SetVehicleHealth(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngineHp]);
 			
-			format(mainStr, sizeof(mainStr), "Naprawi³eœ silnik pojazdu o ID: %d.", vVars[srvVehId][vId]);
+			format(mainStr, sizeof(mainStr), "Naprawi³eœ silnik pojazdu o ID: %d.", tVehicle[srvVehId][vId]);
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 		} else {
 			SendClientMessage(playerid, COLOR_GRAY, "Tip: /naprawpojazd [Gracz] [karoseria/silnik]");

@@ -27,11 +27,11 @@ stock initBoothValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>is[32]ffffi", boVars[i][boUid], boVars[i][boName], boVars[i][boPosX], boVars[i][boPosY], boVars[i][boPosZ], boVars[i][boRange], boVars[i][boWorking]);
+		sscanf(queryStr, "p<|>is[32]ffffi", tBooth[i][boUid], tBooth[i][boName], tBooth[i][boPosX], tBooth[i][boPosY], tBooth[i][boPosZ], tBooth[i][boRange], tBooth[i][boWorking]);
 
 		Iter_Add(boothItter, i);
 
-		boVars[i][boObject] = CreateDynamicObject(1216, boVars[i][boPosX], boVars[i][boPosY], boVars[i][boPosZ], 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
+		tBooth[i][boObject] = CreateDynamicObject(1216, tBooth[i][boPosX], tBooth[i][boPosY], tBooth[i][boPosZ], 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
 	}
 
 	if(Iter_Count(boothItter)) {
@@ -46,9 +46,9 @@ stock initBoothValues() {
 
 stock searchPlayerBooth(playerid) {
 	foreach(new i : boothItter) {
-		if(playerToPoint(playerid, boVars[i][boRange], boVars[i][boPosX], boVars[i][boPosY], boVars[i][boPosZ])) {
-			if(IsValidDynamicObject(boVars[i][boObject]) && boVars[i][boWorking]) {
-				if(pVars[playerid][pHours] > 20) {
+		if(playerToPoint(playerid, tBooth[i][boRange], tBooth[i][boPosX], tBooth[i][boPosY], tBooth[i][boPosZ])) {
+			if(IsValidDynamicObject(tBooth[i][boObject]) && tBooth[i][boWorking]) {
+				if(tPlayer[playerid][pHours] > 20) {
 					return SendClientMessage(playerid, COLOR_GRAY, "Budki telefoniczne dostêpne s¹ tylko dla graczy, którzy przegrali mniej ni¿ 20 godzin.");
 				}
 
@@ -59,13 +59,13 @@ stock searchPlayerBooth(playerid) {
 
 				foreach(new j : groupItter) {
 					foreach(new k : Player) {
-						if(gVars[j][gType] == G_TAXI) {
-							if(pVars[k][pGroupNow] == gVars[j][gUid] && isPlayerDuty[k] && pVars[k][pDuty] > 0) {
+						if(tGroup[j][gType] == G_TAXI) {
+							if(tPlayer[k][pGroupNow] == tGroup[j][gUid] && isPlayerDuty[k] && tPlayer[k][pDuty] > 0) {
 								countPlayers++;
 							}
 						}
 
-						format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, gVars[j][gUid], countPlayers, gVars[j][gName]);
+						format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[j][gUid], countPlayers, tGroup[j][gName]);
 					}
 				}
 

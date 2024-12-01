@@ -21,7 +21,7 @@ stock searchPlayerGym(playerid) {
 		return GameTextForPlayer(playerid, "~r~Nie stoisz przy maszynie!", 5000, 3);
 	}
 
-	if(pVars[playerid][pHp] < 100) {
+	if(tPlayer[playerid][pHp] < 100) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Odczekaj 3 minuty przed ostatni¹ utrat¹ HP.");
 	}
 

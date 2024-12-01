@@ -15,22 +15,27 @@
 sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 	new srvVehId = getServerVehicleIdForPlayerEx(vehicleid);
 
-	actualVehicle[playerid] = vVars[srvVehId][vUid];
+	actualVehicle[playerid] = tVehicle[srvVehId][vUid];
 
-	if(isVehicleInUse(vehicleid) && !pVars[playerid][pDriverLicense] && !drivingCourse[playerid]) {
+	if(tPlayer[playerid][pBlock] & BLOCK_VEH) {
+		ClearAnimations(playerid);
+		return SendClientMessage(playerid, COLOR_GRAY, "Administracja zablokowa³a Ci mo¿liwoœæ prowadzenia pojazdów.");
+	}
+
+	if(isVehicleInUse(vehicleid) && !tPlayer[playerid][pDriverLicense] && !drivingCourse[playerid]) {
 		ClearAnimations(playerid);
 
 		SendClientMessage(playerid, COLOR_WHITE, "(!) Pamiêtaj, to RolePlay. Swój pojazd musisz kupiæ lub wypo¿yczyæ.");
 		SendClientMessage(playerid, COLOR_WHITE, "(!) Warto znaleŸæ pracê, aby zdobyæ pieni¹dze na zakup w³asnego pojazdu.");
 
-		if(pVars[playerid][pHours] < 3) {
+		if(tPlayer[playerid][pHours] < 3) {
 			SendClientMessage(playerid, COLOR_WHITE, "(!) Zanim bêdzie Ciê staæ, u¿yj /budka, by dzwoniæ po taxi, lub /bus. Prowadziæ mo¿na po przegraniu 3h.");
 		} else {
 			SendClientMessage(playerid, COLOR_WHITE, "(!) Jako nowy gracz, mo¿esz byæ pasa¿erem tylko, gdy w pojeŸdzie jest kierowca.");
 		}
 	}
 
-	if(!isBicycle(GetVehicleModel(vehicleid)) && !pVars[playerid][pDriverLicense] && !drivingCourse[playerid] && !ispassenger) {
+	if(!isBicycle(GetVehicleModel(vehicleid)) && !tPlayer[playerid][pDriverLicense] && !drivingCourse[playerid] && !ispassenger) {
 		ClearAnimations(playerid);
 
 		mainStr[0] = EOS;
@@ -39,12 +44,12 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 	}
 
-	if(vVars[srvVehId][vLock]) {
+	if(tVehicle[srvVehId][vLock]) {
 		ClearAnimations(playerid);
 		GameTextForPlayer(playerid, "~n~~n~~r~Pojazd jest zamkniety.~n~~w~/v zamknij", 6000, 3);
 	}
 
-	if((vVars[srvVehId][vOUid] != pVars[playerid][pUid] && !vVars[srvVehId][vGUid]) && pVars[playerid][pDriverLicense]) {
+	if((tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && !tVehicle[srvVehId][vGUid]) && tPlayer[playerid][pDriverLicense] && !ispassenger) {
 		ClearAnimations(playerid);
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Nie mozesz prowadzic tego~n~pojazdu.", 6000, 3);
 	}
@@ -58,7 +63,7 @@ sampCallback:OnPlayerExitVehicle(playerid, vehicleid) {
 
 	new srvVehId = getServerVehicleIdForPlayer(playerid);
 
-	if(vVars[srvVehId][vEngineHp] <= 300.0) {
+	if(tVehicle[srvVehId][vEngineHp] <= 300.0) {
 		mainStr[0] = EOS;
 		strcat(mainStr, "Ten pojazd jest ca³kowicie zniszczony po wybuchu, dachowaniu lub zwodowaniu.\nAby przywróciæ go do stanu u¿ywalnoœc, musisz poprosiæ kogoœ o zaholowanie\n");
 		strcat(mainStr, "do warsztatu lub na stacjê, gdzie zajm¹ siê nim mechanicy.\n\nAby zaakceptowaæ ofertê naprawy, najlepiej usi¹dŸ w œrodku, jako pasa¿er.");
@@ -79,16 +84,16 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 	new srvVehId = getServerVehicleIdForPlayer(killerid);
 
 	DestroyVehicle(vehicleid);
-	vVars[srvVehId][vSpawned] = false;
-	vVars[srvVehId][vEngine] = false;
-	vVars[srvVehId][vLights] = false;
+	tVehicle[srvVehId][vSpawned] = false;
+	tVehicle[srvVehId][vEngine] = false;
+	tVehicle[srvVehId][vLights] = false;
 
-	GetVehiclePos(vVars[srvVehId][vId], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ]);
-	GetVehicleZAngle(vVars[srvVehId][vId], vVars[srvVehId][vAngle]);
-	GetVehicleHealth(vVars[srvVehId][vId], vVars[srvVehId][vEngineHp]);
+	GetVehiclePos(tVehicle[srvVehId][vId], tVehicle[srvVehId][vX], tVehicle[srvVehId][vY], tVehicle[srvVehId][vZ]);
+	GetVehicleZAngle(tVehicle[srvVehId][vId], tVehicle[srvVehId][vAngle]);
+	GetVehicleHealth(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngineHp]);
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Spawned` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Angle` = '%f', `EngineHealth` = '%f' WHERE `UID` = '%d'", vVars[srvVehId][vSpawned], vVars[srvVehId][vX], vVars[srvVehId][vY], vVars[srvVehId][vZ], vVars[srvVehId][vAngle], vVars[srvVehId][vEngineHp], vVars[srvVehId][vUid]);
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Spawned` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Angle` = '%f', `Engine` = '%d', `EngineHealth` = '%f' WHERE `UID` = '%d'", tVehicle[srvVehId][vSpawned], tVehicle[srvVehId][vX], tVehicle[srvVehId][vY], tVehicle[srvVehId][vZ], tVehicle[srvVehId][vAngle], tVehicle[srvVehId][vEngine], tVehicle[srvVehId][vEngineHp], tVehicle[srvVehId][vUid]);
 	mysql_query(queryStr);
 
 	for(new i = 0; i < 3; i++) {
@@ -124,19 +129,19 @@ sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 #if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehicleDamageStatusUpdate");
 #endif
-	
+
 	new panels, doors, lights, tires, damage = setPlayerVehicleDamage(playerid);
 	new pId = getNearestVehicleDriverId(playerid);
 
 	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
 	UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
-	
+
 	if(!hasBelts[playerid]) {
-		SetPlayerHealth(playerid, pVars[playerid][pHp] - damage);
+		SetPlayerHealth(playerid, tPlayer[playerid][pHp] - damage);
 	} else {
-		SetPlayerHealth(playerid, pVars[playerid][pHp] - (damage + 2));
+		SetPlayerHealth(playerid, tPlayer[playerid][pHp] - (damage + 2));
 	}
-	
+
 	if(damage >= 4) {
 		SetTimerEx("healthDamage", 100, false, "i", playerid);
 	}
@@ -145,7 +150,7 @@ sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 		isCollision[playerid] = true;
 
 		mainStr[0] = EOS;
-		format(mainStr, sizeof(mainStr), "~w~Kolizja z ~r~%s~w~?", pVars[pId][pCharName]);
+		format(mainStr, sizeof(mainStr), "~w~Kolizja z ~r~%s~w~?", tPlayer[pId][pCharName]);
 		TextDrawSetString(collisionInfo[playerid], mainStr);
 
 		TextDrawShowForPlayer(playerid, collisionInfo[playerid]);
@@ -164,6 +169,9 @@ sampCallback:OnVehicleStreamIn(vehicleid, forplayerid) {
 #if defined DEBUG
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamIn");
 #endif
+
+	new srvVehId = getServerVehicleIdForPlayerEx(vehicleid);
+	SetVehicleHealth(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngineHp]);
 	return 1;
 }
 
@@ -171,13 +179,14 @@ sampCallback:OnVehicleStreamOut(vehicleid, forplayerid) {
 #if defined DEBUG
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamOut");
 #endif
-	new pId = getNearestVehicleDriverId(forplayerid);
 
 	if(isCollision[forplayerid]) {
+		new pId = getNearestVehicleDriverId(forplayerid);
+
 		isCollision[forplayerid] = false;
 
 		mainStr[0] = EOS;
-		format(mainStr, sizeof(mainStr), "~w~Najblizszy gracz: ~r~%s", pVars[pId][pCharName]);
+		format(mainStr, sizeof(mainStr), "~w~Najblizszy gracz: ~r~%s", tPlayer[pId][pCharName]);
 		TextDrawSetString(collisionInfo[forplayerid], mainStr);
 
 		TextDrawShowForPlayer(forplayerid, collisionInfo[forplayerid]);

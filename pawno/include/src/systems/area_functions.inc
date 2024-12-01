@@ -27,15 +27,15 @@ stock initAreaValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iiffffi", aVars[i][aUid], aVars[i][aOUid], aVars[i][aMinX], aVars[i][aMinY], aVars[i][aMaxX], aVars[i][aMaxY], aVars[i][aMaxSpeed]);
+		sscanf(queryStr, "p<|>iiffffi", tArea[i][aUid], tArea[i][aOUid], tArea[i][aMinX], tArea[i][aMinY], tArea[i][aMaxX], tArea[i][aMaxY], tArea[i][aMaxSpeed]);
 
 		Iter_Add(areaItter, i);
-		
-		GangZoneCreate(aVars[i][aMinX], aVars[i][aMinY], aVars[i][aMaxX], aVars[i][aMaxY]);
-		aVars[i][aArea] = CreateDynamicRectangle(aVars[i][aMinX], aVars[i][aMinY], aVars[i][aMaxX], aVars[i][aMaxY], 0, 0, -1);
+
+		GangZoneCreate(tArea[i][aMinX], tArea[i][aMinY], tArea[i][aMaxX], tArea[i][aMaxY]);
+		tArea[i][aArea] = CreateDynamicRectangle(tArea[i][aMinX], tArea[i][aMinY], tArea[i][aMaxX], tArea[i][aMaxY], 0, 0, -1);
 		
 #if defined DEBUG
-		printf("UID: %d, OUID: %d, MinX: %f, MaxX: %f, MinY: %f, MaxY: %f, MaxSpeed: %d, Area: %d\n", aVars[i][aUid], aVars[i][aOUid], aVars[i][aMinX], aVars[i][aMaxX], aVars[i][aMinY], aVars[i][aMaxY], aVars[i][aMaxSpeed], aVars[i][aArea]);
+		printf("UID: %d, OUID: %d, MinX: %f, MaxX: %f, MinY: %f, MaxY: %f, MaxSpeed: %d, Area: %d\n", tArea[i][aUid], tArea[i][aOUid], tArea[i][aMinX], tArea[i][aMaxX], tArea[i][aMinY], tArea[i][aMaxY], tArea[i][aMaxSpeed], tArea[i][aArea]);
 #endif
 	}
 
@@ -53,7 +53,7 @@ stock getServerAreaIdForPlayer(playerid) {
 	new aId;
 	
 	foreach(new i : areaItter) {
-		if(aVars[i][aUid] == pVars[playerid][pArea]) {
+		if(tArea[i][aUid] == tPlayer[playerid][pArea]) {
 			aId = i;
 			break;
 		}
