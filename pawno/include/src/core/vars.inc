@@ -109,6 +109,7 @@ new	bool:isGodMode[MAX_PLAYERS];
 new	bool:isBW[MAX_PLAYERS];
 new bool:isFreeze[MAX_PLAYERS];
 new bool:isInBus[MAX_PLAYERS];
+new bool:busCameraSelect[MAX_PLAYERS];
 new bool:usedCmdLogin[MAX_PLAYERS];
 new bool:usedCmdReport[MAX_PLAYERS];
 new bool:hasBelts[MAX_PLAYERS];
@@ -134,6 +135,7 @@ new bool:haveTaxiCourse[MAX_PLAYERS];
 new bool:selectChatStyle[MAX_PLAYERS];
 new bool:gpsEnabled[MAX_PLAYERS];
 new bool:spawnFreeze[MAX_PLAYERS];
+new bool:hasAnim[MAX_PLAYERS];
 
 // type - MySQL
 new MySQL:hMySQL;
@@ -143,12 +145,16 @@ new Text3D:exit3dInfo[MAX_PLAYERS];
 
 // type - Text
 new Text:website;
+new Text:news;
 new Text:penalty;
 new Text:helpInfo[MAX_PLAYERS][2];
+new Text:animsInfo[MAX_PLAYERS][3];
 new Text:itemTips[MAX_PLAYERS][2];
 new Text:itemNoNearby[MAX_PLAYERS][2];
 new Text:itemGivePlayerTips[MAX_PLAYERS][2];
 new Text:scrimmageTips[MAX_PLAYERS][5];
+new Text:busStopInfo[MAX_PLAYERS][3];
+new Text:busStopSelect[MAX_PLAYERS][3];
 new Text:firstHoursInfo[3];
 new Text:showInfoGym[MAX_PLAYERS][4];
 new Text:vehicleTips[MAX_PLAYERS][2];

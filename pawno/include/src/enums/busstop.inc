@@ -21,5 +21,6 @@ enum BusStopData {
 	Float:bZ,
 	Float:bRotX,
 	Float:bRotY,
-	Float:bRotZ
+	Float:bRotZ,
+	bool:bUsed
 };

@@ -698,6 +698,10 @@ stock pickUpNearblyItems(playerid, where) {
 	} else if(where == ITEM_PLACE_VEHICLE) {
 		new srvVehId = getServerVehicleIdForPlayer(playerid);
 
+		if(srvVehId == -1) {
+			return 1;
+		}
+
 		if(tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid]) {
 			return GameTextForPlayer(playerid, "~y~Ten pojazd nie nalezy do ciebie.", 5000, 3);
 		}

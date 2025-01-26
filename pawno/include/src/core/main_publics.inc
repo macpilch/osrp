@@ -76,7 +76,7 @@ sampCallback:OSRP_OnGameModeInit() {
 	gymObject[0] = CreateDynamicObject(2629, 758.8672, -76.0945, 1000.6500 - 1, 0.0, 0.0, 90.0, 2, 7, -1, 50.0);
 	casualJobsPickup = CreateDynamicPickup(1239, 1, 817.7484,-1334.3308,13.5469, 0, 0, -1, 40.0, -1, 0);
 
-	website = TextDrawCreate(8.433380, 427.000000, "_");
+	website = TextDrawCreate(8.433380, 425.000000, "_");
 	TextDrawLetterSize(website, 0.303351, 1.016664);
 	TextDrawTextSize(website, -189.751068, -105.000007);
 	TextDrawAlignment(website, 1);
@@ -86,6 +86,19 @@ sampCallback:OSRP_OnGameModeInit() {
 	TextDrawBackgroundColor(website, 51);
 	TextDrawFont(website, 3);
 	TextDrawSetProportional(website, 1);
+
+	news = TextDrawCreate(1.874112, 437.499938, "Radio ~>~ (( Wpisz /radio, by wybrac stacje radiowa ))");
+	TextDrawLetterSize(news, 0.204494, 0.975833);
+	TextDrawTextSize(news, 638.125488, 95.666671);
+	TextDrawAlignment(news, 1);
+	TextDrawColor(news, -1);
+	TextDrawUseBox(news, 1);
+	TextDrawBoxColor(news, 255);
+	TextDrawSetShadow(news, 0);
+	TextDrawSetOutline(news, 1);
+	TextDrawBackgroundColor(news, 51);
+	TextDrawFont(news, 1);
+	TextDrawSetProportional(news, 1);
 
 	penalty = TextDrawCreate(8.941175, 281.166564, "_");
 	TextDrawLetterSize(penalty, 0.300352, 1.191665);

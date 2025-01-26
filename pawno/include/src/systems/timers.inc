@@ -16,11 +16,16 @@ Timer:globalTimer[1000]() {
 	foreach(new i : Player) {
 		playerAFKTime[i]++;
 
-		if(playerAFKTime[i] > 5) {
+		if(playerAFKTime[i] > 3) {
 			return 1;
 		}
 
 		if(playerAFKTime[i] != 0) {
+			if(playerAFKTime[i] == 3) {
+				updatePlayerGameStatus(i);
+				return 1;
+			}
+
 			// Narazie niech bedzie na 1
 			if(playerAFKTime[i] == 1) {
 				tPlayer[i][pSeconds]++;
@@ -39,6 +44,7 @@ Timer:globalTimer[1000]() {
 
 							giveGroupMoney(srvGrpId, -tGroup[srvGrpId][gPayDay]);
 							tPlayer[i][pBank] += tGroup[srvGrpId][gPayDay];
+							savePlayerValues(i, SAVE_MONEY);
 
 							format(timerStr, sizeof(timerStr), "* Otrzymujesz $%d wyp³aty. *", tGroup[srvGrpId][gPayDay]);
 							SendClientMessage(i, COLOR_WHITE, timerStr);
@@ -54,7 +60,7 @@ Timer:globalTimer[1000]() {
 				}
 				
 				if(insidedHotel[i] && tPlayer[i][pHotel] && playerToPoint(i, 5.0, 2216.12, -1076.30, 1050.48)) {
-					GameTextForPlayer(i, "~n~~n~~n~~n~~n~~w~[LALT+SPACJA] ~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
+					GameTextForPlayer(i, "~n~~n~~n~~n~~n~~w~[~k~~SNEAK_ABOUT~+~k~~PED_SPRINT~] ~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
 				}
 			}
 		}
@@ -160,16 +166,16 @@ Timer:globalTimer[1000]() {
 
 					if(isBicycle(tVehicle[j][vModelId]) && !tVehicle[j][vEngine]) {
 						new Keys, lr, ud;
-						
+
 						GetPlayerKeys(i, Keys, ud, lr);
-						
+
 						if(Keys & KEY_ACTION) {
 							GameTextForPlayer(i, "~r~Skakanie tym pojazdem jest~n~zakazane!", 5000, 3);
-							
+
 							SetVehicleVelocity(tVehicle[j][vId], 0.0, 0.0, 0.0);
 							RemovePlayerFromVehicle(i);
 						}
-						
+
 						if(getVehicleSpeed(tVehicle[j][vId]) > 100.0) {
 							GameTextForPlayer(i, "~r~Nie mozesz jechac tak szybko tym~n~pojazdem.", 5000, 3);
 							SetVehicleVelocity(tVehicle[j][vId], 0.0, 0.0, 0.0);
@@ -218,27 +224,10 @@ Timer:globalTimer[1000]() {
 	return 1;
 }
 
-Timer:checkPlayerHealthTimer[100]() {
-	foreach(new i : Player) {
-		if(playerAFKTime[i] == 1) {
-			GetPlayerHealth(i, tPlayer[i][pHp]);
-
-			if(tPlayer[i][pHp] <= 5.0 && !isBW[i] && isSpawned[i] && !spawnFreeze[i]) {
-				OSRP_SetPlayerHealth(i, 6.0);
-				setPlayerBW(i, 3);
-
-				if(isPlayerOnDuty(i)) {
-					pc_cmd_duty(i, "");
-				}
-			}
-		}
-	}
-}
-
 Timer:saveAllValuesTimer[30000]() {
 	foreach(new i : Player) {
 		if(hasLogged[i] && isSpawned[i]) {
-			savePlayerValues(i);
+			savePlayerValues(i, SAVE_ALL_VALUES);
 		}
 	}
 
@@ -356,11 +345,12 @@ Timer:giveFreeMoneyTimer[590000]() {
 		if(tPlayer[i][pHours] < 1) {
 			OSRP_GivePlayerMoney(i, 25);
 			GameTextForPlayer(i, "~w~+~g~$25", 2000, 6);
-			
+			savePlayerValues(i, SAVE_MONEY);
+
 			for(new j = 0; j < sizeof(firstHoursInfo); j++) {
 				TextDrawShowForPlayer(i, firstHoursInfo[j]);
 			}
-			
+
 			SetTimer("hideFirstHoursInfo", 8000, false);
 		}
 	}

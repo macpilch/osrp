@@ -86,6 +86,7 @@
 #define COLOR_DO 0x9797FFFF
 #define COLOR_ORANGE 0xFF9900FF
 #define COLOR_LIGHTORANGE 0xFFCC66FF
+#define COLOR_OOC 0xFFC3FFFF
 
 #define NULL "\0"
 
@@ -108,11 +109,19 @@
 #define BLOCK_RPACTN 64
 #define BLOCK_CURSE 128
 
+// Sloty przedmiotów
+#define SLOT_GYM 0
+
 // Uprawnienia grupy (Flagi)
 #define GROUP_PERM_CHATOOC 1
 #define GROUP_PERM_CHATIC 2
 #define GROUP_PERM_MEGAPHONE 4
 #define GROUP_PERM_GPS 8
+
+// Flagi zapisu danych
+#define SAVE_ALL_VALUES 1
+#define SAVE_MONEY 2
+#define SAVE_STRENGTH 4
 
 #define PEN_BAN 0
 #define PEN_KICK 1

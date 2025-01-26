@@ -76,7 +76,7 @@ enum GroupOrder {
 	gOId,
 	gOPrice,
 	gOAmount,
-	bool:gOIsDeliver
+	bool:gOIsDelivering
 };
 
 enum GroupVehicle {

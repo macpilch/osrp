@@ -512,14 +512,14 @@ CMD:ooc(playerid, params[]) {
 	}
 
 	new str[256];
-	
+
 	if(sscanf(params, "s[256]", str)) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /o [Tekst]");
 	}
 
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "[[ %s: %s ]]", tPlayer[playerid][pCharName], str);
-	sendClientMessageToAllOOC(playerid, 0xFFC3FFFF, mainStr);
+	sendClientMessageToAllOOC(playerid, COLOR_OOC, mainStr);
 	return 1;
 }
 

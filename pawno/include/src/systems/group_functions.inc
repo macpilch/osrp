@@ -434,7 +434,7 @@ stock removeGroupOrder(srvorderid) {
 	tGroupOrder[srvorderid][gOId] = -1;
 	tGroupOrder[srvorderid][gOPrice] = 0;
 	tGroupOrder[srvorderid][gOAmount] = 0;
-	tGroupOrder[srvorderid][gOIsDeliver] = false;
+	tGroupOrder[srvorderid][gOIsDelivering] = false;
 	return 1;
 }
 
@@ -727,11 +727,21 @@ stock isPlayerInAnyGroup(playerid) {
 	return 1;
 }
 
-stock sendClientMessageToGroup(type, const str[]) {
+stock sendClientMessageToGroup(type, color, const str[]) {
 	foreach(new i : Player) {
 		foreach(new j : groupItter) {
 			if(isPlayerOnDuty(i) && tPlayer[i][pGroupNow] == tGroup[j][gUid] && tGroup[j][gType] == type) {
-				SendClientMessage(i, COLOR_WHITE, str);
+				SendClientMessage(i, color, str);
+			}
+		}
+	}
+}
+
+stock gameTextToGroup(type, const str[], time, style) {
+	foreach(new i : Player) {
+		foreach(new j : groupItter) {
+			if(isPlayerOnDuty(i) && tPlayer[i][pGroupNow] == tGroup[j][gUid] && tGroup[j][gType] == type) {
+				GameTextForPlayer(i, str, time, style);
 			}
 		}
 	}

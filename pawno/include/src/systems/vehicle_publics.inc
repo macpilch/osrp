@@ -83,18 +83,23 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 
 	new srvVehId = getServerVehicleIdForPlayer(killerid);
 
-	DestroyVehicle(vehicleid);
 	tVehicle[srvVehId][vSpawned] = false;
 	tVehicle[srvVehId][vEngine] = false;
 	tVehicle[srvVehId][vLights] = false;
 
 	GetVehiclePos(tVehicle[srvVehId][vId], tVehicle[srvVehId][vX], tVehicle[srvVehId][vY], tVehicle[srvVehId][vZ]);
 	GetVehicleZAngle(tVehicle[srvVehId][vId], tVehicle[srvVehId][vAngle]);
-	GetVehicleHealth(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngineHp]);
+
+	tVehicle[srvVehId][vEngineHp] = 300.0;
+	DestroyVehicle(vehicleid);
 
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Spawned` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Angle` = '%f', `Engine` = '%d', `EngineHealth` = '%f' WHERE `UID` = '%d'", tVehicle[srvVehId][vSpawned], tVehicle[srvVehId][vX], tVehicle[srvVehId][vY], tVehicle[srvVehId][vZ], tVehicle[srvVehId][vAngle], tVehicle[srvVehId][vEngine], tVehicle[srvVehId][vEngineHp], tVehicle[srvVehId][vUid]);
 	mysql_query(queryStr);
+
+	for(new i = 0; i < 2; i++) {
+		TextDrawHideForPlayer(killerid, vehicleTips[killerid][i]);
+	}
 
 	for(new i = 0; i < 3; i++) {
 		TextDrawShowForPlayer(killerid, vehicleDeath[killerid][i]);

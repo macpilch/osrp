@@ -33,13 +33,13 @@ CMD:pomoc(playerid, params[]) {
 }
 
 CMD:anim(playerid, params[]) {
-	mainStr[0] = EOS;
+	new animStr[3072];
 
 	for(new i = 0; i < MAX_ANIMATIONS; i++) {
-		format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}//%s", mainStr, tAnim[i][Name]);
+		format(animStr, sizeof(animStr), "%s\n{FFFFFF}//%s", animStr, tAnim[i][Name]);
 	}
 
-	ShowPlayerDialog(playerid, DIALOG_SHOW_ANIMATIONS, DIALOG_STYLE_LIST, "Lista animacji", mainStr, "Aktywuj", "Zamknij");
+	ShowPlayerDialog(playerid, DIALOG_SHOW_ANIMATIONS, DIALOG_STYLE_LIST, "Lista animacji", animStr, "Aktywuj", "Zamknij");
 	return 1;
 }
 
@@ -249,14 +249,7 @@ CMD:r(playerid, params[]) {
 
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "** (%s) %s: %s **", tGroup[srvGrpId][gTag], tPlayer[playerid][pCharName], str);
-
-	foreach(new i : groupItter) {
-		foreach(new j : Player) {
-			if(tGroup[i][gType] == G_LSPD && isPlayerOnDuty(j)) {
-				SendClientMessage(j, 0x42B542FF, mainStr);
-			}
-		}
-	}
+	sendClientMessageToGroup(G_LSPD, 0x42B542FF, mainStr);
 	return 1;
 }
 
@@ -803,13 +796,16 @@ CMD:pay(playerid, params[]) {
 
 	OSRP_GivePlayerMoney(playerid, -money);
 	OSRP_GivePlayerMoney(pId, money);
-	
+
+	savePlayerValues(playerid, SAVE_MONEY);
+	savePlayerValues(pId, SAVE_MONEY);
+
 	format(str, sizeof(str), "Podano %s $%d.", tPlayer[pId][pCharName], money);
 	SendClientMessage(playerid, COLOR_WHITE, str);
-	
+
 	format(str, sizeof(str), "Otrzymujesz $%d od %s.", money, tPlayer[playerid][pCharName]);
 	SendClientMessage(pId, COLOR_WHITE, str);
-	
+
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "* %s podaje trochê gotówki %s.", tPlayer[playerid][pCharName], tPlayer[pId][pCharName]);
 	sendMeMessage(playerid, mainStr);
@@ -843,7 +839,7 @@ CMD:login(playerid, params[]) {
 	hasLogged[playerid] = true;
 	usedCmdLogin[playerid] = true;
 
-	savePlayerValues(playerid);
+	savePlayerValues(playerid, SAVE_ALL_VALUES);
 	setPlayerDefaultValues(playerid);
 
 	cameraTimer[playerid] = -1;
@@ -1180,8 +1176,8 @@ CMD:o(playerid, params[]) {
 
 CMD:wyscig(playerid, params[]) {
 	if(strfind(params, "restart", true) != -1) {
-		format(mainStr, sizeof(mainStr), "> %s zrestartowa³(a) wyœcig.");
-		sendOtherMessage(playerid, mainStr);
+		format(mainStr, sizeof(mainStr), "> %s zrestartowa³(a) wyœcig.", tPlayer[playerid][pCharName]);
+		sendDistanceMessage(playerid, 30.0, 0, mainStr, "", "", COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN);
 	}
 	return 1;
 }
@@ -1468,7 +1464,7 @@ CMD:g(playerid, params[]) {
 					DestroyDynamicMapIcon(gpsMapIcons[playerid][i]);
 				}
 			}
-			
+
 			sendMeMessage(playerid, mainStr);
 			return 1;
 		} else {
@@ -1872,18 +1868,18 @@ CMD:paczka(playerid, params[]) {
 		actualOrder[playerid] = 0;
 
 		tGroupOrder[srvOrderId][gOCourier] = INVALID_PLAYER_ID;
-		tGroupOrder[srvOrderId][gOIsDeliver] = false;
+		tGroupOrder[srvOrderId][gOIsDelivering] = false;
 		return 1;
 	}
 
 	if(deliveringPackage[playerid]) {
 		new srvDoorId = getServerDoorIdFromOrder(playerid);
 
-		if(playerToPoint(playerid, 5.0, 89.8133,-303.0186,1.5781) && !tGroupOrder[srvOrderId][gOIsDeliver]) {
+		if(playerToPoint(playerid, 5.0, 89.8133,-303.0186,1.5781) && !tGroupOrder[srvOrderId][gOIsDelivering]) {
 			DisablePlayerCheckpoint(playerid);
 			SetPlayerCheckpoint(playerid, tDoor[srvDoorId][dEnterX], tDoor[srvDoorId][dEnterY], tDoor[srvDoorId][dEnterZ], 2.0);
 
-			tGroupOrder[srvOrderId][gOIsDeliver] = true;
+			tGroupOrder[srvOrderId][gOIsDelivering] = true;
 
 			for(new i = 0; i < 3; i++) {
 				TextDrawShowForPlayer(playerid, courierTips[playerid][i]);
@@ -1894,11 +1890,11 @@ CMD:paczka(playerid, params[]) {
 		}
 
 		if(tDoor[srvDoorId][dUid] == tGroupOrder[srvOrderId][gOOUid] && !playerToPoint(playerid, 2.0, tDoor[srvDoorId][dEnterX], tDoor[srvDoorId][dEnterY], tDoor[srvDoorId][dEnterZ]) &&
-			tGroupOrder[srvOrderId][gOIsDeliver]) {
+			tGroupOrder[srvOrderId][gOIsDelivering]) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Udaj siê pod drzwi budynku, do którego dostarczasz paczkê.");
 		}
 
-		if(playerToPoint(playerid, 2.0, tDoor[srvDoorId][dEnterX], tDoor[srvDoorId][dEnterY], tDoor[srvDoorId][dEnterZ]) && tGroupOrder[srvOrderId][gOIsDeliver]) {
+		if(playerToPoint(playerid, 2.0, tDoor[srvDoorId][dEnterX], tDoor[srvDoorId][dEnterY], tDoor[srvDoorId][dEnterZ]) && tGroupOrder[srvOrderId][gOIsDelivering]) {
 			new srvGrpId;
 
 			DisablePlayerCheckpoint(playerid);

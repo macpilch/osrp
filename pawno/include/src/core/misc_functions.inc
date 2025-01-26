@@ -18,7 +18,7 @@
 	tym jest bardziej ciemniejsza.
 	Narazie najprostrza wersja do testow.
 */
-static stock sendDistanceMessage(playerid, Float:range, skipPlayer, const wholeStr[], const strHalf1[], const strHalf2[], color1, color2, color3, color4, color5) {
+stock sendDistanceMessage(playerid, Float:range, skipPlayer, const wholeStr[], const strHalf1[], const strHalf2[], color1, color2, color3, color4, color5) {
 	GetPlayerPos(playerid, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ]);
 
 	foreach(new i : Player) {
@@ -172,25 +172,21 @@ stock sendRadioMessage(playerid, const mess[]) {
 		format(str1, sizeof(str1), "%s...", tmpStr);
 		format(str2, sizeof(str2), "... %s", tmpStr2);
 	}
-	
+
 	sendDistanceMessage(playerid, 30.0, 1, mess, "", "", COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN);
 }
 
-stock sendOtherMessage(playerid, const mess[]) {
-	sendDistanceMessage(playerid, 30.0, 0, mess, "", "", COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN);
-}
-
 stock sendClientMessageToAllOOC(playerid, color, const str[]) {
-	new messStr[256], messStr2[256];
-	new tmpStr[95], tmpStr2[128];
-	
+	new messStr[256], messStr2[256],
+		tmpStr[95], tmpStr2[128];
+
 	if(strlen(str) > 85) {
 		strmid(tmpStr, str, 0, 84);
 		strmid(tmpStr2, str, 85, strlen(str));
-		
+
 		format(messStr, sizeof(messStr), "[[ %s: %s...", tPlayer[playerid][pCharName], tmpStr);
 		format(messStr2, sizeof(messStr2), "... %s ]]", tmpStr2);
-		
+
 		SendClientMessageToAll(color, messStr);
 		SendClientMessageToAll(color, messStr2);
 	} else {
@@ -220,22 +216,22 @@ stock decimalToHex(dec) {
 
 stock createNumber(playerid) {
 	new number[6], numberStr[16];
-	
+
 	for(new i = 0; i < sizeof(number); i++) {
 		number[i] = random(10);
-		
+
 		format(numberStr, sizeof(numberStr), "%s%d", numberStr, number[i]);
 	}
-	
+
 	printf("[DEBUG] Name: %s, Number: %s", tPlayer[playerid][pCharName], numberStr);
 	return 1;
 }
 
 stock isPlayerInArea(playerid, Float:minx, Float:maxx, Float:miny, Float:maxy) {
     new Float:x, Float:y, Float:z;
-	
+
     GetPlayerPos(playerid, x, y, z);
-    
+
 	if(x > minx && x < maxx && y > miny && y < maxy) {
 		return 1;
 	}
@@ -328,6 +324,10 @@ stock getPlayerSpeed(playerid) {
 
 	pVel = floatround(floatsqroot(pPos[0] * pPos[0] + pPos[1] * pPos[1] + pPos[2] * pPos[2]) * 180);
 	return pVel;
+}
+
+stock getDistance(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2) {
+    return floatround(floatsqroot(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)) + ((z1 - z2) * (z1 - z2))));
 }
 
 stock getXYInFrontOfPlayer(playerid, &Float:x, &Float:y, Float:distance) {

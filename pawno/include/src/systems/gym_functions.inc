@@ -18,7 +18,7 @@ stock searchPlayerGym(playerid) {
 	}
 
 	if(!isPlayerFacingObject(playerid, gymObject[0])) {
-		return GameTextForPlayer(playerid, "~r~Nie stoisz przy maszynie!", 5000, 3);
+		return GameTextForPlayer(playerid, "~r~Nie stoisz przy maszynie", 5000, 3);
 	}
 
 	if(tPlayer[playerid][pHp] < 100) {
@@ -46,7 +46,7 @@ Callback:givePlayerGymBarBell(playerid) {
 
 	isGym[playerid] = true;
 
-	SetPlayerAttachedObject(playerid, 0, 2913, 6, 0, -0.04, -0.01, 0, 0, 0, 1, 1, 1);
+	SetPlayerAttachedObject(playerid, SLOT_GYM, 2913, 6, 0, -0.04, -0.01, 0, 0, 0, 1, 1, 1);
 	return 1;
 }
 
@@ -56,7 +56,7 @@ Callback:updatePressedBarbell(playerid) {
 	} else {
 		pressedBarbell[playerid] = false;
 	}
-	
+
 	antiCheatGym[playerid] = 0;
 	return 1;
 }

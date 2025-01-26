@@ -107,7 +107,7 @@ stock onEnterRaceCheckpoint(playerid) {
 
 		mainStr[0] = EOS;
 		format(mainStr, sizeof(mainStr), "%s koñczy wyœcig z czasem %0.2fs.", tPlayer[playerid][pCharName], playerRcActualTime[playerid]);
-		sendOtherMessage(playerid, mainStr);
+		sendDistanceMessage(playerid, 30.0, 0, mainStr, "", "", COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN);
 	}
 
 	mainStr[0] = EOS;
@@ -157,7 +157,7 @@ Callback:enablePlayerRaceCD() {
 
 stock getServerRaceIdForPlayer(playerid) {
 	new rId;
-	
+
 	foreach(new i : raceItter) {
 		if(tRace[i][rcUid] == actualRace[playerid]) {
 			rId = i;

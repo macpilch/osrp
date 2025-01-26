@@ -6,6 +6,8 @@
 	Modified: 10.01.2024
 */
 
+// Po crashu restartuje dane
+
 #if defined __PLAYER_PUBLICS_INC__
 	#endinput
 #endif
@@ -144,11 +146,12 @@ sampCallback:OSRP_OnPlayerDisconnect(playerid, reason) {
 	}
 
 	exit3dInfo[playerid] = CreateDynamic3DTextLabel(mainStr, COLOR_WHITE, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ], 30.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, 0, 0, playerid, 30.0, -1, 0);
-	SetTimerEx("destroyExit3dInfo", 10000, false, "i", playerid);
+	SetTimerEx("destroyExit3dInfo", 7000, false, "i", playerid);
 
 	TextDrawHideForPlayer(playerid, website);
+	TextDrawHideForPlayer(playerid, news);
 
-	savePlayerValues(playerid);
+	savePlayerValues(playerid, SAVE_ALL_VALUES);
 	resetPlayerValues(playerid); // dla dobra pamieci
 	resetItemValues(playerid);
 
@@ -158,6 +161,9 @@ sampCallback:OSRP_OnPlayerDisconnect(playerid, reason) {
 
 sampCallback:OSRP_OnPlayerSpawn(playerid) {
 	if(isBW[playerid] && tPlayer[playerid][pBw] > 0) {
+		SetPlayerPos(playerid, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ]);
+		SetPlayerSkin(playerid, tPlayer[playerid][pSkin]);
+		ApplyAnimation(playerid, "CRACK", "crckdeth1", 4.1, 0, 0, 0, 1, 0);
 		return 1;
 	}
 
@@ -176,6 +182,7 @@ sampCallback:OSRP_OnPlayerSpawn(playerid) {
 	SetPlayerVirtualWorld(playerid, tPlayer[playerid][pVw]);
 
 	TextDrawShowForPlayer(playerid, website);
+	TextDrawShowForPlayer(playerid, news);
 	PlayerPlaySound(playerid, 0, 0.0, 0.0, 0.0);
 
 	KillTimer(cameraTimer[playerid]);
@@ -211,7 +218,7 @@ sampCallback:OSRP_OnPlayerSpawn(playerid) {
 	SetTimerEx("unFreezePlayer", 1500, false, "i", playerid);
 
 	if(isSpawned[playerid] && !hasLogged[playerid]) {
-		return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_KICK, 0, "Pieszo bez zalogowania.");
+		givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_KICK, 0, "Pieszo bez zalogowania.");
 	}
 
 	printf("[LOG]: OnPlayerSpawn -- Called! (%d ms).", GetTickCount() - callSecs);
@@ -221,27 +228,13 @@ sampCallback:OSRP_OnPlayerSpawn(playerid) {
 sampCallback:OSRP_OnPlayerDeath(playerid, killerid, reason) {
 	new callSecs = GetTickCount();
 
-	if(killerid == INVALID_PLAYER_ID) {
-		return 0;
-	}
-
-	if(tPlayer[killerid][pHours] < 10) {
+	/*if(tPlayer[killerid][pHours] < 10) {
 		SendClientMessage(killerid, COLOR_CLARET, "Nie wolno Ci zabijaæ dopóki nie przekroczysz 10 godzin gry.");
 	}
 
-	if(killerid != INVALID_PLAYER_ID && GetPlayerWeapon(playerid) == 0) {
-		new reas[128];
-
-		format(reas, sizeof(reas), "Prawdopodobny DM~n~~w~Zabil %s(%d:%d), bron: %d, godzin: %d", tPlayer[playerid][pCharName], tPlayer[playerid][pUid], playerid, GetPlayerWeapon(killerid), tPlayer[killerid][pHours]);
-		return givePlayerPenalty(INVALID_PLAYER_ID, killerid, PEN_ADMJAIL, 0, reas);
-	}
-
-	//format(reas, sizeof(reas), "FakeKill~n~~w~FakeKill na %s. %s");
-	//return givePlayerPenalty(INVALID_PLAYER_ID, killerid, PEN_KICK, 0, reas));
-
 	if(usedTelephone[playerid]) {
 		new pId = getPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
-		
+
 		ApplyAnimation(pId, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 0, 0, 1);
 
 		usedTelephone[playerid] = false;
@@ -253,9 +246,11 @@ sampCallback:OSRP_OnPlayerDeath(playerid, killerid, reason) {
 		GameTextForPlayer(playerid, "~r~Rozmowa zakonczona.", 5000, 3);
 		GameTextForPlayer(pId, "~r~Rozmowca rozlaczyl sie.", 5000, 3);
 	}
+*/
+	setPlayerBW(playerid, 3);
 
 	printf("[LOG]: OnPlayerDeath -- Called! (%d ms).", GetTickCount() - callSecs);
-	return 0;
+	return 1;
 }
 
 sampCallback:OSRP_OnPlayerText(playerid, text[]) {
@@ -281,6 +276,22 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 	if(strfind(textStr, "!!", false) != -1) {
 		format(mainStr, sizeof(mainStr), "%s krzyczy: %s", tPlayer[playerid][pCharName], textStr);
 		sendShoutMessage(playerid, mainStr);
+	} else if(strfind(textStr, "//", false) != -1) {
+		new name[32], id;
+		strmid(name, textStr, 2, strlen(textStr));
+
+		id = getServerAnimIdFromName(name);
+		if(!hasAnim[playerid]) {
+			if(id != -1 && id != 4) {
+				ApplyAnimation(playerid, tAnim[id][AnimLib], tAnim[id][AnimName], tAnim[id][Delta], tAnim[id][Loop], tAnim[id][LockX], tAnim[id][LockY], tAnim[id][Freeze], tAnim[id][Time], tAnim[id][Foresync]);
+
+				hasAnim[playerid] = true;
+			} else if(id == 4) {
+				ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0, 0);
+
+				hasAnim[playerid] = false;
+			}
+		}
 	} else if(strfind(textStr, ":)", false) == 0 || strfind(textStr, ":>", false) == 0) {
 		format(mainStr, sizeof(mainStr), "* %s uœmiecha siê.", tPlayer[playerid][pCharName]);
 		sendMeMessage(playerid, mainStr);
@@ -320,7 +331,7 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 			SetTimerEx("hideOOCWarning", 5000, false, "i", playerid);
 		}
 
-		new oocMsg[64], oocMsg2[64], str[64], str2[64];
+		new oocMsg[64], oocMsg2[64], str[64];
 
 		strmid(oocMsg, textStr, 1, strlen(textStr));
 
@@ -330,14 +341,11 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 		if(strlen(oocMsg) > 27) {
 			strmid(oocMsg2, oocMsg, 27, sizeof(oocMsg));
 
-			format(str, sizeof(str), "((%s", oocMsg);
-			format(str2, sizeof(str2), "%s))", oocMsg2);
-
-			SetPlayerChatBubble(playerid, str, COLOR_WHITE, 30.0, 5000);
-			SetPlayerChatBubble(playerid, str2, COLOR_WHITE, 30.0, 5000);
+			format(str, sizeof(str), "((%s\n%s))", oocMsg, oocMsg2);
+			SetPlayerChatBubble(playerid, str, COLOR_CHAT, 30.0, 5000);
 		} else {
-			format(str, sizeof(str), "(( %s ))", oocMsg);
-			SetPlayerChatBubble(playerid, str, COLOR_WHITE, 30.0, 5000);
+			format(str, sizeof(str), "((%s))", oocMsg);
+			SetPlayerChatBubble(playerid, str, COLOR_CHAT, 30.0, 5000);
 		}
 	} else if(textStr[0] == '@') {
 		if(srvGrpId == -1) {
@@ -723,6 +731,14 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		}
 	}
 
+	if(PRESSED(KEY_HANDBRAKE)) {
+		if(hasAnim[playerid]) {
+			ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0, 0);
+
+			hasAnim[playerid] = false;
+		}
+	}
+
 	if(HOLDING(KEY_HANDBRAKE) || PRESSED(KEY_HANDBRAKE)) {
 		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) {
 			new srvItemId = getServerItemIdForPlayer(playerid), weaponid = GetPlayerWeapon(playerid);
@@ -743,7 +759,7 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		}
 	}
 
-	if(PRESSED(KEY_SPRINT)) {
+	if(PRESSED(KEY_SPRINT) || HOLDING(KEY_SPRINT)) {
 		if(tPlayer[playerid][pBlock] & BLOCK_RUNNBLW) {
 			ClearAnimations(playerid);
 			return SendClientMessage(playerid, COLOR_GRAY, "Administracja zablokowa³a Ci mo¿liwoœæ biegania.");
@@ -761,7 +777,7 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
 		if(endBWTime[playerid] > GetTickCount()) {
 			ClearAnimations(playerid);
-			TextDrawShowForPlayer(playerid, endBWTimeInfo[playerid]); // 4 sek
+			TextDrawShowForPlayer(playerid, endBWTimeInfo[playerid]); // 30 sek
 
 			OSRP_TogglePlayerControllable(playerid, 0);
 			SetTimerEx("unFreezePlayer", 1500, false, "i", playerid);
@@ -792,7 +808,7 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 					}
 
 					if(numberPresses[playerid] == 10) {
-						RemovePlayerAttachedObject(playerid, 0);
+						RemovePlayerAttachedObject(playerid, SLOT_GYM);
 						OSRP_TogglePlayerControllable(playerid, 1);
 
 						numberPresses[playerid] = 0;
@@ -801,6 +817,7 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 						isGym[playerid] = false;
 
 						tPlayer[playerid][pStrength] += 5;
+						savePlayerValues(playerid, SAVE_STRENGTH);
 
 						for(new i = 0; i < 4; i++) {
 							TextDrawHideForPlayer(playerid, showInfoGym[playerid][i]);
@@ -826,7 +843,83 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		}
 	}
 
-	if((newkeys & KEY_JUMP) && (newkeys & KEY_WALK)) {
+	if(PRESSED(KEY_SECONDARY_ATTACK)) {
+		new srvBusId = getServerBusStopIdForPlayer(playerid);
+		if(srvBusId == -1) {
+			return 1;
+		}
+
+		if(busCameraSelect[playerid] && !isInBus[playerid]) {
+			new Float:CamX, Float:CamY, Float:CamZ;
+			new busid;
+
+			GetPlayerCameraPos(playerid, CamX, CamY, CamZ);
+			busid = -1;
+
+			foreach(new i : busStopItter) {
+				if(getDistance(CamX, CamY, CamZ, tBusStop[i][bX], tBusStop[i][bY], tBusStop[i][bZ]) < 300.0) { // najlepszy dystans
+					busid = i;
+					break;
+				}
+			}
+
+			if(busid == -1) {
+				return GameTextForPlayer(playerid, "~r~Brak najblizszego przystanku.", 5000, 3);
+			}
+
+			// ten sam przystanek
+			if(busid == srvBusId) {
+				return 1;
+			}
+
+			new busCost, busTime, dist;
+			new Float:floatDist;
+			new busStr[256], costStr[32];
+
+			InterpolateCameraPos(playerid, CamX, CamY, CamZ, tBusStop[busid][bX], tBusStop[busid][bY] + 10.0, tBusStop[busid][bZ] + 100.0, 1000, CAMERA_MOVE);
+			InterpolateCameraLookAt(playerid, CamX, CamY, CamZ, tBusStop[busid][bX], tBusStop[busid][bY], tBusStop[busid][bZ], 1000, CAMERA_MOVE);
+
+			floatDist = floatabs(getDistance(tPlayer[playerid][pBusX], tPlayer[playerid][pBusY], tPlayer[playerid][pBusZ], tBusStop[busid][bX], tBusStop[busid][bY], tBusStop[busid][bZ]));
+			dist = floatToInt(floatDist);
+			busTime = dist / 25;
+
+			tPlayer[playerid][pBusTime] = busTime;
+			tPlayer[playerid][pBusId] = busid;
+
+			if(tPlayer[playerid][pHours] < 6) {
+				strcat(costStr, "Darmowy (do 6h~n~ gry)");
+			} else {
+				busCost = dist / 35;
+				format(costStr, sizeof(costStr), "%d$", busCost);
+			}
+
+			for(new i = 0; i < 3; i++) {
+				TextDrawHideForPlayer(playerid, busStopInfo[playerid][i]);
+			}
+
+			isInBus[playerid] = true;
+			busCameraSelect[playerid] = false;
+
+			format(busStr, sizeof(busStr), "Przystanek: ~y~%d ~y~~h~(/bus~n~ ~w~%d)~n~Koszt biletu: ~y~%s~n~ ~w~Czas podrozy: ~y~%ds.", tBusStop[busid][bUid], tBusStop[busid][bUid], costStr, busTime);
+			TextDrawSetString(busStopSelect[playerid][1], busStr);
+
+			for(new i = 0; i < 3; i++) {
+				TextDrawShowForPlayer(playerid, busStopSelect[playerid][i]);
+			}
+		} else {
+			for(new i = 0; i < 3; i++) {
+				TextDrawHideForPlayer(playerid, busStopSelect[playerid][i]);
+			}
+
+			SetCameraBehindPlayer(playerid);
+			SetPlayerPos(playerid, tPlayer[playerid][pBusX], tPlayer[playerid][pBusY], tPlayer[playerid][pBusZ]);
+
+			tBusStop[srvBusId][bUsed] = true;
+			SetTimerEx("teleportToBusStop", 2000, false, "ii", playerid, tPlayer[playerid][pBusId]);
+		}
+	}
+
+	if((newkeys & KEY_SPRINT) && (newkeys & KEY_WALK)) {
 		new srvDoorId = getServerDoorIdForPlayer(playerid);
 
 		if(srvDoorId == -1) {
@@ -931,12 +1024,12 @@ sampCallback:OSRP_OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 
 			if(tDoor[i][dVw] != tPlayer[playerid][pVw] && tDoor[i][dInt] != tPlayer[playerid][pInt]) {
 				resetPlayerTextDraws(playerid);
-				TextDrawSetString(doorInfo[playerid][0], tDoor[i][dName]);
+				TextDrawSetString(doorInfo[playerid][1], tDoor[i][dName]);
 
 				if(!tDoor[i][dOpen]) {
-					TextDrawSetString(doorInfo[playerid][1], "~y~Drzwi sa zamkniete.");
+					TextDrawSetString(doorInfo[playerid][2], "~y~Drzwi sa zamkniete.");
 				} else {
-					TextDrawSetString(doorInfo[playerid][1], "~y~Aby wejsc, wcisnij jednoczesnie~n~~w~LALT i SPACE.");
+					TextDrawSetString(doorInfo[playerid][2], "~y~~h~Aby wejsc, wcisnij jednoczesnie~n~~w~ ~k~~SNEAK_ABOUT~ i ~k~~PED_SPRINT~.");
 				}
 
 				for(new j = 0; j < 3; j++) {
@@ -988,11 +1081,18 @@ sampCallback:OSRP_OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid
 				}
 			}
 
-			if(numPeople > 0) {
+			if(numPeople > 1) {
 				new srvVehId = getServerVehicleIdForPlayer(playerid);
 				new reas[128];
 
 				format(reas, sizeof(reas), "Potracono %d osob(y). V%d~n~~w~Potracono %d osob(y). V%d", numPeople, tVehicle[srvVehId][vUid], numPeople, tVehicle[srvVehId][vUid]);
+
+				for(new i = 0; i < MAX_PLAYERS; i++) {
+					hasFallen[i] = 0;
+				}
+
+				numFallens = 0;
+				numPeople = 0;
 				return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, 0, reas);
 			}
 		}
@@ -1001,7 +1101,7 @@ sampCallback:OSRP_OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid
 	if(isBW[damagedid]) {
 		GameTextForPlayer(playerid, "~r~Atak zabroniony", 5000, 3);
 		GameTextForPlayer(damagedid, "~r~Atak zabroniony", 5000, 3);
-		OSRP_SetPlayerHealth(damagedid, 6.0);
+		OSRP_SetPlayerHealth(damagedid, 5.0);
 		return 1;
 	}
 
@@ -1062,7 +1162,7 @@ sampCallback:OSRP_OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid,
 				SetTimerEx("hideScrimmageTips", 5000, false, "ii", playerid, i);
 			}
 
-			SetTimerEx("fightCheckTimer", 1000, false, "ii", playerid, issuerid);
+			SetTimerEx("fightCheckTimer", 5000, false, "ii", playerid, issuerid);
 		}
 	}
 
@@ -1480,10 +1580,39 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 
 		case DIALOG_SHOW_ANIMATIONS: {
 			if(!response) {
+				for(new i = 0; i < 3; i++) {
+					TextDrawShowForPlayer(playerid, animsInfo[playerid][i]);
+				}
+
+				SetTimerEx("hideAnimsInfo", 6000, false, "i", playerid);
 				return 1;
 			}
 
-			
+			new name[32], id;
+			strmid(name, inputtext, 2, strlen(inputtext));
+
+			id = getServerAnimIdFromName(name);
+			if(!hasAnim[playerid]) {
+				if(id != -1 && id != 4) {
+					ApplyAnimation(playerid, tAnim[id][AnimLib], tAnim[id][AnimName], tAnim[id][Delta], tAnim[id][Loop], tAnim[id][LockX], tAnim[id][LockY], tAnim[id][Freeze], tAnim[id][Time], tAnim[id][Foresync]);
+
+					hasAnim[playerid] = true;
+
+					mainStr[0] = EOS;
+					format(mainStr, sizeof(mainStr), "~w~Kazda animacje z tej listy mozna~n~aktywowac wpisujac na czacie jej~n~ nazwe poprzedzona slashami:~n~~n~~y~ %s", inputtext);
+					TextDrawSetString(animsInfo[playerid][1], mainStr);
+
+					for(new i = 0; i < 3; i++) {
+						TextDrawShowForPlayer(playerid, animsInfo[playerid][i]);
+					}
+
+					SetTimerEx("hideAnimsInfo", 6000, false, "i", playerid);
+				} else if(id == 4) {
+					ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0, 0);
+
+					hasAnim[playerid] = false;
+				}
+			}
 		}
 
 		case DIALOG_SHOW_VEHICLES: {
@@ -4027,7 +4156,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "~y~%s~n~~w~odbiera ~r~%d", tPlayer[playerid][pCharName], tGroupTask[srvTaskId][gTUid]);
-			GameTextForAll(mainStr, 5000, 6);
+			gameTextToGroup(tGroup[getServerGroupIdForPlayer(playerid)][gType], mainStr, 5000, 6);
 
 			removeGroupTask(srvTaskId, tmpUid);
 		}
@@ -4417,6 +4546,8 @@ sampCallback:OSRP_OnEnterExitModShop(playerid, enterexit, interiorid) {
 sampCallback:OSRP_OnPlayerUpdate(playerid) {
 	playerAFKTime[playerid] = 0;
 
+	updatePlayerSelectBusStopCamera(playerid);
+
 	if(isCuffed[playerid] && cuffedBy[playerid] != INVALID_PLAYER_ID) {
 		new id = cuffedBy[playerid];
 		new Float:x, Float:y, Float:z;
@@ -4477,7 +4608,6 @@ sampCallback:OSRP_OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ) {
 	}
 
 	new id = taxiDriver[playerid];
-
 	SetPlayerCheckpoint(id, fX, fY, fZ, 3.0);
 
 	mainStr[0] = EOS;

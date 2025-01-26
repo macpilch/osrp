@@ -86,8 +86,11 @@ enum PlayerData {
 	pPayment[MAX_PLAYER_GROUPS],
 	pGroupActivity[64],
 	pGroupPerms[64],
+	pRedScreen,
 	pArea,
 	pDuty,
+	pBusId,
+	pBusTime,
 	pStatus[64],
 	p3dInfoStr[128],
 	pTraveled,
@@ -100,10 +103,13 @@ enum PlayerData {
 	pStyleFight,
 	pDrugs, // 15 min dzialania
 	pDrugsTime,
-	bool:pMusic,
+	pMusic,
 	Float:pX,
 	Float:pY,
 	Float:pZ,
+	Float:pBusX,
+	Float:pBusY,
+	Float:pBusZ,
 	Text3D:p3dInfo,
 	Text3D:pCharDesc
 };
