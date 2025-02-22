@@ -1608,6 +1608,7 @@ stock setPlayerDefaultValues(playerid) {
 	usedCmdLogin[playerid] = false;
 	usedCmdReport[playerid] = false;
 	hasBelts[playerid] = false;
+	isCuffed[playerid] = false;
 	isDizzines[playerid] = false;
 	usedTelephone[playerid] = false;
 	chatMessages[playerid][0] = true;
@@ -1721,7 +1722,6 @@ stock resetPlayerValues(playerid) {
 	numPlayerRace = 0;
 	playerCps[playerid] = 0;
 	playerRcPosition[playerid] = 0;
-	cameraTimer[playerid] = 0;
 	playerRcTime[playerid] = 0.0;
 	playerRcActualTime[playerid] = 0.0;
 	playerAFKTime[playerid] = 0;
@@ -2820,15 +2820,16 @@ Callback:ajTimer(playerid) {
 }
 
 Callback:setPlayerCamerasView(playerid) {
-	//new randIndex; = random(MAX_CAMERAS);
-	new Float:startX = (random(5000) + 150.0) / 2.1;
-	new Float:startY = -((random(1800) + 900.0) / 2.1);
-	new Float:startZ = (random(200) + 2.0) / 1.5;
+	new Float:startX = (random(4000) + 150.0) / 2.1;
+	new Float:startY = -((random(800) + 900.0) / 2.1);
+	new Float:startZ = (random(300) + 2.0) / 1.5;
 	new Float:endX = startX + 400.0;
 	new Float:endY = startY + 100.0;
 	new Float:endZ = startZ + 10.0;
+	new h, m, d;
 
-	SetWorldTime(21);
+	gettime(h, m, d);
+	SetWorldTime(h);
 
 	InterpolateCameraPos(playerid, startX, startY, startZ, endX, endY + 180.0, endZ, CAMERA_SPEED, CAMERA_CUT);
 	InterpolateCameraLookAt(playerid, startX, startY, startZ, endX, endY, endZ, CAMERA_SPEED, CAMERA_CUT);

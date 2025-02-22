@@ -140,6 +140,7 @@ new bool:selectChatStyle[MAX_PLAYERS];
 new bool:gpsEnabled[MAX_PLAYERS];
 new bool:spawnFreeze[MAX_PLAYERS];
 new bool:hasAnim[MAX_PLAYERS];
+new bool:createdChar[MAX_PLAYERS];
 
 // type - MySQL
 new MySQL:hMySQL;
