@@ -28,8 +28,20 @@ stock initAnimValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>is[32]s[32]s[32]fiiiiii", tAnim[i][Uid], tAnim[i][Name], tAnim[i][AnimLib], tAnim[i][AnimName], tAnim[i][Delta], tAnim[i][Loop], tAnim[i][LockX],
-		tAnim[i][LockY], tAnim[i][Freeze], tAnim[i][Time], tAnim[i][Foresync]);
+
+		sscanf(queryStr, "p<|>is[32]s[32]s[32]fiiiiii",
+			tAnim[i][Uid],
+			tAnim[i][Name],
+			tAnim[i][AnimLib],
+			tAnim[i][AnimName],
+			tAnim[i][Delta],
+			tAnim[i][Loop],
+			tAnim[i][LockX],
+			tAnim[i][LockY],
+			tAnim[i][Freeze],
+			tAnim[i][Time],
+			tAnim[i][Foresync]
+		);
 	}
 
 	anims = i + 1;

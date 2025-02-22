@@ -32,3 +32,44 @@ stock saveServerValues() {
 	mysql_query(queryStr);
 	return 1;
 }
+
+stock initServerPenalties() {
+	printf("[LOG]: Zaczynam ladowac kary...");
+
+	for(new i = 0; i < MAX_PENALTIES; i++) {
+		queryStr[0] = EOS;
+		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Penalties` WHERE `UID` = '%d'", i + 1);
+		mysql_query(queryStr);
+
+		mysql_store_result();
+
+		if(!mysql_num_rows()) {
+			break;
+		}
+
+		mysql_fetch_row(queryStr, " ");
+
+		sscanf(queryStr, "iiiiis[64]s[128]",
+			tPenalty[i][penUID],
+			tPenalty[i][penSUID],
+			tPenalty[i][penOUID],
+			tPenalty[i][penType],
+			tPenalty[i][penDays],
+			tPenalty[i][penDate],
+			tPenalty[i][penReason]
+		);
+
+		Iter_Add(penItter, i);
+		printf("UID: %d, SUID: %d, OUID: %d, Type: %d, Days: %d, Date: %s, Reason: %s\n", tPenalty[i][penUID], tPenalty[i][penSUID], tPenalty[i][penOUID], tPenalty[i][penType],
+		tPenalty[i][penDays], tPenalty[i][penDate], tPenalty[i][penReason]);
+	}
+
+	mysql_free_result();
+
+	if(Iter_Count(penItter)) {
+		printf("[LOG]: Wczytano %d kar.", Iter_Count(penItter));
+	} else {
+		printf("[LOG]: Brak kar.");
+	}
+	return 1;
+}

@@ -23,6 +23,7 @@ enum CharSurName {
 };
 
 enum PenaltyData {
+	penUID,
 	penSUID,
 	penOUID,
 	penType,

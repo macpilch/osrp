@@ -27,7 +27,16 @@ stock initAreaValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iiffffi", tArea[i][aUid], tArea[i][aOUid], tArea[i][aMinX], tArea[i][aMinY], tArea[i][aMaxX], tArea[i][aMaxY], tArea[i][aMaxSpeed]);
+
+		sscanf(queryStr, "p<|>iiffffi",
+			tArea[i][aUid],
+			tArea[i][aOUid],
+			tArea[i][aMinX],
+			tArea[i][aMinY],
+			tArea[i][aMaxX],
+			tArea[i][aMaxY],
+			tArea[i][aMaxSpeed]
+		);
 
 		Iter_Add(areaItter, i);
 

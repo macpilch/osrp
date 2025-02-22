@@ -55,7 +55,6 @@
 #include "src\systems\booth_functions"
 #include "src\systems\bus_functions"
 #include "src\systems\cashpoint_functions"
-#include "src\systems\station_functions"
 #include "src\systems\group_functions"
 #include "src\systems\object_functions"
 #include "src\systems\race_functions"

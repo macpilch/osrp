@@ -3,10 +3,8 @@
 	Author: steeZ (macpilch)
 	File: player_publics.inc
 	Date: 25.07.2022
-	Modified: 10.01.2024
+	Modified: 25.07.2022
 */
-
-// Po crashu restartuje dane
 
 #if defined __PLAYER_PUBLICS_INC__
 	#endinput
@@ -20,7 +18,7 @@ sampCallback:OSRP_OnPlayerRequestClass(playerid, classid) {
 
 	SpawnPlayer(playerid);
 	OSRP_TogglePlayerSpectating(playerid, true);
-	cameraTimer[playerid] = SetTimerEx("setPlayerCamerasView", 5000, false, "i", playerid);
+	cameraTimer[playerid] = SetTimerEx("setPlayerCamerasView", 1000, false, "i", playerid);
 
 	mysql_real_escape_string(tPlayer[playerid][pAccName], tmpAccName);
 
@@ -63,13 +61,13 @@ sampCallback:OSRP_OnPlayerRequestClass(playerid, classid) {
 			mysql_free_result();
 
 			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na osrp.com, najwiêkszym polskim serwerze RolePlay!\nOd zawsze jesteœmy liderem o najlepszej jakoœci rozgrywki.\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", tPlayer[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na osrp.com, najwiêkszym polskim serwerze RolePlay!\nOd 2025 roku jesteœmy liderem o najlepszej jakoœci rozgrywki.\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", tPlayer[playerid][pCharName]);
 			ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");
 		} else {
 			mysql_free_result();
 
 			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na osrp.com, najwiêkszym polskim serwerze RolePlay!\nOd zawsze jesteœmy liderem o najlepszej jakoœci rozgrywki.\n\nNie mamy postaci o nicku: {FFFFFF}%s.\n{CDC9C9}Chcesz za³o¿yæ now¹ postaæ?\nTo tylko kilka sekund!", tPlayer[playerid][pAccName]);
+			format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na osrp.com, najwiêkszym polskim serwerze RolePlay!\nOd 2025 roku jesteœmy liderem o najlepszej jakoœci rozgrywki.\n\nNie mamy postaci o nicku: {FFFFFF}%s.\n{CDC9C9}Chcesz za³o¿yæ now¹ postaæ?\nTo tylko kilka sekund!", tPlayer[playerid][pAccName]);
 			ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_MSGBOX, "Nowa postaæ?", mainStr, "STWÓRZ" , "Inna postaæ");
 		}
 	} else {
@@ -111,7 +109,10 @@ sampCallback:OSRP_OnPlayerRequestClass(playerid, classid) {
 sampCallback:OSRP_OnPlayerConnect(playerid) {
 	new callSecs = GetTickCount();
 
+	SetWeather(serverWeat);
+	SetWorldTime(20);
 	PlayerPlaySound(playerid, 1062, 0.0, 0.0, 0.0);
+
 	SetPlayerColor(playerid, 0xD1D1A700); // Przezroczysty
 	AllowPlayerTeleport(playerid, 1);
 
@@ -183,7 +184,6 @@ sampCallback:OSRP_OnPlayerSpawn(playerid) {
 
 	TextDrawShowForPlayer(playerid, website);
 	TextDrawShowForPlayer(playerid, news);
-	PlayerPlaySound(playerid, 0, 0.0, 0.0, 0.0);
 
 	KillTimer(cameraTimer[playerid]);
 	cameraTimer[playerid] = -1;
@@ -228,11 +228,11 @@ sampCallback:OSRP_OnPlayerSpawn(playerid) {
 sampCallback:OSRP_OnPlayerDeath(playerid, killerid, reason) {
 	new callSecs = GetTickCount();
 
-	/*if(tPlayer[killerid][pHours] < 10) {
+	if(tPlayer[killerid][pHours] < 10) {
 		SendClientMessage(killerid, COLOR_CLARET, "Nie wolno Ci zabijaæ dopóki nie przekroczysz 10 godzin gry.");
 	}
 
-	if(usedTelephone[playerid]) {
+	/*if(usedTelephone[playerid]) {
 		new pId = getPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
 
 		ApplyAnimation(pId, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 0, 0, 1);
@@ -276,22 +276,6 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 	if(strfind(textStr, "!!", false) != -1) {
 		format(mainStr, sizeof(mainStr), "%s krzyczy: %s", tPlayer[playerid][pCharName], textStr);
 		sendShoutMessage(playerid, mainStr);
-	} else if(strfind(textStr, "//", false) != -1) {
-		new name[32], id;
-		strmid(name, textStr, 2, strlen(textStr));
-
-		id = getServerAnimIdFromName(name);
-		if(!hasAnim[playerid]) {
-			if(id != -1 && id != 4) {
-				ApplyAnimation(playerid, tAnim[id][AnimLib], tAnim[id][AnimName], tAnim[id][Delta], tAnim[id][Loop], tAnim[id][LockX], tAnim[id][LockY], tAnim[id][Freeze], tAnim[id][Time], tAnim[id][Foresync]);
-
-				hasAnim[playerid] = true;
-			} else if(id == 4) {
-				ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0, 0);
-
-				hasAnim[playerid] = false;
-			}
-		}
 	} else if(strfind(textStr, ":)", false) == 0 || strfind(textStr, ":>", false) == 0) {
 		format(mainStr, sizeof(mainStr), "* %s uœmiecha siê.", tPlayer[playerid][pCharName]);
 		sendMeMessage(playerid, mainStr);
@@ -313,7 +297,8 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Znak zapytania nie jest g³osem postaci.\nU¿yj /me do pokazania mimiki twarzy.", "OK", "");
 	} else if(strfind(textStr, ".", false) == 0) {
 		if(isBW[playerid]) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Nie mo¿esz tego zrobiæ podczas BW lub AJ. Zamiast /b, u¿yj /w.");
+			SendClientMessage(playerid, COLOR_GRAY, "Nie mo¿esz tego zrobiæ podczas BW lub AJ. Zamiast /b, u¿yj /w.");
+			return 0;
 		}
 
 		if(tPlayer[playerid][pBlock] & BLOCK_OOC) {
@@ -483,7 +468,7 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 				new animId = tPlayer[playerid][pChatStyle];
 
 				switch(animId) {
-					case 1: ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.1, 0, 0, 0, 1, 1, 1);
+					case 1: ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.1, 0, 1, 1, 0, 0, 0);
 					case 2: ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.1, 0, 0, 0, 0, 0, 0);
 					case 3: ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.1, 0, 0, 0, 0, 0, 0);
 					case 4: ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.1, 0, 0, 0, 0, 0, 0);
@@ -501,6 +486,22 @@ sampCallback:OSRP_OnPlayerText(playerid, text[]) {
 }
 
 sampCallback:OSRP_OnPlayerCommandText(playerid, cmdtext[]) {
+	if(strfind(cmdtext, "//", false) != -1) {
+		new name[32], id;
+
+		strmid(name, cmdtext, 2, strlen(cmdtext));
+		id = getServerAnimIdFromName(name);
+
+		if(!hasAnim[playerid]) {
+			if(id != -1 && id != 4) {
+				hasAnim[playerid] = true;
+				ApplyAnimation(playerid, tAnim[id][AnimLib], tAnim[id][AnimName], tAnim[id][Delta], tAnim[id][Loop], tAnim[id][LockX], tAnim[id][LockY], tAnim[id][Freeze], tAnim[id][Time], tAnim[id][Foresync]);
+			} else if(id == 4) {
+				hasAnim[playerid] = true;
+				ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0, 0);
+			}
+		}
+	}
 	return 0;
 }
 
@@ -529,7 +530,7 @@ sampCallback:OSRP_OnPlayerCommandReceived(playerid, cmd[], params[], flags) {
 sampCallback:OSRP_OnPlayerCommandPerformed(playerid, cmd[], params[], result, flags) {
 	if(result == -1) {
 		resetPlayerTextDraws(playerid);
-		
+
 		for(new i = 0; i < 2; i++) {
 			TextDrawShowForPlayer(playerid, helpInfo[playerid][i]);
 		}
@@ -733,9 +734,8 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
 	if(PRESSED(KEY_HANDBRAKE)) {
 		if(hasAnim[playerid]) {
-			ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0, 0);
-
 			hasAnim[playerid] = false;
+			ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0, 0);
 		}
 	}
 
@@ -845,6 +845,7 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
 	if(PRESSED(KEY_SECONDARY_ATTACK)) {
 		new srvBusId = getServerBusStopIdForPlayer(playerid);
+
 		if(srvBusId == -1) {
 			return 1;
 		}
@@ -864,7 +865,7 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			}
 
 			if(busid == -1) {
-				return GameTextForPlayer(playerid, "~r~Brak najblizszego przystanku.", 5000, 3);
+				return GameTextForPlayer(playerid, "~r~Brak przystanku w poblizu.", 5000, 3);
 			}
 
 			// ten sam przystanek
@@ -883,7 +884,7 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			dist = floatToInt(floatDist);
 			busTime = dist / 25;
 
-			tPlayer[playerid][pBusTime] = busTime;
+			tPlayer[playerid][pBusTime] = busTime * 1500;
 			tPlayer[playerid][pBusId] = busid;
 
 			if(tPlayer[playerid][pHours] < 6) {
@@ -915,11 +916,11 @@ sampCallback:OSRP_OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			SetPlayerPos(playerid, tPlayer[playerid][pBusX], tPlayer[playerid][pBusY], tPlayer[playerid][pBusZ]);
 
 			tBusStop[srvBusId][bUsed] = true;
-			SetTimerEx("teleportToBusStop", 2000, false, "ii", playerid, tPlayer[playerid][pBusId]);
+			SetTimerEx("teleportToBusStop", 1500, false, "ii", playerid, tPlayer[playerid][pBusId]);
 		}
 	}
 
-	if((newkeys & KEY_SPRINT) && (newkeys & KEY_WALK)) {
+	if((newkeys & KEY_WALK) && (newkeys & KEY_JUMP)) {
 		new srvDoorId = getServerDoorIdForPlayer(playerid);
 
 		if(srvDoorId == -1) {
@@ -1217,9 +1218,9 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 		case DIALOG_REGISTER_NAME: {
 			if(!response) {
 				new str[1024];
-			
+
 				setPlayerDefaultValues(playerid);
-				
+
 				for(new i = 0; i < sizeof(charSur); i++) {
 					format(str, sizeof(str), "%s\n{FFFFFF}%s", str, charSur[i][chSurName]);
 				}
@@ -1314,8 +1315,8 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			SendClientMessage(playerid, COLOR_WHITE, mainStr);
 
 			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "{A52A2A}Witaj, %s (UID %d, ID %d). Mi³ej gry, za³ó¿ profil na naszym forum!", tPlayer[playerid][pCharName], tPlayer[playerid][pUid], playerid);
-			SendClientMessage(playerid, COLOR_WHITE, mainStr);
+			format(mainStr, sizeof(mainStr), "Witaj, %s (UID %d, ID %d). Mi³ej gry, za³ó¿ profil na naszym forum!", tPlayer[playerid][pCharName], tPlayer[playerid][pUid], playerid);
+			SendClientMessage(playerid, COLOR_DARKRED, mainStr);
 		}
 
 		case DIALOG_LOGIN: {
@@ -1357,7 +1358,14 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 				mysql_fetch_row(queryStr, "|");
 				sscanf(queryStr, "p<|>is[24]s[24]s[32]", tPlayer[playerid][pGUid], tPlayer[playerid][pCharName], tPlayer[playerid][pCharName2], tPlayer[playerid][pPass]);
 				mysql_free_result();
-				
+
+				if(tPlayer[playerid][pBlock] & BLOCK_BAN) {
+					SendClientMessage(playerid, COLOR_DARKRED, "Konto jest zbanowane. SprawdŸ logi na swoim profilu, by przekonaæ siê czy i kiedy kara wygasa.");
+					SendClientMessage(playerid, COLOR_DARKRED, "Je¿eli na liœcie nie bêdzie tej kary - nie mo¿esz jej zdjaæ. Ostatnie zapisy w logach:");
+
+					SetTimerEx("kickPlayer", 20000, false, "i", playerid);
+				}
+
 				mainStr[0] = EOS;
 				format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", tPlayer[playerid][pCharName]);
 				ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");
@@ -1374,49 +1382,42 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 
 			static loginAttempts;
 
-			if(!strcmp(tPlayer[playerid][pPass], inputtext, false) && strlen(inputtext)) {
+			if(strlen(inputtext) && !strcmp(tPlayer[playerid][pPass], inputtext, false)) {
 				if(tPlayer[playerid][pBlock] & BLOCK_BAN) {
-					SendClientMessage(playerid, COLOR_WHITE, "Konto jest zbanowane. SprawdŸ logi na swoim profilu, by przekonaæ siê czy i kiedy kara wygasa.");
-					SendClientMessage(playerid, COLOR_WHITE, "Je¿eli na liœcie nie bêdzie tej kary - nie mo¿esz jej zdjaæ. Ostatnie zapisy w logach:");
-					return SetTimerEx("kickPlayer", 10000, false, "i", playerid);
+					SendClientMessage(playerid, COLOR_DARKRED, "Konto jest zbanowane. SprawdŸ logi na swoim profilu, by przekonaæ siê czy i kiedy kara wygasa.");
+					SendClientMessage(playerid, COLOR_DARKRED, "Je¿eli na liœcie nie bêdzie tej kary - nie mo¿esz jej zdjaæ. Ostatnie zapisy w logach:");
+
+					format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", tPlayer[playerid][pCharName]);
+					return ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");
 				}
-
-				OSRP_TogglePlayerSpectating(playerid, false);
-				SetTimerEx("setICNameForPlayer", 1000, false, "i", playerid);
-
-				loadPlayerValues(playerid);
-				loadPlayerContacts(playerid);
 
 				hasLogged[playerid] = true;
 
+				OSRP_TogglePlayerSpectating(playerid, false);
+				SetTimerEx("setICNameForPlayer", 1000, false, "i", playerid);
+				loadPlayerValues(playerid);
+
 				if(tPlayer[playerid][pRank] == RANK_GOLD) {
-					format(mainStr, sizeof(mainStr), "{A52A2A}Witaj, %s (UID %d, ID %d). {FFFF00}Posiadasz konto premium GOLD. Dziêkujemy, mi³ej gry!", tPlayer[playerid][pCharName], tPlayer[playerid][pUid], playerid);
+					format(mainStr, sizeof(mainStr), "Witaj, %s (UID %d, ID %d). {FFFF00}Posiadasz konto premium GOLD. Dziêkujemy, mi³ej gry!", tPlayer[playerid][pCharName], tPlayer[playerid][pUid], playerid);
 				} else {
-					format(mainStr, sizeof(mainStr), "{A52A2A}Witaj, %s (UID %d, ID %d). Mi³ej gry!", tPlayer[playerid][pCharName], tPlayer[playerid][pUid], playerid);
+					format(mainStr, sizeof(mainStr), "Witaj, %s (UID %d, ID %d). Mi³ej gry!", tPlayer[playerid][pCharName], tPlayer[playerid][pUid], playerid);
 				}
 
-				SendClientMessage(playerid, COLOR_WHITE, mainStr);
-			} else if(tPlayer[playerid][pBlock] & BLOCK_BAN) {
-				loginAttempts++;
-
-				if(loginAttempts >= 2) {
-					SendClientMessage(playerid, COLOR_WHITE, "Konto jest zbanowane. SprawdŸ logi na swoim profilu, by przekonaæ siê czy i kiedy kara wygasa.");
-					SendClientMessage(playerid, COLOR_WHITE, "Je¿eli na liœcie nie bêdzie tej kary - nie mo¿esz jej zdjaæ. Ostatnie zapisy w logach:");
-
-					SetTimerEx("kickPlayer", 10000, false, "i", playerid);
-
-					loginAttempts = 0;
-					return SetTimerEx("kickPlayer", 500, false, "i", playerid);
-				}
-
-				format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", tPlayer[playerid][pCharName]);
-				return ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");
+				SendClientMessage(playerid, COLOR_DARKRED, mainStr);
 			} else {
-				SendClientMessage(playerid, COLOR_WHITE, "{A52A2A}Has³o nie pasuje do postaci.");
-				SendClientMessage(playerid, COLOR_WHITE, "{A52A2A}1. Je¿eli podpisa³eœ(aœ) postaæ pod profil na osrp.com, u¿yj has³a tego profilu.");
-				SendClientMessage(playerid, COLOR_WHITE, "{A52A2A}2. Je¿eli profil na stronie utworzy³eœ(aœ) Facebookiem, wejdŸ w ustawienia konta");
-				SendClientMessage(playerid, COLOR_WHITE, "{A52A2A}   na stronie i ustaw has³o, którego u¿yjesz do logowania w grze.");
-				SendClientMessage(playerid, COLOR_WHITE, "{A52A2A}3. Masz polskie znaki w haœle? Spróbuj je usun¹æ w ustawieniach konta na stronie.");
+				if(tPlayer[playerid][pBlock] & BLOCK_BAN) {
+					SendClientMessage(playerid, COLOR_DARKRED, "Konto jest zbanowane. SprawdŸ logi na swoim profilu, by przekonaæ siê czy i kiedy kara wygasa.");
+					SendClientMessage(playerid, COLOR_DARKRED, "Je¿eli na liœcie nie bêdzie tej kary - nie mo¿esz jej zdjaæ. Ostatnie zapisy w logach:");
+
+					format(mainStr, sizeof(mainStr), "{CD5C5C}Witaj na serverze testowym, przed sekund¹ powsta³ym serwerze RolePlay!\n\n{CDC9C9}Postaæ o nicku {FFFFFF}%s {CDC9C9}ju¿ istnieje.\n1.\tJest Twoja? Wpisz has³o i zaloguj siê.\n2.\tChcesz za³o¿yæ postaæ? Kliknij {FFFFFF}STWÓRZ{CDC9C9}!", tPlayer[playerid][pCharName]);
+					return ShowPlayerDialog(playerid, DIALOG_LOGIN_PASS, DIALOG_STYLE_PASSWORD, "Logowanie lub rejestracja", mainStr, "Zaloguj", "STWÓRZ");
+				}
+
+				SendClientMessage(playerid, COLOR_DARKRED, "Has³o nie pasuje do postaci.");
+				SendClientMessage(playerid, COLOR_DARKRED, "1. Je¿eli podpisa³eœ(aœ) postaæ pod profil na osrp.com, u¿yj has³a tego profilu.");
+				SendClientMessage(playerid, COLOR_DARKRED, "2. Je¿eli profil na stronie utworzy³eœ(aœ) Facebookiem, wejdŸ w ustawienia konta");
+				SendClientMessage(playerid, COLOR_DARKRED, "   na stronie i ustaw has³o, którego u¿yjesz do logowania w grze.");
+				SendClientMessage(playerid, COLOR_DARKRED, "3. Masz polskie znaki w haœle? Spróbuj je usun¹æ w ustawieniach konta na stronie.");
 
 				GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Haslo nie pasuje do postaci.", 10000, 3);
 
@@ -1594,9 +1595,8 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			id = getServerAnimIdFromName(name);
 			if(!hasAnim[playerid]) {
 				if(id != -1 && id != 4) {
-					ApplyAnimation(playerid, tAnim[id][AnimLib], tAnim[id][AnimName], tAnim[id][Delta], tAnim[id][Loop], tAnim[id][LockX], tAnim[id][LockY], tAnim[id][Freeze], tAnim[id][Time], tAnim[id][Foresync]);
-
 					hasAnim[playerid] = true;
+					ApplyAnimation(playerid, tAnim[id][AnimLib], tAnim[id][AnimName], tAnim[id][Delta], tAnim[id][Loop], tAnim[id][LockX], tAnim[id][LockY], tAnim[id][Freeze], tAnim[id][Time], tAnim[id][Foresync]);
 
 					mainStr[0] = EOS;
 					format(mainStr, sizeof(mainStr), "~w~Kazda animacje z tej listy mozna~n~aktywowac wpisujac na czacie jej~n~ nazwe poprzedzona slashami:~n~~n~~y~ %s", inputtext);
@@ -1608,9 +1608,8 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 
 					SetTimerEx("hideAnimsInfo", 6000, false, "i", playerid);
 				} else if(id == 4) {
-					ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0, 0);
-
 					hasAnim[playerid] = false;
+					ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0, 0);
 				}
 			}
 		}
@@ -2388,9 +2387,9 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 					}
 					case 1: {
 						if(tPlayer[playerid][pBank] < 0 && tPlayer[playerid][pDebt] > 0) {
-							SendClientMessage(playerid, COLOR_WHITE, "{A52A2A}Wiadomoœæ od banku. Otrzymaliœmy z urzêdu informacjê");
-							SendClientMessage(playerid, COLOR_WHITE, "{A52A2A}o Pañskim d³ugu i zablokowaliœmy œrodki na koncie.");
-							SendClientMessage(playerid, COLOR_WHITE, "{A52A2A}Proszê udaæ siê do bankomatu w celu sp³aty d³ugu.");
+							SendClientMessage(playerid, COLOR_DARKRED, "Wiadomoœæ od banku. Otrzymaliœmy z urzêdu informacjê");
+							SendClientMessage(playerid, COLOR_DARKRED, "o Pañskim d³ugu i zablokowaliœmy œrodki na koncie.");
+							SendClientMessage(playerid, COLOR_DARKRED, "Proszê udaæ siê do bankomatu w celu sp³aty d³ugu.");
 						}
 
 						if(tPlayer[playerid][pBank] < offerParams[playerid][OFFER_PARM_PRICE]) {
@@ -3326,16 +3325,11 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			switch(listitem) {
 				case 0: {
 					new k, count;
-					new servicesTypes[] = { G_GOV, G_RADIO, G_BAR, G_SALON, G_MECH, G_GYM, G_SECTY, G_TAXI, G_SHOP, G_DRVRLIC, G_MOBILE, G_SHOOT };
-					new serviceNames[][] = {
-						"Rzad", "Radio", "Bar lub restauracja", "Salon samochodowy", "Warsztat", "Silownia", "Ochrona",
-						"Taxi", "24/7", "Nauka jazdy", "Operator komorkowy", "Airsoft gun"
-					};
 
 					mainStr[0] = EOS;
 					foreach(new i : groupItter) {
 						foreach(new j : Player) {
-							if(isPlayerOnDuty(j) && tGroup[i][gType] == servicesTypes[k]) {
+							if(isPlayerOnDuty(j) && tGroup[i][gType] == serviceTypes[k]) {
 								count++;
 							}
 						}
@@ -3452,191 +3446,22 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 			}
 
 			new groupType = strval(inputtext), countPlaya;
-			
+
 			mainStr[0] = EOS;
-			switch(groupType) {
-				case G_GOV: {
-					strcat(mainStr, "{FFFFFF}Ka¿da grupa typu Rzad...\n--\n");
-					
-					foreach(new i : groupItter) {
-						foreach(new j : Player) {
-							if(tGroup[i][gType] == G_GOV) {
-								if(tPlayer[j][pGroupNow] == tGroup[i][gUid] && isPlayerOnDuty(j)) {
-									countPlaya++;
-								}	
-							}
-							
-							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[i][gUid], countPlaya, tGroup[i][gName]);
-						}
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Ka¿da grupa typu %s...\n--\n", serviceNames[groupType]);
+
+			foreach(new i : groupItter) {
+				foreach(new j : Player) {
+					if(tGroup[i][gType] == serviceTypes[groupType]) {
+						if(tPlayer[j][pGroupNow] == tGroup[i][gUid] && isPlayerOnDuty(j)) {
+							countPlaya++;
+						}	
 					}
 				}
-				case G_RADIO: {
-					strcat(mainStr, "{FFFFFF}Ka¿da grupa typu Radio...\n--\n");
-					
-					foreach(new i : groupItter) {
-						foreach(new j : Player) {
-							if(tGroup[i][gType] == G_RADIO) {
-								if(tPlayer[j][pGroupNow] == tGroup[i][gUid] && isPlayerOnDuty(j)) {
-									countPlaya++;
-								}	
-							}
-							
-							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[i][gUid], countPlaya, tGroup[i][gName]);
-						}
-					}
-				}
-				case G_BAR: {
-					strcat(mainStr, "{FFFFFF}Ka¿da grupa typu Bar lub restauracja...\n--\n");
-					
-					foreach(new i : groupItter) {
-						foreach(new j : Player) {
-							if(tGroup[i][gType] == G_BAR) {
-								if(tPlayer[j][pGroupNow] == tGroup[i][gUid] && isPlayerOnDuty(j)) {
-									countPlaya++;
-								}	
-							}
-							
-							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[i][gUid], countPlaya, tGroup[i][gName]);
-						}
-					}
-				}
-				case G_SALON: {
-					strcat(mainStr, "{FFFFFF}Ka¿da grupa typu Salon samochodowy...\n--\n");
-					
-					foreach(new i : groupItter) {
-						foreach(new j : Player) {
-							if(tGroup[i][gType] == G_SALON) {
-								if(tPlayer[j][pGroupNow] == tGroup[i][gUid] && isPlayerOnDuty(j)) {
-									countPlaya++;
-								}	
-							}
-							
-							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[i][gUid], countPlaya, tGroup[i][gName]);
-						}
-					}
-				}
-				case G_MECH: {
-					strcat(mainStr, "{FFFFFF}Ka¿da grupa typu Warsztat...\n--\n");
-					
-					foreach(new i : groupItter) {
-						foreach(new j : Player) {
-							if(tGroup[i][gType] == G_MECH) {
-								if(tPlayer[j][pGroupNow] == tGroup[i][gUid] && isPlayerOnDuty(j)) {
-									countPlaya++;
-								}	
-							}
-							
-							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[i][gUid], countPlaya, tGroup[i][gName]);
-						}
-					}
-				}
-				case G_GYM: {
-					strcat(mainStr, "{FFFFFF}Ka¿da grupa typu Silownia...\n--\n");
-					
-					foreach(new i : groupItter) {
-						foreach(new j : Player) {
-							if(tGroup[i][gType] == G_GYM) {
-								if(tPlayer[j][pGroupNow] == tGroup[i][gUid] && isPlayerOnDuty(j)) {
-									countPlaya++;
-								}	
-							}
-							
-							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[i][gUid], countPlaya, tGroup[i][gName]);
-						}
-					}
-				}
-				case G_SECTY: {
-					strcat(mainStr, "{FFFFFF}Ka¿da grupa typu Ochrona...\n--\n");
-					
-					foreach(new i : groupItter) {
-						foreach(new j : Player) {
-							if(tGroup[i][gType] == G_SECTY) {
-								if(tPlayer[j][pGroupNow] == tGroup[i][gUid] && isPlayerOnDuty(j)) {
-									countPlaya++;
-								}	
-							}
-							
-							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[i][gUid], countPlaya, tGroup[i][gName]);
-						}
-					}
-				}
-				case G_TAXI: {
-					strcat(mainStr, "{FFFFFF}Ka¿da grupa typu Taxi...\n--\n");
-					
-					foreach(new i : groupItter) {
-						foreach(new j : Player) {
-							if(tGroup[i][gType] == G_TAXI) {
-								if(tPlayer[j][pGroupNow] == tGroup[i][gUid] && isPlayerOnDuty(j)) {
-									countPlaya++;
-								}	
-							}
-							
-							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[i][gUid], countPlaya, tGroup[i][gName]);
-						}
-					}
-				}
-				case G_SHOP: {
-					strcat(mainStr, "{FFFFFF}Ka¿da grupa typu 24/7...\n--\n");
-					
-					foreach(new i : groupItter) {
-						foreach(new j : Player) {
-							if(tGroup[i][gType] == G_SHOP) {
-								if(tPlayer[j][pGroupNow] == tGroup[i][gUid] && isPlayerOnDuty(j)) {
-									countPlaya++;
-								}	
-							}
-							
-							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[i][gUid], countPlaya, tGroup[i][gName]);
-						}
-					}
-				}
-				case G_DRVRLIC: {
-					strcat(mainStr, "{FFFFFF}Ka¿da grupa typu Nauka jazdy...\n--\n");
-					
-					foreach(new i : groupItter) {
-						foreach(new j : Player) {
-							if(tGroup[i][gType] == G_DRVRLIC) {
-								if(tPlayer[j][pGroupNow] == tGroup[i][gUid] && isPlayerOnDuty(j)) {
-									countPlaya++;
-								}
-							}
-							
-							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[i][gUid], countPlaya, tGroup[i][gName]);
-						}
-					}
-				}
-				case G_MOBILE: {
-					strcat(mainStr, "{FFFFFF}Ka¿da grupa typu Operator komorkowy...\n--\n");
-					
-					foreach(new i : groupItter) {
-						foreach(new j : Player) {
-							if(tGroup[i][gType] == G_MOBILE) {
-								if(tPlayer[j][pGroupNow] == tGroup[i][gUid] && isPlayerOnDuty(j)) {
-									countPlaya++;
-								}	
-							}
-							
-							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[i][gUid], countPlaya, tGroup[i][gName]);
-						}
-					}
-				}
-				case G_SHOOT: {
-					strcat(mainStr, "{FFFFFF}Ka¿da grupa typu Airsoft gun...\n--\n");
-					
-					foreach(new i : groupItter) {
-						foreach(new j : Player) {
-							if(tGroup[i][gType] == G_SHOOT) {
-								if(tPlayer[j][pGroupNow] == tGroup[i][gUid] && isPlayerOnDuty(j)) {
-									countPlaya++;
-								}	
-							}
-							
-							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[i][gUid], countPlaya, tGroup[i][gName]);
-						}
-					}
-				}
+
+				format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[i][gUid], countPlaya, tGroup[i][gName]);
 			}
-			
+
 			SendClientMessage(playerid, COLOR_YELLOW, "Automat (telefon): Witamy. Gdzie chce siê Pan/Pani dodzwoniæ?");
 			PlayerPlaySound(playerid, 3600, 0.0, 0.0, 0.0);
 
@@ -4110,19 +3935,17 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 		
 		case DIALOG_GROUP_MEMBERS: {
 			new title[64];
-			
+
 			mainStr[0] = EOS;
-			
 			strcat(mainStr, "Wpisz np. 50% lub 125%, aby edytowaæ wyp³atê.\nWyp³aty musz¹ byæ zbalansowane. Aby ktoœ móg³\notrzymaæ 125%, inny cz³onek musi mieæ najwy¿ej 75%.\n\n");
 			strcat(mainStr, "Ka¿de uprawnienie ma przypisan¹ literkê.\nMo¿esz zmieniaæ kilka uprawnieñ na raz:\n+A aby nadaæ uprawnienia zgodnie z legend¹.\n");
 			strcat(mainStr, "-ACD aby zabraæ uprawnienia.\n\nWpisz \"wyrzuc\" aby wyprosiæ gracza.");
-			
+
 			ShowPlayerDialog(playerid, DIALOG_GROUP_MEMBERS_EDIT, DIALOG_STYLE_INPUT, title, mainStr, "Edytuj", "Anuluj");
 		}
 		
 		case DIALOG_GROUP_MEMBERS_EDIT: {
 			GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~n~~n~Nie podano zadnego uprawnienia,~n~ktore mozesz edytowac..", 5000, 3);
-			
 			showPlayerGroupMembers(playerid);
 		}
 
@@ -4156,7 +3979,7 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "~y~%s~n~~w~odbiera ~r~%d", tPlayer[playerid][pCharName], tGroupTask[srvTaskId][gTUid]);
-			gameTextToGroup(tGroup[getServerGroupIdForPlayer(playerid)][gType], mainStr, 5000, 6);
+			gameTextToGroup(getServerGroupIdForPlayer(playerid), mainStr, 5000, 6);
 
 			removeGroupTask(srvTaskId, tmpUid);
 		}
@@ -4438,12 +4261,12 @@ sampCallback:OSRP_OnDialogResponse(playerid, dialogid, response, listitem, input
 sampCallback:OSRP_OnPlayerEnterDynamicArea(playerid, areaid) {
 	foreach(new i : areaItter) {
 		if(areaid == tArea[i][aArea]) {
-			new srvVehId = getServerVehicleIdForPlayer(playerid);
-			new str[64];
-
 			tPlayer[playerid][pArea] = tArea[i][aUid];
 
 			if(IsPlayerInAnyVehicle(playerid) && GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
+				new srvVehId = getServerVehicleIdForPlayer(playerid);
+				new str[64];
+
 				mainStr[0] = EOS;
 
 				if(tArea[i][aMaxSpeed] != 999) {
@@ -4539,7 +4362,6 @@ sampCallback:OSRP_OnPlayerClickTextDraw(playerid, Text:clickedid) {
 }
 
 sampCallback:OSRP_OnEnterExitModShop(playerid, enterexit, interiorid) {
-	
 	return 1;
 }
 
@@ -4617,7 +4439,6 @@ sampCallback:OSRP_OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ) {
 }
 
 sampCallback:OSRP_OnPlayerClickPlayer(playerid, clickedplayerid, source) {
-	
 	return 1;
 }
 

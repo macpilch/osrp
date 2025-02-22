@@ -30,7 +30,7 @@ stock initVehicleValues() {
 		
 		mysql_fetch_row(queryStr, "|");
 		
-		sscanf(queryStr, "p<|>iiiiiiifffffiifiiiiiiiifis[64]s[32]",
+		sscanf(queryStr, "p<|>iiiiiiifffffiifiiiiiiiiffs[64]s[32]",
 			tVehicle[i][vUid],
 			tVehicle[i][vId],
 			tVehicle[i][vOUid],
@@ -147,7 +147,7 @@ stock getServerVehicleIdForPlayerEx(vehicleid) {
 	return vid;
 }
 
-stock addPlayerVehicle(playerid, modelid) {
+stock addPlayerVehicle(playerid, modelid, color1, color2) {
 	new freeId;
 
 	queryStr[0] = EOS;
@@ -169,8 +169,8 @@ stock addPlayerVehicle(playerid, modelid) {
 	tVehicle[freeId][vOUid] = tPlayer[playerid][pUid];
 	tVehicle[freeId][vGUid] = 0;
 	tVehicle[freeId][vModelId] = modelid;
-	tVehicle[freeId][vColor1] = random(255);
-	tVehicle[freeId][vColor2] = random(255);
+	tVehicle[freeId][vColor1] = color1;
+	tVehicle[freeId][vColor2] = color2;
 	tVehicle[freeId][vAngle] = 0.0;
 	tVehicle[freeId][vLock] = false;
 	tVehicle[freeId][vSpawned] = false;
@@ -192,7 +192,7 @@ stock addPlayerVehicle(playerid, modelid) {
 	vehMapIcon[freeId] = -1;
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`UID`, `ID`, `OUID`, `ModelID`, `Color1`, `Color2`, `X`, `Y`, `Z`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d', '%d', '%f', '%f', '%f')",
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`UID`, `ID`, `OUID`, `ModelID`, `Color1`, `Color2`, `X`, `Y`, `Z`) VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%f', '%f', '%f')",
 	tVehicle[freeId][vUid], tVehicle[freeId][vId], tVehicle[freeId][vOUid], tVehicle[freeId][vModelId], tVehicle[freeId][vColor1], tVehicle[freeId][vColor2], tVehicle[freeId][vX], tVehicle[freeId][vY], tVehicle[freeId][vZ]);
 	mysql_query(queryStr);
 }
@@ -266,13 +266,13 @@ Callback:vehicleEngineOn(playerid) {
 
 	mainStr[0] = EOS;
 
-	if(tVehicle[srvVehId][vEngineHp] == 300.0 && (rand == 0 || rand == 2 || rand == 4)) {
+	if(tVehicle[srvVehId][vEngineHp] <= 300.0 && (rand == 0 || rand == 2 || rand == 4)) {
 		format(mainStr, sizeof(mainStr), "* %s próbuje uruchomiæ pojazd, ale silnik odmawia pos³uszeñstwa.", tPlayer[playerid][pCharName]);
 		sendMeMessage(playerid, mainStr);
 	} else if(tVehicle[srvVehId][vEngineHp] < 500.0 && tVehicle[srvVehId][vEngineHp] > 300.0) {
 		format(mainStr, sizeof(mainStr), "* %s próbuje uruchomiæ pojazd, ale silnik jest przegrzany.", tPlayer[playerid][pCharName]);
 		sendMeMessage(playerid, mainStr);
-	} else if(tVehicle[srvVehId][vEngineHp] > 500.0 || (tVehicle[srvVehId][vEngineHp] == 300.0 && (rand == 1 || rand == 3))) {
+	} else if(tVehicle[srvVehId][vEngineHp] > 500.0 || (tVehicle[srvVehId][vEngineHp] <= 300.0 && (rand == 1 || rand == 3))) {
 		new engine, lights, alarm, doors, bonnet, boot, objective;
 
 		GetVehicleParamsEx(tVehicle[srvVehId][vId], engine, lights, alarm, doors, bonnet, boot, objective);
@@ -321,9 +321,9 @@ Callback:updateVehicleFuel(playerid, Float:fuel) {
 stock getVehicleSpeed(vehicleid) {
 	new Float:vehPos[3];
 	new vehVel;
-	
+
 	GetVehicleVelocity(vehicleid, vehPos[0], vehPos[1], vehPos[2]);
-	
+
 	vehVel = floatround(floatsqroot(vehPos[0] * vehPos[0] + vehPos[1] * vehPos[1] + vehPos[2] * vehPos[2]) * 180);
 	return vehVel;
 }
@@ -419,13 +419,13 @@ stock setPlayerVehicleDamage(playerid) {
 	return 1;
 }
 
-stock bool:isVehicleInUse(vehicleid) {
+stock isVehicleInUse(vehicleid) {
 	foreach(new i : Player) {
 		if(IsPlayerInVehicle(i, vehicleid)) {
-			return true;
+			return 1;
 		}
 	}
-	return false;
+	return 0;
 }
 
 stock getPanel(vehicleid, panelid) {
@@ -594,12 +594,12 @@ stock decode_tires(tires, &tire1, &tire2, &tire3, &tire4) {
 	tire4 = tires >> 3 & 1;
 }
 
-stock getVehicleDistance(vehicleid) {
+stock Float:getVehicleDistance(vehicleid) {
 	new Float:vehDistance;
 
 	vehDistance = getVehicleSpeed(vehicleid) * 1000 / 3600 / 1;
 	vehDistance = vehDistance / 1000;
-	return floatToInt(vehDistance);
+	return vehDistance;
 }
 
 stock getVehicleModelIdFromName(const vname[]) {
@@ -648,8 +648,8 @@ stock getClosestVehicle(playerid, Float:dist = 1000.0) {
 
 		GetVehiclePos(i, x[1], y[1], z[1]);
 
-        if(nearestPos > GetDistanceBetweenPoints(x[0], y[0], z[0], x[1], y[1], z[1])) {
-			nearestPos = GetDistanceBetweenPoints(x[0], y[0], z[0], x[1], y[1], z[1]);
+        if(nearestPos > Distance(x[0], y[0], z[0], x[1], y[1], z[1])) {
+			nearestPos = Distance(x[0], y[0], z[0], x[1], y[1], z[1]);
 			nearestVehicle = i;
 		}
     }
@@ -1007,7 +1007,7 @@ Callback:updatePlayerTaxiCourse(playerid, vehicleid) {
 
 	new taxiStr[64];
 
-	taxiDistance[playerid] += getVehicleDistance(vehicleid);
+	taxiDistance[playerid] += floatToInt(getVehicleDistance(vehicleid));
 	taxiCost[playerid] = taxiDistance[playerid] * offerParams[playerid][OFFER_PARM_ETC];
 
 	format(taxiStr, sizeof(taxiStr), "~y~~h~%d~w~m.__[~r~%d~w~]", taxiDistance[playerid], taxiCost[playerid]);

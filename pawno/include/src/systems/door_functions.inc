@@ -27,11 +27,34 @@ stock initDoorValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iiis[32]ffffffiis[24]iiiiiiiiii", tDoor[i][dUid], tDoor[i][dOUid], tDoor[i][dOType], tDoor[i][dName], tDoor[i][dEnterX], tDoor[i][dEnterY], tDoor[i][dEnterZ],
-		tDoor[i][dExitX], tDoor[i][dExitY], tDoor[i][dExitZ], tDoor[i][dOpen], tDoor[i][dTax], tDoor[i][dTaxDate], tDoor[i][dTaxCost], tDoor[i][dDimensions], tDoor[i][dObjects],
-		tDoor[i][dMaxObjects], tDoor[i][dTexts], tDoor[i][dMaxTexts], tDoor[i][dSecurity], tDoor[i][dVw], tDoor[i][dInt], tDoor[i][dType]);
-		Iter_Add(doorItter, i);
 
+		sscanf(queryStr, "p<|>iiis[32]ffffffiis[24]iiiiiiiiii",
+			tDoor[i][dUid],
+			tDoor[i][dOUid],
+			tDoor[i][dOType],
+			tDoor[i][dName],
+			tDoor[i][dEnterX],
+			tDoor[i][dEnterY],
+			tDoor[i][dEnterZ],
+			tDoor[i][dExitX],
+			tDoor[i][dExitY],
+			tDoor[i][dExitZ],
+			tDoor[i][dOpen],
+			tDoor[i][dTax],
+			tDoor[i][dTaxDate],
+			tDoor[i][dTaxCost],
+			tDoor[i][dDimensions],
+			tDoor[i][dObjects],
+			tDoor[i][dMaxObjects],
+			tDoor[i][dTexts],
+			tDoor[i][dMaxTexts],
+			tDoor[i][dSecurity],
+			tDoor[i][dVw],
+			tDoor[i][dInt],
+			tDoor[i][dType]
+		);
+
+		Iter_Add(doorItter, i);
 		tDoor[i][dPickup] = CreateDynamicPickup(1239, 2, tDoor[i][dEnterX], tDoor[i][dEnterY], tDoor[i][dEnterZ], 0, 0, -1, 50.0, -1, 0);
 	}
 

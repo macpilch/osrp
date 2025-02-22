@@ -14,20 +14,20 @@
 
 stock initItemValues() {
 	printf("[LOG]: Zaczynam ladowac przedmioty...");
-	
+
 	for(new i = 0; i < MAX_ITEMS; i++) {		
 		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Items` WHERE `UID` = '%d'", i + 1);
 		mysql_query(queryStr);
-		
+
 		mysql_store_result();
-		
+
 		if(!mysql_num_rows()) {
 			break;
 		}
-		
+
 		mysql_fetch_row(queryStr, "|");
-		
+
 		sscanf(queryStr, "p<|>iiiis[32]iifffii",
 			tItem[i][iUid],
 			tItem[i][iId],
@@ -46,25 +46,24 @@ stock initItemValues() {
 		Iter_Add(itemItter, i);
 		printf("[DEBUG] SrvId: %d, Uid: %d, Id: %d, OUid: %d, BUid: %d, Name: %s, Value1: %d, Value2: %d, PosX: %0.1f, PosY: %0.1f, PosZ: %0.1f, Used: %d, Place: %d", i, tItem[i][iUid], tItem[i][iId], tItem[i][iOUid], tItem[i][iBUid], tItem[i][iName], tItem[i][iValue1], tItem[i][iValue2], tItem[i][iPosX], tItem[i][iPosY], tItem[i][iPosZ], tItem[i][iUsed], tItem[i][iPlace]);
 	}
-	
+
 	if(Iter_Count(itemItter)) {
 		printf("[LOG]: Wczytano %d przedmiotow.", Iter_Count(itemItter));
 	} else {
 		printf("[LOG]: Brak przedmiotow.");
 	}
-	
+
 	mysql_free_result();
 	return 1;
 }
 
 stock saveItemValues() {
 	queryStr[0] = EOS;
-	
+
 	foreach(new i : itemItter) {
 		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `OUID` = '%d', `Value1` = '%d', `Value2` = '%d', `Used` = '%d', `Place` = '%d' WHERE `UID` = '%d'", tItem[i][iOUid], tItem[i][iValue1], tItem[i][iValue2], tItem[i][iUsed], tItem[i][iPlace], tItem[i][iUid]);
 		mysql_query(queryStr);
 	}
-	return 1;
 }
 
 stock getServerItemIdForPlayer(playerid) {
@@ -80,17 +79,17 @@ stock getServerItemIdForPlayer(playerid) {
 }
 
 stock addPlayerItem(playerid, itemid) {
-	new freeId;
-	
+	new freeId = -1;
+
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Items`");
 	mysql_query(queryStr);
-	
+
 	mysql_store_result();
-	
+
 	freeId = mysql_fetch_int();
 	mysql_free_result();
-	
+
 	tItem[freeId][iUid] = freeId + 1;
 	tItem[freeId][iId] = itemid;
 	tItem[freeId][iOUid] = tPlayer[playerid][pUid];
@@ -126,7 +125,6 @@ stock addPlayerItem(playerid, itemid) {
 
 		for(new i = 0; i < sizeof(number); i++) {
 			number[i] = random(10);
-			
 			format(numberStr, sizeof(numberStr), "%s%d", numberStr, number[i]);
 		}
 
@@ -143,29 +141,28 @@ stock addPlayerItem(playerid, itemid) {
 
 	if(tItem[freeId][iId] >= P_COLT && tItem[freeId][iId] <= P_TEC9) {
 		tItem[freeId][iValue1] = 50;
-		
+
 		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `Value1` = '%d' WHERE `UID` = '%d'", tItem[freeId][iValue1], tItem[freeId][iUid]);
 		mysql_query(queryStr);
 	}
-	
+
 	if(tItem[freeId][iId] == P_KAMIZELKA) {
 		tItem[freeId][iValue1] = 100;
-		
+
 		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `Value1` = '%d' WHERE `UID` = '%d'", tItem[freeId][iValue1], tItem[freeId][iUid]);
 		mysql_query(queryStr);
 	}
-	return 1;
 }
 
 stock removePlayerItem(srvitemid) {
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Items` WHERE `UID` = '%d'", tItem[srvitemid][iUid]);
 	mysql_query(queryStr);
-	
+
 	Iter_Remove(itemItter, srvitemid);
-	
+
 	tItem[srvitemid][iUid] = INVALID_ITEM_ID;
 	tItem[srvitemid][iId] = -1;
 	tItem[srvitemid][iOUid] = INVALID_ITEM_ID;
@@ -178,7 +175,6 @@ stock removePlayerItem(srvitemid) {
 	tItem[srvitemid][iPosZ] = 0.0;
 	tItem[srvitemid][iUsed] = false;
 	tItem[srvitemid][iPlace] = ITEM_PLACE_PLAYER;
-	return 1;
 }
 
 stock resetItemValues(playerid) {
@@ -193,7 +189,6 @@ stock resetItemValues(playerid) {
 	}
 
 	actualItem[playerid] = INVALID_ITEM_ID;
-	return 1;
 }
 
 stock enableItemProperties(playerid, srvitemid, itemid) {
@@ -206,6 +201,8 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 	switch(itemid) {
 		case P_ROLKI: {
 			if(!tItem[srvitemid][iUsed]) {
+				resetPlayerTextDraws(playerid);
+
 				for(new i = 0; i < 2; i++) {
 					TextDrawShowForPlayer(playerid, usedRollersInfo[playerid][i]);
 				}
@@ -583,7 +580,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 			if(!tItem[srvitemid][iUsed]) {
 				tItem[srvitemid][iUsed] = true;
 
-				addPlayerVehicle(playerid, itemid);
+				addPlayerVehicle(playerid, itemid, random(255), random(255));
 				removePlayerItem(srvitemid);
 
 				strcat(mainStr, "Pojazd zosta³ odebrany i znajduje siê teraz\nna Twojej liœcie pojazdów - /v.");
@@ -681,6 +678,26 @@ stock saveItemWeaponAmmo(srvitemid) {
 	return 1;
 }
 
+stock dropOutAllPlayerItems(playerid) {
+	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
+		return 1;
+	}
+
+	GetPlayerPos(playerid, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ]);
+
+	foreach(new i : itemItter) {
+		if(tItem[i][iOUid] == tPlayer[playerid][pUid] && tItem[i][iBUid] == INVALID_ITEM_ID && tItem[i][iPlace] == ITEM_PLACE_PLAYER) {
+			tItem[i][iOUid] = INVALID_PLAYER_ID;
+			tItem[i][iPlace] = ITEM_PLACE_FLOOR;
+			tItem[i][iPosX] = tPlayer[playerid][pX];
+			tItem[i][iPosY] = tPlayer[playerid][pY];
+			tItem[i][iPosZ] = tPlayer[playerid][pZ];
+			tItem[i][iUsed] = false;
+		}
+	}
+	return 1;
+}
+
 stock pickUpNearblyItems(playerid, where) {
 	new countItems;
 	mainStr[0] = EOS;
@@ -690,7 +707,6 @@ stock pickUpNearblyItems(playerid, where) {
 			if(playerToPoint(playerid, 5.0, tItem[i][iPosX], tItem[i][iPosY], tItem[i][iPosZ])) {
 				if(tItem[i][iPlace] == ITEM_PLACE_FLOOR && tItem[i][iOUid] == INVALID_PLAYER_ID) {
 					format(mainStr, sizeof(mainStr), "%s{FFFFFF}%d\t%s\n", mainStr, tItem[i][iUid], tItem[i][iName]);
-
 					countItems++;
 				}
 			}
@@ -709,7 +725,6 @@ stock pickUpNearblyItems(playerid, where) {
 		foreach(new i : itemItter) {
 			if(tItem[i][iPlace] == ITEM_PLACE_VEHICLE && tItem[i][iOUid] == tVehicle[srvVehId][vUid]) {
 				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, tItem[i][iUid], tItem[i][iName]);
-
 				countItems++;
 			}
 		}

@@ -12,21 +12,6 @@
 #define __DEFINES_INC__
 #pragma library osrp
 
-// Klawisze
-#define HOLDING(%0) \
-	((newkeys & (%0)) == (%0))
-	
-#define PRESSED(%0) \
-	(((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
-	
-#define PRESSING(%0,%1) \
-	(%0 & (%1))
-	
-#define RELEASED(%0) \
-	(((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
-
-#define GetDistanceBetweenPoints(%0,%1,%2,%3,%4,%5) (((%0 - %3) * (%0 - %3)) + ((%1 - %4) * (%1 - %4)) + ((%2 - %5) * (%2 - %5)))
-
 #pragma tabsize 0
 #pragma dynamic 4096 // rozmiar stosu
 
@@ -42,9 +27,6 @@
 #define MAX_PLAYER_GROUPS 5
 #define MAX_ITEMS 100
 #define MAX_DOORS 10
-#define MAX_STATIONS 10
-#define MAX_GAS_PUMPS 10
-#define MAX_PETROL_STATIONS 10
 #define MAX_BOOTHS 10
 #define MAX_BUS_STOPS 10
 #define MAX_CASHPOINTS 10
@@ -60,15 +42,10 @@
 #define MAX_PENALTIES 100
 #define MAX_ANIMATIONS 135
 
-// Callbacks
-#define sampCallback:%0(%1) \
-		public %0(%1)
-
-#define Callback:%0(%1) \
-		forward %0(%1); public %0(%1)
-
+// Colors
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_RED 0xFF0000FF
+#define COLOR_DARKRED 0xA52A2AFF
 #define COLOR_CLARET 0xFF4444FF
 #define COLOR_YELLOW 0xFFFF00FF
 #define COLOR_GREEN 0x33AA33FF
@@ -87,6 +64,28 @@
 #define COLOR_ORANGE 0xFF9900FF
 #define COLOR_LIGHTORANGE 0xFFCC66FF
 #define COLOR_OOC 0xFFC3FFFF
+
+// Callbacks
+#define sampCallback:%0(%1) \
+		public %0(%1)
+
+#define Callback:%0(%1) \
+		forward %0(%1); public %0(%1)
+
+// Klawisze
+#define HOLDING(%0) \
+	((newkeys & (%0)) == (%0))
+	
+#define PRESSED(%0) \
+	(((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
+	
+#define PRESSING(%0,%1) \
+	(%0 & (%1))
+	
+#define RELEASED(%0) \
+	(((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
+
+#define Distance(%0,%1,%2,%3,%4,%5) (((%0 - %3) * (%0 - %3)) + ((%1 - %4) * (%1 - %4)) + ((%2 - %5) * (%2 - %5)))
 
 #define NULL "\0"
 
@@ -112,17 +111,28 @@
 // Sloty przedmiotów
 #define SLOT_GYM 0
 
+#define DOC_ID 0
+#define DOC_L_DRIVING 1
+#define DOC_L_HEALTH 2
+#define DOC_L_PRISON 3
+#define DOC_L_PSYCHO 4
+#define DOC_L_WEAPON 5
+
 // Uprawnienia grupy (Flagi)
 #define GROUP_PERM_CHATOOC 1
 #define GROUP_PERM_CHATIC 2
 #define GROUP_PERM_MEGAPHONE 4
-#define GROUP_PERM_GPS 8
+#define GROUP_PERM_RADIO 8
+#define GROUP_PERM_GPS 16
 
 // Flagi zapisu danych
 #define SAVE_ALL_VALUES 1
 #define SAVE_MONEY 2
 #define SAVE_STRENGTH 4
+#define SAVE_HEALTH 8
+#define SAVE_SCORE 16
 
+// Kary
 #define PEN_BAN 0
 #define PEN_KICK 1
 #define PEN_ADMJAIL 2
@@ -136,6 +146,7 @@
 #define PEN_CURSE 10
 #define PEN_SCORE 11
 
+// Oferty
 #define OFFER_PARM_PRICE 0
 #define OFFER_PARM_ETC 1
 #define OFFER_PARM_TYPE 2
@@ -175,6 +186,7 @@
 #define O_TAXI 28
 #define O_REKLAMA 29
 
+// Przedmioty
 #define	P_ROLKI 0
 #define	P_PIWO 1
 #define	P_WINO 2
@@ -321,12 +333,14 @@
 #define VEHICLE_OWNER_GROUP 0
 #define INVALID_ITEM_ID 0
 
+// veh accessories flags
 #define VEH_ACCESSORIES_ALARM 1
 #define VEH_ACCESSORIES_IMMOBILISER 2
 #define VEH_ACCESSORIES_CBRADIO 4
 #define VEH_ACCESSORIES_AUDIO 8
 #define VEH_ACCESSORIES_LIMITER 16
 
+// item places
 #define ITEM_PLACE_PLAYER 0
 #define ITEM_PLACE_FLOOR 1
 #define ITEM_PLACE_VEHICLE 2
@@ -360,12 +374,6 @@
 // Number plate
 #define VEHICLE_NUMBER_PLATE_NULL ""
 
-forward bool:checkPlayerVehicles(playerid);
-forward bool:isVehicleInUse(vehicleid);
-forward bool:isPlayerBanned(playerid);
-forward bool:isPlayerOnDuty(playerid);
-forward bool:isPlayerBanned(playerid);
-
 // Callbacki servera
 #define OSRP_OnGameModeInit OnGameModeInit
 #define OSRP_OnGameModeExit OnGameModeExit
@@ -393,3 +401,13 @@ forward bool:isPlayerBanned(playerid);
 #define OSRP_OnPlayerUpdate OnPlayerUpdate
 #define OSRP_OnPlayerClickMap OnPlayerClickMap
 #define OSRP_OnPlayerClickPlayer OnPlayerClickPlayer
+#define OSRP_OnPlayerEnterVehicle OnPlayerEnterVehicle
+#define OSRP_OnPlayerExitVehicle OnPlayerExitVehicle
+#define OSRP_OnVehicleSpawn OnVehicleSpawn
+#define OSRP_OnVehicleDeath OnVehicleDeath
+#define OSRP_OnVehicleMod OnVehicleMod
+#define OSRP_OnVehiclePaintjob OnVehiclePaintjob
+#define OSRP_OnVehicleRespray OnVehicleRespray
+#define OSRP_OnVehicleDamageStatusUpdate OnVehicleDamageStatusUpdate
+#define OSRP_OnVehicleStreamIn OnVehicleStreamIn
+#define OSRP_OnVehicleStreamOut OnVehicleStreamOut

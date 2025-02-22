@@ -27,10 +27,18 @@ stock initBoothValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>is[32]ffffi", tBooth[i][boUid], tBooth[i][boName], tBooth[i][boPosX], tBooth[i][boPosY], tBooth[i][boPosZ], tBooth[i][boRange], tBooth[i][boWorking]);
+
+		sscanf(queryStr, "p<|>is[32]ffffi",
+			tBooth[i][boUid],
+			tBooth[i][boName],
+			tBooth[i][boPosX],
+			tBooth[i][boPosY],
+			tBooth[i][boPosZ],
+			tBooth[i][boRange],
+			tBooth[i][boWorking]
+		);
 
 		Iter_Add(boothItter, i);
-
 		tBooth[i][boObject] = CreateDynamicObject(1216, tBooth[i][boPosX], tBooth[i][boPosY], tBooth[i][boPosZ], 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
 	}
 

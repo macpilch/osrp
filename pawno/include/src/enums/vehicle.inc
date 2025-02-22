@@ -33,7 +33,7 @@ enum VehicleData {
 	bool:vWindow,
 	vAccessories,
 	Float:vRepair,
-	vMileage, // Przebieg
+	Float:vMileage, // Przebieg
 	Text3D:vDesc,
 	vDescInfo[64],
 	vPlate[32]

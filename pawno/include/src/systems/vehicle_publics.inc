@@ -12,9 +12,8 @@
 #define __VEHICLE_PUBLICS_INC__
 #pragma library osrp
 
-sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
+sampCallback:OSRP_OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 	new srvVehId = getServerVehicleIdForPlayerEx(vehicleid);
-
 	actualVehicle[playerid] = tVehicle[srvVehId][vUid];
 
 	if(tPlayer[playerid][pBlock] & BLOCK_VEH) {
@@ -22,7 +21,7 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Administracja zablokowa³a Ci mo¿liwoœæ prowadzenia pojazdów.");
 	}
 
-	if(isVehicleInUse(vehicleid) && !tPlayer[playerid][pDriverLicense] && !drivingCourse[playerid]) {
+	if(isVehicleInUse(vehicleid) && !tPlayer[playerid][pDriverLicense] && !drivingCourse[playerid] && !ispassenger) {
 		ClearAnimations(playerid);
 
 		SendClientMessage(playerid, COLOR_WHITE, "(!) Pamiêtaj, to RolePlay. Swój pojazd musisz kupiæ lub wypo¿yczyæ.");
@@ -56,7 +55,7 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 	return 1;
 }
 
-sampCallback:OnPlayerExitVehicle(playerid, vehicleid) {
+sampCallback:OSRP_OnPlayerExitVehicle(playerid, vehicleid) {
 #if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnPlayerExitVehicle");
 #endif
@@ -72,11 +71,11 @@ sampCallback:OnPlayerExitVehicle(playerid, vehicleid) {
 	return 1;
 }
 
-sampCallback:OnVehicleSpawn(vehicleid) {
+sampCallback:OSRP_OnVehicleSpawn(vehicleid) {
 	return 1;
 }
 
-sampCallback:OnVehicleDeath(vehicleid, killerid) {
+sampCallback:OSRP_OnVehicleDeath(vehicleid, killerid) {
 #if defined DEBUG
 	SendClientMessage(killerid, COLOR_WHITE, "Witma ! OnVehicleDeath");
 #endif
@@ -109,28 +108,28 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 	return 1;
 }
 
-sampCallback:OnVehicleMod(playerid, vehicleid, componentid) {
+sampCallback:OSRP_OnVehicleMod(playerid, vehicleid, componentid) {
 #if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehicleMod");
 #endif
 	return 1;
 }
 
-sampCallback:OnVehiclePaintjob(playerid, vehicleid, paintjobid) {
+sampCallback:OSRP_OnVehiclePaintjob(playerid, vehicleid, paintjobid) {
 #if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehiclePaintjob");
 #endif
 	return 1;
 }
 
-sampCallback:OnVehicleRespray(playerid, vehicleid, color1, color2) {
+sampCallback:OSRP_OnVehicleRespray(playerid, vehicleid, color1, color2) {
 #if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehicleRespray");
 #endif
 	return 1;
 }
 
-sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
+sampCallback:OSRP_OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 #if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehicleDamageStatusUpdate");
 #endif
@@ -144,7 +143,7 @@ sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 	if(!hasBelts[playerid]) {
 		SetPlayerHealth(playerid, tPlayer[playerid][pHp] - damage);
 	} else {
-		SetPlayerHealth(playerid, tPlayer[playerid][pHp] - (damage + 2));
+		SetPlayerHealth(playerid, tPlayer[playerid][pHp] - (damage + 3));
 	}
 
 	if(damage >= 4) {
@@ -170,7 +169,7 @@ sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 	return 1;
 }
 
-sampCallback:OnVehicleStreamIn(vehicleid, forplayerid) {
+sampCallback:OSRP_OnVehicleStreamIn(vehicleid, forplayerid) {
 #if defined DEBUG
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamIn");
 #endif
@@ -180,7 +179,7 @@ sampCallback:OnVehicleStreamIn(vehicleid, forplayerid) {
 	return 1;
 }
 
-sampCallback:OnVehicleStreamOut(vehicleid, forplayerid) {
+sampCallback:OSRP_OnVehicleStreamOut(vehicleid, forplayerid) {
 #if defined DEBUG
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamOut");
 #endif

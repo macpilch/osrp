@@ -70,11 +70,11 @@ Timer:globalTimer[1000]() {
 		if(srvVehId != -1 && !isBicycle(tVehicle[srvVehId][vModelId])) {
 			if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
 				if(hasBelts[i]) {
-					format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%d~w~ KM~n~~w~Paliwo: ~b~%0.1f~w~ L~n~Pasy: ~g~zapiete", getVehicleSpeed(tVehicle[srvVehId][vId]), tVehicle[srvVehId][vMileage], tVehicle[srvVehId][vFuel]);
+					format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%d~w~ KM~n~~w~Paliwo: ~b~%0.1f~w~ L~n~Pasy: ~g~zapiete", getVehicleSpeed(tVehicle[srvVehId][vId]), floatToInt(tVehicle[srvVehId][vMileage]), tVehicle[srvVehId][vFuel]);
 					TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
 					TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
 				} else {
-					format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%d~w~ KM~n~~w~Paliwo: ~b~%0.1f~w~ L~n~Pasy: ~r~odpiete", getVehicleSpeed(tVehicle[srvVehId][vId]), tVehicle[srvVehId][vMileage], tVehicle[srvVehId][vFuel]);
+					format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%d~w~ KM~n~~w~Paliwo: ~b~%0.1f~w~ L~n~Pasy: ~r~odpiete", getVehicleSpeed(tVehicle[srvVehId][vId]), floatToInt(tVehicle[srvVehId][vMileage]), tVehicle[srvVehId][vFuel]);
 					TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
 					TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
 				}
@@ -224,9 +224,9 @@ Timer:globalTimer[1000]() {
 	return 1;
 }
 
-Timer:saveAllValuesTimer[30000]() {
+Timer:saveAllValuesTimer[60000]() {
 	foreach(new i : Player) {
-		if(hasLogged[i] && isSpawned[i]) {
+		if(isSpawned[i] && playerAFKTime[i] == 1) {
 			savePlayerValues(i, SAVE_ALL_VALUES);
 		}
 	}
@@ -237,13 +237,14 @@ Timer:saveAllValuesTimer[30000]() {
 	saveVehicleValues();
 }
 
-Timer:setRealTimeTimer[600000]() {
+Timer:setRealTimeTimer[5000]() {
 	new h, m, s;
 
 	gettime(h, m, s);
+	serverTime = h;
 
 	foreach(new i : Player) {
-		SetPlayerTime(i, h, m);
+		SetPlayerTime(i, serverTime, 0);
 	}
 }
 
@@ -279,10 +280,6 @@ Timer:townHallBellsTimer[59000]() {
 			SendClientMessage(i, COLOR_DO, timerStr);
 		}
 	}
-
-	if(hours == 0) {
-		changePricesGasPumps();
-	}
 }
 
 Timer:antiCheat[1000]() {
@@ -313,7 +310,7 @@ Timer:antiCheat[1000]() {
 				}
 			}
 
-			if(isFreeze[i] && !numberBlows[i] && !isBW[i]) {
+			if(isFreeze[i] && !numberBlows[i] && !isBW[i] && !busCameraSelect[i] && !isInBus[i]) {
 				if(IsPlayerInAnyVehicle(i) && getVehicleSpeed(tVehicle[srvVehId][vId]) > 0 && (x > tPlayer[i][pX] || x < tPlayer[i][pX]) && (tPlayer[i][pY] > y || tPlayer[i][pY] < y) && GetTickCount() < enteredVehicleSec[i]) {
 					enteredVehicleSec[i] = 0;
 					totalPos = floatabs((x - tPlayer[i][pX]) + (y - tPlayer[i][pY]));

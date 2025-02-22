@@ -344,6 +344,10 @@ stock getXYInFrontOfPlayer(playerid, &Float:x, &Float:y, Float:distance) {
 	y += (distance * floatcos(-a, degrees));
 }
 
+stock intToFloat(i) {
+	return float(i);
+}
+
 stock floatToInt(Float:f) {
 	new str[32];
 

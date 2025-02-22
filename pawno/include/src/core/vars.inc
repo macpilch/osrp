@@ -18,6 +18,9 @@ new allAccounts;
 new allCharacters;
 new numPlayerRace;
 
+new serverTime;
+new serverWeat = 10;
+
 new playerCps[MAX_PLAYERS];
 new playerRcPosition[MAX_PLAYERS];
 
@@ -79,6 +82,7 @@ new taxiDriver[MAX_PLAYERS];
 new taxiDistance[MAX_PLAYERS];
 new taxiCost[MAX_PLAYERS];
 
+new playerVehicles[MAX_PLAYERS][10];
 new gpsMapIcons[MAX_PLAYERS][100];
 
 //part time job
@@ -192,6 +196,6 @@ new Iterator:groupItter<MAX_GROUPS>;
 new Iterator:groupItemsItter<50>;
 new Iterator:groupTasksItter<MAX_GROUP_TASKS>;
 new Iterator:groupOrdersItter<100>;
-new Iterator:gasItter<MAX_PETROL_STATIONS>;
 new Iterator:raceItter<MAX_RACES>;
 new Iterator:areaItter<MAX_AREAS>;
+new Iterator:penItter<MAX_PENALTIES>;

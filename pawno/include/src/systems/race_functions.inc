@@ -30,7 +30,15 @@ stock initRaceValues() {
 		}
 		
 		mysql_fetch_row(queryStr, ",");
-		sscanf(queryStr, "p<,>is[64]iiii", tRace[i][rcUid], tRace[i][rcName], tRace[i][rcCreated], tRace[i][rcBesetments], tRace[i][rcCps], tRace[i][rcPlayers]);
+
+		sscanf(queryStr, "p<,>is[64]iiii",
+			tRace[i][rcUid],
+			tRace[i][rcName],
+			tRace[i][rcCreated],
+			tRace[i][rcBesetments],
+			tRace[i][rcCps],
+			tRace[i][rcPlayers]
+		);
 		
 		cps = tRace[i][rcCps];
 		

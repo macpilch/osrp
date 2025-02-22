@@ -21,11 +21,8 @@ sampCallback:OSRP_OnGameModeInit() {
 	EnableZoneNames(1);
 	DisableInteriorEnterExits();
 	ManualVehicleEngineAndLights();
-	EnableVehicleFriendlyFire();
 	ShowNameTags(0);
 	AddPlayerClassEx(0, 0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0);
-	SetWeather(10);
-	SetWorldTime(20);
 	SetGravity(0.008);
 	SetGameModeText("macpilch: osrp.com");
 
@@ -48,8 +45,6 @@ sampCallback:OSRP_OnGameModeInit() {
 	initAreaValues();
 	initItemValues();
 	initDoorValues();
-	initStationValues();
-	initGasPumpValues();
 	initBoothValues();
 	initBusStopValues();
 	initCashpointValues();
@@ -60,6 +55,7 @@ sampCallback:OSRP_OnGameModeInit() {
 	initGroupOrderValues();
 	initGroupVehicleValues();
 	initRaceValues();
+	initServerPenalties();
 
 	createServerObjects();
 	createServer3DTexts();
@@ -74,7 +70,6 @@ sampCallback:OSRP_OnGameModeInit() {
 	}
 
 	gymObject[0] = CreateDynamicObject(2629, 758.8672, -76.0945, 1000.6500 - 1, 0.0, 0.0, 90.0, 2, 7, -1, 50.0);
-	casualJobsPickup = CreateDynamicPickup(1239, 1, 817.7484,-1334.3308,13.5469, 0, 0, -1, 40.0, -1, 0);
 
 	website = TextDrawCreate(8.433380, 425.000000, "_");
 	TextDrawLetterSize(website, 0.303351, 1.016664);

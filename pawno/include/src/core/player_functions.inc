@@ -431,7 +431,7 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawFont(doorInfo[playerid][1], 1);
 	TextDrawSetProportional(doorInfo[playerid][1], 1);
 
-	doorInfo[playerid][2] = TextDrawCreate(500.380493, 309.749969, "~y~~h~Aby wejsc, wcisnij jednoczesnie~n~~w~ LALT i SPACE.");
+	doorInfo[playerid][2] = TextDrawCreate(500.380493, 309.749969, "~y~~h~Aby wejsc, wcisnij jednoczesnie~n~~w~ ~k~~SNEAK_ABOUT~ i ~k~~PED_JUMPING~.");
 	TextDrawLetterSize(doorInfo[playerid][2], 0.332401, 1.413332);
 	TextDrawAlignment(doorInfo[playerid][2], 2);
 	TextDrawColor(doorInfo[playerid][2], -1);
@@ -1147,9 +1147,14 @@ TextDrawSetProportional(Textdraw27, 1);
 }
 
 stock loadPlayerValues(playerid) {
-	new charDesc[64], tmpChrName[24];
+	if(!hasLogged[playerid]) {
+		return 1;
+	}
 
+	new charDesc[64], tmpChrName[24];
 	mysql_real_escape_string(tPlayer[playerid][pCharName], tmpChrName);
+
+	PlayerPlaySound(playerid, 0, 0.0, 0.0, 0.0);
 
 	queryStr[0] = EOS;
 	strcat(queryStr, "SELECT `GUID`, `CharId`, `IP`, `GS`, `Rank`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `HP`, `AP`, `VW`, `INT`, `Skin`, `LastSkin`, `Money`, `Bank`, `Debt`, `BW`, `AJ`, `AL`, `DrvLicAttempts`, `GOV`, `Hotel`, `HotelPaid`, `IdCard`, `DriverLicense`, `Detention`, `PDP`, `TelNum`,");
@@ -1215,11 +1220,19 @@ stock loadPlayerValues(playerid) {
 
 	mysql_free_result();
 
+	loadPlayerContacts(playerid);
+	loadPlayerVehicles(playerid);
+
 	SetPlayerScore(playerid, tPlayer[playerid][pGS]);
 	UpdateDynamic3DTextLabelText(tPlayer[playerid][pCharDesc], COLOR_PURPLE, charDesc);
+	return 1;
 }
 
 stock loadPlayerContacts(playerid) {
+	if(!hasLogged[playerid]) {
+		return 1;
+	}
+
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "SELECT `Name`, `Number` FROM `osrp_Contacts` WHERE `UID` = '%d'", tPlayer[playerid][pUid]);
 	mysql_query(queryStr);
@@ -1244,53 +1257,52 @@ stock loadPlayerContacts(playerid) {
 	return 1;
 }
 
-stock loadPlayerPenalties(playerid) {
-	new i;
+stock loadPlayerVehicles(playerid) {
+	new j;
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `SUID`, `OUID`, `Type`, `Days`, `Date`, `Reason` FROM `osrp_Penalties` WHERE `OUID` = '%d'", tPlayer[playerid][pUid]);
-	mysql_query(queryStr);
+	foreach(new i : vehItter) {
+		if(tPlayer[playerid][pUid] == tVehicle[i][vOUid]) {
+			playerVehicles[playerid][j] = i;
 
-	mysql_store_result();
-
-	while(mysql_fetch_row(queryStr, " ")) {
-		if(i == MAX_PENALTIES || !mysql_num_rows()) {
-			break;
-		}
-
-		sscanf(queryStr, "iiiis[64]s[128]", tPenalty[i][penSUID], tPenalty[i][penOUID], tPenalty[i][penType], tPenalty[i][penDays], tPenalty[i][penDate], tPenalty[i][penReason]);
-
-		switch(tPenalty[i][penType]) {
-			case PEN_BAN: {
-				tPlayer[playerid][pBlock] += BLOCK_BAN;
-			}
-			case PEN_BLCKOOC: {
-				tPlayer[playerid][pBlock] += BLOCK_OOC;
-			}
-			case PEN_BLCKACC: {
-				tPlayer[playerid][pBlock] += BLOCK_ACC;
-			}
-			case PEN_BLCKVEH: {
-				tPlayer[playerid][pBlock] += BLOCK_VEH;
-			}
-			case PEN_RUNNBLW: {
-				tPlayer[playerid][pBlock] += BLOCK_RUNNBLW;
-			}
-			case PEN_WRITING: {
-				tPlayer[playerid][pBlock] += BLOCK_WRITING;
-			}
-			case PEN_RPACTN: {
-				tPlayer[playerid][pBlock] += BLOCK_RPACTN;
-			}
-			case PEN_CURSE: {
-				tPlayer[playerid][pBlock] += BLOCK_CURSE;
+			if(j < 10) {
+				j++;
 			}
 		}
-
-		i++;
 	}
+	return 1;
+}
 
-	mysql_free_result();
+stock loadPlayerPenalties(playerid) {
+	foreach(new i : penItter) {
+		if(tPenalty[i][penOUID] == tPlayer[playerid][pUid]) {
+			switch(tPenalty[i][penType]) {
+				case PEN_BAN: {
+					tPlayer[playerid][pBlock] += BLOCK_BAN;
+				}
+				case PEN_BLCKOOC: {
+					tPlayer[playerid][pBlock] += BLOCK_OOC;
+				}
+				case PEN_BLCKACC: {
+					tPlayer[playerid][pBlock] += BLOCK_ACC;
+				}
+				case PEN_BLCKVEH: {
+					tPlayer[playerid][pBlock] += BLOCK_VEH;
+				}
+				case PEN_RUNNBLW: {
+					tPlayer[playerid][pBlock] += BLOCK_RUNNBLW;
+				}
+				case PEN_WRITING: {
+					tPlayer[playerid][pBlock] += BLOCK_WRITING;
+				}
+				case PEN_RPACTN: {
+					tPlayer[playerid][pBlock] += BLOCK_RPACTN;
+				}
+				case PEN_CURSE: {
+					tPlayer[playerid][pBlock] += BLOCK_CURSE;
+				}
+			}
+		}
+	}
 }
 
 stock givePlayerPenalty(playerid, victim, type, days, reason[]) {
@@ -1571,6 +1583,7 @@ stock setPlayerDefaultValues(playerid) {
 	telEnterGroup[playerid] = 0;
 	lastPmId[playerid] = INVALID_PLAYER_ID;
 	casualJob[playerid] = INVALID_PART_TIME_JOB;
+	taxiDriver[playerid] = INVALID_PLAYER_ID;
 	calledCmds[playerid] = 0;
 	calledSecsCmds[playerid] = 0;
 	enteredVehicleSec[playerid] = 0;
@@ -1579,10 +1592,10 @@ stock setPlayerDefaultValues(playerid) {
 	usedLastItemTime[playerid] = 0;
 	numberBlows[playerid] = 0;
 	fightAttacker[playerid] = INVALID_PLAYER_ID;
-	
+
 	playerRcTime[playerid] = 0.0;
 	playerRcActualTime[playerid] = 0.0;
-	
+
 	isSpawned[playerid] = false;
 	hasLogged[playerid] = false;
 	isAdminDuty[playerid] = false;
@@ -1606,15 +1619,25 @@ stock setPlayerDefaultValues(playerid) {
 	isCollision[playerid] = false;
 	isGym[playerid] = false;
 	usedAdminToken[playerid] = false;
+	haveTaxiCourse[playerid] = false;
 
 	for(new i = 0; i < sizeof(playerContacts); i++) {
 		playerContacts[playerid][i] = 0;
 	}
 
+	for(new i = 0; i < 10; i++) {
+		playerVehicles[playerid][i] = -1;
+	}
+
 	exit3dInfo[playerid] = Text3D:INVALID_3DTEXT_ID;
+	return 1;
 }
 
 stock resetPlayerValues(playerid) {
+	if(!hasLogged[playerid]) {
+		return 1;
+	}
+
 	tPlayer[playerid][pUid] = 0;
 	tPlayer[playerid][pGUid] = 0;
 	tPlayer[playerid][pCharId] = 0;
@@ -1698,7 +1721,7 @@ stock resetPlayerValues(playerid) {
 	numPlayerRace = 0;
 	playerCps[playerid] = 0;
 	playerRcPosition[playerid] = 0;
-	cameraTimer[playerid] = -1;
+	cameraTimer[playerid] = 0;
 	playerRcTime[playerid] = 0.0;
 	playerRcActualTime[playerid] = 0.0;
 	playerAFKTime[playerid] = 0;
@@ -1707,7 +1730,7 @@ stock resetPlayerValues(playerid) {
 	actualCashpoint[playerid] = 0;
 	actualItem[playerid] = 0;
 	actualGroupItemsSet[playerid] = 0;
-	actualRace[playerid] = -1;
+	actualRace[playerid] = 0;
 	playerFuelPrice[playerid] = 0;
 	offerFrom[playerid] = INVALID_PLAYER_ID;
 	offerFor[playerid] = INVALID_PLAYER_ID;
@@ -1721,6 +1744,7 @@ stock resetPlayerValues(playerid) {
 	telEnterGroup[playerid] = 0;
 	lastPmId[playerid] = INVALID_PLAYER_ID;
 	casualJob[playerid] = INVALID_PART_TIME_JOB;
+	taxiDriver[playerid] = INVALID_PLAYER_ID;
 	calledCmds[playerid] = 0;
 	calledSecsCmds[playerid] = 0;
 	enteredVehicleSec[playerid] = 0;
@@ -1750,15 +1774,25 @@ stock resetPlayerValues(playerid) {
 	isCollision[playerid] = false;
 	isGym[playerid] = false;
 	usedAdminToken[playerid] = false;
+	haveTaxiCourse[playerid] = false;
 
 	for(new i = 0; i < sizeof(playerContacts); i++) {
 		playerContacts[playerid][i] = 0;
 	}
 
+	for(new i = 0; i < 10; i++) {
+		playerVehicles[playerid][i] = 0;
+	}
+
 	resetPlayerGameStatus(playerid);
+	return 1;
 }
 
 stock savePlayerValues(playerid, what) {
+	if(!hasLogged[playerid]) {
+		return 1;
+	}
+
 	new day, m, yr, sec, mins, hr;
 
 	getdate(yr, m, day);
@@ -1782,7 +1816,15 @@ stock savePlayerValues(playerid, what) {
 	}
 
 	if(what & SAVE_MONEY) {
-		format(queryStr, sizeof(queryStr), "%sSET `Money` = '%d', `Bank` = '%d', `Debt` = '%d'", tPlayer[playerid][pMoney], tPlayer[playerid][pBank], tPlayer[playerid][pDebt]);
+		format(queryStr, sizeof(queryStr), "%sSET `Money` = '%d', `Bank` = '%d', `Debt` = '%d'", queryStr, tPlayer[playerid][pMoney], tPlayer[playerid][pBank], tPlayer[playerid][pDebt]);
+	}
+
+	if(what & SAVE_HEALTH) {
+		format(queryStr, sizeof(queryStr), "%sSET `HP` = '%f', `AP` = '%f'", queryStr, tPlayer[playerid][pHp], tPlayer[playerid][pAp]);
+	}
+
+	if(what & SAVE_SCORE) {
+		format(queryStr, sizeof(queryStr), "%sSET `GS` = '%d'", queryStr, tPlayer[playerid][pGS]);
 	}
 
 	format(queryStr, sizeof(queryStr), "%sWHERE `UID` = '%d'", queryStr, tPlayer[playerid][pUid]);
@@ -2091,33 +2133,27 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 		}
 		case O_ZAKUPPRZED: {
 			new srvItemId = getServerItemIdForPlayer(playerid);
-
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zakup przedmiotu: %s (%d,%d)\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", tItem[srvItemId][iName], tItem[srvItemId][iValue1], tItem[srvItemId][iValue2], offerParams[id][OFFER_PARM_PRICE]);
 			//format(mainStr, sizeof(mainStr), "{FFFFFF}Zakup przedmiotu: Maska (1,3000)\n(!) Przedmiotu mo¿e u¿ywaæ tylko zamawiaj¹ca grupa.\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", tItem[srvItemId][iName], offerParams[id][OFFER_PARM_PRICE]);
 		}
 		case O_ZAKUPBRONI: {
 			new srvItemId = getServerItemIdForPlayer(playerid);
-
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Zakup broni: %s (%d ammo, wiek %d dni) {FF0000}(Broñ legalna, mo¿e jej u¿ywaæ tylko pierwszy w³aœciciel)\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", tItem[srvItemId][iName], offerParams[id][OFFER_PARM_PRICE]);
 		}
 		case O_NAPCZESCI: {
 			new srvItemId = getServerItemIdForPlayer(playerid);
-			
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Naprawa czêœci pojazdu: %s\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", tItem[srvItemId][iName], offerParams[id][OFFER_PARM_PRICE]);
 		}
 		case O_INSTKOMPONENT: {
 			new srvItemId = getServerItemIdForPlayer(playerid);
-
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Instalacja komponentu: %s. Cena: $%d\n\nCzy akceptujesz tê ofertê?", tItem[srvItemId][iName], offerParams[id][OFFER_PARM_PRICE]);
 		}
 		case O_MODKOMPONENT: {
 			new srvItemId = getServerItemIdForPlayer(playerid);
-
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Monta¿ komponentu: %s. Cena: $%d\n\nCzy akceptujesz tê ofertê?", tItem[srvItemId][iName], offerParams[id][OFFER_PARM_PRICE]);
 		}
 		case O_ULEPSZENIE: {
 			new srvItemId = getServerItemIdForPlayer(playerid);
-
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Ulepszenie pojazdu: %s. Cena: $%d\n\nCzy akceptujesz tê ofertê?", tItem[srvItemId][iName], offerParams[id][OFFER_PARM_PRICE]);
 		}
 		case O_NAPRAWA: {
@@ -2190,7 +2226,6 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 		}
 		case O_AUTOWYP: {
 			new srvVehId = getServerVehicleIdForPlayer(id);
-
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Po¿yczenie na %d minut pojazdu %s\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][OFFER_PARM_ETC], VehicleNames[tVehicle[srvVehId][vId]], offerParams[id][OFFER_PARM_PRICE]);
 		}
 		case O_REJESTR: {
@@ -2208,7 +2243,6 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 		}
 		case O_VCARD: {
 			new tmp[64];
-
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Wizytówka vCard do telefonu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][OFFER_PARM_PRICE]);
 
 			format(tmp, sizeof(tmp), "* %s bierze do rêki telefon i wysy³a vCard.", tPlayer[playerid][pCharName]);
@@ -2219,7 +2253,6 @@ stock sendOfferToPlayer(playerid, id, params[], type) {
 		}
 		case O_SPRZEDAZ: {
 			new srvSetId = getServerGroupSetIdForPlayer(playerid);
-
 			format(mainStr, sizeof(mainStr), "{FFFF00}Produkt: %dx %s (%d)\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][OFFER_PARM_ETC], tGroupItem[srvSetId][gIName], tGroupItem[srvSetId][gIUid], offerParams[id][OFFER_PARM_PRICE]);
 		}
 		case O_STREFA: {
@@ -2279,21 +2312,15 @@ stock resetPlayerTextDraws(playerid) {
 	TextDrawHideForPlayer(playerid, helpInfo[playerid][0]);
 	TextDrawHideForPlayer(playerid, helpInfo[playerid][1]);
 
-	TextDrawHideForPlayer(playerid, itemTips[playerid][0]);
-	TextDrawHideForPlayer(playerid, itemTips[playerid][1]);
+	TextDrawHideForPlayer(playerid, itemNoNearby[playerid][0]);
+	TextDrawHideForPlayer(playerid, itemNoNearby[playerid][1]);
 
-	TextDrawHideForPlayer(playerid, scrimmageTips[playerid][0]);
-	TextDrawHideForPlayer(playerid, scrimmageTips[playerid][1]);
-	TextDrawHideForPlayer(playerid, scrimmageTips[playerid][2]);
-	TextDrawHideForPlayer(playerid, scrimmageTips[playerid][3]);
-	TextDrawHideForPlayer(playerid, scrimmageTips[playerid][4]);
+	TextDrawHideForPlayer(playerid, itemGivePlayerTips[playerid][0]);
+	TextDrawHideForPlayer(playerid, itemGivePlayerTips[playerid][1]);
 
 	TextDrawHideForPlayer(playerid, firstHoursInfo[0]);
 	TextDrawHideForPlayer(playerid, firstHoursInfo[1]);
 	TextDrawHideForPlayer(playerid, firstHoursInfo[2]);
-
-	TextDrawHideForPlayer(playerid, vehicleSpawn[playerid][0]);
-	TextDrawHideForPlayer(playerid, vehicleSpawn[playerid][1]);
 
 	TextDrawHideForPlayer(playerid, vehicleDeath[playerid][0]);
 	TextDrawHideForPlayer(playerid, vehicleDeath[playerid][1]);
@@ -2307,6 +2334,9 @@ stock resetPlayerTextDraws(playerid) {
 
 	TextDrawHideForPlayer(playerid, oocWarning[playerid][0]);
 	TextDrawHideForPlayer(playerid, oocWarning[playerid][1]);
+
+	TextDrawHideForPlayer(playerid, vehicleSpawn[playerid][0]);
+	TextDrawHideForPlayer(playerid, vehicleSpawn[playerid][1]);
 
 	TextDrawHideForPlayer(playerid, doorInfo[playerid][0]);
 	TextDrawHideForPlayer(playerid, doorInfo[playerid][1]);
@@ -2322,8 +2352,33 @@ stock resetPlayerTextDraws(playerid) {
 	TextDrawHideForPlayer(playerid, afkPrivateMessage[playerid][0]);
 	TextDrawHideForPlayer(playerid, afkPrivateMessage[playerid][1]);
 
+	TextDrawHideForPlayer(playerid, showInfoGym[playerid][0]);
+	TextDrawHideForPlayer(playerid, showInfoGym[playerid][1]);
+	TextDrawHideForPlayer(playerid, showInfoGym[playerid][2]);
+	TextDrawHideForPlayer(playerid, showInfoGym[playerid][3]);
+
 	TextDrawHideForPlayer(playerid, buildingMusicInfo[playerid][0]);
 	TextDrawHideForPlayer(playerid, buildingMusicInfo[playerid][1]);
+
+	TextDrawHideForPlayer(playerid, taxiInfo[playerid][0]);
+	TextDrawHideForPlayer(playerid, taxiInfo[playerid][1]);
+	TextDrawHideForPlayer(playerid, taxiInfo[playerid][2]);
+
+	TextDrawHideForPlayer(playerid, courierTips[playerid][0]);
+	TextDrawHideForPlayer(playerid, courierTips[playerid][1]);
+	TextDrawHideForPlayer(playerid, courierTips[playerid][2]);
+
+	TextDrawHideForPlayer(playerid, animsInfo[playerid][0]);
+	TextDrawHideForPlayer(playerid, animsInfo[playerid][1]);
+	TextDrawHideForPlayer(playerid, animsInfo[playerid][2]);
+
+	TextDrawHideForPlayer(playerid, busStopInfo[playerid][0]);
+	TextDrawHideForPlayer(playerid, busStopInfo[playerid][1]);
+	TextDrawHideForPlayer(playerid, busStopInfo[playerid][2]);
+
+	TextDrawHideForPlayer(playerid, busStopSelect[playerid][0]);
+	TextDrawHideForPlayer(playerid, busStopSelect[playerid][1]);
+	TextDrawHideForPlayer(playerid, busStopSelect[playerid][2]);
 	return 1;
 }
 
@@ -2336,12 +2391,14 @@ stock OSRP_SetPlayerHealth(playerid, Float:health) {
 	tPlayer[playerid][pHp] = health;
 
 	SetPlayerHealth(playerid, tPlayer[playerid][pHp]);
+	savePlayerValues(playerid, SAVE_HEALTH);
 }
 
 stock OSRP_SetPlayerArmour(playerid, Float:armour) {
 	tPlayer[playerid][pAp] = armour;
 
 	SetPlayerArmour(playerid, tPlayer[playerid][pAp]);
+	savePlayerValues(playerid, SAVE_HEALTH);
 }
 
 stock OSRP_GivePlayerMoney(playerid, money) {
@@ -2349,6 +2406,7 @@ stock OSRP_GivePlayerMoney(playerid, money) {
 
 	tPlayer[playerid][pMoney] += money;
 	GivePlayerMoney(playerid, tPlayer[playerid][pMoney]);
+	savePlayerValues(playerid, SAVE_MONEY);
 }
 
 stock OSRP_SetPlayerScore(playerid, score) {
@@ -2358,6 +2416,7 @@ stock OSRP_SetPlayerScore(playerid, score) {
 
 	tPlayer[playerid][pGS] += score;
 	SetPlayerScore(playerid, tPlayer[playerid][pGS]);
+	savePlayerValues(playerid, SAVE_SCORE);
 }
 
 stock OSRP_GivePlayerWeapon(playerid, weaponid, ammo) {
@@ -2382,7 +2441,6 @@ stock OSRP_GivePlayerWeapon(playerid, weaponid, ammo) {
 }
 
 stock OSRP_TogglePlayerControllable(playerid, toggle) {
-	GetPlayerPos(playerid, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ]);
 	TogglePlayerControllable(playerid, toggle);
 
 	if(toggle) {
@@ -2762,11 +2820,19 @@ Callback:ajTimer(playerid) {
 }
 
 Callback:setPlayerCamerasView(playerid) {
-	new randIndex;// = random(MAX_CAMERAS);
-	
-	InterpolateCameraPos(playerid, startCameraPos[randIndex][0], startCameraPos[randIndex][1], startCameraPos[randIndex][2], endCameraPos[randIndex][0], endCameraPos[randIndex][1], endCameraPos[randIndex][2], CAMERA_SPEED, CAMERA_CUT);
-	InterpolateCameraLookAt(playerid, startCameraPos[randIndex][0], startCameraPos[randIndex][1], startCameraPos[randIndex][2], endCameraPos[randIndex][0], endCameraPos[randIndex][1], endCameraPos[randIndex][2], CAMERA_SPEED, CAMERA_CUT);
-	
+	//new randIndex; = random(MAX_CAMERAS);
+	new Float:startX = (random(5000) + 150.0) / 2.1;
+	new Float:startY = -((random(1800) + 900.0) / 2.1);
+	new Float:startZ = (random(200) + 2.0) / 1.5;
+	new Float:endX = startX + 400.0;
+	new Float:endY = startY + 100.0;
+	new Float:endZ = startZ + 10.0;
+
+	SetWorldTime(21);
+
+	InterpolateCameraPos(playerid, startX, startY, startZ, endX, endY + 180.0, endZ, CAMERA_SPEED, CAMERA_CUT);
+	InterpolateCameraLookAt(playerid, startX, startY, startZ, endX, endY, endZ, CAMERA_SPEED, CAMERA_CUT);
+
 	cameraTimer[playerid] = SetTimerEx("setPlayerCamerasView", 6000, false, "i", playerid);
 	return 1;
 }
