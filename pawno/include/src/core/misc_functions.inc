@@ -19,7 +19,7 @@
 	Narazie najprostrza wersja do testow.
 */
 stock sendDistanceMessage(playerid, Float:range, skipPlayer, const wholeStr[], const strHalf1[], const strHalf2[], color1, color2, color3, color4, color5) {
-	GetPlayerPos(playerid, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ]);
+	GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
 
 	foreach(new i : Player) {
 		if(skipPlayer) {
@@ -29,42 +29,40 @@ stock sendDistanceMessage(playerid, Float:range, skipPlayer, const wholeStr[], c
 		}
 
 		if(GetPlayerInterior(playerid) == GetPlayerInterior(i) && GetPlayerVirtualWorld(playerid) == GetPlayerVirtualWorld(i)) {
-			if(!isBW[playerid]) {
-				if(playerToPoint(i, range / 5, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ])) {
-					if(strlen(strHalf1) && strlen(strHalf2)) {
-						SendClientMessage(i, color1, strHalf1);
-						SendClientMessage(i, color1, strHalf2);
-					} else {
-						SendClientMessage(i, color1, wholeStr);
-					}
-				} else if(playerToPoint(i, range / 4, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ])) {
-					if(strlen(strHalf1) && strlen(strHalf2)) {
-						SendClientMessage(i, color2, strHalf1);
-						SendClientMessage(i, color2, strHalf2);
-					} else {
-						SendClientMessage(i, color2, wholeStr);
-					}
-				} else if(playerToPoint(i, range / 3, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ])) {
-					if(strlen(strHalf1) && strlen(strHalf2)) {
-						SendClientMessage(i, color3, strHalf1);
-						SendClientMessage(i, color3, strHalf2);
-					} else {
-						SendClientMessage(i, color3, wholeStr);
-					}
-				} else if(playerToPoint(i, range / 2, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ])) {
-					if(strlen(strHalf1) && strlen(strHalf2)) {
-						SendClientMessage(i, color4, strHalf1);
-						SendClientMessage(i, color4, strHalf2);
-					} else {
-						SendClientMessage(i, color4, wholeStr);
-					}
-				} else if(playerToPoint(i, range, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ])) {
-					if(strlen(strHalf1) && strlen(strHalf2)) {
-						SendClientMessage(i, color5, strHalf1);
-						SendClientMessage(i, color5, strHalf2);
-					} else {
-						SendClientMessage(i, color5, wholeStr);
-					}
+			if(playerToPoint(i, range / 5, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ])) {
+				if(strlen(strHalf1) && strlen(strHalf2)) {
+					SendClientMessage(i, color1, strHalf1);
+					SendClientMessage(i, color1, strHalf2);
+				} else {
+					SendClientMessage(i, color1, wholeStr);
+				}
+			} else if(playerToPoint(i, range / 4, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ])) {
+				if(strlen(strHalf1) && strlen(strHalf2)) {
+					SendClientMessage(i, color2, strHalf1);
+					SendClientMessage(i, color2, strHalf2);
+				} else {
+					SendClientMessage(i, color2, wholeStr);
+				}
+			} else if(playerToPoint(i, range / 3, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ])) {
+				if(strlen(strHalf1) && strlen(strHalf2)) {
+					SendClientMessage(i, color3, strHalf1);
+					SendClientMessage(i, color3, strHalf2);
+				} else {
+					SendClientMessage(i, color3, wholeStr);
+				}
+			} else if(playerToPoint(i, range / 2, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ])) {
+				if(strlen(strHalf1) && strlen(strHalf2)) {
+					SendClientMessage(i, color4, strHalf1);
+					SendClientMessage(i, color4, strHalf2);
+				} else {
+					SendClientMessage(i, color4, wholeStr);
+				}
+			} else if(playerToPoint(i, range, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ])) {
+				if(strlen(strHalf1) && strlen(strHalf2)) {
+					SendClientMessage(i, color5, strHalf1);
+					SendClientMessage(i, color5, strHalf2);
+				} else {
+					SendClientMessage(i, color5, wholeStr);
 				}
 			}
 		}
@@ -194,6 +192,50 @@ stock sendClientMessageToAllOOC(playerid, color, const str[]) {
 	}
 }
 
+stock getPenaltyName(type) {
+	new name[32];
+
+	switch(type) {
+		case PEN_BAN: {
+			strcat(name, "Ban");
+		}
+		case PEN_KICK: {
+			strcat(name, "Kick");
+		}
+		case PEN_ADMJAIL: {
+			strcat(name, "AdminJail");
+		}
+		case PEN_WARN: {
+			strcat(name, "Warn");
+		}
+		case PEN_BLCKACC: {
+			strcat(name, "Blokada konta");
+		}
+		case PEN_RUNNBLW: {
+			strcat(name, "Blokada biegania i bicia");
+		}
+		case PEN_BLCKVEH: {
+			strcat(name, "Blokada prowadzenia pojazdow");
+		}
+		case PEN_BLCKOOC: {
+			strcat(name, "Blokada czatu OOC");
+		}
+		case PEN_WRITING: {
+			strcat(name, "Blokada niechlujnego pisania");
+		}
+		case PEN_RPACTN: {
+			strcat(name, "Wymuszenie odgrywania akcji RolePlay");
+		}
+		case PEN_CURSE: {
+			strcat(name, "Ban w wyniku klatwy");
+		}
+		case PEN_SCORE: {
+			strcat(name, "GamerScore");
+		}
+	}
+	return name;
+}
+
 stock decimalToHex(dec) {
 	new quotient, remainder, i;
 	new hex[7];
@@ -227,6 +269,17 @@ stock createNumber(playerid) {
 	return 1;
 }
 
+stock isPlayerInStationAreas(playerid) {
+	if(playerToPoint(playerid, 40.0, 1940.73, -1771.38, 13.3906) || playerToPoint(playerid, 40.0, -91.1946, -1169.85, 2.4179) || playerToPoint(playerid, 40.0, 1940.73, -1767.32, 13.3906) ||
+	   playerToPoint(playerid, 40.0, -97.9225, -1173.39, 2.3911) || playerToPoint(playerid, 40.0, 1940.73, -1771.38, 13.3906) || playerToPoint(playerid, 40.0, 1940.73, -1771.38, 13.3906) || 
+	   playerToPoint(playerid, 40.0, 1940.73, -1771.38, 13.3906) || playerToPoint(playerid, 40.0, 1940.73, -1771.38, 13.3906) || playerToPoint(playerid, 40.0, 1940.73, -1771.38, 13.3906) || 
+	   playerToPoint(playerid, 40.0, 1940.73, -1771.38, 13.3906) || playerToPoint(playerid, 40.0, 1940.73, -1771.38, 13.3906) || playerToPoint(playerid, 40.0, 1940.73, -1771.38, 13.3906) || 
+	   playerToPoint(playerid, 40.0, 1940.73, -1771.38, 13.3906) || playerToPoint(playerid, 40.0, 1940.73, -1771.38, 13.3906) || playerToPoint(playerid, 40.0, 1940.73, -1771.38, 13.3906)) {
+		return 1;
+	}
+	return 0;
+}
+
 stock isPlayerInArea(playerid, Float:minx, Float:maxx, Float:miny, Float:maxy) {
     new Float:x, Float:y, Float:z;
 
@@ -238,26 +291,54 @@ stock isPlayerInArea(playerid, Float:minx, Float:maxx, Float:miny, Float:maxy) {
     return 0;
 }
 
+stock setPlayerToFacePlayer(playerid, targetid) {
+    new Float:pX, Float:pY, Float:pZ, Float:X, Float:Y, Float:Z, Float:ang;
+
+    if(!IsPlayerConnected(playerid) || !IsPlayerConnected(targetid)) {
+		return 0;
+    }
+
+	GetPlayerPos(targetid, X, Y, Z);
+    GetPlayerPos(playerid, pX, pY, pZ);
+
+    if(Y > pY) {
+		ang = (-acos((X - pX) / floatsqroot((X - pX) * (X - pX) + (Y - pY) * (Y - pY))) - 90.0);
+	} else if(Y < pY && X < pX) {
+		ang = (acos((X - pX) / floatsqroot((X - pX) * (X - pX) + (Y - pY) * (Y - pY))) - 450.0);
+	} else if(Y < pY) {
+		ang = (acos((X - pX) / floatsqroot((X - pX) * (X - pX) + (Y - pY) * (Y - pY))) - 90.0);
+	}
+
+    if(X > pX) {
+		ang = (floatabs(floatabs(ang) + 180.0));
+    } else {
+		ang = (floatabs(ang) - 180.0);
+	}
+
+	SetPlayerFacingAngle(playerid, ang);
+	return 1;
+}
+
 stock isPlayerFacingPlayer(playerid, targetid, Float:dOffset) {
-	new Float:pX2, Float:pY2, Float:pZ2, Float:pA2, Float:X, Float:Y, Float:Z, Float:ang;
+	new Float:pX, Float:pY, Float:pZ, Float:pA, Float:X, Float:Y, Float:Z, Float:ang;
 
 	if(!IsPlayerConnected(playerid) || !IsPlayerConnected(targetid)) {
 		return 0;
 	}
 
-	GetPlayerPos(targetid, pX2, pY2, pZ2);
+	GetPlayerPos(targetid, pX, pY, pZ);
 	GetPlayerPos(playerid, X, Y, Z);
-	GetPlayerFacingAngle(playerid, pA2);
+	GetPlayerFacingAngle(playerid, pA);
 
-	if(Y > pY2) {
-		ang = (-acos((X - pX2) / floatsqroot((X - pX2) * (X - pX2) + (Y - pY2) * (Y - pY2))) - 90.0);
-	} else if(Y < pY2 && X < pX2) {
-		ang = (acos((X - pX2) / floatsqroot((X - pX2) * (X - pX2) + (Y - pY2) * (Y - pY2))) - 450.0);
-	} else if(Y < pY2) {
-		ang = (acos((X - pX2) / floatsqroot((X - pX2) * (X - pX2) + (Y - pY2) * (Y - pY2))) - 90.0);
+	if(Y > pY) {
+		ang = (-acos((X - pX) / floatsqroot((X - pX) * (X - pX) + (Y - pY) * (Y - pY))) - 90.0);
+	} else if(Y < pY && X < pX) {
+		ang = (acos((X - pX) / floatsqroot((X - pX) * (X - pX) + (Y - pY) * (Y - pY))) - 450.0);
+	} else if(Y < pY) {
+		ang = (acos((X - pX) / floatsqroot((X - pX) * (X - pX) + (Y - pY) * (Y - pY))) - 90.0);
 	}
 
-	if(angleInRangeOfAngle(-ang, pA2, dOffset)) {
+	if(angleInRangeOfAngle(-ang, pA, dOffset)) {
 		return 1;
 	}
 	return 0;
@@ -273,20 +354,20 @@ stock angleInRangeOfAngle(Float:a1, Float:a2, Float:range) {
 }
 
 stock isPlayerFacingObject(playerid, objectid) {
-	new Float:pX2, Float:pY2, Float:pZ2, Float:obX, Float:obY, Float:obZ, Float:Angle, Float:pAngle;
+	new Float:pX, Float:pY, Float:pZ, Float:obX, Float:obY, Float:obZ, Float:Angle, Float:pAngle;
 
 	GetDynamicObjectPos(objectid, obX, obY, obZ);
-	GetPlayerPos(playerid, pX2, pY2, pZ2);
+	GetPlayerPos(playerid, pX, pY, pZ);
 
-	if(obY > pY2) {
-		Angle = (-acos((obX - pX2) / floatsqroot((obX - pX2) * (obX - pX2) + (obY - pY2) * (obY - pY2))) - 90.0);
-	} else if(obY < pY2 && obX < pX2) {
-		Angle = (acos((obX - pX2) / floatsqroot((obX - pX2) * (obX - pX2) + (obY - pY2) * (obY - pY2))) - 450.0);
-	} else if(obY < pY2) {
-		Angle = (acos((obX - pX2) / floatsqroot((obX - pX2) * (obX - pX2) + (obY - pY2) * (obY - pY2))) - 90.0);
+	if(obY > pY) {
+		Angle = (-acos((obX - pX) / floatsqroot((obX - pX) * (obX - pX) + (obY - pY) * (obY - pY))) - 90.0);
+	} else if(obY < pY && obX < pX) {
+		Angle = (acos((obX - pX) / floatsqroot((obX - pX) * (obX - pX) + (obY - pY) * (obY - pY))) - 450.0);
+	} else if(obY < pY) {
+		Angle = (acos((obX - pX) / floatsqroot((obX - pX) * (obX - pX) + (obY - pY) * (obY - pY))) - 90.0);
 	}
 
-	if(obX > pX2) {
+	if(obX > pX) {
 		Angle = (floatabs(floatabs(Angle) + 180.0));
 	} else {
 		Angle = (floatabs(Angle) - 180.0);
@@ -312,6 +393,16 @@ stock playerToPoint(playerid, Float:radius, Float:x, Float:y, Float:z) {
 
 	if(((tempposx < radius) && (tempposx > -radius)) && ((tempposy < radius) && (tempposy > -radius)) && ((tempposz < radius) && (tempposz > -radius))) {
 		return 1;
+	}
+	return 0;
+}
+
+stock distanceBetweenPlayers(playerid, playerid2, Float:range) {
+	new Float:x, Float:y, Float:z;
+	GetPlayerPos(playerid2, x, y, z);
+
+	if(IsPlayerInRangeOfPoint(playerid, range, x, y, z)) {
+	    return 1;
 	}
 	return 0;
 }

@@ -13,15 +13,16 @@
 #pragma library osrp
 
 sampCallback:OSRP_OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
-	new srvVehId = getServerVehicleIdForPlayerEx(vehicleid);
-	actualVehicle[playerid] = tVehicle[srvVehId][vUid];
+	new srvVehId = getClosestServerVehicleId(vehicleid);
+
+	tPlayer[playerid][pVehicle] = tVehicle[srvVehId][vUid];
 
 	if(tPlayer[playerid][pBlock] & BLOCK_VEH) {
 		ClearAnimations(playerid);
 		return SendClientMessage(playerid, COLOR_GRAY, "Administracja zablokowa³a Ci mo¿liwoœæ prowadzenia pojazdów.");
 	}
 
-	if(isVehicleInUse(vehicleid) && !tPlayer[playerid][pDriverLicense] && !drivingCourse[playerid] && !ispassenger) {
+	if(isVehicleInUse(vehicleid) && !(tPlayer[playerid][pDocuments] & DOC_L_DRIVING) && !drivingCourse[playerid] && !ispassenger) {
 		ClearAnimations(playerid);
 
 		SendClientMessage(playerid, COLOR_WHITE, "(!) Pamiêtaj, to RolePlay. Swój pojazd musisz kupiæ lub wypo¿yczyæ.");
@@ -30,11 +31,11 @@ sampCallback:OSRP_OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		if(tPlayer[playerid][pHours] < 3) {
 			SendClientMessage(playerid, COLOR_WHITE, "(!) Zanim bêdzie Ciê staæ, u¿yj /budka, by dzwoniæ po taxi, lub /bus. Prowadziæ mo¿na po przegraniu 3h.");
 		} else {
-			SendClientMessage(playerid, COLOR_WHITE, "(!) Jako nowy gracz, mo¿esz byæ pasa¿erem tylko, gdy w pojeŸdzie jest kierowca.");
+			SendClientMessage(playerid, COLOR_DARKRED, "(!) Jako nowy gracz, mo¿esz byæ pasa¿erem tylko, gdy w pojeŸdzie jest kierowca.");
 		}
 	}
 
-	if(!isBicycle(GetVehicleModel(vehicleid)) && !tPlayer[playerid][pDriverLicense] && !drivingCourse[playerid] && !ispassenger) {
+	if(!isBicycle(GetVehicleModel(vehicleid)) && !(tPlayer[playerid][pDocuments] & DOC_L_DRIVING) && !drivingCourse[playerid] && !ispassenger) {
 		ClearAnimations(playerid);
 
 		mainStr[0] = EOS;
@@ -48,7 +49,7 @@ sampCallback:OSRP_OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		GameTextForPlayer(playerid, "~n~~n~~r~Pojazd jest zamkniety.~n~~w~/v zamknij", 6000, 3);
 	}
 
-	if((tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && !tVehicle[srvVehId][vGUid]) && tPlayer[playerid][pDriverLicense] && !ispassenger) {
+	if((tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && !tVehicle[srvVehId][vGUid]) && (tPlayer[playerid][pDocuments] & DOC_L_DRIVING) && !ispassenger) {
 		ClearAnimations(playerid);
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Nie mozesz prowadzic tego~n~pojazdu.", 6000, 3);
 	}
@@ -60,7 +61,7 @@ sampCallback:OSRP_OnPlayerExitVehicle(playerid, vehicleid) {
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnPlayerExitVehicle");
 #endif
 
-	new srvVehId = getServerVehicleIdForPlayer(playerid);
+	new srvVehId = getServerVehicleId(playerid);
 
 	if(tVehicle[srvVehId][vEngineHp] <= 300.0) {
 		mainStr[0] = EOS;
@@ -80,20 +81,20 @@ sampCallback:OSRP_OnVehicleDeath(vehicleid, killerid) {
 	SendClientMessage(killerid, COLOR_WHITE, "Witma ! OnVehicleDeath");
 #endif
 
-	new srvVehId = getServerVehicleIdForPlayer(killerid);
+	new srvVehId = getServerVehicleId(killerid);
 
 	tVehicle[srvVehId][vSpawned] = false;
 	tVehicle[srvVehId][vEngine] = false;
-	tVehicle[srvVehId][vLights] = false;
+	tVehicle[srvVehId][vLightsOn] = false;
 
-	GetVehiclePos(tVehicle[srvVehId][vId], tVehicle[srvVehId][vX], tVehicle[srvVehId][vY], tVehicle[srvVehId][vZ]);
+	GetVehiclePos(tVehicle[srvVehId][vId], tVehicle[srvVehId][vPosX], tVehicle[srvVehId][vPosY], tVehicle[srvVehId][vPosZ]);
 	GetVehicleZAngle(tVehicle[srvVehId][vId], tVehicle[srvVehId][vAngle]);
 
 	tVehicle[srvVehId][vEngineHp] = 300.0;
 	DestroyVehicle(vehicleid);
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Spawned` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Angle` = '%f', `Engine` = '%d', `EngineHealth` = '%f' WHERE `UID` = '%d'", tVehicle[srvVehId][vSpawned], tVehicle[srvVehId][vX], tVehicle[srvVehId][vY], tVehicle[srvVehId][vZ], tVehicle[srvVehId][vAngle], tVehicle[srvVehId][vEngine], tVehicle[srvVehId][vEngineHp], tVehicle[srvVehId][vUid]);
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Spawned` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Angle` = '%f', `Engine` = '%d', `EngineHealth` = '%f' WHERE `UID` = '%d'", tVehicle[srvVehId][vSpawned], tVehicle[srvVehId][vPosX], tVehicle[srvVehId][vPosY], tVehicle[srvVehId][vPosZ], tVehicle[srvVehId][vAngle], tVehicle[srvVehId][vEngine], tVehicle[srvVehId][vEngineHp], tVehicle[srvVehId][vUid]);
 	mysql_query(queryStr);
 
 	for(new i = 0; i < 2; i++) {
@@ -134,11 +135,11 @@ sampCallback:OSRP_OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehicleDamageStatusUpdate");
 #endif
 
-	new panels, doors, lights, tires, damage = setPlayerVehicleDamage(playerid);
+	new damage = setPlayerVehicleDamage(playerid);
 	new pId = getNearestVehicleDriverId(playerid);
+	new srvVehId = getClosestServerVehicleId(vehicleid);
 
-	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
-	UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
+	GetVehicleDamageStatus(vehicleid, tVehicle[srvVehId][vPanels], tVehicle[srvVehId][vDoors], tVehicle[srvVehId][vLights], tVehicle[srvVehId][vTires]);
 
 	if(!hasBelts[playerid]) {
 		SetPlayerHealth(playerid, tPlayer[playerid][pHp] - damage);
@@ -174,7 +175,12 @@ sampCallback:OSRP_OnVehicleStreamIn(vehicleid, forplayerid) {
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamIn");
 #endif
 
-	new srvVehId = getServerVehicleIdForPlayerEx(vehicleid);
+	new srvVehId = getClosestServerVehicleId(vehicleid);
+	new engine, lights, alarm, doors, bonnet, boot, objective;
+
+	GetVehicleParamsEx(tVehicle[srvVehId][vId], engine, lights, alarm, doors, bonnet, boot, objective);
+	SetVehicleParamsEx(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngine], tVehicle[srvVehId][vLightsOn], alarm, 0, bonnet, boot, objective);
+
 	SetVehicleHealth(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngineHp]);
 	return 1;
 }

@@ -43,7 +43,6 @@ enum GroupData {
 	gVehsLimit,
 	gVehsCount,
 	gMoney,
-	gPayDay,
 	gDoor,
 	gFlags,
 	gColor[7],

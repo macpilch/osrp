@@ -28,7 +28,6 @@ stock initAnimValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-
 		sscanf(queryStr, "p<|>is[32]s[32]s[32]fiiiiii",
 			tAnim[i][Uid],
 			tAnim[i][Name],
@@ -57,7 +56,7 @@ stock initAnimValues() {
 }
 
 stock getServerAnimIdFromName(name[]) {
-	new id = -1;
+	new id = INVALID_ANIM_ID;
 
 	for(new i = 0; i < MAX_ANIMATIONS; i++) {
 		if(!strcmp(name, tAnim[i][Name])) {

@@ -27,14 +27,13 @@ stock initCashpointValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-
 		sscanf(queryStr, "p<|>is[32]ifffffff",
 			tCashpoint[i][cUid],
 			tCashpoint[i][cName],
 			tCashpoint[i][cIsOpen],
-			tCashpoint[i][cX],
-			tCashpoint[i][cY],
-			tCashpoint[i][cZ],
+			tCashpoint[i][cPosX],
+			tCashpoint[i][cPosY],
+			tCashpoint[i][cPosZ],
 			tCashpoint[i][cRotX],
 			tCashpoint[i][cRotY],
 			tCashpoint[i][cRotZ],
@@ -42,7 +41,7 @@ stock initCashpointValues() {
 		);
 
 		Iter_Add(cashpointItter, i);
-		tCashpoint[i][cObject] = CreateDynamicObject(2942, tCashpoint[i][cX], tCashpoint[i][cY], tCashpoint[i][cZ], tCashpoint[i][cRotX], tCashpoint[i][cRotY], tCashpoint[i][cRotZ], 0, 0, -1, 100.0);
+		tCashpoint[i][cObject] = CreateDynamicObject(2942, tCashpoint[i][cPosX], tCashpoint[i][cPosY], tCashpoint[i][cPosZ], tCashpoint[i][cRotX], tCashpoint[i][cRotY], tCashpoint[i][cRotZ], 0, 0, -1, 100.0);
 
 		printf("[DEBUG] Id: %d,  Name: %s", i, tCashpoint[i][cName]);
 	}
@@ -59,7 +58,7 @@ stock initCashpointValues() {
 
 stock searchPlayerCashpoint(playerid) {
 	foreach(new i : cashpointItter) {
-		if(playerToPoint(playerid, tCashpoint[i][cDistance], tCashpoint[i][cX], tCashpoint[i][cY], tCashpoint[i][cZ])) {
+		if(playerToPoint(playerid, tCashpoint[i][cDistance], tCashpoint[i][cPosX], tCashpoint[i][cPosY], tCashpoint[i][cPosZ])) {
 			if(!tPlayer[playerid][pBankAcc]) {
 				generateBankAccountNumber(playerid);
 			}
@@ -75,10 +74,10 @@ stock searchPlayerCashpoint(playerid) {
 
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tStan konta (%d)\n2\tWyp³aæ pieni¹dze\n3\tWp³aæ pieni¹dze\n4\tDokonaj przelewu\n5\tSp³aæ d³ug ($%d)", tPlayer[playerid][pBank], tPlayer[playerid][pDebt]);
-			ShowPlayerDialog(playerid, DIALOG_SHOW_CASHPOINT, DIALOG_STYLE_LIST, "Bankomat", mainStr, "OK", "Anuluj");
+			ShowPlayerDialog(playerid, DIALOG_CASHPOINT, DIALOG_STYLE_LIST, "Bankomat", mainStr, "OK", "Anuluj");
 
-			actualCashpoint[playerid] = i;
-		} else if(playerToPoint(playerid, tCashpoint[i][cDistance] * 2, tCashpoint[i][cX], tCashpoint[i][cY], tCashpoint[i][cZ])) {
+			tPlayer[playerid][pCashpoint] = tCashpoint[i][cUid];
+		} else if(playerToPoint(playerid, tCashpoint[i][cDistance] * 2, tCashpoint[i][cPosX], tCashpoint[i][cPosY], tCashpoint[i][cPosZ])) {
 			return GameTextForPlayer(playerid, "~n~~r~Podejdz blizej.", 5000, 3);
 		}
 	}
@@ -98,26 +97,26 @@ stock createNewCashpoint(playerid, cashpointname[]) {
 	freeId = mysql_fetch_int();
 	mysql_free_result();
 	
-	GetPlayerPos(playerid, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ]);
+	GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
 	Iter_Add(cashpointItter, freeId);
 
-	x = tPlayer[playerid][pX];
-	y = tPlayer[playerid][pY];
-	z = tPlayer[playerid][pZ];
+	x = tPlayer[playerid][pPosX];
+	y = tPlayer[playerid][pPosY];
+	z = tPlayer[playerid][pPosZ];
 
 	getXYInFrontOfPlayer(playerid, x, y, 2.0);
 
 	tCashpoint[freeId][cUid] = freeId + 1;
 	format(tCashpoint[freeId][cName], 32, cashpointname);
 	tCashpoint[freeId][cIsOpen] = true;
-	tCashpoint[freeId][cX] = x;
-	tCashpoint[freeId][cY] = y;
-	tCashpoint[freeId][cZ] = z;
+	tCashpoint[freeId][cPosX] = x;
+	tCashpoint[freeId][cPosY] = y;
+	tCashpoint[freeId][cPosZ] = z;
 	tCashpoint[freeId][cDistance] = 2.0;
 	tCashpoint[freeId][cObject] = CreateDynamicObject(2942, x, y, z - 0.35, 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
 	
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Cashpoints`(`UID`, `Name`, `Object`, `IsOpen`, `X`, `Y`, `Z`, `Distance`) VALUES ('%d', '%s', '%d', '%d', '%f', '%f', '%f', '%f')", tCashpoint[freeId][cUid], tCashpoint[freeId][cName], tCashpoint[freeId][cObject], tCashpoint[freeId][cIsOpen], tCashpoint[freeId][cX], tCashpoint[freeId][cY], tCashpoint[freeId][cZ], tCashpoint[freeId][cDistance]);
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Cashpoints`(`UID`, `Name`, `Object`, `IsOpen`, `PosX`, `PosY`, `PosZ`, `Distance`) VALUES ('%d', '%s', '%d', '%d', '%f', '%f', '%f', '%f')", tCashpoint[freeId][cUid], tCashpoint[freeId][cName], tCashpoint[freeId][cObject], tCashpoint[freeId][cIsOpen], tCashpoint[freeId][cPosX], tCashpoint[freeId][cPosY], tCashpoint[freeId][cPosZ], tCashpoint[freeId][cDistance]);
 	mysql_query(queryStr);
 	return 1;
 }

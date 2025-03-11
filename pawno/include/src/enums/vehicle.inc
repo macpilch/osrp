@@ -13,27 +13,38 @@
 #pragma library osrp
 
 enum VehicleData {
-	vUid, //id from database	
+	vUid, //id from database
 	vId,   // id in game
 	vOUid,  // vehicle owner
 	vGUid, // group uid
 	vModelId, // vehicle modelid
 	vColor1,
 	vColor2,
-	Float:vX,
-	Float:vY,
-	Float:vZ,
+	Float:vPosX,
+	Float:vPosY,
+	Float:vPosZ,
 	Float:vAngle,
+	Float:vOldX,
+	Float:vOldY,
+	Float:vOldZ,
 	Float:vFuel,
 	bool:vLock,
 	bool:vEngine,
 	Float:vEngineHp, // Stan silnika
 	bool:vSpawned,
-	bool:vLights,
+	bool:vLightsOn,
 	bool:vWindow,
 	vAccessories,
+	vPanels,
+	vDoors,
+	vLights,
+	vTires,
+	vVw,
+	vInt,
+	vPaintjob,
 	Float:vRepair,
 	Float:vMileage, // Przebieg
+	vBlock,
 	Text3D:vDesc,
 	vDescInfo[64],
 	vPlate[32]

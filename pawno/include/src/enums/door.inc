@@ -13,10 +13,10 @@
 #pragma library osrp
 
 enum {
-	D_PUBLIC = 0,
-	D_BUSSI,
+	D_SHOP = 0,
 	D_HOTEL,
-	D_GYM
+	D_GYM,
+	D_CLOTHES
 };
 
 enum DoorData {

@@ -74,7 +74,7 @@ stock initRaceValues() {
 }
 
 stock onEnterRaceCheckpoint(playerid) {
-	new srvRcId = getServerRaceIdForPlayer(playerid);
+	new srvRcId = getServerRaceId(playerid);
 
 	playerRcActualTime[playerid] = ((GetTickCount() - playerRcTime[playerid]) / 1000);
 	playerCps[playerid]++;
@@ -163,14 +163,14 @@ Callback:enablePlayerRaceCD() {
 	return 1;
 }
 
-stock getServerRaceIdForPlayer(playerid) {
-	new rId;
+stock getServerRaceId(playerid) {
+	new id = INVALID_RACE_ID;
 
 	foreach(new i : raceItter) {
-		if(tRace[i][rcUid] == actualRace[playerid]) {
-			rId = i;
+		if(tRace[i][rcUid] == tPlayer[playerid][pRace]) {
+			id = i;
 			break;
 		}
 	}
-	return rId;
+	return id;
 }

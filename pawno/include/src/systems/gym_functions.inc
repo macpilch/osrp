@@ -46,7 +46,7 @@ Callback:givePlayerGymBarBell(playerid) {
 
 	isGym[playerid] = true;
 
-	SetPlayerAttachedObject(playerid, SLOT_GYM, 2913, 6, 0, -0.04, -0.01, 0, 0, 0, 1, 1, 1);
+	SetPlayerAttachedObject(playerid, SLOT_BARBELL, 2913, 6, 0, -0.04, -0.01, 0, 0, 0, 1, 1, 1);
 	return 1;
 }
 

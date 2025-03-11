@@ -27,7 +27,6 @@ stock initBoothValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-
 		sscanf(queryStr, "p<|>is[32]ffffi",
 			tBooth[i][boUid],
 			tBooth[i][boName],
@@ -84,7 +83,7 @@ stock searchPlayerBooth(playerid) {
 				ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 1, 1, 1, 1, 1);
 				SendClientMessage(playerid, COLOR_WHITE, "{FFFF00}Automat (telefon): Witamy. Gdzie chce siê Pan/Pani dodzwoniæ?");
 
-				ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_GROUPS, DIALOG_STYLE_LIST, "Dostêpne grupy", mainStr, "Wybierz", "Anuluj");
+				ShowPlayerDialog(playerid, DIALOG_TELEPHONE_GROUPS, DIALOG_STYLE_LIST, "Dostêpne grupy", mainStr, "Wybierz", "Anuluj");
 			}
 		}
 	}

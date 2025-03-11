@@ -20,52 +20,55 @@
 #undef MAX_OBJECTS
 
 #define MAX_PLAYERS 2
-#define MAX_VEHICLES 10
-#define MAX_OBJECTS 10
+#define MAX_VEHICLES 2
+#define MAX_OBJECTS 2
 
 #define MAX_PLAYER_CHARS 6
 #define MAX_PLAYER_GROUPS 5
+#define MAX_PLAYER_VEHICLES 10
 #define MAX_ITEMS 100
-#define MAX_DOORS 10
-#define MAX_BOOTHS 10
-#define MAX_BUS_STOPS 10
-#define MAX_CASHPOINTS 10
-#define MAX_GROUPS 4
+#define MAX_DOORS 100
+#define MAX_BOOTHS 100
+#define MAX_BUS_STOPS 100
+#define MAX_CASHPOINTS 100
+#define MAX_GROUPS 100
+#define MAX_GROUP_ITEMS 100
 #define MAX_GROUP_TASKS 100
-#define MAX_CAMERAS 2
-#define MAX_RACES 4
-#define MAX_CPS 50
-#define MAX_AREAS 20
-#define MAX_STATUSES 12
-#define MAX_CONTACTS 10
+#define MAX_GROUP_ORDERS 100
+#define MAX_GROUP_VEHICLES 100
+#define MAX_RACES 100
+#define MAX_CPS 100
+#define MAX_GPS_ICONS 100
+#define MAX_AREAS 100
+#define MAX_CONTACTS 100
 #define MAX_BLOCKADES 5
 #define MAX_PENALTIES 100
 #define MAX_ANIMATIONS 135
 
-// Colors
-#define COLOR_WHITE 0xFFFFFFFF
-#define COLOR_RED 0xFF0000FF
-#define COLOR_DARKRED 0xA52A2AFF
-#define COLOR_CLARET 0xFF4444FF
-#define COLOR_YELLOW 0xFFFF00FF
-#define COLOR_GREEN 0x33AA33FF
-#define COLOR_GRAY 0xAFAFAFFF
-#define COLOR_CHAT 0xE6E6E6E6
-#define COLOR_CHAT2 0xC8C8C8C8
-#define COLOR_CHAT3 0xAAAAAAAA
-#define COLOR_CHAT4 0x8C8C8C8C
-#define COLOR_CHAT5 0x6E6E6E6E
-#define COLOR_PURPLE 0xC6A2EEFF
-#define COLOR_PURPLE2 0xA582BDFF
-#define COLOR_PURPLE3 0x8C75A5FF
-#define COLOR_PURPLE4 0x846994FF
-#define COLOR_PURPLE5 0x73617BFF
-#define COLOR_DO 0x9797FFFF
-#define COLOR_ORANGE 0xFF9900FF
-#define COLOR_LIGHTORANGE 0xFFCC66FF
-#define COLOR_OOC 0xFFC3FFFF
+// Kolory
+#define COLOR_WHITE 			0xFFFFFFFF
+#define COLOR_RED 				0xFF0000FF
+#define COLOR_DARKRED 			0xA52A2AFF
+#define COLOR_CLARET 			0xFF4444FF
+#define COLOR_YELLOW 			0xFFFF00FF
+#define COLOR_GREEN 			0x33AA33FF
+#define COLOR_GRAY 				0xAFAFAFAA
+#define COLOR_CHAT 				0xE6E6E6E6
+#define COLOR_CHAT2 			0xC8C8C8C8
+#define COLOR_CHAT3 			0xAAAAAAAA
+#define COLOR_CHAT4 			0x8C8C8C8C
+#define COLOR_CHAT5 			0x6E6E6E6E
+#define COLOR_PURPLE 			0xC6A2EEFF
+#define COLOR_PURPLE2 			0xA582BDFF
+#define COLOR_PURPLE3 			0x8C75A5FF
+#define COLOR_PURPLE4 			0x846994FF
+#define COLOR_PURPLE5 			0x73617BFF
+#define COLOR_DO 				0x9797FFFF
+#define COLOR_ORANGE 			0xFF9900FF
+#define COLOR_LIGHTORANGE 		0xFFCC66FF
+#define COLOR_OOC 				0xFFC3FFFF
 
-// Callbacks
+// Callbacki
 #define sampCallback:%0(%1) \
 		public %0(%1)
 
@@ -75,13 +78,13 @@
 // Klawisze
 #define HOLDING(%0) \
 	((newkeys & (%0)) == (%0))
-	
+
 #define PRESSED(%0) \
 	(((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
-	
+
 #define PRESSING(%0,%1) \
 	(%0 & (%1))
-	
+
 #define RELEASED(%0) \
 	(((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
 
@@ -96,9 +99,15 @@
 #define DEFAULT_POS_Y -1344.6394
 #define DEFAULT_POS_Z 7.1719
 
+#define DEFAULT_VEH_POS_X 873.2178
+#define DEFAULT_VEH_POS_Y -1251.6439
+#define DEFAULT_VEH_POS_Z 14.9040
+#define DEFAULT_VEH_POS_ANGLE 90.0
+
 #define CAMERA_SPEED 5000
 
 // Blokady gracza (Flagi)
+#define BLOCK_NONE 0
 #define BLOCK_BAN 1
 #define BLOCK_OOC 2
 #define BLOCK_ACC 4
@@ -109,21 +118,30 @@
 #define BLOCK_CURSE 128
 
 // Sloty przedmiotów
-#define SLOT_GYM 0
+#define SLOT_CUFFED 0
+#define SLOT_WEAPON 1
+#define SLOT_ACCESS 2
+#define SLOT_BARBELL 3
 
-#define DOC_ID 0
-#define DOC_L_DRIVING 1
-#define DOC_L_HEALTH 2
-#define DOC_L_PRISON 3
-#define DOC_L_PSYCHO 4
-#define DOC_L_WEAPON 5
+#define BONE_NONE 0
+#define BONE_HEAD 2
+#define BONE_RUARM 4
+#define BONE_LHAND 5
+
+#define DOC_ID 1
+#define DOC_L_DRIVING 2
+#define DOC_L_HEALTH 4
+#define DOC_L_PRISON 8
+#define DOC_L_PSYCHO 16
+#define DOC_L_WEAPON 32
 
 // Uprawnienia grupy (Flagi)
 #define GROUP_PERM_CHATOOC 1
 #define GROUP_PERM_CHATIC 2
 #define GROUP_PERM_MEGAPHONE 4
-#define GROUP_PERM_RADIO 8
+#define GROUP_PERM_DEPT 8
 #define GROUP_PERM_GPS 16
+#define GROUP_PERM_NEWS 32
 
 // Flagi zapisu danych
 #define SAVE_ALL_VALUES 1
@@ -131,6 +149,10 @@
 #define SAVE_STRENGTH 4
 #define SAVE_HEALTH 8
 #define SAVE_SCORE 16
+#define SAVE_SKIN 32
+#define SAVE_POS 64
+#define SAVE_DOCS 128
+#define SAVE_GROUPS 256
 
 // Kary
 #define PEN_BAN 0
@@ -155,156 +177,163 @@
 #define OFFER_SPECIAL 1
 
 #define INVALID_OFFER_TYPE -1
-#define O_POWITANIE 0
+#define O_WELCOME 0
 #define O_KISS 1
-#define O_ZAPRGRP 2
-#define O_ZAPRWS 3
-#define O_NAUKAJAZDY 4
-#define O_DOWOD 5
-#define O_PRAWKO 6
-#define O_RP 7
-#define O_PODATEK 8
-#define O_ZAKUPPRZED 9
-#define O_ZAKUPBRONI 10
-#define O_NAPCZESCI 11
-#define O_INSTKOMPONENT 12
-#define O_MODKOMPONENT 13
-#define O_MODPOJAZDU 14
-#define O_ULEPSZENIE 15
-#define O_ZAKUPPOJ 16
-#define O_WYMIENPOJ 17
-#define O_AUTOWYP 18
-#define O_REJESTR 19
-#define O_TANKOWANIE 20
-#define O_LINA 21
-#define O_VCARD 22
-#define O_PRZETRZY 23
-#define O_SPRZEDAZ 24
-#define O_NAPRAWA 25
-#define O_LAKIER 26
-#define O_STREFA 27
-#define O_TAXI 28
-#define O_REKLAMA 29
+#define O_SEX 2
+#define O_GROUPINV 3
+#define O_RCINV 4
+#define O_DRIVINGLESS 5
+#define O_IDCARD 6
+#define O_DRIVINGLIC 7
+#define O_RP 8
+#define O_TAX 9
+#define O_PURCHITEM 10
+#define O_PURCHWEAP 11
+#define O_COMPSREP 12
+#define O_COMPINSTALL 13
+#define O_COMPMOD 14
+#define O_VEHMOD 15
+#define O_IMPROVEMENT 16
+#define O_VEHBUYING 17
+#define O_VEHCHANGING 18
+#define O_CARRENTAL 19
+#define O_REGISTER 20
+#define O_REFUELING 21
+#define O_ROPE 22
+#define O_VCARD 23
+#define O_DETENTION 24
+#define O_SALE 25
+#define O_REPAIR 26
+#define O_VARNISHING 27
+#define O_AREA 28
+#define O_TAXI 29
+#define O_AD 30
+#define O_INTERVIEW 31
+
+#define ITEMS_WEAPON 0
+#define ITEMS_FOOD 1
 
 // Przedmioty
-#define	P_ROLKI 0
-#define	P_PIWO 1
-#define	P_WINO 2
-#define P_VODKA 3
-#define	P_SPRUNK 4
-#define	P_TECZKA 5
-#define	P_TORBA 6
-#define	P_NOTATNIK 7
-#define	P_MARLBORO 8
-#define	P_CYGARO 9
-#define	P_UBRANIE 10
-#define	P_TELEFON 11
-#define	P_KOSTKA 12
-#define	P_MASKA 13
-#define P_CZARBANDANA 14
-#define	P_REKAWICE 15
-#define	P_KAMIZELKA 16
-#define	P_KWIATY 17
-#define	P_KASTET 18
-#define	P_NITESTICK 19
-#define	P_KNIFE 20
-#define	P_BASEBALL 21
-#define	P_PARALIZ 22
-#define	P_TAGGER 23
-#define	P_COLT 24
-#define	P_DEAGLE 25
-#define	P_GLOCK 26
-#define	P_SHOTGUN 27
-#define	P_UZI 28
-#define	P_MP5 29
-#define	P_AK47 30
-#define	P_M4 31
-#define	P_TEC9 32
-#define	P_PARA 33
-#define	P_MATWYBCH 34
-#define P_BATONIK 35
-#define	P_BULKA 36
-#define	P_PIZZA 37
-#define	P_CHEESBURG 38
-#define P_SAJGONKI 39
-#define P_SAKE 40
-#define	P_ZAPIEK 41
-#define P_CAPPUCCINO 42
-#define	P_COCACOLA 43
-#define	P_CUBALIBRE 44
-#define P_PEPSI 45
-#define P_ENERGYDRINK 46
-#define P_MOJITO 47
-#define	P_FRYTKI 48
-#define	P_GRVBURGER 49
-#define	P_HAMBGRG 50
-#define	P_HERBATA 51
-#define	P_HOTDOG 52
-#define	P_KAWA 53
-#define	P_KEBAB 54
-#define	P_LODY 55
-#define	P_LODYWKBK 56
-#define P_LODCZEK 57
-#define P_LODSMIET 58
-#define P_LODTRUSK 59
-#define P_KANAPKAKUR 60
-#define	P_LONGER 61
-#define	P_NACHOSZS 62
-#define	P_NALESNIK 63
-#define	P_NALESNIKI 64
-#define	P_PACZEK 65
-#define	P_PACZEKAFRO 66
-#define	P_PACZEKZLT 67
-#define	P_DONUT 68
-#define	P_SUSHI 69
-#define P_LASAGNE 70
-#define P_NUGGETS 71
-#define P_SPAGHETTI 72
-#define P_TACO 73
-#define P_TORTILLA 74
-#define	P_WODAMINER 75
-#define	P_DISCMAN 76
-#define P_BOOMBOX 77
-#define	P_RADPARTY 78
-#define	P_CD 79
-#define	P_NKA8110 80
-#define P_LEK 81
-#define	P_WITAMINAC 82
-#define	P_ALARM 83
-#define P_IMMOBILISER 84
-#define	P_ZDERZAKP 85
-#define	P_ZDERZAKT 86
-#define	P_DRZWIKIER 87
-#define	P_DRZWIPAS 88
-#define	P_BAGAZNIK 89
-#define	P_MASKASAM 90
-#define	P_OPONASLP 91
-#define	P_OPONASLT 92
-#define	P_OPONASPP 93
-#define	P_OPONASPT 94
-#define	P_OPONAMLP 95
-#define	P_OPONAMLT 96
-#define	P_OPONAMPP 97
-#define	P_OPONAMPT 98
-#define	P_SWIATLOLP 99
-#define	P_SWIATLOPP 100
-#define	P_SWIATLOLT 101
-#define	P_SWIATLOPT 102
-#define P_ALIENSULTAN 103
-#define	P_KANISTER 104
-#define	P_KARNET 105
-#define	P_HEROINA 106
-#define	P_CANON 107
-#define P_LINA 108
-#define P_CASIO 109
-#define P_KARTAPAM 110
-#define P_LATARKA 111
-#define P_LOTERIA 112
-#define P_MEBEL 113
-#define P_NABOJLAKIERU 114
-#define P_NAPIS3D 115
-#define P_WYTRYCH 116
-#define	P_LANDSTALKER 400
+#define	I_ROLLERS 0
+#define	I_BEER 1
+#define	I_WINE 2
+#define I_VODKA 3
+#define	I_SPRUNK 4
+#define	I_FOLDER 5
+#define	I_BAG 6
+#define	I_NOTEBOOK 7
+#define	I_MARLBORO 8
+#define	I_CIGAR 9
+#define	I_CLOTHES 10
+#define	I_TELEPHONE 11
+#define	I_NKA8110 12
+#define I_SMARTPHONE 13
+#define I_TOPUP 14
+#define	I_DICE 15
+#define	I_MASK 16
+#define I_BLACKBANDANA 17
+#define	I_GLOVES 18
+#define	I_ARMOR 19
+#define	I_FLOWERS 20
+#define	I_KNUCKLE 21
+#define	I_NITESTICK 22
+#define	I_KNIFE 23
+#define	I_BASEBALL 24
+#define	I_INHIBITOR 25
+#define	I_TAGGER 26
+#define	I_COLT 27
+#define	I_DEAGLE 28
+#define	I_GLOCK 29
+#define	I_SHOTGUN 30
+#define	I_UZI 31
+#define	I_MP5 32
+#define	I_AK47 33
+#define	I_M4 34
+#define	I_TEC9 35
+#define	I_PARA 36
+#define	I_EXPLOSIVES 37
+#define I_BAR 38
+#define	I_ROLL 39
+#define	I_PIZZA 40
+#define	I_CHEESBURG 41
+#define I_SPRINGROLLS 42
+#define I_SAKE 43
+#define	I_CASSEROLE 44
+#define I_CAPPUCCINO 45
+#define	I_COCACOLA 46
+#define	I_CUBALIBRE 47
+#define I_PEPSI 48
+#define I_ENERGYDRINK 49
+#define I_MOJITO 50
+#define	I_FRIES 51
+#define	I_GRVBURGER 52
+#define	I_HAMBGRG 53
+#define	I_TEA 54
+#define	I_HOTDOG 55
+#define	I_COFFEE 56
+#define	I_KEBAB 57
+#define	I_ICECREAM 58
+#define	I_ICECREAMCUP 59
+#define I_ICECREAMCH 60
+#define I_ICECREAMCR 61
+#define I_ICECREAMST 62
+#define I_CHSANDWICH 63
+#define	I_LONGER 64
+#define	I_CHNACHOS 65
+#define	I_PANCAKE 66
+#define	I_PANCAKES 67
+#define	I_DONUT 68
+#define	I_DONUTAFRO 69
+#define	I_DONUTGOLD 70
+#define	I_AMEDONUT 71
+#define	I_SUSHI 72
+#define I_LASAGNE 73
+#define I_NUGGETS 74
+#define I_SPAGHETTI 75
+#define I_TACO 76
+#define I_TORTILLA 77
+#define	I_MINWATER 78
+#define	I_DISCMAN 79
+#define I_BOOMBOX 80
+#define	I_RADPARTY 81
+#define	I_CD 82
+#define I_MEDICINE 83
+#define	I_VITAMINC 84
+#define	I_ALARM 85
+#define I_IMMOBILISER 86
+#define	I_FBUMPER 87
+#define	I_RBUMPER 88
+#define	I_DRVDOOR 89
+#define	I_PASSDOOR 90
+#define	I_BOOT 91
+#define	I_CARHOOD 92
+#define	I_CLFWHEEL 93
+#define	I_CLRWHEEL 94
+#define	I_CRFWHEEL 95
+#define	I_CRRWHEEL 96
+#define	I_BLFWHEEL 97
+#define	I_BLRWHEEL 98
+#define	I_BRFWHEEL 99
+#define	I_BRRWHEEL 100
+#define	I_LIGHTLF 101
+#define	I_LIGHTLR 102
+#define	I_LIGHTRF 103
+#define	I_LIGHTRR 104
+#define I_ALIENSULTAN 105
+#define	I_CANISTER 106
+#define	I_GYMMEMSHIP 107
+#define	I_HEROIN 108
+#define	I_CANON 109
+#define I_ROPE 110
+#define I_CASIO 111
+#define I_MEMCARD 112
+#define I_FLASHLIGHT 113
+#define I_LOTTERY 114
+#define I_FURNITURE 115
+#define I_PAINTCARTRIDGE 116
+#define I_3DTEXT 117
+#define I_PICKLOCK 118
+#define	I_LANDSTALKER 400
 
 #define F_L_TIRE 0
 #define B_L_TIRE 1
@@ -331,9 +360,21 @@
 #define REPAIR_DOOR_RR 4
 
 #define VEHICLE_OWNER_GROUP 0
-#define INVALID_ITEM_ID 0
+
+#define INVALID_SERVER_VEHICLE_ID -1
+#define INVALID_AREA_ID -1
+#define INVALID_ITEM_ID -1
+#define INVALID_GROUP_ID -1
+#define INVALID_GROUP_SET_ID -1
+#define INVALID_ANIM_ID -1
+#define INVALID_BUS_ID -1
+#define INVALID_DOOR_ID -1
+#define INVALID_ORDER_ID -1
+#define INVALID_TASK_ID -1
+#define INVALID_RACE_ID -1
 
 // veh accessories flags
+#define VEH_ACCESSORIES_NONE 0
 #define VEH_ACCESSORIES_ALARM 1
 #define VEH_ACCESSORIES_IMMOBILISER 2
 #define VEH_ACCESSORIES_CBRADIO 4
@@ -345,8 +386,11 @@
 #define ITEM_PLACE_FLOOR 1
 #define ITEM_PLACE_VEHICLE 2
 #define ITEM_PLACE_BAG 3
+#define ITEM_PLACE_DOOR 4
+#define ITEM_PLACE_CRAFTING 5
 
 // admin ranks
+#define RANK_NONE 0
 #define RANK_GOLD 1
 #define RANK_GAMEMASTER1 2
 #define RANK_GAMEMASTER2 3
@@ -366,7 +410,6 @@
 #define PART_TIME_JOB_COURIER 1
 
 // fuel tanks
-#define INVALID_SERVER_VEHICLE_ID 0
 #define VEHICLE_FUEL_TANK_SMALL 20
 #define VEHICLE_FUEL_TANK_MEDIUM 40
 #define VEHICLE_FUEL_TANK_LARGE 60

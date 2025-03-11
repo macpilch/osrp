@@ -27,7 +27,6 @@ stock initDoorValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-
 		sscanf(queryStr, "p<|>iiis[32]ffffffiis[24]iiiiiiiiii",
 			tDoor[i][dUid],
 			tDoor[i][dOUid],
@@ -79,45 +78,35 @@ stock saveDoorValues() {
 	return 1;
 }
 
-stock getServerDoorIdForPlayer(playerid) {
-	new dId = -1;
+stock getServerDoorId(playerid) {
+	new id = INVALID_DOOR_ID;
 
 	foreach(new i : doorItter) {
 		if((tDoor[i][dUid] == tPlayer[playerid][pDoor]) || (insidedHotel[playerid] && tPlayer[playerid][pHotel] == tDoor[i][dUid])) {
-			dId = i;
+			id = i;
 			break;
 		}
 	}
-	return dId;
+	return id;
 }
 
-stock createNewDoor(playerid, ownerId, doorName[]) {
-	new freeId;
-	
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Doors`");
-	mysql_query(queryStr);
-	
-	mysql_store_result();
-	
-	freeId = mysql_fetch_int();
-	mysql_free_result();
-	
-	GetPlayerPos(playerid, tPlayer[playerid][pX], tPlayer[playerid][pY], tPlayer[playerid][pZ]);
-	
-	tDoor[freeId][dUid] = freeId + 1;
-	tDoor[freeId][dOUid] = ownerId;
-	tDoor[freeId][dOType] = 0;
-	format(tDoor[freeId][dName], 32, doorName);
-	
-	tDoor[freeId][dVw] = tPlayer[playerid][pVw];
-	tDoor[freeId][dInt] = tPlayer[playerid][pInt];
-	
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Doors`(`UID`, `OUID`, `OType`, `Name`, `VW`, `INT`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d')",
-	tDoor[freeId][dUid], tDoor[freeId][dOUid], tDoor[freeId][dOType], tDoor[freeId][dName], tDoor[freeId][dVw], tDoor[freeId][dInt]);
-	mysql_query(queryStr);
-	return 1;
+stock getServerDoorIdFromUid(uid) {
+	new id = INVALID_DOOR_ID;
+
+	foreach(new i : doorItter) {
+		if(uid == tDoor[i][dUid]) {
+			id = i;
+			break;
+		}
+	}
+	return id;
+}
+
+stock isDoorHaveType(srvdoorid, type) {
+	if(tDoor[srvdoorid][dType] == type) {
+		return 1;
+	}
+	return 0;
 }
 
 stock showMessageToPlayersInThisDoor(srvdoorid, const mess[]) {

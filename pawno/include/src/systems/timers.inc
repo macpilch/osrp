@@ -39,14 +39,14 @@ Timer:globalTimer[1000]() {
 					if(isPlayerOnDuty(i)) {
 						tPlayer[i][pDuty]++;
 
-						if((tPlayer[i][pDuty] % 5) == 0) {
-							new srvGrpId = getServerGroupIdForPlayer(i);
+						if((tPlayer[i][pDuty] % 30) == 0) {
+							new srvGrpId = getServerGroupId(i);
 
-							giveGroupMoney(srvGrpId, -tGroup[srvGrpId][gPayDay]);
-							tPlayer[i][pBank] += tGroup[srvGrpId][gPayDay];
+							giveGroupMoney(srvGrpId, -tPlayer[i][pPayDay][tPlayer[i][pGroupNow]]);
+							tPlayer[i][pBank] += tPlayer[i][pPayDay][tPlayer[i][pGroupNow]];
 							savePlayerValues(i, SAVE_MONEY);
 
-							format(timerStr, sizeof(timerStr), "* Otrzymujesz $%d wyp³aty. *", tGroup[srvGrpId][gPayDay]);
+							format(timerStr, sizeof(timerStr), "* Otrzymujesz $%d wyp³aty. *", tPlayer[i][pPayDay][tPlayer[i][pGroupNow]]);
 							SendClientMessage(i, COLOR_WHITE, timerStr);
 
 							PlayerPlaySound(i, 4201, 0.0, 0.0, 0.0);
@@ -62,34 +62,6 @@ Timer:globalTimer[1000]() {
 				if(insidedHotel[i] && tPlayer[i][pHotel] && playerToPoint(i, 5.0, 2216.12, -1076.30, 1050.48)) {
 					GameTextForPlayer(i, "~n~~n~~n~~n~~n~~w~[~k~~SNEAK_ABOUT~+~k~~PED_SPRINT~] ~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
 				}
-			}
-		}
-
-		new srvVehId = getServerVehicleIdForPlayer(i);
-
-		if(srvVehId != -1 && !isBicycle(tVehicle[srvVehId][vModelId])) {
-			if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
-				if(hasBelts[i]) {
-					format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%d~w~ KM~n~~w~Paliwo: ~b~%0.1f~w~ L~n~Pasy: ~g~zapiete", getVehicleSpeed(tVehicle[srvVehId][vId]), floatToInt(tVehicle[srvVehId][vMileage]), tVehicle[srvVehId][vFuel]);
-					TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
-					TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
-				} else {
-					format(timerStr, sizeof(timerStr), "~w~Predkosc: ~b~%d ~w~KM/H~n~~w~Przebieg: ~b~%d~w~ KM~n~~w~Paliwo: ~b~%0.1f~w~ L~n~Pasy: ~r~odpiete", getVehicleSpeed(tVehicle[srvVehId][vId]), floatToInt(tVehicle[srvVehId][vMileage]), tVehicle[srvVehId][vFuel]);
-					TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
-					TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
-				}
-			} else if(GetPlayerState(i) == PLAYER_STATE_PASSENGER) {
-				if(hasBelts[i]) {
-					format(timerStr, sizeof(timerStr), "Pasy: ~g~zapiete");
-					TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
-					TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
-				} else {
-					format(timerStr, sizeof(timerStr), "Pasy: ~r~odpiete");
-					TextDrawSetString(vehicleSpeedMeter[i][0], timerStr);
-					TextDrawShowForPlayer(i, vehicleSpeedMeter[i][0]);
-				}	
-			} else {
-				TextDrawHideForPlayer(i, vehicleSpeedMeter[i][0]);
 			}
 		}
 
@@ -116,10 +88,7 @@ Timer:globalTimer[1000]() {
 						}
 					}
 
-					if(getVehicleSpeed(tVehicle[j][vId])) {
-						tVehicle[j][vMileage] += getVehicleDistance(tVehicle[j][vId]);
-						tPlayer[i][pTraveled] += getVehicleDistance(tVehicle[j][vId]);
-					}
+					calcsVehicleDistance(i, j);
 
 					if(tVehicle[j][vFuel] <= 0.0) {
 						new engine, lights, alarm, doors, bonnet, boot, objective;
@@ -131,7 +100,7 @@ Timer:globalTimer[1000]() {
 						tVehicle[j][vEngine] = false;
 
 						if(IsPlayerInVehicle(i, tVehicle[j][vId])) {
-							format(timerStr, sizeof(timerStr), "** W pojeŸdzie %s koñczy siê paliwo. **", VehicleNames[tVehicle[j][vModelId] - 400]);
+							format(timerStr, sizeof(timerStr), "** W pojeŸdzie %s koñczy siê paliwo. **", vehicleNames[tVehicle[j][vModelId] - 400]);
 							sendDoMessage(i, timerStr);
 						}
 					}
@@ -165,17 +134,6 @@ Timer:globalTimer[1000]() {
 					}
 
 					if(isBicycle(tVehicle[j][vModelId]) && !tVehicle[j][vEngine]) {
-						new Keys, lr, ud;
-
-						GetPlayerKeys(i, Keys, ud, lr);
-
-						if(Keys & KEY_ACTION) {
-							GameTextForPlayer(i, "~r~Skakanie tym pojazdem jest~n~zakazane!", 5000, 3);
-
-							SetVehicleVelocity(tVehicle[j][vId], 0.0, 0.0, 0.0);
-							RemovePlayerFromVehicle(i);
-						}
-
 						if(getVehicleSpeed(tVehicle[j][vId]) > 100.0) {
 							GameTextForPlayer(i, "~r~Nie mozesz jechac tak szybko tym~n~pojazdem.", 5000, 3);
 							SetVehicleVelocity(tVehicle[j][vId], 0.0, 0.0, 0.0);
@@ -187,12 +145,12 @@ Timer:globalTimer[1000]() {
 				new Float:vx, Float:vy, Float:vz;
 				GetVehiclePos(tVehicle[j][vId], vx, vy, vz);
 
-				if(tVehicle[j][vOUid] != tPlayer[i][pUid] && ((floatabs(tVehicle[j][vX] - vx) >= 0.1 && floatabs(tVehicle[j][vY] - vy) >= 0.1) && vz)) {
+				if(tVehicle[j][vOUid] != tPlayer[i][pUid] && ((floatabs(tVehicle[j][vPosX] - vx) >= 0.1 && floatabs(tVehicle[j][vPosY] - vy) >= 0.1) && vz)) {
 					DestroyVehicle(tVehicle[j][vId]);
 
 					tVehicle[j][vSpawned] = false;
 					tVehicle[j][vEngine] = false;
-					tVehicle[j][vLights] = false;
+					tVehicle[j][vLightsOn] = false;
 				}
 			}
 		}
@@ -200,8 +158,8 @@ Timer:globalTimer[1000]() {
 		// GPS
 		if(gpsEnabled[i]) {
 			new count;
-			new players[100];
-			new Float:x[100], Float:y[100], Float:z[100];
+			new players[MAX_GPS_ICONS];
+			new Float:x[MAX_GPS_ICONS], Float:y[MAX_GPS_ICONS], Float:z[MAX_GPS_ICONS];
 
 			if(isPlayerInGroupType(i, G_LSPD)) {
 				if(IsPlayerInAnyVehicle(i)) {
@@ -271,68 +229,96 @@ Timer:townHallBellsTimer[59000]() {
 	foreach(new i : Player) {
 		if(hours == 0 && minutes == 0) {
 			format(timerStr, sizeof(timerStr), "* Dzwony w ratuszu bij¹ 12 razy. *");
-			SendClientMessage(i, COLOR_DO, timerStr);
+			SendClientMessage(i, 0xC2A2DAAA, timerStr);
 		} else if(hours == 1 && minutes == 0) {
 			format(timerStr, sizeof(timerStr), "* Dzwony w ratuszu bij¹ 1 raz. *");
-			SendClientMessage(i, COLOR_DO, timerStr);
+			SendClientMessage(i, 0xC2A2DAAA, timerStr);
 		} else if((hours > 1 && hours <= 23) && minutes == 0) {
 			format(timerStr, sizeof(timerStr), "* Dzwony w ratuszu bij¹ %d razy. *", hours);
-			SendClientMessage(i, COLOR_DO, timerStr);
+			SendClientMessage(i, 0xC2A2DAAA, timerStr);
 		}
 	}
 }
 
-Timer:antiCheat[1000]() {
+Timer:updatePenaltyTimer[3600000]() {
+	new h, m, d;
+	gettime(h, m, d);
+
+	if(h == 0) {
+		foreach(new i : penItter) {
+			queryStr[0] = EOS;
+
+			if(tPenalty[i][penOUID] != 0 && tPenalty[i][penDays] > 0) {
+				tPenalty[i][penDays]--;
+
+				format(queryStr, sizeof(queryStr), "UPDATE `osrp_Penalties` SET `Days` = '%d' WHERE `UID` = '%d'", tPenalty[i][penDays], tPenalty[i][penUID]);
+				mysql_query(queryStr);
+			}
+
+			if(!tPenalty[i][penDays]) {
+				format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Penalties` WHERE `UID` = '%d'", tPenalty[i][penUID]);
+				mysql_query(queryStr);
+
+				tPenalty[i][penUID] = 0;
+				tPenalty[i][penSUID] = 0;
+				tPenalty[i][penOUID] = 0;
+				format(tPenalty[i][penIp], 16, NULL);
+				tPenalty[i][penType] = -1;
+				tPenalty[i][penDays] = 0;
+				format(tPenalty[i][penDate], 64, NULL);
+				format(tPenalty[i][penReason], 128, NULL);
+			}
+		}
+	}
+}
+
+Timer:antiCheatTimer[1000]() {
 	foreach(new i : Player) {
-		if(hasLogged[i] && isSpawned[i] && !spawnFreeze[i]) {
-			new reas[64];
+		if(isLogged[i] && isSpawned[i] && !spawnFreeze[i]) {
 			new Float:x, Float:y, Float:z, Float:totalPos;
-			new srvVehId = getServerVehicleIdForPlayer(i);
 
 			GetPlayerPos(i, x, y, z);
 
-			/*if((x > tPlayer[i][pX] || x < tPlayer[i][pX]) && (tPlayer[i][pY] > y || tPlayer[i][pY] < y) && !isFreeze[i]) {
-				format(reas, sizeof(reas), "Cheat, AirBreak~n~~w~Cheat, AirBreak: d%f tc%d d3.s%d");
-				givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, 0, reas);
-			}
-
-			if(getPlayerSpeed(i) > 50.0) {
-				format(reas, sizeof(reas), "Cheat, Teleport~n~~w~Cheat, Teleport: d%0.6f tc%d delta3s%d");
-				givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, 0, reas);
-			}*/
-
 			if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
+				new srvVehId = getServerVehicleId(i);
 				GetVehicleVelocity(tVehicle[srvVehId][vId], x, y, z);
 
 				if(getVehicleSpeed(tVehicle[srvVehId][vId]) > 200) {
-					format(reas, sizeof(reas), "SpeedHack V %f %f %f", x, y, z);
-					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, 0, reas);
+					format(timerStr, sizeof(timerStr), "SpeedHack V %f %f %f", x, y, z);
+					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, 0, timerStr);
 				}
 			}
 
 			if(isFreeze[i] && !numberBlows[i] && !isBW[i] && !busCameraSelect[i] && !isInBus[i]) {
-				if(IsPlayerInAnyVehicle(i) && getVehicleSpeed(tVehicle[srvVehId][vId]) > 0 && (x > tPlayer[i][pX] || x < tPlayer[i][pX]) && (tPlayer[i][pY] > y || tPlayer[i][pY] < y) && GetTickCount() < enteredVehicleSec[i]) {
-					enteredVehicleSec[i] = 0;
-					totalPos = floatabs((x - tPlayer[i][pX]) + (y - tPlayer[i][pY]));
+				if(IsPlayerInAnyVehicle(i)) {
+					new srvVehId = getServerVehicleId(i);
 
-					format(reas, sizeof(reas), "Unfreeze~n~~w~3x ruch o %0.1fj podczas zamrozenia w pojezdzie.", totalPos);
-					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, 0, reas);
+					if(getVehicleSpeed(tVehicle[srvVehId][vId]) > 0 && (x > tPlayer[i][pPosX] || x < tPlayer[i][pPosX]) && (tPlayer[i][pPosY] > y || tPlayer[i][pPosY] < y) && GetTickCount() < enteredVehicleSec[i]) {
+						enteredVehicleSec[i] = 0;
+						totalPos = floatabs((x - tPlayer[i][pPosX]) + (y - tPlayer[i][pPosY]));
+
+						format(timerStr, sizeof(timerStr), "Unfreeze~n~~w~3x ruch o %0.1fj podczas zamrozenia w pojezdzie.", totalPos);
+						return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, 0, timerStr);
+					}
 				}
 
-				if(((x > tPlayer[i][pX] || x < tPlayer[i][pX]) && (tPlayer[i][pY] > y || tPlayer[i][pY] < y)) && GetPlayerState(i) == PLAYER_STATE_ONFOOT) {
-					totalPos = floatabs((x - tPlayer[i][pX]) + (y - tPlayer[i][pY]));
+				if(((x > tPlayer[i][pPosX] || x < tPlayer[i][pPosX]) && (tPlayer[i][pPosY] > y || tPlayer[i][pPosY] < y)) && GetPlayerState(i) == PLAYER_STATE_ONFOOT) {
+					totalPos = floatabs((x - tPlayer[i][pPosX]) + (y - tPlayer[i][pPosY]));
 
-					format(reas, sizeof(reas), "Unfreeze~n~~w~Ruch o %0.1fj podczas zamrozenia pieszo.", totalPos);
-					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, 0, reas);
+					format(timerStr, sizeof(timerStr), "Unfreeze~n~~w~Ruch o %0.1fj podczas zamrozenia pieszo.", totalPos);
+					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, 0, timerStr);
+				}
+			}
+
+			if(GetPlayerWeapon(i) != 0) {
+				if(tPlayer[i][pWeapon] != GetPlayerWeapon(i)) {
+					new srvItemId = getServerItemId(i);
+
+					format(timerStr, sizeof(timerStr), "Bron: %d/%d(%s). Systemowa: %d/%d:%d (Weap)", GetPlayerWeapon(i), GetPlayerAmmo(i), weaponNames[GetPlayerWeapon(i)], tItem[srvItemId][iUid], tItem[srvItemId][iValue1], tItem[srvItemId][iValue2]);
+					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, 0, timerStr);
 				}
 			}
 		}
-
-		//format(reas, sizeof(reas), "Forced seat takeover");
-		//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, reas, 0);
-
-		//format(reas, sizeof(reas), "AirBreak~n~~w~Cheat, AirBreak: d11.803848 tc16744321 d3.s1885");
-		//return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, reas, 0);
 	}
 	return 1;
 }
@@ -342,7 +328,6 @@ Timer:giveFreeMoneyTimer[590000]() {
 		if(tPlayer[i][pHours] < 1) {
 			OSRP_GivePlayerMoney(i, 25);
 			GameTextForPlayer(i, "~w~+~g~$25", 2000, 6);
-			savePlayerValues(i, SAVE_MONEY);
 
 			for(new j = 0; j < sizeof(firstHoursInfo); j++) {
 				TextDrawShowForPlayer(i, firstHoursInfo[j]);
@@ -353,17 +338,18 @@ Timer:giveFreeMoneyTimer[590000]() {
 	}
 }
 
-Timer:remindPlayPhoneTimer[60000]() {
-	static bool:hasPhone = false;
+Timer:remindPlayPhoneTimer[180000]() {
+	static bool:hasPhone[MAX_PLAYERS] = { false, ... };
 
 	foreach(new i : Player) {
 		foreach(new j : itemItter) {
-			if(tItem[j][iOUid] == tPlayer[i][pUid] && (tItem[j][iId] == P_TELEFON || tItem[j][iId] == P_NKA8110)) {
-				hasPhone = true;
+			if(tItem[j][iOUid] == tPlayer[i][pUid] && (tItem[j][iId] == I_TELEPHONE || tItem[j][iId] == I_NKA8110 || tItem[j][iId] == I_SMARTPHONE) &&
+			   tItem[j][iPlace] == ITEM_PLACE_PLAYER) {
+				hasPhone[i] = true;
 			}
 		}
 
-		if(!hasPhone && tPlayer[i][pHours] > 0 && tPlayer[i][pHours] < 3) {
+		if(!hasPhone[i] && tPlayer[i][pHours] < 2) {
 			SendClientMessage(i, COLOR_GREEN, "> IdŸ do salonu jakiegoœ operatora komórkowego i kup od nich tani telefon.");
 		}
 	}
@@ -399,6 +385,6 @@ Timer:moneyForHotelTimer[3600000]() {
 			mysql_free_result();
 		}
 	}
-	
+
 	mysql_free_result();
 }

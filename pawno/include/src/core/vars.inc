@@ -26,14 +26,7 @@ new playerRcPosition[MAX_PLAYERS];
 
 new cameraTimer[MAX_PLAYERS];
 new playerAFKTime[MAX_PLAYERS];
-
-new actualVehicle[MAX_PLAYERS];
-new actualBusStop[MAX_PLAYERS]; //Zapisuje aktualny przystanek gracza po wpisaniu CMD:bus
-new actualCashpoint[MAX_PLAYERS]; // Zapisuje aktualny bankomat w zasiegu gracza
-new actualItem[MAX_PLAYERS];
-new actualGroupItemsSet[MAX_PLAYERS];
-new actualOrder[MAX_PLAYERS];
-new actualRace[MAX_PLAYERS];
+new loginAttempts[MAX_PLAYERS];
 
 new playerFuelPrice[MAX_PLAYERS]; // Do tablicy trafia cena paliwa dla danego gracza podczas uzywania funkcji tankuj
 
@@ -79,7 +72,7 @@ new playerNotes[MAX_PLAYERS];
 new playerNotesDesc[MAX_PLAYERS][64];
 
 new taxiDriver[MAX_PLAYERS];
-new taxiDistance[MAX_PLAYERS];
+new Float:taxiDistance[MAX_PLAYERS];
 new taxiCost[MAX_PLAYERS];
 
 new playerVehicles[MAX_PLAYERS][10];
@@ -91,6 +84,8 @@ new casualJobsPickup;
 
 new calledCmds[MAX_PLAYERS];
 new calledSecsCmds[MAX_PLAYERS];
+
+new reportedPlayers[MAX_PLAYERS];
 
 new vehCP[MAX_VEHICLES];
 new vehMapIcon[MAX_VEHICLES];
@@ -104,15 +99,15 @@ new Float:playerRcActualTime[MAX_PLAYERS];
 
 // type - bool
 new bool:isSpawned[MAX_PLAYERS];
-new bool:hasLogged[MAX_PLAYERS];
+new bool:isLogged[MAX_PLAYERS];
 new bool:isAdminDuty[MAX_PLAYERS]; // false(0) is admin duty off or true(1) is admin duty on only when player have ranks: SUPPORT_RANK, ADMIN_RANK, HEADADMIN_RANK
-new bool:isGMDuty[MAX_PLAYERS];
 new bool:isPlayerDuty[MAX_PLAYERS]; 
 new	bool:isSpectating[MAX_PLAYERS];
 new	bool:isGodMode[MAX_PLAYERS];
 new	bool:isBW[MAX_PLAYERS];
 new bool:isFreeze[MAX_PLAYERS];
 new bool:isInBus[MAX_PLAYERS];
+new bool:busCameraChoose[MAX_PLAYERS];
 new bool:busCameraSelect[MAX_PLAYERS];
 new bool:usedCmdLogin[MAX_PLAYERS];
 new bool:usedCmdReport[MAX_PLAYERS];
@@ -158,6 +153,7 @@ new Text:itemTips[MAX_PLAYERS][2];
 new Text:itemNoNearby[MAX_PLAYERS][2];
 new Text:itemGivePlayerTips[MAX_PLAYERS][2];
 new Text:scrimmageTips[MAX_PLAYERS][5];
+new Text:gmDutyInfo[MAX_PLAYERS][2];
 new Text:busStopInfo[MAX_PLAYERS][3];
 new Text:busStopSelect[MAX_PLAYERS][3];
 new Text:firstHoursInfo[3];
@@ -166,7 +162,6 @@ new Text:vehicleTips[MAX_PLAYERS][2];
 new Text:vehicleStats[MAX_PLAYERS][3];
 new Text:vehicleFuelStatus[MAX_PLAYERS][3];
 new Text:vehicleSpawn[MAX_PLAYERS][2];
-new Text:vehicleSpeedMeter[MAX_PLAYERS][2];
 new Text:vehicleDeath[MAX_PLAYERS][3];
 new Text:areaSpeedWarning[MAX_PLAYERS][2];
 new Text:courseDrivingInfo[MAX_PLAYERS][2];
@@ -185,6 +180,7 @@ new Text:taxiInfo[MAX_PLAYERS][3];
 new Text:courierInfo[MAX_PLAYERS];
 new Text:courierTips[MAX_PLAYERS][3];
 new Text:specialServicesInfo[MAX_PLAYERS];
+new Text:skinInfo[MAX_PLAYERS][2];
 
 // type - Iterator
 new Iterator:vehItter<MAX_VEHICLES>;

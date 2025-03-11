@@ -12,33 +12,12 @@
 #define __PLAYER_INC__
 #pragma library osrp
 
-enum CharName {
-	chName[24],
-	bool:chUsed
-};
-
-enum CharSurName {
-	chSurName[24],
-	bool:chSurUsed
-};
-
-enum PenaltyData {
-	penUID,
-	penSUID,
-	penOUID,
-	penType,
-	penDays,
-	penDate[64],
-	penReason[128]
-};
-
 enum PlayerData {
 	pUid,
 	pGUid,
-	pCharId,
+	pCharNum,
 	pAccName[24],
 	pCharName[24],
-	pCharName2[24],
 	pPass[32],
 	pIp[16],
 	pDateReg[64],
@@ -66,16 +45,15 @@ enum PlayerData {
 	pDebt,
 	pWeapons[13],
 	pWeapSlot,
+	pWeapon,
 	pBw,
-	pBwTimer,
 	pAj,
 	pAl,
 	pDrvLicAttempts,
 	pGov,
 	pHotel,
 	pHotelPaid,
-	pIdCard,
-	pDriverLicense,
+	pDocuments,
 	pDetention,
 	pPdp,
 	pTelNum,
@@ -84,17 +62,20 @@ enum PlayerData {
 	pGroupDesc[128],
 	pGroup[MAX_PLAYER_GROUPS],
 	pGroupNow,
-	pPayment[MAX_PLAYER_GROUPS],
+	pPayDay[MAX_PLAYER_GROUPS],
 	pGroupActivity[64],
 	pGroupPerms[64],
+	pGroupItem,
 	pRedScreen,
 	pArea,
+	pAreaWarn,
 	pDuty,
-	pBusId,
+	pBus,
+	pBusNext,
 	pBusTime,
 	pStatus[64],
 	p3dInfoStr[128],
-	pTraveled,
+	Float:pTraveled,
 	Float:pAddiction,
 	pDoor,
 	pAudio,
@@ -102,15 +83,72 @@ enum PlayerData {
 	pComputer,
 	pWalkAnim,
 	pStyleFight,
+	pOrder,
+	pItem,
+	pRace,
+	pVehicle,
+	pCashpoint,
 	pDrugs, // 15 min dzialania
 	pDrugsTime,
+	pGloves,
 	pMusic,
-	Float:pX,
-	Float:pY,
-	Float:pZ,
+	pSelectSkin,
+	pSkinNum,
+	Float:pPosX,
+	Float:pPosY,
+	Float:pPosZ,
+	Float:pCamX,
+	Float:pCamY,
+	Float:pCamZ,
 	Float:pBusX,
 	Float:pBusY,
 	Float:pBusZ,
 	Text3D:p3dInfo,
 	Text3D:pCharDesc
+};
+
+enum PenaltyData {
+	penUID,
+	penSUID,
+	penOUID,
+	penIp[16],
+	penType,
+	penDays,
+	penDate[64],
+	penReason[128]
+};
+
+enum WeaponData {
+	wId,
+	wBody,
+	Float:wPosX,
+	Float:wPosY,
+	Float:wPosZ,
+	Float:wPosRX,
+	Float:wPosRY,
+	Float:wPosRZ,
+	Float:wScaleX,
+	Float:wScaleY,
+	Float:wScaleZ
+};
+
+enum ClothesData {
+	cModel,
+	cPrice
+};
+
+enum AccessData {
+	aModel,
+	aPrice,
+	aName[24],
+	aBone,
+	Float:aPosX,
+	Float:aPosY,
+	Float:aPosZ,
+	Float:aRotX,
+	Float:aRotY,
+	Float:aRotZ,
+	Float:aScaleX,
+	Float:aScaleY,
+	Float:aScaleZ
 };

@@ -13,23 +13,33 @@
 #pragma library osrp
 
 sampCallback:OSRP_OnGameModeInit() {
-	new callSecs = GetTickCount();
+	new callSecs = gettime();
 
-	AllowAdminTeleport(1);
 	EnableStuntBonusForAll(0);
 	EnableTirePopping(1);
 	EnableZoneNames(1);
 	DisableInteriorEnterExits();
+	AllowInteriorWeapons(0);
+	EnableVehicleFriendlyFire();
 	ManualVehicleEngineAndLights();
 	ShowNameTags(0);
+	ShowPlayerMarkers(0);
 	AddPlayerClassEx(0, 0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0);
 	SetGravity(0.008);
 	SetGameModeText("macpilch: osrp.com");
 
+	Streamer_MaxItems(STREAMER_TYPE_OBJECT, 100);
+	Streamer_MaxItems(STREAMER_TYPE_PICKUP, 100);
+	Streamer_MaxItems(STREAMER_TYPE_CP, 100);
+	Streamer_MaxItems(STREAMER_TYPE_RACE_CP, 100);
+	Streamer_MaxItems(STREAMER_TYPE_MAP_ICON, 100);
+	Streamer_MaxItems(STREAMER_TYPE_3D_TEXT_LABEL, 100);
+	Streamer_TickRate(30);
+
 	readIni();
 
 	{
-		hMySQL = mysql_init(LOG_ONLY_ERRORS, 1);
+		hMySQL = mysql_init(LOG_ALL, 1);
 		mySQLConnect = mysql_connect(gDB_HOST, gDB_NAME, gDB_PASS, gDB_DBNAME, hMySQL, 1);
 
 		if(mySQLConnect) {
@@ -71,27 +81,26 @@ sampCallback:OSRP_OnGameModeInit() {
 
 	gymObject[0] = CreateDynamicObject(2629, 758.8672, -76.0945, 1000.6500 - 1, 0.0, 0.0, 90.0, 2, 7, -1, 50.0);
 
-	website = TextDrawCreate(8.433380, 425.000000, "_");
-	TextDrawLetterSize(website, 0.303351, 1.016664);
-	TextDrawTextSize(website, -189.751068, -105.000007);
+	website = TextDrawCreate(4.685180, 424.083587, "_");
+	TextDrawLetterSize(website, 0.304758, 1.034166);
 	TextDrawAlignment(website, 1);
 	TextDrawColor(website, -1);
 	TextDrawSetShadow(website, 0);
 	TextDrawSetOutline(website, 1);
-	TextDrawBackgroundColor(website, 51);
+	TextDrawBackgroundColor(website, 0xFFFF0010);
 	TextDrawFont(website, 3);
 	TextDrawSetProportional(website, 1);
 
-	news = TextDrawCreate(1.874112, 437.499938, "Radio ~>~ (( Wpisz /radio, by wybrac stacje radiowa ))");
-	TextDrawLetterSize(news, 0.204494, 0.975833);
-	TextDrawTextSize(news, 638.125488, 95.666671);
+	news = TextDrawCreate(1.405545, 438.083312, "_");
+	TextDrawLetterSize(news, 0.199340, 0.853331);
+	TextDrawTextSize(news, 638.125854, -30.333337);
 	TextDrawAlignment(news, 1);
 	TextDrawColor(news, -1);
 	TextDrawUseBox(news, 1);
-	TextDrawBoxColor(news, 255);
+	TextDrawBoxColor(news, 0xFFFFFF22);
 	TextDrawSetShadow(news, 0);
 	TextDrawSetOutline(news, 1);
-	TextDrawBackgroundColor(news, 51);
+	TextDrawBackgroundColor(news, 255);
 	TextDrawFont(news, 1);
 	TextDrawSetProportional(news, 1);
 
@@ -105,15 +114,15 @@ sampCallback:OSRP_OnGameModeInit() {
 	TextDrawFont(penalty, 1);
 	TextDrawSetProportional(penalty, 1);
 
-	printf("[LOG]: OnGameModeInit -- Called! (%d ms).", GetTickCount() - callSecs);
+	printf("[LOG]: OnGameModeInit -- Called! (%d ms).", gettime() - callSecs);
 	return 1;
 }
 
 sampCallback:OSRP_OnGameModeExit() {
-	new callSecs = GetTickCount();
+	new callSecs = gettime();
 
 	mysql_close(hMySQL);
 
-	printf("[LOG]: OnGameModeExit -- Called! (%d ms).", GetTickCount() - callSecs);
+	printf("[LOG]: OnGameModeExit -- Called! (%d ms).", gettime() - callSecs);
 	return 1;
 }

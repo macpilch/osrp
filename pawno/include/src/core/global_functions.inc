@@ -49,10 +49,11 @@ stock initServerPenalties() {
 
 		mysql_fetch_row(queryStr, " ");
 
-		sscanf(queryStr, "iiiiis[64]s[128]",
+		sscanf(queryStr, "iiis[16]iis[64]s[128]",
 			tPenalty[i][penUID],
 			tPenalty[i][penSUID],
 			tPenalty[i][penOUID],
+			tPenalty[i][penIp],
 			tPenalty[i][penType],
 			tPenalty[i][penDays],
 			tPenalty[i][penDate],
@@ -60,8 +61,8 @@ stock initServerPenalties() {
 		);
 
 		Iter_Add(penItter, i);
-		printf("UID: %d, SUID: %d, OUID: %d, Type: %d, Days: %d, Date: %s, Reason: %s\n", tPenalty[i][penUID], tPenalty[i][penSUID], tPenalty[i][penOUID], tPenalty[i][penType],
-		tPenalty[i][penDays], tPenalty[i][penDate], tPenalty[i][penReason]);
+		printf("UID: %d, SUID: %d, OUID: %d, IP: %s, Type: %d, Days: %d, Date: %s, Reason: %s\n", tPenalty[i][penUID], tPenalty[i][penSUID], tPenalty[i][penOUID], tPenalty[i][penIp],
+		tPenalty[i][penType], tPenalty[i][penDays], tPenalty[i][penDate], tPenalty[i][penReason]);
 	}
 
 	mysql_free_result();

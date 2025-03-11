@@ -27,7 +27,6 @@ stock initAreaValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-
 		sscanf(queryStr, "p<|>iiffffi",
 			tArea[i][aUid],
 			tArea[i][aOUid],
@@ -58,14 +57,14 @@ stock initAreaValues() {
 	return 1;
 }
 
-stock getServerAreaIdForPlayer(playerid) {
-	new aId;
-	
+stock getServerAreaId(playerid) {
+	new id = INVALID_AREA_ID;
+
 	foreach(new i : areaItter) {
 		if(tArea[i][aUid] == tPlayer[playerid][pArea]) {
-			aId = i;
+			id = i;
 			break;
 		}
 	}
-	return aId;
+	return id;
 }

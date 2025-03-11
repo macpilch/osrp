@@ -16,6 +16,18 @@ CMD:mc(playerid, params[]) {
 	return 1;
 }
 
+CMD:amc(playerid, params[]) {
+	new objId;
+
+	if(sscanf(params, "i", objId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /mc [ID modelu] - tworzy obiekt");
+	}
+
+	ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja",
+	"Ten budynek nie ma przypisanych żadnych obiektów do stworzenia.\n\nUżyj komendy /drzwi, by przypisać mu wybraną ilość obiektów.", "OK", "");
+	return 1;
+}
+
 CMD:md(playerid, params[]) {
 	GameTextForPlayer(playerid, "~w~Nie edytujesz obiektu.~n~~r~Uzyj /mc lub /msel.", 5000, 3);
 	return 1;
