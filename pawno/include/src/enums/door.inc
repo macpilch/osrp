@@ -46,3 +46,14 @@ enum DoorData {
 	dInt,
 	dType
 };
+
+enum DimensionData {
+	dimUid,
+	dimOUid,
+	dimMinX,
+	dimMinY,
+	dimMinZ,
+	dimMaxX,
+	dimMaxY,
+	dimMaxZ
+};

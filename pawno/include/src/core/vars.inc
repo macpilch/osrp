@@ -115,7 +115,7 @@ new bool:hasBelts[MAX_PLAYERS];
 new bool:isCuffed[MAX_PLAYERS];
 stock bool:hasBank[MAX_PLAYERS];
 new bool:isDizzines[MAX_PLAYERS];
-new bool:usedTelephone[MAX_PLAYERS];
+new bool:usesTelephone[MAX_PLAYERS];
 new bool:chatMessages[MAX_PLAYERS][2]; // 0 - PM, 1 - Grupowe
 new bool:drivingCourse[MAX_PLAYERS];
 new bool:showGroupsInfo[MAX_PLAYERS];
@@ -184,8 +184,11 @@ new Text:skinInfo[MAX_PLAYERS][2];
 
 // type - Iterator
 new Iterator:vehItter<MAX_VEHICLES>;
+new Iterator:objectItter<MAX_VEHICLES>;
+new Iterator:text3DItter<MAX_3DTEXTS>;
 new Iterator:itemItter<MAX_ITEMS>;
 new Iterator:doorItter<MAX_DOORS>;
+new Iterator:dimItter<MAX_DIMENSIONS>;
 new Iterator:boothItter<MAX_BOOTHS>;
 new Iterator:busStopItter<MAX_BUS_STOPS>;
 new Iterator:cashpointItter<MAX_CASHPOINTS>;

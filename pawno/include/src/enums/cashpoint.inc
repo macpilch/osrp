@@ -23,5 +23,7 @@ enum CashpointData {
 	Float:cRotX,
 	Float:cRotY,
 	Float:cRotZ,
-	Float:cDistance
+	Float:cDistance,
+	cVw,
+	cInt
 };

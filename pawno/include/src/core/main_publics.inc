@@ -50,11 +50,14 @@ sampCallback:OSRP_OnGameModeInit() {
 	}
 
 	initServerValues();
+	initObjectValues();
+	init3DTextValues();
 	initVehicleValues();
 	initAnimValues();
 	initAreaValues();
 	initItemValues();
 	initDoorValues();
+	initDimensionValues();
 	initBoothValues();
 	initBusStopValues();
 	initCashpointValues();
@@ -66,9 +69,6 @@ sampCallback:OSRP_OnGameModeInit() {
 	initGroupVehicleValues();
 	initRaceValues();
 	initServerPenalties();
-
-	createServerObjects();
-	createServer3DTexts();
 
 	for(new i = 0; i < MAX_PLAYERS; i++) {
 		tPlayer[i][p3dInfo] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 0.15, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);

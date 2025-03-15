@@ -28,23 +28,23 @@ CMD:v(playerid, params[]) {
 		}
 	}
 
-	new opt[32], parms[64];
+	new opt[16], parms[16];
 
-	if(sscanf(params, "s[32]S()[64]", opt)) {
+	if(sscanf(params, "s[16]S()[16]", opt, parms)) {
 		if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 			new vehs;
 
 			foreach(new i : vehItter) {
 				if(tVehicle[i][vOUid] == tPlayer[playerid][pUid] && tVehicle[i][vGUid] == VEHICLE_OWNER_GROUP) {
-					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d  %s", mainStr, tVehicle[i][vUid], vehicleNames[tVehicle[i][vModelId] - 400]);
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d   %s", mainStr, tVehicle[i][vUid], vehicleNames[tVehicle[i][vModelId] - 400]);
 					vehs++;
 				}
 			}
 
 			if(!vehs) {
 				strcat(mainStr, "W tym miejscu pojawi sie lista posiadanych przez Ciebie pojazdów.\n\n");
-				strcat(mainStr, "Kup nowy pojazd w salonie samochodowym lub u?ywany od innego gracza.\n\n");
-				strcat(mainStr, "Pojazdom mo?na dodawaa komponenty i zabezpieczenia w warsztatach.");
+				strcat(mainStr, "Kup nowy pojazd w salonie samochodowym lub u¿ywany od innego gracza.\n\n");
+				strcat(mainStr, "Pojazdom mo¿na dodawaæ komponenty i zabezpieczenia w warsztatach.");
 				ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 			} else {
 				ShowPlayerDialog(playerid, DIALOG_VEHICLES, DIALOG_STYLE_LIST, "Wybór pojazdu", mainStr, "(Un)spawn", "Anuluj");
@@ -63,6 +63,9 @@ CMD:v(playerid, params[]) {
 			}
 
 			new srvVehId = getServerVehicleId(playerid);
+			if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
+				return 1;
+			}
 
 			if(tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid]) {
 				return GameTextForPlayer(playerid, "~r~To nie jest twoj pojazd.", 5000, 3);
@@ -105,10 +108,18 @@ CMD:v(playerid, params[]) {
 
 			if(playerToPoint(playerid, 2.0, tVehicle[srvVehId][vPosX], tVehicle[srvVehId][vPosY], tVehicle[srvVehId][vPosZ]) && GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 				if(tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_ALARM) {
-					ApplyAnimation(playerid, "HEIST9", "Use_SwipeCard", 4.1, 0, 0, 0, 0, 1);
+					GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
+					ApplyAnimation(playerid, "HEIST9", "Use_SwipeCard", 4.1, 0, 0, 0, 0, 0);
+
+					foreach(new i : Player) {
+						if(playerToPoint(i, 30.0, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ])) {
+							PlayerPlaySound(i, 1147, 0.0, 0.0, 0.0);
+						}
+					}
 				} else {
-					ApplyAnimation(playerid, "INT_HOUSE", "wash_up", 4.1, 0, 0, 0, 0, 0, 0);
+					ApplyAnimation(playerid, "INT_HOUSE", "wash_up", 4.1, 0, 0, 0, 0, 0);
 				}
+
 				goto closevehicle;
 			}
 
@@ -185,6 +196,10 @@ closevehicle:
 				return SendClientMessage(playerid, COLOR_GRAY, "W tym slocie nie masz ¿adnego pojazdu.");
 			}
 
+			if(!tVehicle[srvVehId][vSpawned]) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Aby namierzyæ pojazd musi on byæ zespawnowany.");
+			}
+
 			GetVehiclePos(tVehicle[srvVehId][vId], tVehicle[srvVehId][vPosX], tVehicle[srvVehId][vPosY], tVehicle[srvVehId][vPosZ]);
 
 			if(vehCP[srvVehId] == -1 && vehMapIcon[srvVehId] == -1) {
@@ -210,6 +225,10 @@ closevehicle:
 			srvVehId = playerVehicles[playerid][slot - 1];
 			if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
 				return SendClientMessage(playerid, COLOR_GRAY, "W tym slocie nie masz ¿adnego pojazdu.");
+			}
+
+			if(!tVehicle[srvVehId][vSpawned]) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Aby zresetowaæ pojazd musi on byæ zespawnowany.");
 			}
 
 			if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
@@ -242,6 +261,9 @@ closevehicle:
 
 			new vehStr[64];
 			new srvVehId = getServerVehicleId(playerid);
+			if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
+				return 1;
+			}
 
 			if(sscanf(parms, "s[64]", vehStr)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v opis [Tresc]");
@@ -252,14 +274,14 @@ closevehicle:
 			}
 
 			format(tVehicle[srvVehId][vDescInfo], 64, vehStr);
-			UpdateDynamic3DTextLabelText(tVehicle[srvVehId][vDesc], COLOR_PURPLE, tVehicle[srvVehId][vDescInfo]);
+			UpdateDynamic3DTextLabelText(tVehicle[srvVehId][vDesc], COLOR_DO, tVehicle[srvVehId][vDescInfo]);
 
 			queryStr[0] = EOS;
 			format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Desc` = '%s' WHERE `UID` = '%d'", vehStr, tVehicle[srvVehId][vUid]);
 			mysql_query(queryStr);
 
 			SendClientMessage(playerid, COLOR_GRAY, "Opis pojazdu ustawiony (aby go usun¹æ, wpisz /opis usun):");
-			SendClientMessage(playerid, COLOR_PURPLE, tVehicle[srvVehId][vDescInfo]);
+			SendClientMessage(playerid, COLOR_DO, tVehicle[srvVehId][vDescInfo]);
 		} else {
 			SendClientMessage(playerid, COLOR_GRAY, "Tip: /v [zaparkuj/z(amknij)/info/namierz/reset]");
 		}
@@ -273,6 +295,9 @@ CMD:pasy(playerid, params[]) {
 	}
 
 	new srvVehId = getServerVehicleId(playerid);
+	if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
+		return 1;
+	}
 
 	if(isBicycle(tVehicle[srvVehId][vModelId]) || isBike(tVehicle[srvVehId][vModelId])) {
 		return GameTextForPlayer(playerid, "~y~Ten pojazd nie ma pasow.", 5000, 3);

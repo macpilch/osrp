@@ -13,28 +13,8 @@
 #define __GROUP_INC__
 #pragma library osrp
 
-enum {
-	G_LSPD = 0,
-	G_LSFD,
-	G_GOV,
-	G_FBI,
-	G_CRIMINAL,
-	G_RADIO,
-	G_BAR,
-	G_SALON,
-	G_MECH,
-	G_GYM,
-	G_SECTY,
-	G_TAXI,
-	G_SHOP,
-	G_DRVRLIC,
-	G_MOBILE,
-	G_SHOOT
-};
-
 enum GroupData {
 	gUid,
-	gOUid,
 	gName[32],
 	gTag[8],
 	gDate[32],
@@ -44,8 +24,8 @@ enum GroupData {
 	gVehsCount,
 	gMoney,
 	gDoor,
-	gFlags,
-	gColor[7],
+	gPerms,
+	gColor[10],
 	gRegister
 };
 

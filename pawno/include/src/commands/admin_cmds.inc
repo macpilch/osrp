@@ -275,6 +275,10 @@ CMD:unaj(playerid, params[]) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
+		if(!tPlayer[pId][pAj]) {
+			return 1;
+		}
+
 		tPlayer[pId][pAj] = 0;
 
 		SetPlayerPos(playerid, tPlayer[pId][pPosX], tPlayer[pId][pPosY], tPlayer[pId][pPosZ]);

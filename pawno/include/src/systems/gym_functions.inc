@@ -28,7 +28,7 @@ stock searchPlayerGym(playerid) {
 	SetPlayerFacingAngle(playerid, 90);
 	SetPlayerPos(playerid, 758.8672 + 1, -76.0945, 1000.6500);
 
-	ApplyAnimation(playerid, "benchpress", "gym_bp_geton", 1, 0, 0, 0, 1, 0, 1);
+	ApplyAnimation(playerid, "BENCHPRESS", "gym_bp_geton", 1, 0, 0, 0, 1, 0, 1);
 	SetTimerEx("givePlayerGymBarBell", 4000, false, "i", playerid);
 
 	acceptTraining[playerid] = false;

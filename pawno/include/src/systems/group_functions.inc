@@ -28,11 +28,8 @@ stock initGroupValues(){
 		}
 
 		mysql_fetch_row(queryStr, "|");
-		new tmpColor;
-
-		sscanf(queryStr, "p<|>iis[32]s[8]s[32]iiiiiiii",
+		sscanf(queryStr, "p<|>is[32]s[8]s[32]iiiiis[10]i",
 			tGroup[i][gUid],
-			tGroup[i][gOUid],
 			tGroup[i][gName],
 			tGroup[i][gTag],
 			tGroup[i][gDate],
@@ -41,19 +38,16 @@ stock initGroupValues(){
 			tGroup[i][gVehsLimit],
 			tGroup[i][gMoney],
 			tGroup[i][gDoor],
-			tGroup[i][gFlags],
-			tmpColor,
+			tGroup[i][gColor],
 			tGroup[i][gRegister]
 		);
 
 		Iter_Add(groupItter, i);
-
-		tGroup[i][gColor] = decimalToHex(tmpColor);
 		tGroup[i][gVehsCount] = 0;
 
-		printf("[DEBUG] Id: %d, Uid: %d, OUid: %d, Name: %s, Tag: %s, Type: %d, Members: %d, VehLimit: %d, Money: %d, Doors: %d, Flags: %d, Register: %d",
-		i, tGroup[i][gUid], tGroup[i][gOUid], tGroup[i][gName], tGroup[i][gTag], tGroup[i][gType], tGroup[i][gMembers], tGroup[i][gVehsLimit], tGroup[i][gMoney],
-		tGroup[i][gDoor], tGroup[i][gFlags], tGroup[i][gRegister]);
+		printf("[DEBUG] Id: %d, Uid: %d, Name: %s, Tag: %s, Type: %d, Members: %d, VehLimit: %d, Money: %d, Doors: %d, Register: %d",
+		i, tGroup[i][gUid], tGroup[i][gName], tGroup[i][gTag], tGroup[i][gType], tGroup[i][gMembers], tGroup[i][gVehsLimit], tGroup[i][gMoney],
+		tGroup[i][gDoor], tGroup[i][gRegister]);
 	}
 
 	if(Iter_Count(groupItter)) {
@@ -67,13 +61,13 @@ stock initGroupValues(){
 }
 
 stock initGroupPermValues() {
-	new tmpFlags[6];
+	new tmpFlags[15];
 
 	printf("[LOG]: Zaczynam ladowac flagi grupy...");
 
 	foreach(new i : groupItter) {
 		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_GroupPerms` WHERE `UID` = '%d'", tGroup[i][gUid]);
+		format(queryStr, sizeof(queryStr), "SELECT `PermOOC`,`PermIC`,`PermMegaphone`,`PermName`,`PermTag`,`PermDept`,`PermGPS`,`PermRope`,`PermWithdraw`,`PermNews`,`PermBlockCar`,`PermGangZone`,`PermBuyList`,`PermDetention`,`PermRobbery` FROM `osrp_GroupPerms` WHERE `OUID` = '%d'", tGroup[i][gUid]);
 		mysql_query(queryStr);
 
 		mysql_store_result();
@@ -83,37 +77,82 @@ stock initGroupPermValues() {
 		}
 
 		mysql_fetch_row(queryStr, " ");
-		sscanf(queryStr, "iiiiii",
+		sscanf(queryStr, "iiiiiiiiiiiiiii",
 			tmpFlags[0],
 			tmpFlags[1],
 			tmpFlags[2],
 			tmpFlags[3],
 			tmpFlags[4],
-			tmpFlags[5]
+			tmpFlags[5],
+			tmpFlags[6],
+			tmpFlags[7],
+			tmpFlags[8],
+			tmpFlags[9],
+			tmpFlags[10],
+			tmpFlags[11],
+			tmpFlags[12],
+			tmpFlags[13],
+			tmpFlags[14]
 		);
 
 		if(tmpFlags[0]) {
-			tGroup[i][gFlags] += GROUP_PERM_CHATOOC;
+			tGroup[i][gPerms] += G_GROUP_PERM_CHATOOC;
 		}
 
 		if(tmpFlags[1]) {
-			tGroup[i][gFlags] += GROUP_PERM_CHATIC;
+			tGroup[i][gPerms] += G_GROUP_PERM_CHATIC;
 		}
 
 		if(tmpFlags[2]) {
-			tGroup[i][gFlags] += GROUP_PERM_MEGAPHONE;
+			tGroup[i][gPerms] += G_GROUP_PERM_MEGAPHONE;
 		}
 
 		if(tmpFlags[3]) {
-			tGroup[i][gFlags] += GROUP_PERM_DEPT;
+			tGroup[i][gPerms] += G_GROUP_PERM_NAME;
 		}
 
 		if(tmpFlags[4]) {
-			tGroup[i][gFlags] += GROUP_PERM_GPS;
+			tGroup[i][gPerms] += G_GROUP_PERM_TAG;
 		}
 
 		if(tmpFlags[5]) {
-			tGroup[i][gFlags] += GROUP_PERM_NEWS;
+			tGroup[i][gPerms] += G_GROUP_PERM_DEPT;
+		}
+
+		if(tmpFlags[6]) {
+			tGroup[i][gPerms] += G_GROUP_PERM_GPS;
+		}
+
+		if(tmpFlags[7]) {
+			tGroup[i][gPerms] += G_GROUP_PERM_ROPE;
+		}
+
+		if(tmpFlags[8]) {
+			tGroup[i][gPerms] += G_GROUP_PERM_WITHDRAW;
+		}
+
+		if(tmpFlags[9]) {
+			tGroup[i][gPerms] += G_GROUP_PERM_NEWS;
+		}
+
+		if(tmpFlags[10]) {
+			tGroup[i][gPerms] += G_GROUP_PERM_BLOCKCAR;
+		}
+
+		if(tmpFlags[11]) {
+			tGroup[i][gPerms] += G_GROUP_PERM_GANGZONE;
+		}
+
+		if(tmpFlags[12]) {
+			tGroup[i][gPerms] += G_GROUP_PERM_BUYLIST;
+		}
+
+		if(tmpFlags[13]) {
+			tGroup[i][gPerms] += G_GROUP_PERM_DETENTION;
+		}
+
+		if(tmpFlags[14]) {
+			tGroup[i][gPerms] += G_GROUP_PERM_ROBBERY;
 		}
 	}
 
@@ -368,7 +407,7 @@ stock showPlayerGroupVehicles(playerid) {
 	}
 
 	if(!vehs) {
-		return GameTextForPlayer(playerid, "Ta grupa nie posiada pojazdow.", 5000, 3);
+		return GameTextForPlayer(playerid, "~r~Ta grupa nie posiada pojazdow.", 5000, 3);
 	}
 
 	ShowPlayerDialog(playerid, DIALOG_GROUP_VEHICLE_SELECT, DIALOG_STYLE_LIST, "Wybór pojazdu (* = zespawnowany)", mainStr, "(Un)spawn", "Wiêcej");
@@ -382,8 +421,8 @@ stock showPlayerGroupInfo(playerid) {
 	mainStr[0] = EOS;
 	format(str, sizeof(str), "%s", tGroup[srvGrpId][gName]);
 
-	format(mainStr, sizeof(mainStr), "{FFFFFF}UID:\t\t\t%d\nKonto:\t\t\t%d USD\nLimit pojazdów:\t\t%d\nRodzaj:\t\t\t%d\nFlagi:\t\t\t%d", tGroup[srvGrpId][gUid], tGroup[srvGrpId][gMoney], tGroup[srvGrpId][gVehsLimit], tGroup[srvGrpId][gType], tGroup[srvGrpId][gFlags]);
-	format(mainStr, sizeof(mainStr), "%s\n\n1\tCzat OOC aktywny:\t\t%s\n2\tCzat IC aktywny:\t\t%s", mainStr, (tGroup[srvGrpId][gFlags] & GROUP_PERM_CHATOOC) ? ("T") : ("N"), (tGroup[srvGrpId][gFlags] & GROUP_PERM_CHATIC) ? ("T") : ("N"));
+	format(mainStr, sizeof(mainStr), "{FFFFFF}UID:\t\t\t%d\nKonto:\t\t\t%d USD\nLimit pojazdów:\t\t%d\nRodzaj:\t\t\t%d\nFlagi:\t\t\t%d", tGroup[srvGrpId][gUid], tGroup[srvGrpId][gMoney], tGroup[srvGrpId][gVehsLimit], tGroup[srvGrpId][gType], tGroup[srvGrpId][gPerms]);
+	format(mainStr, sizeof(mainStr), "%s\n\n1\tCzat OOC aktywny:\t\t%s\n2\tCzat IC aktywny:\t\t%s", mainStr, (tGroup[srvGrpId][gPerms] & G_GROUP_PERM_CHATOOC) ? ("T") : ("N"), (tGroup[srvGrpId][gPerms] & G_GROUP_PERM_CHATIC) ? ("T") : ("N"));
 	ShowPlayerDialog(playerid, DIALOG_GROUP_STATS, DIALOG_STYLE_LIST, str, mainStr, "OK", "Zamknij");
 }
 
@@ -494,25 +533,23 @@ stock createNewGroup(playerid, ownerid, type, tag[], name[]) {
 	mysql_free_result();
 
 	tGroup[freeId][gUid] = freeId + 1;
-	tGroup[freeId][gOUid] = tPlayer[ownerid][pUid];
-
 	format(tGroup[freeId][gName], 32, name);
 	format(tGroup[freeId][gTag], 8, tag);
-
 	tGroup[freeId][gType] = type;
 	tGroup[freeId][gMembers]++;
 	tGroup[freeId][gVehsLimit] = 5;
 	tGroup[freeId][gMoney] = 0;
 	tGroup[freeId][gDoor] = 0;
 	format(tGroup[freeId][gColor], 7, "FF0000");
-	tGroup[freeId][gFlags] += GROUP_PERM_CHATOOC;
-	tGroup[freeId][gFlags] += GROUP_PERM_CHATIC;
+	tGroup[freeId][gPerms] += G_GROUP_PERM_CHATOOC;
+	tGroup[freeId][gPerms] += G_GROUP_PERM_CHATIC;
 	tPlayer[ownerid][pGroupNow] = tGroup[freeId][gUid];
+	tPlayer[ownerid][pGroupPermNow] += P_GROUP_PERM_LEADER;
 
 	Iter_Add(groupItter, freeId);
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Groups`(`UID`, `OUID`, `Name`, `Tag`, `Type`) VALUES ('%d', '%d', '%s', '%s', '%d')", tGroup[freeId][gUid], tGroup[freeId][gOUid], name, tag, type);
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Groups`(`UID`, `Name`, `Tag`, `Type`) VALUES ('%d', '%d', '%s', '%s', '%d')", tGroup[freeId][gUid], name, tag, type);
 	mysql_query(queryStr);
 
 	queryStr[0] = EOS;
@@ -527,8 +564,8 @@ stock createNewGroup(playerid, ownerid, type, tag[], name[]) {
 	format(mainStr, sizeof(mainStr), "Grupa o nazwie '%s' zosta³a pomyœlnie utworzona.\nJej Liderem zosta³ %s.", tGroup[freeId][gName], tPlayer[ownerid][pCharName]);
 	ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 
-	printf("[DEBUG] Id: %d, Uid: %d, OUid: %d, Name: %s, Tag: %s, Type: %d, Members: %d, VehLimit: %d, Money: %d Doors: %d, Flags: %d",
-	freeId, tGroup[freeId][gUid], tGroup[freeId][gOUid], tGroup[freeId][gName], tGroup[freeId][gTag], tGroup[freeId][gType], tGroup[freeId][gMembers], tGroup[freeId][gVehsLimit], tGroup[freeId][gMoney], tGroup[freeId][gDoor], tGroup[freeId][gFlags]);
+	printf("[DEBUG] Id: %d, Uid: %d, Name: %s, Tag: %s, Type: %d, Members: %d, VehLimit: %d, Money: %d Doors: %d, Perms: %d",
+	freeId, tGroup[freeId][gUid], tGroup[freeId][gName], tGroup[freeId][gTag], tGroup[freeId][gType], tGroup[freeId][gMembers], tGroup[freeId][gVehsLimit], tGroup[freeId][gMoney], tGroup[freeId][gDoor], tGroup[freeId][gPerms]);
 }
 
 stock getServerGroupId(playerid) {
@@ -773,7 +810,7 @@ stock isGroupType(srvgrpid, type) {
 }
 
 stock isGroupHavePermission(srvgrpid, perm) {
-	if(tGroup[srvgrpid][gFlags] & perm) {
+	if(tGroup[srvgrpid][gPerms] & perm) {
 		return 1;
 	}
 	return 0;

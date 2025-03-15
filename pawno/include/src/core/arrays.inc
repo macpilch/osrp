@@ -14,7 +14,7 @@
 
 new mainStr[1024];
 new smallStr[64];
-new queryStr[1024];
+new queryStr[2048];
 new timerStr[128]; // stworzona na potrzeby timers.inc
 new itemParms[MAX_PLAYERS][64];
 new tempName[24];
@@ -37,12 +37,14 @@ new tGroupOrder[MAX_GROUP_ORDERS][GroupOrder];
 new tGroupVehicle[MAX_GROUP_VEHICLES][GroupVehicle];
 
 new tDoor[MAX_DOORS][DoorData];
+new tDimension[MAX_DIMENSIONS][DimensionData];
 
 //Cashpoints system
 new tCashpoint[MAX_CASHPOINTS][CashpointData];
 
 //Object system
-stock tObject[MAX_OBJECTS][ObjectData];
+new tObject[MAX_OBJECTS][ObjectData];
+new t3DText[MAX_3DTEXTS][Text3DData];
 
 new tRace[MAX_RACES][RaceData];
 new tArea[MAX_AREAS][AreaData];
@@ -112,14 +114,14 @@ new itemNames[][] = {
 	"Napis 3D", "Wytrych"
 };
 
-new serviceTypes[] = { G_GOV, G_RADIO, G_BAR, G_SALON, G_MECH, G_GYM, G_SECTY, G_TAXI, G_SHOP, G_DRVRLIC, G_MOBILE, G_SHOOT };
+new serviceTypes[] = { G_GOV, G_RADIO, G_BAR, G_SALON, G_MECHANIC, G_GYM, G_SECURITY, G_TAXI, G_SHOP, G_DRIVERLICENSE, G_MOBILE, G_SHOOT };
 new serviceNames[][] = {
 	"Rzad", "Radio", "Bar lub restauracja", "Salon samochodowy", "Warsztat", "Silownia", "Ochrona",
 	"Taxi", "24/7", "Nauka jazdy", "Operator komorkowy", "Airsoft gun"
 };
 
 new weaponNames[][] = {
-	"Kastet", "Kij golfowy", "Pa³ka", "Nó¿", "Kij baseballowy", "£opata", "Kij bilardowy", "Katana", "Chainsaw", "Dildo",
+	"", "Kastet", "Kij golfowy", "Pa³ka", "Nó¿", "Kij baseballowy", "£opata", "Pool Cue", "Katana", "Chainsaw", "Dildo",
 	"Dildo 2", "Wibrator", "Wibrator 2", "Kwiaty", "Laska", "Granat", "Gaz ³zawi¹cy", "Mo³otow", "Pistolet", "Pistolet z t³umikiem",
 	"Desert Eagle", "Shotgun", "Sawn OFF", "Combat", "UZI", "MP5", "AK-47", "M4", "TEC9", "Karabin", "Snajperka", "RPG", "Wyrzutnia rakiet",
 	"Flamethrower", "Minigun", "Satchel charge", "Detonator", "Spray", "Gaœnica", "Aparat", "Gogle", "Gogle", "Spadochron"
@@ -397,8 +399,21 @@ new weaponObjects[] = {
 };
 
 new tWeapon[][WeaponData] = {
-	{29, 1, 0.071999, -0.143000, -0.024999, 1.599999, 32.300018, 1.100003, 1.000000, 1.000000, 1.000000}, // MP5
-	{24, 2, -0.317999, -0.170000, -0.074999, -0.199982, 23.599971, -0.500006, 1.000000, 1.000000, 1.000000} // Deagle
+	{5, 1, 0.3, -0.15, -0.15, 0.0, -85.0, 0.0, 0.0, 0.0, 0.0}, // Baseball
+	{3, 8, 0.0, -0.1, 0.05, 90.0, 80.0, 0.0, 0.0, 0.0, 0.0}, // Palka
+	{7, 1, 0.3, -0.12, -0.15, 0.0, -85.0, 0.0, 0.0, 0.0, 0.0}, // Bilard
+	{22, 8, -0.05, -0.18, -0.1, -20.0, 0.0, 0.0, 0.0, 0.0, 0.0}, // Glock
+	{23, 8, -0.05, -0.18, -0.1, -20.0, 0.0, 0.0, 0.0, 0.0, 0.0}, // Paralizator
+	{24, 8, -0.05, -0.18, -0.1, -20.0, 0.0, 0.0, 0.0, 0.0, 0.0}, // Deagle
+	//{24, 1, -0.317999, -0.170000, -0.074999, -0.199982, 23.599971, -0.500006, 1.000000, 1.000000, 1.000000} // Deagle
+	{25, 1, 0.3, -0.13, -0.07, 0.0, 210.0, 0.0, 0.0, 0.0, 0.0}, // Shotgun
+	{28, 7, 0.15, 0.1, -0.13, 90.0, -80.0, 0.0, 0.0, 0.0, 0.0}, // Uzi
+	{29, 1, -0.1, -0.15, 0.0, 0.0, 35.0, 0.0, 0.0, 0.0, 0.0}, // MP5
+	{32, 7, 0.15, 0.1, -0.13, 90.0, -70.0, 0.0, 0.0, 0.0, 0.0}, // Tec
+	{30, 1, -0.1, -0.15, 0.0, 0.0, 35.0, 0.0, 0.0, 0.0, 0.0}, // AK-47
+	{31, 1, -0.1, -0.15, 0.0, 0.0, 35.0, 0.0, 0.0, 0.0, 0.0}, // M4
+	{34, 1, 0.3, -0.13, -0.07, 0.0, 210.0, 0.0, 0.0, 0.0, 0.0} // Snajperka
+	//{29, 1, 0.071999, -0.143000, -0.024999, 1.599999, 32.300018, 1.100003, 1.000000, 1.000000, 1.000000}, // MP5
 };
 
 stock tAccess[][AccessData] = {

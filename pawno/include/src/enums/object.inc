@@ -14,12 +14,17 @@
 
 enum ObjectData {
 	oUid,
-	oGUid,
+	oOUid,
+	oType,
+	oId,
 	oModelId,
 	Float:oPosX,
 	Float:oPosY, 
 	Float:oPosZ, 
 	Float:oRotX,
 	Float:oRotY, 
-	Float:oRotZ
+	Float:oRotZ,
+	Float:oDist,
+	oVw,
+	oInt
 };

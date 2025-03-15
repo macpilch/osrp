@@ -27,7 +27,7 @@ stock initCashpointValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>is[32]ifffffff",
+		sscanf(queryStr, "p<|>is[32]ifffffffii",
 			tCashpoint[i][cUid],
 			tCashpoint[i][cName],
 			tCashpoint[i][cIsOpen],
@@ -37,11 +37,13 @@ stock initCashpointValues() {
 			tCashpoint[i][cRotX],
 			tCashpoint[i][cRotY],
 			tCashpoint[i][cRotZ],
-			tCashpoint[i][cDistance]
+			tCashpoint[i][cDistance],
+			tCashpoint[i][cVw],
+			tCashpoint[i][cInt]
 		);
 
+		tCashpoint[i][cObject] = CreateDynamicObject(2942, tCashpoint[i][cPosX], tCashpoint[i][cPosY], tCashpoint[i][cPosZ], tCashpoint[i][cRotX], tCashpoint[i][cRotY], tCashpoint[i][cRotZ], tCashpoint[i][cVw], tCashpoint[i][cInt], -1, 100.0);
 		Iter_Add(cashpointItter, i);
-		tCashpoint[i][cObject] = CreateDynamicObject(2942, tCashpoint[i][cPosX], tCashpoint[i][cPosY], tCashpoint[i][cPosZ], tCashpoint[i][cRotX], tCashpoint[i][cRotY], tCashpoint[i][cRotZ], 0, 0, -1, 100.0);
 
 		printf("[DEBUG] Id: %d,  Name: %s", i, tCashpoint[i][cName]);
 	}

@@ -1157,14 +1157,15 @@ stock loadPlayerValues(playerid) {
 	new flags[2];
 
 	queryStr[0] = EOS;
-	strcat(queryStr, "SELECT `GUID`, `CharNum`, `IP`, `DateReg`, `LastDate`, `GS`, `Rank`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `HP`, `AP`, `Bans`, `Kicks`, `Warns`, `AJS`, `VW`, `INT`, `Skin`, `LastSkin`, `Money`, `Bank`, `Debt`, `BW`, `AJ`, `AL`, `DrvLicAttempts`, `GOV`, `Hotel`, `HotelPaid`, `IdCard`, `DriverLicense`, `Detention`, `PDP`, `TelNum`,");
-	format(queryStr, sizeof(queryStr), "%s`TelNetwork`, `BankAcc`, `GroupDesc`, `Group0`, `Group1`, `Group2`, `Group3`, `Group4`, `CasualJob`, `Traveled`, `Addiction`, `Audio`, `ChatStyle`, `Computer`, `WalkAnim`, `StyleFight`, `PosX`, `PosY`, `PosZ`, `Desc` FROM `osrp_Players` WHERE `UID` = '%d'", queryStr, tPlayer[playerid][pUid]);
+strcat(queryStr, "SELECT `GUID`, `CharNum`, `IP`, `DateReg`, `LastDate`, `GS`, `Rank`, `Sex`, `Strength`, `Hours`, `Minutes`, `Seconds`, `HP`, `AP`, `Bans`, `Kicks`, `Warns`, `AJS`, `VW`, `INT`, `Skin`, `LastSkin`, `Money`, `Bank`, `Debt`, `PistSkill`, `SemiSkill`, `AutomSkill`, `ShotgSkill`, `RifleSkill`, `BW`, `AJ`, `AL`, `DrvLicAttempts`, `GOV`, `Hotel`, `HotelPaid`, `IdCard`, `DriverLicense`,");
+format(queryStr, sizeof(queryStr), "%s `TelNetwork`, `BankAcc`, `GroupDesc`, `Group0`, `Group1`, `Group2`, `Group3`, `Group4`, `Perm0`, `Perm1`, `Perm2`, `Perm3`, `Perm4`, `PayDay0`, `PayDay1`, `PayDay2`, `PayDay3`, `PayDay4`, `CasualJob`, `Traveled`, `Addiction`, `Door`, `Audio`, `ChatStyle`, `Computer`, `WalkAnim`, `StyleFight`, `PosX`, `PosY`, `PosZ`, `Desc` FROM `osrp_Players` WHERE `UID` = '%d'",
+queryStr, tPlayer[playerid][pUid]);
 	mysql_query(queryStr);
 
 	mysql_store_result();
 
 	mysql_fetch_row(queryStr, "|");
-	sscanf(queryStr, "p<|>iis[16]s[64]s[64]iiiiiiiffiiiiiiiiiiiiiiiiiiiiiiiiis[128]iiiiiiffiiiiifffs[64]",
+	sscanf(queryStr, "p<|>iis[16]s[64]s[64]iiiiiiiffiiiiiiiiiiiiiiiiiiiiiiiiiiiiiis[128]iiiiiiiiiiiiiiiiffiiiiiifffs[64]",
 		tPlayer[playerid][pGUid],
 		tPlayer[playerid][pCharNum],
 		tPlayer[playerid][pIp],
@@ -1190,6 +1191,11 @@ stock loadPlayerValues(playerid) {
 		tPlayer[playerid][pMoney],
 		tPlayer[playerid][pBank],
 		tPlayer[playerid][pDebt],
+		tPlayer[playerid][pPistSkill],
+		tPlayer[playerid][pSemiSkill],
+		tPlayer[playerid][pAutomSkill],
+		tPlayer[playerid][pShotgSkill],
+		tPlayer[playerid][pRifleSkill],
 		tPlayer[playerid][pBw],
 		tPlayer[playerid][pAj],
 		tPlayer[playerid][pAl],
@@ -1210,9 +1216,20 @@ stock loadPlayerValues(playerid) {
 		tPlayer[playerid][pGroup][2],
 		tPlayer[playerid][pGroup][3],
 		tPlayer[playerid][pGroup][4],
+		tPlayer[playerid][pGroupPerms][0],
+		tPlayer[playerid][pGroupPerms][1],
+		tPlayer[playerid][pGroupPerms][2],
+		tPlayer[playerid][pGroupPerms][3],
+		tPlayer[playerid][pGroupPerms][4],
+		tPlayer[playerid][pPayDay][0],
+		tPlayer[playerid][pPayDay][1],
+		tPlayer[playerid][pPayDay][2],
+		tPlayer[playerid][pPayDay][3],
+		tPlayer[playerid][pPayDay][4],
 		casualJob[playerid],
 		tPlayer[playerid][pTraveled],
 		tPlayer[playerid][pAddiction],
+		tPlayer[playerid][pDoor],
 		tPlayer[playerid][pAudio],
 		tPlayer[playerid][pChatStyle],
 		tPlayer[playerid][pComputer],
@@ -1238,7 +1255,7 @@ stock loadPlayerValues(playerid) {
 	loadPlayerVehicles(playerid);
 
 	SetPlayerScore(playerid, tPlayer[playerid][pGS]);
-	UpdateDynamic3DTextLabelText(tPlayer[playerid][pCharDesc], COLOR_PURPLE, charDesc);
+	UpdateDynamic3DTextLabelText(tPlayer[playerid][pCharDesc], COLOR_DO, charDesc);
 	return 1;
 }
 
@@ -1453,7 +1470,6 @@ stock setPlayerDefaultValues(playerid) {
 	format(tPlayer[playerid][pStatus], 64, NULL);
 	format(tPlayer[playerid][p3dInfoStr], 128, NULL);
 	format(tPlayer[playerid][pGroupActivity], 64, NULL);
-	format(tPlayer[playerid][pGroupPerms], 64, NULL);
 
 	SetPlayerSkillLevel(playerid, WEAPON_COLT45, 0);
 	SetPlayerSkillLevel(playerid, WEAPON_DEAGLE, 0);
@@ -1465,16 +1481,53 @@ stock setPlayerDefaultValues(playerid) {
 	SetPlayerSkillLevel(playerid, WEAPON_TEC9, 0);
 
 	preloadAnimLib(playerid, "PED");
-	preloadAnimLib(playerid, "RAPPING");
-	preloadAnimLib(playerid, "SKATE");
-	preloadAnimLib(playerid, "PLAYIDLES");
+	preloadAnimLib(playerid, "CARRY");
+	preloadAnimLib(playerid, "KISSING");
 	preloadAnimLib(playerid, "INT_HOUSE");
-	preloadAnimLib(playerid, "BEACH");
+	preloadAnimLib(playerid, "MEDIC");
+	preloadAnimLib(playerid, "SWEET");
+	preloadAnimLib(playerid, "ON_LOOKERS");
+	preloadAnimLib(playerid, "RIOT");
+	preloadAnimLib(playerid, "GANGS");
+	preloadAnimLib(playerid, "SHOP");
+	preloadAnimLib(playerid, "COP_AMBIENT");
+	preloadAnimLib(playerid, "MISC");
+	preloadAnimLib(playerid, "OTB");
 	preloadAnimLib(playerid, "FOOD");
+	preloadAnimLib(playerid, "POLICE");
+	preloadAnimLib(playerid, "GRAVEYARD");
+	preloadAnimLib(playerid, "FIGHT_D");
+	preloadAnimLib(playerid, "BAR");
+	preloadAnimLib(playerid, "CAR");
+	preloadAnimLib(playerid, "RYDER");
+	preloadAnimLib(playerid, "DEALER");
+	preloadAnimLib(playerid, "VENDING");
+	preloadAnimLib(playerid, "HEIST9");
+	preloadAnimLib(playerid, "GRAFFITI");
+	preloadAnimLib(playerid, "JST_BUISNESS");
+	preloadAnimLib(playerid, "GRENADE");
+	preloadAnimLib(playerid, "RAPPING");
+	preloadAnimLib(playerid, "WAYFARER");
+	preloadAnimLib(playerid, "BEACH");
+	preloadAnimLib(playerid, "INT_OFFICE");
 	preloadAnimLib(playerid, "CRACK");
-	preloadAnimLib(playerid, "MD_END");
-	preloadAnimLib(playerid, "BENCHPRESS");
 	preloadAnimLib(playerid, "BOMBER");
+	preloadAnimLib(playerid, "ROB_BANK");
+	preloadAnimLib(playerid, "STRIP");
+	preloadAnimLib(playerid, "GHANDS");
+	preloadAnimLib(playerid, "PARK");
+	preloadAnimLib(playerid, "BSKTBALL");
+	preloadAnimLib(playerid, "SMOKING");
+	preloadAnimLib(playerid, "PLAYIDLES");
+	preloadAnimLib(playerid, "POOL");
+	preloadAnimLib(playerid, "CRIB");
+	preloadAnimLib(playerid, "DANCING");
+	preloadAnimLib(playerid, "LOWRIDER");
+	preloadAnimLib(playerid, "INT_SHOP");
+	preloadAnimLib(playerid, "WUZI");
+	preloadAnimLib(playerid, "SKATE");
+	preloadAnimLib(playerid, "BENCHPRESS");
+	preloadAnimLib(playerid, "MD_END");
 
 	tPlayer[playerid][pGUid] = 0;
 	tPlayer[playerid][pCharNum] = 0;
@@ -1499,6 +1552,11 @@ stock setPlayerDefaultValues(playerid) {
 	tPlayer[playerid][pMoney] = 0;
 	tPlayer[playerid][pBank] = 0;
 	tPlayer[playerid][pDebt] = 0;
+	tPlayer[playerid][pPistSkill] = 0;
+	tPlayer[playerid][pSemiSkill] = 0;
+	tPlayer[playerid][pAutomSkill] = 0;
+	tPlayer[playerid][pShotgSkill] = 0;
+	tPlayer[playerid][pRifleSkill] = 0;
 	tPlayer[playerid][pWeapons][0] = 0;
 	tPlayer[playerid][pWeapons][1] = 0;
 	tPlayer[playerid][pWeapons][2] = 0;
@@ -1513,6 +1571,7 @@ stock setPlayerDefaultValues(playerid) {
 	tPlayer[playerid][pWeapons][11] = 0;
 	tPlayer[playerid][pWeapons][12] = 0;
 	tPlayer[playerid][pWeapSlot] = 0;
+	tPlayer[playerid][pWeapon] = 0;
 	tPlayer[playerid][pBw] = 0;
 	tPlayer[playerid][pAj] = 0;
 	tPlayer[playerid][pAl] = 0;
@@ -1532,11 +1591,18 @@ stock setPlayerDefaultValues(playerid) {
 	tPlayer[playerid][pGroup][3] = 0;
 	tPlayer[playerid][pGroup][4] = 0;
 	tPlayer[playerid][pGroupNow] = 0;
+	tPlayer[playerid][pGroupPerms][0] = 0;
+	tPlayer[playerid][pGroupPerms][1] = 0;
+	tPlayer[playerid][pGroupPerms][2] = 0;
+	tPlayer[playerid][pGroupPerms][3] = 0;
+	tPlayer[playerid][pGroupPerms][4] = 0;
+	tPlayer[playerid][pGroupPermNow] = 0;
 	tPlayer[playerid][pPayDay][0] = 0;
 	tPlayer[playerid][pPayDay][1] = 0;
 	tPlayer[playerid][pPayDay][2] = 0;
 	tPlayer[playerid][pPayDay][3] = 0;
 	tPlayer[playerid][pPayDay][4] = 0;
+	tPlayer[playerid][pPayDayNow] = 0;
 	tPlayer[playerid][pGroupItem] = 0;
 	tPlayer[playerid][pRedScreen] = 0;
 	tPlayer[playerid][pArea] = 0;
@@ -1550,9 +1616,10 @@ stock setPlayerDefaultValues(playerid) {
 	tPlayer[playerid][pDoor] = 0;
 	tPlayer[playerid][pAudio] = 1;
 	tPlayer[playerid][pChatStyle] = 1;
-	tPlayer[playerid][pComputer] = 1;
+	tPlayer[playerid][pComputer] = 0;
 	tPlayer[playerid][pWalkAnim] = 1;
 	tPlayer[playerid][pStyleFight] = 1;
+	tPlayer[playerid][pInterview] = INVALID_PLAYER_ID;
 	tPlayer[playerid][pOrder] = 0;
 	tPlayer[playerid][pItem] = 0;
 	tPlayer[playerid][pRace] = 0;
@@ -1560,6 +1627,7 @@ stock setPlayerDefaultValues(playerid) {
 	tPlayer[playerid][pCashpoint] = 0;
 	tPlayer[playerid][pDrugs] = 0;
 	tPlayer[playerid][pDrugsTime] = 0;
+	tPlayer[playerid][pGloves] = 0;
 	tPlayer[playerid][pMusic] = 0;
 	tPlayer[playerid][pSelectSkin] = 0;
 	tPlayer[playerid][pSkinNum] = 0;
@@ -1632,7 +1700,7 @@ stock setPlayerDefaultValues(playerid) {
 	hasBelts[playerid] = false;
 	isCuffed[playerid] = false;
 	isDizzines[playerid] = false;
-	usedTelephone[playerid] = false;
+	usesTelephone[playerid] = false;
 	chatMessages[playerid][0] = true;
 	chatMessages[playerid][1] = true;
 	drivingCourse[playerid] = false;
@@ -1688,7 +1756,6 @@ stock resetPlayerValues(playerid) {
 	format(tPlayer[playerid][pLastDate], 64, NULL);
 	format(tPlayer[playerid][pGroupDesc], 128, NULL);
 	format(tPlayer[playerid][pGroupActivity], 64, NULL);
-	format(tPlayer[playerid][pGroupPerms], 64, NULL);
 	format(tPlayer[playerid][pStatus], 64, NULL);
 	format(tPlayer[playerid][p3dInfoStr], 128, NULL);
 
@@ -1713,6 +1780,11 @@ stock resetPlayerValues(playerid) {
 	tPlayer[playerid][pMoney] = 0;
 	tPlayer[playerid][pBank] = 0;
 	tPlayer[playerid][pDebt] = 0;
+	tPlayer[playerid][pPistSkill] = 0;
+	tPlayer[playerid][pSemiSkill] = 0;
+	tPlayer[playerid][pAutomSkill] = 0;
+	tPlayer[playerid][pShotgSkill] = 0;
+	tPlayer[playerid][pRifleSkill] = 0;
 	tPlayer[playerid][pWeapons][0] = 0;
 	tPlayer[playerid][pWeapons][1] = 0;
 	tPlayer[playerid][pWeapons][2] = 0;
@@ -1727,6 +1799,7 @@ stock resetPlayerValues(playerid) {
 	tPlayer[playerid][pWeapons][11] = 0;
 	tPlayer[playerid][pWeapons][12] = 0;
 	tPlayer[playerid][pWeapSlot] = 0;
+	tPlayer[playerid][pWeapon] = 0;
 	tPlayer[playerid][pBw] = 0;
 	tPlayer[playerid][pAj] = 0;
 	tPlayer[playerid][pAl] = 0;
@@ -1746,11 +1819,18 @@ stock resetPlayerValues(playerid) {
 	tPlayer[playerid][pGroup][3] = 0;
 	tPlayer[playerid][pGroup][4] = 0;
 	tPlayer[playerid][pGroupNow] = 0;
+	tPlayer[playerid][pGroupPerms][0] = 0;
+	tPlayer[playerid][pGroupPerms][1] = 0;
+	tPlayer[playerid][pGroupPerms][2] = 0;
+	tPlayer[playerid][pGroupPerms][3] = 0;
+	tPlayer[playerid][pGroupPerms][4] = 0;
+	tPlayer[playerid][pGroupPermNow] = 0;
 	tPlayer[playerid][pPayDay][0] = 0;
 	tPlayer[playerid][pPayDay][1] = 0;
 	tPlayer[playerid][pPayDay][2] = 0;
 	tPlayer[playerid][pPayDay][3] = 0;
 	tPlayer[playerid][pPayDay][4] = 0;
+	tPlayer[playerid][pPayDayNow] = 0;
 	tPlayer[playerid][pGroupItem] = 0;
 	tPlayer[playerid][pRedScreen] = 0;
 	tPlayer[playerid][pArea] = 0;
@@ -1767,6 +1847,7 @@ stock resetPlayerValues(playerid) {
 	tPlayer[playerid][pComputer] = 0;
 	tPlayer[playerid][pWalkAnim] = 0;
 	tPlayer[playerid][pStyleFight] = 0;
+	tPlayer[playerid][pInterview] = INVALID_PLAYER_ID;
 	tPlayer[playerid][pOrder] = 0;
 	tPlayer[playerid][pItem] = 0;
 	tPlayer[playerid][pRace] = 0;
@@ -1774,6 +1855,7 @@ stock resetPlayerValues(playerid) {
 	tPlayer[playerid][pCashpoint] = 0;
 	tPlayer[playerid][pDrugs] = 0;
 	tPlayer[playerid][pDrugsTime] = 0;
+	tPlayer[playerid][pGloves] = 0;
 	tPlayer[playerid][pMusic] = 0;
 	tPlayer[playerid][pSelectSkin] = 0;
 	tPlayer[playerid][pSkinNum] = 0;
@@ -1849,7 +1931,7 @@ stock resetPlayerValues(playerid) {
 	hasBelts[playerid] = false;
 	isCuffed[playerid] = false;
 	isDizzines[playerid] = false;
-	usedTelephone[playerid] = false;
+	usesTelephone[playerid] = false;
 	chatMessages[playerid][0] = false;
 	chatMessages[playerid][1] = false;
 	drivingCourse[playerid] = false;
@@ -1908,11 +1990,79 @@ stock savePlayerValues(playerid, what) {
 	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` ");
 
 	if(what & SAVE_ALL_VALUES) {
-		format(queryStr, sizeof(queryStr), "%sSET `LastDate`='%s',`GS`='%d',`Rank`='%d',`Sex`='%d',`Strength`='%d',`Hours`='%d',`Minutes`='%d',`Seconds`='%d',`HP`='%f',`AP`='%f',`Bans`='%d',`Kicks`='%d',`Warns`='%d',`AJS`='%d',`VW`='%d',`INT`='%d',`Skin`='%d',`LastSkin`='%d',`Money`='%d',`Bank`='%d',`Debt`='%d',`BW`='%d',`AJ`='%d',`AL`='%d',`DrvLicAttempts`='%d',`GOV`='%d',`Hotel`='%d',`IdCard`='%d',`DriverLicense`='%d',`Detention`='%d',`PDP`='%d',`TelNum`='%d',`TelNetwork`='%d',", queryStr,
-		tPlayer[playerid][pLastDate],tPlayer[playerid][pGS],tPlayer[playerid][pRank],tPlayer[playerid][pSex],tPlayer[playerid][pStrength],tPlayer[playerid][pHours],tPlayer[playerid][pMinutes],tPlayer[playerid][pSeconds],tPlayer[playerid][pHp],tPlayer[playerid][pAp],tPlayer[playerid][pBans],tPlayer[playerid][pKicks],tPlayer[playerid][pWarns],tPlayer[playerid][pAJs],tPlayer[playerid][pVw],tPlayer[playerid][pInt],tPlayer[playerid][pSkin],tPlayer[playerid][pLastSkin],tPlayer[playerid][pMoney],
-		tPlayer[playerid][pBank],tPlayer[playerid][pDebt],tPlayer[playerid][pBw],tPlayer[playerid][pAj],tPlayer[playerid][pAl],tPlayer[playerid][pDrvLicAttempts],tPlayer[playerid][pGov],tPlayer[playerid][pHotel],(tPlayer[playerid][pDocuments] & DOC_ID) ? 1 : 0,(tPlayer[playerid][pDocuments] & DOC_L_DRIVING) ? 1 : 0,tPlayer[playerid][pDetention],tPlayer[playerid][pPdp],tPlayer[playerid][pTelNum],tPlayer[playerid][pTelNetwork]);
-		format(queryStr, sizeof(queryStr), "%s`BankAcc`='%d',`GroupDesc`='%s',`Group0`='%d',`Group1`='%d',`Group2`='%d',`Group3`='%d',`Group4`='%d',`CasualJob`='%d',`Traveled`='%f',`Addiction`='%f',`Audio`='%d',`ChatStyle`='%d',`Computer`='%d',`WalkAnim`='%d',`StyleFight`='%d',`PosX`='%f',`PosY`='%f',`PosZ`='%f' ", queryStr,tPlayer[playerid][pBankAcc],tPlayer[playerid][pGroupDesc],tPlayer[playerid][pGroup][0],tPlayer[playerid][pGroup][1],tPlayer[playerid][pGroup][2],tPlayer[playerid][pGroup][3],
-		tPlayer[playerid][pGroup][4],casualJob[playerid],tPlayer[playerid][pTraveled],tPlayer[playerid][pAddiction],tPlayer[playerid][pAudio],tPlayer[playerid][pChatStyle],tPlayer[playerid][pComputer],tPlayer[playerid][pWalkAnim],tPlayer[playerid][pStyleFight],tPlayer[playerid][pPosX],tPlayer[playerid][pPosY],tPlayer[playerid][pPosZ]);
+		format(queryStr, sizeof(queryStr), "%sSET `LastDate`='%s',`GS`='%d',`Rank`='%d',`Sex`='%d',`Strength`='%d',`Hours`='%d',`Minutes`='%d',`Seconds`='%d',`HP`='%f',`AP`='%f',`Bans`='%d',`Kicks`='%d',`Warns`='%d',`AJS`='%d',`VW`='%d',`INT`='%d',`Skin`='%d',`LastSkin`='%d',`Money`='%d',`Bank`='%d',`Debt`='%d',`PistSkill`='%d',`SemiSkill`='%d',`AutomSkill`='%d',`ShotgSkill`='%d',`RifleSkill`='%d',", queryStr,
+			tPlayer[playerid][pLastDate],
+			tPlayer[playerid][pGS],
+			tPlayer[playerid][pRank],
+			tPlayer[playerid][pSex],
+			tPlayer[playerid][pStrength],
+			tPlayer[playerid][pHours],
+			tPlayer[playerid][pMinutes],
+			tPlayer[playerid][pSeconds],
+			tPlayer[playerid][pHp],
+			tPlayer[playerid][pAp],
+			tPlayer[playerid][pBans],
+			tPlayer[playerid][pKicks],
+			tPlayer[playerid][pWarns],
+			tPlayer[playerid][pAJs],
+			tPlayer[playerid][pVw],
+			tPlayer[playerid][pInt],
+			tPlayer[playerid][pSkin],
+			tPlayer[playerid][pLastSkin],
+			tPlayer[playerid][pMoney],
+			tPlayer[playerid][pBank],
+			tPlayer[playerid][pDebt],
+			tPlayer[playerid][pPistSkill],
+			tPlayer[playerid][pSemiSkill],
+			tPlayer[playerid][pAutomSkill],
+			tPlayer[playerid][pShotgSkill],
+			tPlayer[playerid][pRifleSkill]
+		);
+		format(queryStr, sizeof(queryStr), "%s`BW`='%d',`AJ`='%d',`AL`='%d',`DrvLicAttempts`='%d',`GOV`='%d',`Hotel`='%d',`IdCard`='%d',`DriverLicense`='%d',`Detention`='%d',`PDP`='%d',`TelNum`='%d',`TelNetwork`='%d',`BankAcc`='%d',`GroupDesc`='%s',`Group0`='%d',`Group1`='%d',`Group2`='%d',`Group3`='%d',`Group4`='%d',`Perm0`='%d',`Perm1`='%d',`Perm2`='%d',`Perm3`='%d',`Perm4`='%d',", queryStr,
+			tPlayer[playerid][pBw],
+			tPlayer[playerid][pAj],
+			tPlayer[playerid][pAl],
+			tPlayer[playerid][pDrvLicAttempts],
+			tPlayer[playerid][pGov],
+			tPlayer[playerid][pHotel],
+			(tPlayer[playerid][pDocuments] & DOC_ID) ? 1 : 0,
+			(tPlayer[playerid][pDocuments] & DOC_L_DRIVING) ? 1 : 0,
+			tPlayer[playerid][pDetention],
+			tPlayer[playerid][pPdp],
+			tPlayer[playerid][pTelNum],
+			tPlayer[playerid][pTelNetwork],
+			tPlayer[playerid][pBankAcc],
+			tPlayer[playerid][pGroupDesc],
+			tPlayer[playerid][pGroup][0],
+			tPlayer[playerid][pGroup][1],
+			tPlayer[playerid][pGroup][2],
+			tPlayer[playerid][pGroup][3],
+			tPlayer[playerid][pGroup][4],
+			tPlayer[playerid][pGroupPerms][0],
+			tPlayer[playerid][pGroupPerms][1],
+			tPlayer[playerid][pGroupPerms][2],
+			tPlayer[playerid][pGroupPerms][3],
+			tPlayer[playerid][pGroupPerms][4]
+		);
+		format(queryStr, sizeof(queryStr), "%s`PayDay0`='%d',`PayDay1`='%d',`PayDay2`='%d',`PayDay3`='%d',`PayDay4`='%d',`CasualJob`='%d',`Traveled`='%f',`Addiction`='%f',`Door`='%d',`Audio`='%d',`ChatStyle`='%d',`Computer`='%d',`WalkAnim`='%d',`StyleFight`='%d',`PosX`='%f',`PosY`='%f',`PosZ`='%f'", queryStr,
+			tPlayer[playerid][pPayDay][0],
+			tPlayer[playerid][pPayDay][1],
+			tPlayer[playerid][pPayDay][2],
+			tPlayer[playerid][pPayDay][3],
+			tPlayer[playerid][pPayDay][4],
+			casualJob[playerid],
+			tPlayer[playerid][pTraveled],
+			tPlayer[playerid][pAddiction],
+			tPlayer[playerid][pDoor],
+			tPlayer[playerid][pAudio],
+			tPlayer[playerid][pChatStyle],
+			tPlayer[playerid][pComputer],
+			tPlayer[playerid][pWalkAnim],
+			tPlayer[playerid][pStyleFight],
+			tPlayer[playerid][pPosX],
+			tPlayer[playerid][pPosY],
+			tPlayer[playerid][pPosZ]
+		);
 	}
 
 	if(what & SAVE_MONEY) {
@@ -1944,7 +2094,13 @@ stock savePlayerValues(playerid, what) {
 	}
 
 	if(what & SAVE_GROUPS) {
-		format(queryStr, sizeof(queryStr), "%sSET `casualJob` = '%d', `Group0` = '%d', `Group1` = '%d', `Group2` = '%d', `Group3` = '%d', `Group4` = '%d'", queryStr, casualJob[playerid], tPlayer[playerid][pGroup][0], tPlayer[playerid][pGroup][1], tPlayer[playerid][pGroup][2], tPlayer[playerid][pGroup][3], tPlayer[playerid][pGroup][4]);
+		format(queryStr, sizeof(queryStr), "%sSET `casualJob` = '%d', `Group0` = '%d', `Group1` = '%d', `Group2` = '%d', `Group3` = '%d', `Group4` = '%d', `Perm0` = '%d', `Perm1` = '%d', `Perm2` = '%d', `Perm3` = '%d', `Perm4` = '%d' `PayDay0` = '%d', `PayDay1` = '%d', `PayDay2` = '%d', `PayDay3` = '%d', `PayDay4` = '%d'",
+		queryStr, casualJob[playerid], tPlayer[playerid][pGroup][0], tPlayer[playerid][pGroup][1], tPlayer[playerid][pGroup][2], tPlayer[playerid][pGroup][3], tPlayer[playerid][pGroup][4], tPlayer[playerid][pGroupPerms][0], tPlayer[playerid][pGroupPerms][1], tPlayer[playerid][pGroupPerms][2], tPlayer[playerid][pGroupPerms][3],
+		tPlayer[playerid][pGroupPerms][4], tPlayer[playerid][pPayDay][0], tPlayer[playerid][pPayDay][1], tPlayer[playerid][pPayDay][2], tPlayer[playerid][pPayDay][3], tPlayer[playerid][pPayDay][4]);
+	}
+
+	if(what & SAVE_SKILL) {
+		format(queryStr, sizeof(queryStr), "%sSET `PistSkill` = '%d', `SemiSkill` = '%d', `AutomSkill` = '%d', `ShotgSkill` = '%d', `RifleSkill` = '%d'", queryStr, tPlayer[playerid][pPistSkill], tPlayer[playerid][pSemiSkill], tPlayer[playerid][pAutomSkill], tPlayer[playerid][pShotgSkill], tPlayer[playerid][pRifleSkill]);
 	}
 
 	format(queryStr, sizeof(queryStr), "%s WHERE `UID` = '%d'", queryStr, tPlayer[playerid][pUid]);
@@ -2427,6 +2583,9 @@ stock sendOffer(playerid, id, price, etc, parmtype, type) {
 		case O_AD: {
 			format(mainStr, sizeof(mainStr), "{FFFFFF}Reklama przez 60 sekund\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][OFFER_PARM_PRICE]);
 		}
+		case O_INTERVIEW: {
+			format(mainStr, sizeof(mainStr), "{FFFFFF}Wywiad\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", offerParams[id][OFFER_PARM_PRICE]);
+		}
 	}
 
 	if(offerParams[id][OFFER_PARM_TYPE] == OFFER_SPECIAL) {
@@ -2816,7 +2975,7 @@ Callback:setICNameForPlayer(playerid) {
 }
 
 Callback:dismissCall(playerid, receiver) {
-	if(!usedTelephone[playerid] && !usedTelephone[receiver]) {
+	if(!usesTelephone[playerid] && !usesTelephone[receiver]) {
 		for(new i = 0; i < sizeof(telephoneCall); i++) {
 			TextDrawHideForPlayer(receiver, telephoneCall[receiver][i]);
 		}
@@ -2829,8 +2988,8 @@ Callback:dismissCall(playerid, receiver) {
 
 		ApplyAnimation(playerid, "PED", "PHONE_OUT", 4.1, 0, 0, 0, 0, 0, 1);
 
-		usedTelephone[playerid] = false;
-		usedTelephone[receiver] = false;
+		usesTelephone[playerid] = false;
+		usesTelephone[receiver] = false;
 
 		telEnterNumber[playerid] = 0;
 		telEnterNumber[receiver] = 0;

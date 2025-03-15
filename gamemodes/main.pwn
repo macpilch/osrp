@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: main.pwn
 	Date: 24.07.2022
-	Modified: 16.08.2023
+	Modified: 24.07.2022
 */
 
 #if !defined DEBUG
@@ -17,6 +17,8 @@
 #include <sscanf2>
 #include <YSI\y_timers>
 #include <foreach>
+#include <crashdetect>
+#include <md5>
 
 #include "src\macros\defines"
 #include "src\macros\dialogs"
@@ -30,8 +32,8 @@
 #include "src\enums\booth"
 #include "src\enums\busstop"
 #include "src\enums\cashpoint"
-#include "src\enums\station"
 #include "src\enums\object"
+#include "src\enums\3dtext"
 #include "src\enums\race"
 #include "src\core\vars"
 #include "src\core\arrays"
@@ -39,7 +41,6 @@
 #include "src\core\main_publics"
 #include "src\core\misc_functions"
 #include "src\core\player_publics"
-#include "src\core\objects"
 #include "src\systems\vehicle_publics"
 #include "src\commands\admin_cmds"
 #include "src\commands\player_cmds"
@@ -57,6 +58,7 @@
 #include "src\systems\cashpoint_functions"
 #include "src\systems\group_functions"
 #include "src\systems\object_functions"
+#include "src\systems\3dtext_functions"
 #include "src\systems\race_functions"
 #include "src\systems\gym_functions"
 #include "src\systems\timers"

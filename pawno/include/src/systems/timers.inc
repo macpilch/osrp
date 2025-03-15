@@ -40,9 +40,7 @@ Timer:globalTimer[1000]() {
 						tPlayer[i][pDuty]++;
 
 						if((tPlayer[i][pDuty] % 30) == 0) {
-							new srvGrpId = getServerGroupId(i);
-
-							giveGroupMoney(srvGrpId, -tPlayer[i][pPayDay][tPlayer[i][pGroupNow]]);
+							giveGroupMoney(getServerGroupId(i), -tPlayer[i][pPayDayNow]);
 							tPlayer[i][pBank] += tPlayer[i][pPayDay][tPlayer[i][pGroupNow]];
 							savePlayerValues(i, SAVE_MONEY);
 
@@ -154,30 +152,6 @@ Timer:globalTimer[1000]() {
 				}
 			}
 		}
-
-		// GPS
-		if(gpsEnabled[i]) {
-			new count;
-			new players[MAX_GPS_ICONS];
-			new Float:x[MAX_GPS_ICONS], Float:y[MAX_GPS_ICONS], Float:z[MAX_GPS_ICONS];
-
-			if(isPlayerInGroupType(i, G_LSPD)) {
-				if(IsPlayerInAnyVehicle(i)) {
-					players[count] = i;
-					count++;
-				}
-			}
-
-			new vehicleid;
-
-			for(new j = 0; j < count; j++) {
-				vehicleid = GetPlayerVehicleID(players[j]);
-				GetVehiclePos(vehicleid, x[j], y[j], z[j]);
-
-				DestroyDynamicMapIcon(gpsMapIcons[i][j]);
-				gpsMapIcons[i][j] = CreateDynamicMapIcon(x[j], y[j], z[j], 30, COLOR_WHITE, 0, 0, -1, 4000, MAPICON_GLOBAL, -1, 0);
-			}
-		}
 	}
 	return 1;
 }
@@ -190,9 +164,9 @@ Timer:saveAllValuesTimer[60000]() {
 	}
 
 	saveServerValues();
-	saveItemValues();
-	saveDoorValues();
-	saveVehicleValues();
+	saveItemsValues();
+	saveDoorsValues();
+	saveVehiclesValues();
 }
 
 Timer:setRealTimeTimer[5000]() {
@@ -229,18 +203,18 @@ Timer:townHallBellsTimer[59000]() {
 	foreach(new i : Player) {
 		if(hours == 0 && minutes == 0) {
 			format(timerStr, sizeof(timerStr), "* Dzwony w ratuszu bij¹ 12 razy. *");
-			SendClientMessage(i, 0xC2A2DAAA, timerStr);
+			SendClientMessage(i, COLOR_DO, timerStr);
 		} else if(hours == 1 && minutes == 0) {
 			format(timerStr, sizeof(timerStr), "* Dzwony w ratuszu bij¹ 1 raz. *");
-			SendClientMessage(i, 0xC2A2DAAA, timerStr);
+			SendClientMessage(i, COLOR_DO, timerStr);
 		} else if((hours > 1 && hours <= 23) && minutes == 0) {
 			format(timerStr, sizeof(timerStr), "* Dzwony w ratuszu bij¹ %d razy. *", hours);
-			SendClientMessage(i, 0xC2A2DAAA, timerStr);
+			SendClientMessage(i, COLOR_DO, timerStr);
 		}
 	}
 }
 
-Timer:updatePenaltyTimer[3600000]() {
+Timer:updateDaysTimer[3600000]() {
 	new h, m, d;
 	gettime(h, m, d);
 
@@ -311,10 +285,8 @@ Timer:antiCheatTimer[1000]() {
 			}
 
 			if(GetPlayerWeapon(i) != 0) {
-				if(tPlayer[i][pWeapon] != GetPlayerWeapon(i)) {
-					new srvItemId = getServerItemId(i);
-
-					format(timerStr, sizeof(timerStr), "Bron: %d/%d(%s). Systemowa: %d/%d:%d (Weap)", GetPlayerWeapon(i), GetPlayerAmmo(i), weaponNames[GetPlayerWeapon(i)], tItem[srvItemId][iUid], tItem[srvItemId][iValue1], tItem[srvItemId][iValue2]);
+				if(tPlayer[i][pWeapon] != GetPlayerWeapon(i) && getServerItemId(i) != INVALID_ITEM_ID) {
+					format(timerStr, sizeof(timerStr), "Bron: %d/%d(%s). Systemowa: %d/%d:%d (Weap)", GetPlayerWeapon(i), GetPlayerAmmo(i), weaponNames[GetPlayerWeapon(i)], tItem[getServerItemId(i)][iUid], tItem[getServerItemId(i)][iValue1], tItem[getServerItemId(i)][iValue2]);
 					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, 0, timerStr);
 				}
 			}
@@ -338,7 +310,7 @@ Timer:giveFreeMoneyTimer[590000]() {
 	}
 }
 
-Timer:remindPlayPhoneTimer[180000]() {
+Timer:tutorialTipsTimer[480000]() {
 	static bool:hasPhone[MAX_PLAYERS] = { false, ... };
 
 	foreach(new i : Player) {

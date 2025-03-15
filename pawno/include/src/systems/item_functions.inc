@@ -57,12 +57,31 @@ stock initItemValues() {
 	return 1;
 }
 
-stock saveItemValues() {
-	queryStr[0] = EOS;
+stock saveItemValues(srvitemid) {
+	if(srvitemid == INVALID_ITEM_ID) {
+		return 1;
+	}
 
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `OUID` = '%d', `BUID` = '%d', `Value1` = '%d', `Value2` = '%d', `PosX` = '%d', `PosY` = '%d', `PosZ` = '%d', `Used` = '%d', `Place` = '%d' WHERE `UID` = '%d'",
+		tItem[srvitemid][iOUid],
+		tItem[srvitemid][iBUid],
+		tItem[srvitemid][iValue1],
+		tItem[srvitemid][iValue2],
+		tItem[srvitemid][iPosX],
+		tItem[srvitemid][iPosY],
+		tItem[srvitemid][iPosZ],
+		tItem[srvitemid][iUsed],
+		tItem[srvitemid][iPlace],
+		tItem[srvitemid][iUid]
+	);
+	mysql_query(queryStr);
+	return 1;
+}
+
+stock saveItemsValues() {
 	foreach(new i : itemItter) {
-		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Items` SET `OUID` = '%d', `Value1` = '%d', `Value2` = '%d', `Used` = '%d', `Place` = '%d' WHERE `UID` = '%d'", tItem[i][iOUid], tItem[i][iValue1], tItem[i][iValue2], tItem[i][iUsed], tItem[i][iPlace], tItem[i][iUid]);
-		mysql_query(queryStr);
+		saveItemValues(i);
 	}
 }
 
@@ -113,7 +132,16 @@ stock addPlayerItem(playerid, itemid, value1, value2) {
 	Iter_Add(itemItter, freeId);
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Items` (`UID`, `ID`, `OUID`, `Name`, `Value1`, `Value2`, `Used`, `Place`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d', '%d', '%d')", tItem[freeId][iUid], tItem[freeId][iId], tItem[freeId][iOUid], tItem[freeId][iName], tItem[freeId][iValue1], tItem[freeId][iValue2], tItem[freeId][iUsed], tItem[freeId][iPlace]);
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Items` (`UID`, `ID`, `OUID`, `Name`, `Value1`, `Value2`, `Used`, `Place`) VALUES ('%d', '%d', '%d', '%s', '%d', '%d', '%d', '%d')",
+		tItem[freeId][iUid],
+		tItem[freeId][iId],
+		tItem[freeId][iOUid],
+		tItem[freeId][iName],
+		tItem[freeId][iValue1],
+		tItem[freeId][iValue2],
+		tItem[freeId][iUsed],
+		tItem[freeId][iPlace]
+	);
 	mysql_query(queryStr);
 
 	if(tItem[freeId][iId] == I_TELEPHONE || tItem[freeId][iId] == I_NKA8110 || tItem[freeId][iId] == I_SMARTPHONE) {
@@ -181,7 +209,7 @@ stock doesItemIsInItemsGroup(srvitemid, group) {
 		   tItem[srvitemid][iId] == I_BASEBALL || tItem[srvitemid][iId] == I_INHIBITOR || tItem[srvitemid][iId] == I_TAGGER || tItem[srvitemid][iId] == I_COLT ||
 		   tItem[srvitemid][iId] == I_DEAGLE || tItem[srvitemid][iId] == I_GLOCK || tItem[srvitemid][iId] == I_SHOTGUN || tItem[srvitemid][iId] == I_UZI ||
 		   tItem[srvitemid][iId] == I_MP5 || tItem[srvitemid][iId] == I_AK47 || tItem[srvitemid][iId] == I_M4 || tItem[srvitemid][iId] == I_TEC9 ||
-		   tItem[srvitemid][iId] == I_PARA || tItem[srvitemid][iId] == I_EXPLOSIVES) {
+		   tItem[srvitemid][iId] == I_RIFLE || tItem[srvitemid][iId] == I_SNIPERRIFLE || tItem[srvitemid][iId] == I_PARA || tItem[srvitemid][iId] == I_EXPLOSIVES) {
 			return 1;
 		}
 	}
@@ -197,10 +225,6 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 
 	switch(itemid) {
 		case I_ROLLERS: {
-			if(IsPlayerInAnyVehicle(playerid)) {
-				return 1;
-			}
-
 			if(!tItem[srvitemid][iUsed]) {
 				resetPlayerTextDraws(playerid);
 
@@ -319,7 +343,7 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 		case I_TELEPHONE, I_NKA8110, I_SMARTPHONE: {
 			new pId = getPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
 
-			if(pId != INVALID_PLAYER_ID && telEnterNumber[pId] == tPlayer[playerid][pTelNum] && !usedTelephone[pId] && !usedTelephone[playerid]) {
+			if(pId != INVALID_PLAYER_ID && telEnterNumber[pId] == tPlayer[playerid][pTelNum] && !usesTelephone[pId] && !usesTelephone[playerid]) {
 				new str[32];
 				new h, m, d;
 
@@ -329,14 +353,14 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 
 				strcat(mainStr, "{FFFFFF}8\tOdbierz\n9\tZignoruj");
 				ShowPlayerDialog(playerid, DIALOG_TELEPHONE_CALL_CHOICE, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
-			} else if(pId != INVALID_PLAYER_ID && usedTelephone[pId] && usedTelephone[playerid]) {
-				ApplyAnimation(playerid, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
-				ApplyAnimation(pId, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 1, 1, 1);
+			} else if(pId != INVALID_PLAYER_ID && usesTelephone[pId] && usesTelephone[playerid]) {
+				ApplyAnimation(playerid, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 0, 0, 1);
+				ApplyAnimation(pId, "PED", "PHONE_OUT", 4.1, 0, 1, 1, 0, 0, 1);
 
 				tItem[srvitemid][iUsed] = false;
 				tPlayer[playerid][pItem] = 0;
-				usedTelephone[playerid] = false;
-				usedTelephone[pId] = false;
+				usesTelephone[playerid] = false;
+				usesTelephone[pId] = false;
 				telEnterNumber[playerid] = 0;
 				telEnterNumber[pId] = 0;
 
@@ -440,8 +464,8 @@ stock enableItemProperties(playerid, srvitemid, itemid) {
 				OSRP_SetPlayerArmour(playerid, 0);
 			}
 		}
-		case I_FLOWERS, I_KNUCKLE, I_NITESTICK, I_KNIFE, I_BASEBALL, I_INHIBITOR, I_TAGGER, I_COLT, I_DEAGLE, I_GLOCK, I_SHOTGUN, I_UZI, I_MP5, I_AK47, I_M4, I_TEC9, I_PARA,
-			 I_EXPLOSIVES: {
+		case I_FLOWERS, I_KNUCKLE, I_NITESTICK, I_KNIFE, I_BASEBALL, I_INHIBITOR, I_TAGGER, I_COLT, I_DEAGLE, I_GLOCK, I_SHOTGUN, I_UZI, I_MP5, I_AK47, I_M4, I_TEC9, I_RIFLE,
+		     I_SNIPERRIFLE, I_PARA, I_EXPLOSIVES: {
 			//SendClientMessage(playerid, COLOR_GRAY, "Ta broñ zepsu³a siê w wyniku eksploatacji.");
 
 			if(!strlen(itemParms[playerid])) {
@@ -707,12 +731,12 @@ stock pickUpNearblyItems(playerid, where) {
 
 stock showPlayerDialogItems(playerid) {
 	new countItems;
-	new str[2048];
+	new str[4096];
 
 	foreach(new i : itemItter) {
 		if(tItem[i][iOUid] == tPlayer[playerid][pUid] && tItem[i][iPlace] == ITEM_PLACE_PLAYER) {
 			countItems++;
-			format(str, sizeof(str), "%s\n {%s}%s{000000}\t%d\t%d\t(%d, %d)", str, (countItems % 2 == 0) ? ("FFFFFF") : ("9DB6D3"), tItem[i][iName], tItem[i][iUid], tItem[i][iId], tItem[i][iValue1], tItem[i][iValue2]);
+			format(str, sizeof(str), "%s\n {%s}%s{000000}\t%d\t%d\t(%d, %d)", str, (countItems % 2 == 0) ? ("E6E6E6") : ("9DB6D3"), tItem[i][iName], tItem[i][iUid], tItem[i][iId], tItem[i][iValue1], tItem[i][iValue2]);
 		}
 	}
 

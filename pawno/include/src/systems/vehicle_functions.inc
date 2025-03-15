@@ -29,7 +29,7 @@ stock initVehicleValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iiiiiifffffiifiiiiiiiiiiiiiiiffis[64]s[32]",
+		sscanf(queryStr, "p<|>iiiiiifffffiifiiiiiiiiiiiiiiiiffis[64]s[32]",
 			tVehicle[i][vUid],
 			tVehicle[i][vOUid],
 			tVehicle[i][vGUid],
@@ -59,6 +59,7 @@ stock initVehicleValues() {
 			tVehicle[i][vVw],
 			tVehicle[i][vInt],
 			tVehicle[i][vPaintjob],
+			tVehicle[i][vNitro],
 			tVehicle[i][vRepair],
 			tVehicle[i][vMileage],
 			tVehicle[i][vBlock],
@@ -100,9 +101,43 @@ stock initVehicleValues() {
 		spawnedVehicleSec[i] = 0;
 
 #if defined DEBUG
-		printf("[DEBUG]: Uid: %d, OUid: %d, GUid: %d, ModelId: %d, Color1: %d, Color2: %d, PosX: %f, PosY: %f, PosZ: %f, Angle: %f, Fuel: %f, Lock: %d, Engine: %d, EngineHp: %f, Spawned: %d, LightsOn: %d, Window: %d, Alarm: %d, Immo: %d, CBRadio: %d, Audio: %d, Limiter: %d, Panels: %d, Doors: %d, Lights: %d, Tires: %d, VW: %d, Int: %d, Paintjob: %d, Repair: %f, Mileage: %f, Block: %d, Desc: %s, Plate: %s",
-		tVehicle[i][vUid], tVehicle[i][vOUid], tVehicle[i][vGUid], tVehicle[i][vModelId], tVehicle[i][vColor1], tVehicle[i][vColor2], tVehicle[i][vPosX], tVehicle[i][vPosY], tVehicle[i][vPosZ], tVehicle[i][vAngle], tVehicle[i][vFuel], tVehicle[i][vLock], tVehicle[i][vEngine], tVehicle[i][vEngineHp], tVehicle[i][vSpawned], tVehicle[i][vLightsOn], tVehicle[i][vWindow], tmpFlags[0], tmpFlags[1],
-		tmpFlags[2], tmpFlags[3], tmpFlags[4], tVehicle[i][vPanels], tVehicle[i][vDoors], tVehicle[i][vLights], tVehicle[i][vTires], tVehicle[i][vVw], tVehicle[i][vInt], tVehicle[i][vPaintjob], tVehicle[i][vRepair], tVehicle[i][vMileage], tVehicle[i][vBlock], tVehicle[i][vDescInfo], tVehicle[i][vPlate]);
+		printf("[DEBUG]: Uid: %d, OUid: %d, GUid: %d, ModelId: %d, Color1: %d, Color2: %d, PosX: %f, PosY: %f, PosZ: %f, Angle: %f, Fuel: %f, Lock: %d, Engine: %d, EngineHp: %f, Spawned: %d, LightsOn: %d, Window: %d, Alarm: %d, Immo: %d, CBRadio: %d, Audio: %d, Limiter: %d, Panels: %d, Doors: %d, Lights: %d, Tires: %d, VW: %d, Int: %d, Paintjob: %d, Nitro: %d, Repair: %f, Mileage: %f, Block: %d, Desc: %s, Plate: %s",
+			tVehicle[i][vUid],
+			tVehicle[i][vOUid],
+			tVehicle[i][vGUid],
+			tVehicle[i][vModelId],
+			tVehicle[i][vColor1],
+			tVehicle[i][vColor2],
+			tVehicle[i][vPosX],
+			tVehicle[i][vPosY],
+			tVehicle[i][vPosZ],
+			tVehicle[i][vAngle],
+			tVehicle[i][vFuel],
+			tVehicle[i][vLock],
+			tVehicle[i][vEngine],
+			tVehicle[i][vEngineHp],
+			tVehicle[i][vSpawned],
+			tVehicle[i][vLightsOn],
+			tVehicle[i][vWindow],
+			tmpFlags[0],
+			tmpFlags[1],
+			tmpFlags[2],
+			tmpFlags[3],
+			tmpFlags[4],
+			tVehicle[i][vPanels],
+			tVehicle[i][vDoors],
+			tVehicle[i][vLights],
+			tVehicle[i][vTires],
+			tVehicle[i][vVw],
+			tVehicle[i][vInt],
+			tVehicle[i][vPaintjob],
+			tVehicle[i][vNitro],
+			tVehicle[i][vRepair],
+			tVehicle[i][vMileage],
+			tVehicle[i][vBlock],
+			tVehicle[i][vDescInfo],
+			tVehicle[i][vPlate]
+		);
 #endif
 	}
 
@@ -116,26 +151,66 @@ stock initVehicleValues() {
 	return 1;
 }
 
-stock saveVehicleValues() {
-	foreach(new i : vehItter) {
-		if(tVehicle[i][vId] != INVALID_VEHICLE_ID && tVehicle[i][vSpawned]) {
-			GetVehiclePos(tVehicle[i][vId], tVehicle[i][vPosX], tVehicle[i][vPosY], tVehicle[i][vPosZ]);
-			GetVehicleZAngle(tVehicle[i][vId], tVehicle[i][vAngle]);
-			GetVehicleHealth(tVehicle[i][vId], tVehicle[i][vEngineHp]);
+stock saveVehicleValues(srvvehid) {
+	if(srvvehid == INVALID_SERVER_VEHICLE_ID) {
+		return 1;
+	}
 
-			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` ");
+	if(tVehicle[srvvehid][vId] != INVALID_VEHICLE_ID && tVehicle[srvvehid][vSpawned]) {
+		GetVehiclePos(tVehicle[srvvehid][vId], tVehicle[srvvehid][vPosX], tVehicle[srvvehid][vPosY], tVehicle[srvvehid][vPosZ]);
+		GetVehicleZAngle(tVehicle[srvvehid][vId], tVehicle[srvvehid][vAngle]);
+		GetVehicleHealth(tVehicle[srvvehid][vId], tVehicle[srvvehid][vEngineHp]);
 
-			format(queryStr, sizeof(queryStr), "%sSET `Color1` = '%d', `Color2` = '%d', `PosX` = '%f', `PosY` = '%f', `PosZ` = '%f', `Angle` = '%f', `Fuel` = '%f', `Lock` = '%d', `Engine` = '%d', `EngineHealth` = '%f', `Spawned` = '%d', `LightsOn` = '%d', `Window` = '%d', `Alarm` = '%d', `Immo` = '%d', `CBRadio` = '%d', `Audio` = '%d', `Limiter` = '%d', `Panels` = '%d', `Doors` = '%d', `Lights` = '%d', `Tires` = '%d',",
-			queryStr, tVehicle[i][vColor1], tVehicle[i][vColor2], tVehicle[i][vPosX], tVehicle[i][vPosY], tVehicle[i][vPosZ], tVehicle[i][vAngle], tVehicle[i][vFuel], tVehicle[i][vLock], tVehicle[i][vEngine], tVehicle[i][vEngineHp], tVehicle[i][vSpawned], tVehicle[i][vLightsOn], tVehicle[i][vWindow], tVehicle[i][vAccessories] & VEH_ACCESSORIES_ALARM ? 1 : 0, tVehicle[i][vAccessories] & VEH_ACCESSORIES_IMMOBILISER ? 1 : 0, tVehicle[i][vAccessories] & VEH_ACCESSORIES_CBRADIO ? 1 : 0,
-			tVehicle[i][vAccessories] & VEH_ACCESSORIES_AUDIO ? 1 : 0, tVehicle[i][vAccessories] & VEH_ACCESSORIES_LIMITER ? 1 : 0, tVehicle[i][vPanels], tVehicle[i][vDoors], tVehicle[i][vLights], tVehicle[i][vTires]);
-			format(queryStr, sizeof(queryStr), "%s `VW` = '%d', `INT` = '%d', `Paintjob` = '%d', `Repair` = '%f', `Mileage` = '%f', `Block` = '%d', `Desc` = '%s', `Plate` = '%s'", queryStr, tVehicle[i][vVw], tVehicle[i][vInt], tVehicle[i][vPaintjob], tVehicle[i][vRepair], tVehicle[i][vMileage], tVehicle[i][vBlock], tVehicle[i][vDescInfo], tVehicle[i][vPlate]);
+		queryStr[0] = EOS;
+		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` ");
 
-			format(queryStr, sizeof(queryStr), "%s WHERE `UID` = '%d'", queryStr, tVehicle[i][vUid]);
-			mysql_query(queryStr);
-		}
+		format(queryStr, sizeof(queryStr), "%sSET `Color1` = '%d', `Color2` = '%d', `PosX` = '%f', `PosY` = '%f', `PosZ` = '%f', `Angle` = '%f', `Fuel` = '%f', `Lock` = '%d', `Engine` = '%d', `EngineHealth` = '%f', `Spawned` = '%d', `LightsOn` = '%d', `Window` = '%d', `Alarm` = '%d', `Immo` = '%d', `CBRadio` = '%d', `Audio` = '%d', `Limiter` = '%d', `Panels` = '%d', `Doors` = '%d', `Lights` = '%d', `Tires` = '%d',", queryStr,
+			tVehicle[srvvehid][vColor1],
+			tVehicle[srvvehid][vColor2],
+			tVehicle[srvvehid][vPosX],
+			tVehicle[srvvehid][vPosY],
+			tVehicle[srvvehid][vPosZ],
+			tVehicle[srvvehid][vAngle],
+			tVehicle[srvvehid][vFuel],
+			tVehicle[srvvehid][vLock],
+			tVehicle[srvvehid][vEngine],
+			tVehicle[srvvehid][vEngineHp],
+			tVehicle[srvvehid][vSpawned],
+			tVehicle[srvvehid][vLightsOn],
+			tVehicle[srvvehid][vWindow],
+			tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_ALARM ? 1 : 0,
+			tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_IMMOBILISER ? 1 : 0,
+			tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_CBRADIO ? 1 : 0,
+			tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_AUDIO ? 1 : 0,
+			tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_LIMITER ? 1 : 0,
+			tVehicle[srvvehid][vPanels],
+			tVehicle[srvvehid][vDoors],
+			tVehicle[srvvehid][vLights],
+			tVehicle[srvvehid][vTires]
+		);
+
+		format(queryStr, sizeof(queryStr), "%s `VW` = '%d', `INT` = '%d', `Paintjob` = '%d', `Nitro` = '%d', `Repair` = '%f', `Mileage` = '%f', `Block` = '%d', `Desc` = '%s', `Plate` = '%s'", queryStr,
+			tVehicle[srvvehid][vVw],
+			tVehicle[srvvehid][vInt],
+			tVehicle[srvvehid][vPaintjob],
+			tVehicle[srvvehid][vNitro],
+			tVehicle[srvvehid][vRepair],
+			tVehicle[srvvehid][vMileage],
+			tVehicle[srvvehid][vBlock],
+			tVehicle[srvvehid][vDescInfo],
+			tVehicle[srvvehid][vPlate]
+		);
+
+		format(queryStr, sizeof(queryStr), "%s WHERE `UID` = '%d'", queryStr, tVehicle[srvvehid][vUid]);
+		mysql_query(queryStr);
 	}
 	return 1;
+}
+
+stock saveVehiclesValues() {
+	foreach(new i : vehItter) {
+		saveVehicleValues(i);
+	}
 }
 
 stock getServerVehicleId(playerid) {
@@ -201,10 +276,10 @@ stock addPlayerVehicle(playerid, modelid, color1, color2) {
 	tVehicle[freeId][vPosX] = DEFAULT_VEH_POS_X;
 	tVehicle[freeId][vPosY] = DEFAULT_VEH_POS_Y;
 	tVehicle[freeId][vPosZ] = DEFAULT_VEH_POS_Z;
+	tVehicle[freeId][vAngle] = DEFAULT_VEH_POS_ANGLE;
 	tVehicle[freeId][vOldX] = 0.0;
 	tVehicle[freeId][vOldY] = 0.0;
 	tVehicle[freeId][vOldZ] = 0.0;
-	tVehicle[freeId][vAngle] = DEFAULT_VEH_POS_ANGLE;
 	tVehicle[freeId][vFuel] = VEHICLE_FUEL_TANK_MEDIUM;
 	tVehicle[freeId][vLock] = false;
 	tVehicle[freeId][vEngine] = false;
@@ -220,6 +295,7 @@ stock addPlayerVehicle(playerid, modelid, color1, color2) {
 	tVehicle[freeId][vVw] = 0;
 	tVehicle[freeId][vInt] = 0;
 	tVehicle[freeId][vPaintjob] = -1;
+	tVehicle[freeId][vNitro] = -1;
 	tVehicle[freeId][vRepair] = 0.0;
 	tVehicle[freeId][vMileage] = 0;
 	tVehicle[freeId][vBlock] = 0;
@@ -235,12 +311,26 @@ stock addPlayerVehicle(playerid, modelid, color1, color2) {
 
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`UID`, `OUID`, `GUID`, `ModelId`, `Color1`, `Color2`, `PosX`, `PosY`, `PosZ`, `Fuel`, `EngineHealth`) VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%f', '%f', '%f', '%f', '%f')",
-	tVehicle[freeId][vUid], tVehicle[freeId][vOUid], tVehicle[freeId][vGUid], tVehicle[freeId][vModelId], tVehicle[freeId][vColor1], tVehicle[freeId][vColor2], tVehicle[freeId][vPosX], tVehicle[freeId][vPosY], tVehicle[freeId][vPosZ], tVehicle[freeId][vFuel], tVehicle[freeId][vEngineHp]);
+		tVehicle[freeId][vUid],
+		tVehicle[freeId][vOUid],
+		tVehicle[freeId][vGUid],
+		tVehicle[freeId][vModelId],
+		tVehicle[freeId][vColor1],
+		tVehicle[freeId][vColor2],
+		tVehicle[freeId][vPosX],
+		tVehicle[freeId][vPosY],
+		tVehicle[freeId][vPosZ],
+		tVehicle[freeId][vFuel],
+		tVehicle[freeId][vEngineHp]
+	);
 	mysql_query(queryStr);
 }
 
 stock spawnVehicle(playerid, uid, bool:groupVeh) {
 	new srvVehId = getServerVehicleIdFromUid(uid);
+	if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
+		return 1;
+	}
 
 	if(GetTickCount() < exitedVehicleSec[srvVehId]) {
 		return GameTextForPlayer(playerid, "~r~Odczekaj 15 sekund od~n~opuszczenia pojazdu.", 5000, 3);

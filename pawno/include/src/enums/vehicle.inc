@@ -42,6 +42,7 @@ enum VehicleData {
 	vVw,
 	vInt,
 	vPaintjob,
+	vNitro,
 	Float:vRepair,
 	Float:vMileage, // Przebieg
 	vBlock,
