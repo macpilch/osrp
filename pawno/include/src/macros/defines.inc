@@ -13,7 +13,7 @@
 #pragma library osrp
 
 #pragma tabsize 0
-#pragma dynamic 4096 // rozmiar stosu
+#pragma dynamic 8192 // rozmiar stosu
 
 #undef MAX_PLAYERS
 #undef MAX_VEHICLES
@@ -27,14 +27,14 @@
 #define MAX_PLAYER_CHARS 6
 #define MAX_PLAYER_GROUPS 5
 #define MAX_PLAYER_VEHICLES 10
-#define MAX_ITEMS 100
+#define MAX_THINGS 100
 #define MAX_DOORS 100
 #define MAX_DIMENSIONS 100
 #define MAX_BOOTHS 100
 #define MAX_BUS_STOPS 100
 #define MAX_CASHPOINTS 100
 #define MAX_GROUPS 100
-#define MAX_GROUP_ITEMS 100
+#define MAX_GROUP_THINGS 100
 #define MAX_GROUP_TASKS 100
 #define MAX_GROUP_ORDERS 100
 #define MAX_GROUP_VEHICLES 100
@@ -54,12 +54,14 @@
 #define COLOR_CLARET 			0xFF4444FF
 #define COLOR_YELLOW 			0xFFFF00FF
 #define COLOR_GREEN 			0x33AA33FF
+#define COLOR_BLUE				0x0000FFFF
 #define COLOR_GRAY 				0xAFAFAFAA
 #define COLOR_CHAT 				0xE6E6E6E6
 #define COLOR_CHAT2 			0xC8C8C8C8
 #define COLOR_CHAT3 			0xAAAAAAAA
 #define COLOR_CHAT4 			0x8C8C8C8C
 #define COLOR_CHAT5 			0x6E6E6E6E
+#define COLOR_QUIT				0xDEDEDECC
 #define COLOR_PURPLE 			0xC6A2EEFF
 #define COLOR_PURPLE2 			0xA582BDFF
 #define COLOR_PURPLE3 			0x8C75A5FF
@@ -69,6 +71,8 @@
 #define COLOR_ORANGE 			0xFF9900FF
 #define COLOR_LIGHTORANGE 		0xFFCC66FF
 #define COLOR_OOC 				0xFFC3FFFF
+#define COLOR_INFO				0x9DB6D3FF
+#define COLOR_DESC 				0xC2A2DAFF
 
 // Callbacki
 #define sampCallback:%0(%1) \
@@ -90,7 +94,9 @@
 #define RELEASED(%0) \
 	(((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
 
+#define isnull(%1) ((!(%1[0])) || (((%1[0]) == '\1') && (!(%1[1]))))
 #define Distance(%0,%1,%2,%3,%4,%5) (((%0 - %3) * (%0 - %3)) + ((%1 - %4) * (%1 - %4)) + ((%2 - %5) * (%2 - %5)))
+#define getTime() gettime() + (-4 * 3600)
 
 #define NULL "\0"
 
@@ -114,10 +120,11 @@
 #define BLOCK_OOC 2
 #define BLOCK_ACC 4
 #define BLOCK_VEH 8
-#define BLOCK_RUNNBLW 16
-#define BLOCK_WRITING 32
-#define BLOCK_RPACTN 64
-#define BLOCK_CURSE 128
+#define BLOCK_WEAP 16
+#define BLOCK_RUNNBLW 32
+#define BLOCK_WRITING 64
+#define BLOCK_RPACTN 128
+#define BLOCK_CURSE 256
 
 // Sloty przedmiotów
 #define SLOT_CUFFED 0
@@ -160,23 +167,25 @@
 #define P_GROUP_PERM_CHAT 8
 #define P_GROUP_PERM_SUBCHAT 16
 
-#define G_LSPD 0
-#define G_LSFD 1
-#define G_GOV 2
-#define G_FBI 3
-#define G_CRIMINAL 4
-#define G_RADIO 5
-#define G_BAR 6
-#define G_SALON 7
-#define	G_MECHANIC 8
-#define G_GYM 9
-#define G_SECURITY 10
-#define G_TAXI 11
-#define G_SHOP 12
-#define G_DRIVERLICENSE 13
-#define G_MOBILE 14
-#define G_SHOOT 15
-#define G_SANNEWS 16
+#define G_LSPD 1
+#define G_LSFD 2
+#define G_GOV 3
+#define G_FBI 4
+#define G_MEDIC 5
+#define G_MAFIA 6
+#define G_GANG 7
+#define G_RADIO 8
+#define G_BAR 9
+#define G_SALON 10
+#define	G_MECHANIC 11
+#define G_GYM 12
+#define G_SECURITY 13
+#define G_TAXI 14
+#define G_SHOP 15
+#define G_DRIVERLICENSE 16
+#define G_MOBILE 17
+#define G_SHOOT 18
+#define G_SANNEWS 19
 
 // Flagi zapisu danych
 #define SAVE_ALL_VALUES 1
@@ -198,11 +207,12 @@
 #define PEN_BLCKOOC 4
 #define PEN_BLCKACC 5
 #define PEN_BLCKVEH 6
-#define PEN_RUNNBLW 7
-#define PEN_WRITING 8
-#define PEN_RPACTN 9
-#define PEN_CURSE 10
-#define PEN_SCORE 11
+#define PEN_BLCKWEAP 7
+#define PEN_RUNNBLW 8
+#define PEN_WRITING 9
+#define PEN_RPACTN 10
+#define PEN_CURSE 11
+#define PEN_SCORE 12
 
 // Oferty
 #define OFFER_PARM_PRICE 0
@@ -212,166 +222,94 @@
 #define OFFER_NORMAL 0
 #define OFFER_SPECIAL 1
 
-#define INVALID_OFFER_TYPE -1
-#define O_WELCOME 0
-#define O_KISS 1
-#define O_SEX 2
-#define O_GROUPINV 3
-#define O_RCINV 4
-#define O_DRIVINGLESS 5
-#define O_IDCARD 6
-#define O_DRIVINGLIC 7
-#define O_RP 8
-#define O_TAX 9
-#define O_PURCHITEM 10
-#define O_PURCHWEAP 11
-#define O_COMPSREP 12
-#define O_COMPINSTALL 13
-#define O_COMPMOD 14
-#define O_VEHMOD 15
-#define O_IMPROVEMENT 16
-#define O_VEHBUYING 17
-#define O_VEHCHANGING 18
-#define O_CARRENTAL 19
-#define O_REGISTER 20
-#define O_REFUELING 21
-#define O_ROPE 22
-#define O_VCARD 23
-#define O_DETENTION 24
-#define O_SALE 25
-#define O_REPAIR 26
-#define O_VARNISHING 27
-#define O_AREA 28
-#define O_TAXI 29
-#define O_AD 30
-#define O_INTERVIEW 31
+#define INVALID_OFFER_TYPE 0
+#define O_WELCOME 1
+#define O_KISS 2
+#define O_SEX 3
+#define O_GROUPINV 4
+#define O_RCINV 5
+#define O_DRIVINGLESS 6
+#define O_IDCARD 7
+#define O_DRIVINGLIC 8
+#define O_RP 9
+#define O_TAX 10
+#define O_PURCHTHING 11
+#define O_PURCHWEAP 12
+#define O_COMPSREP 13
+#define O_COMPINSTALL 14
+#define O_COMPMOD 15
+#define O_VEHMOD 16
+#define O_IMPROVEMENT 17
+#define O_VEHBUYING 18
+#define O_VEHCHANGING 19
+#define O_CARRENTAL 20
+#define O_REGISTER 21
+#define O_REFUELING 22
+#define O_ROPE 23
+#define O_VCARD 24
+#define O_DETENTION 25
+#define O_SALE 26
+#define O_REPAIR 27
+#define O_VARNISHING 28
+#define O_AREA 29
+#define O_TAXI 30
+#define O_AD 31
+#define O_INTERVIEW 32
 
-#define ITEMS_WEAPON 0
-#define ITEMS_FOOD 1
-
-// Przedmioty
-#define	I_ROLLERS 0
-#define	I_BEER 1
-#define	I_WINE 2
-#define I_VODKA 3
-#define	I_SPRUNK 4
-#define	I_FOLDER 5
-#define	I_BAG 6
-#define	I_NOTEBOOK 7
-#define	I_MARLBORO 8
-#define	I_CIGAR 9
-#define	I_CLOTHES 10
-#define	I_TELEPHONE 11
-#define	I_NKA8110 12
-#define I_SMARTPHONE 13
-#define I_TOPUP 14
-#define	I_DICE 15
-#define	I_MASK 16
-#define I_BLACKBANDANA 17
-#define	I_GLOVES 18
-#define	I_ARMOR 19
-#define	I_FLOWERS 20
-#define	I_KNUCKLE 21
-#define	I_NITESTICK 22
-#define	I_KNIFE 23
-#define	I_BASEBALL 24
-#define	I_INHIBITOR 25
-#define	I_TAGGER 26
-#define	I_COLT 27
-#define	I_DEAGLE 28
-#define	I_GLOCK 29
-#define	I_SHOTGUN 30
-#define	I_UZI 31
-#define	I_MP5 32
-#define	I_AK47 33
-#define	I_M4 34
-#define	I_TEC9 35
-#define	I_RIFLE 36
-#define	I_SNIPERRIFLE 37
-#define	I_PARA 38
-#define	I_EXPLOSIVES 39
-#define I_BAR 40
-#define	I_ROLL 41
-#define	I_PIZZA 42
-#define	I_CHEESBURG 43
-#define I_SPRINGROLLS 44
-#define I_SAKE 45
-#define	I_CASSEROLE 46
-#define I_CAPPUCCINO 47
-#define	I_COCACOLA 48
-#define	I_CUBALIBRE 49
-#define I_PEPSI 50
-#define I_ENERGYDRINK 51
-#define I_MOJITO 52
-#define	I_FRIES 53
-#define	I_GRVBURGER 54
-#define	I_HAMBGRG 55
-#define	I_TEA 56
-#define	I_HOTDOG 57
-#define	I_COFFEE 58
-#define	I_KEBAB 59
-#define	I_ICECREAM 60
-#define	I_ICECREAMCUP 61
-#define I_ICECREAMCH 62
-#define I_ICECREAMCR 63
-#define I_ICECREAMST 64
-#define I_CHSANDWICH 65
-#define	I_LONGER 66
-#define	I_CHNACHOS 67
-#define	I_PANCAKE 68
-#define	I_PANCAKES 69
-#define	I_DONUT 70
-#define	I_DONUTAFRO 71
-#define	I_DONUTGOLD 72
-#define	I_AMEDONUT 73
-#define	I_SUSHI 74
-#define I_LASAGNE 75
-#define I_NUGGETS 76
-#define I_SPAGHETTI 77
-#define I_TACO 78
-#define I_TORTILLA 79
-#define	I_MINWATER 80
-#define	I_DISCMAN 81
-#define I_BOOMBOX 82
-#define	I_RADPARTY 83
-#define	I_CD 84
-#define I_MEDICINE 85
-#define	I_VITAMINC 86
-#define	I_ALARM 87
-#define I_IMMOBILISER 88
-#define	I_FBUMPER 89
-#define	I_RBUMPER 90
-#define	I_DRVDOOR 91
-#define	I_PASSDOOR 92
-#define	I_BOOT 93
-#define	I_CARHOOD 94
-#define	I_CLFWHEEL 95
-#define	I_CLRWHEEL 96
-#define	I_CRFWHEEL 97
-#define	I_CRRWHEEL 98
-#define	I_BLFWHEEL 99
-#define	I_BLRWHEEL 100
-#define	I_BRFWHEEL 101
-#define	I_BRRWHEEL 102
-#define	I_LIGHTLF 103
-#define	I_LIGHTLR 104
-#define	I_LIGHTRF 105
-#define	I_LIGHTRR 106
-#define I_ALIENSULTAN 107
-#define	I_CANISTER 108
-#define	I_GYMMEMSHIP 109
-#define	I_HEROIN 110
-#define	I_CANON 111
-#define I_ROPE 112
-#define I_CASIO 113
-#define I_MEMCARD 114
-#define I_FLASHLIGHT 115
-#define I_LOTTERY 116
-#define I_FURNITURE 117
-#define I_PAINTCARTRIDGE 118
-#define I_3DTEXT 119
-#define I_PICKLOCK 120
-#define	I_LANDSTALKER 400
+// Rodzaje rzeczy, przedmiotów
+#define TKIND_NONE 0
+#define	TKIND_ROLLER 1
+#define	TKIND_BEER 2
+#define	TKIND_WINE 3
+#define	TKIND_WATER 4
+#define	TKIND_CIGARETTE 5
+#define	TKIND_FOLDER 6
+#define	TKIND_BAG 7
+#define	TKIND_NOTEBOOK 8
+#define	TKIND_DRUG 9
+#define	TKIND_DRUG_HEROINE 10
+#define	TKIND_DRUG_ANADRALL 11
+#define	TKIND_DRUG_MARIJUANA 12
+#define	TKIND_CLOTHES 13
+#define	TKIND_TELEPHONE 14
+#define TKIND_TOPUP 15
+#define	TKIND_DICE 16
+#define	TKIND_MASK 17
+#define TKIND_BANDANA 18
+#define	TKIND_GLOVES 19
+#define	TKIND_ARMOR 20
+#define	TKIND_WEAPON 21
+#define TKIND_AMMO 22
+#define TKIND_MEAL 23
+#define	TKIND_DISCMAN 24
+#define TKIND_BOOMBOX 25
+#define	TKIND_CD 26
+#define TKIND_SWITCH 27
+#define TKIND_COUNTER 28
+#define TKIND_MEDICINE 29
+#define	TKIND_COMPONENT 30
+#define TKIND_TUNING 31
+#define TKIND_BEACON 32
+#define TKIND_CORPSE 33
+#define	TKIND_FBUMPER 34
+#define	TKIND_RBUMPER 35
+#define	TKIND_DDOOR 36
+#define	TKIND_PDOOR 37
+#define	TKIND_BOOT 38
+#define	TKIND_CARHOOD 39
+#define	TKIND_LFWHEEL 40
+#define	TKIND_RFWHEEL 41
+#define	TKIND_RRWHEEL 42
+#define	TKIND_LRWHEEL 43
+#define	TKIND_LFLIGHT 44
+#define	TKIND_RFLIGHT 45
+#define	TKIND_CANISTER 46
+#define	TKIND_GYMMEMSHIP 47
+#define TKIND_ROPE 48
+#define TKIND_WATCH 49
+#define TKIND_PICKLOCK 50
+#define TKIND_LOTTERY 51
+#define TKIND_VEHICLE 52
 
 #define F_L_TIRE 0
 #define B_L_TIRE 1
@@ -397,11 +335,9 @@
 #define REPAIR_DOOR_RF 3
 #define REPAIR_DOOR_RR 4
 
-#define VEHICLE_OWNER_GROUP 0
-
 #define INVALID_SERVER_VEHICLE_ID -1
 #define INVALID_AREA_ID -1
-#define INVALID_ITEM_ID -1
+#define INVALID_THING_ID -1
 #define INVALID_GROUP_ID -1
 #define INVALID_GROUP_SET_ID -1
 #define INVALID_ANIM_ID -1
@@ -419,13 +355,13 @@
 #define VEH_ACCESSORIES_AUDIO 8
 #define VEH_ACCESSORIES_LIMITER 16
 
-// item places
-#define ITEM_PLACE_PLAYER 0
-#define ITEM_PLACE_FLOOR 1
-#define ITEM_PLACE_VEHICLE 2
-#define ITEM_PLACE_BAG 3
-#define ITEM_PLACE_DOOR 4
-#define ITEM_PLACE_CRAFT 5
+// thing places
+#define THING_PLACE_PLAYER 1
+#define THING_PLACE_FLOOR 2
+#define THING_PLACE_VEHICLE 3
+#define THING_PLACE_BAG 4
+#define THING_PLACE_DOOR 5
+#define THING_PLACE_CRAFT 6
 
 // admin ranks
 #define RANK_NONE 0
@@ -446,6 +382,18 @@
 #define INVALID_PART_TIME_JOB -1
 #define PART_TIME_JOB_MECHANIC 0
 #define PART_TIME_JOB_COURIER 1
+
+#define DOOR_OWNER_PLAYER 1
+#define DOOR_OWNER_GROUP 2
+
+#define VEHICLE_OWNER_PLAYER 9
+#define VEHICLE_OWNER_GROUP 11
+
+#define OBJECT_OWNER_AREA 9
+#define OBJECT_OWNER_DOOR 16
+
+#define TEXT3D_OWNER_AREA 9
+#define TEXT3D_OWNER_DOOR 16
 
 // fuel tanks
 #define VEHICLE_FUEL_TANK_SMALL 20

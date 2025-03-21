@@ -31,7 +31,7 @@ stock initObjectValues() {
 		sscanf(queryStr, "p<|>iiiifffffffii",
 			tObject[i][oUid],
 			tObject[i][oOUid],
-			tObject[i][oType],
+			tObject[i][oKind],
 			tObject[i][oModelId],
 			tObject[i][oPosX],
 			tObject[i][oPosY],
@@ -55,13 +55,5 @@ stock initObjectValues() {
 	}
 
 	mysql_free_result();
-	return 1;
-}
-
-stock createNewObject(playerid, modelid) {
-	return 1;
-}
-
-stock destroyObject(playerid) {
 	return 1;
 }

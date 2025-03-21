@@ -8,7 +8,7 @@ enum Text3DData {
 	t3dUid,
 	t3dOUid,
 	Text3D:t3dId,
-	t3dType,
+	t3dKind,
 	t3dDesc[64],
 	t3dColor[10],
 	Float:t3dPosX,

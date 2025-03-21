@@ -16,36 +16,24 @@ new mainStr[1024];
 new smallStr[64];
 new queryStr[2048];
 new timerStr[128]; // stworzona na potrzeby timers.inc
-new itemParms[MAX_PLAYERS][64];
+new thingParms[MAX_PLAYERS][64];
 new tempName[24];
 
-// Main Tables
 new tPlayer[MAX_PLAYERS][PlayerData];
 new tVehicle[MAX_VEHICLES][VehicleData];
-new tItem[MAX_ITEMS][ItemData];
-
-//Bus stops system
+new tThing[MAX_THINGS][ThingData];
 new tBusStop[MAX_BUS_STOPS][BusStopData];
-
 new tBooth[MAX_BOOTHS][BoothData];
-
-// Group
 new tGroup[MAX_GROUPS][GroupData];
-new tGroupItem[MAX_GROUP_ITEMS][GroupItem];
-new tGroupTask[MAX_GROUP_TASKS][GroupTask];
-new tGroupOrder[MAX_GROUP_ORDERS][GroupOrder];
-new tGroupVehicle[MAX_GROUP_VEHICLES][GroupVehicle];
-
+new tGroupThing[MAX_GROUP_THINGS][GroupThingData];
+new tGroupTask[MAX_GROUP_TASKS][GroupTaskData];
+new tGroupOrder[MAX_GROUP_ORDERS][GroupOrderData];
+new tGroupVehicle[MAX_GROUP_VEHICLES][GroupVehicleData];
 new tDoor[MAX_DOORS][DoorData];
 new tDimension[MAX_DIMENSIONS][DimensionData];
-
-//Cashpoints system
-new tCashpoint[MAX_CASHPOINTS][CashpointData];
-
-//Object system
+new tCashPoint[MAX_CASHPOINTS][CashPointData];
 new tObject[MAX_OBJECTS][ObjectData];
 new t3DText[MAX_3DTEXTS][Text3DData];
-
 new tRace[MAX_RACES][RaceData];
 new tArea[MAX_AREAS][AreaData];
 new tPenalty[MAX_PENALTIES][PenaltyData];
@@ -101,27 +89,14 @@ new charSurs[][] = {
 	"Cricenti", "Crivaro", "Crivello", "Cruzzola", "Cuiccio", "Cupi"
 };
 
-new itemNames[][] = {
-	"Rolki", "Piwo", "Wino", "Vodka", "Sprunk", "Teczka", "Torba", "Notatnik", "Marlboro", "Cygaro", "Ubranie", "Telefon", "Nokia 8110", "Smartfon", "Doladowanie 20",
-	"Kostka", "Maska", "Czarna bandana", "Rêkawice", "Kamizelka", "Kwiaty", "Kastet", "Pa³ka", "Nó¿", "Kij baseballowy", "Paralizator", "Tagger", "Pistolet", "Desert Eagle",
-	"Glock 19", "Shotgun", "UZI", "MP5", "AK-47", "M4", "TEC9", "Spadochron", "Mat Wybuchowe", "Batonik", "Bu³ka", "Pizza", "Cheeseburger", "Sajgonki", "Sake Maki",
-	"Zapiekanka", "Cappuccino", "Coca-Cola", "CubaLibre", "Pepsi", "Energy drink", "Mojito", "Frytki", "Grove Burger", "Hamburger", "Herbata", "Hotdog", "Kawa", "Kebab",
-	"Lody", "Lody w kubku", "Lód czekoladowy", "Lód œmietankowy", "Lód truskawkowy", "Kanapka z kurczakiem", "Longer", "Nachos z serem", "Naleœnik", "Naleœniki", "P¹czek",
-	"P¹czek Afro", "P¹czek Z³otawy", "Donut", "Sushi", "Lasagne", "Nuggetsy", "Spaghetti", "Taco", "Tortilla", "Woda Mineralna", "Discman", "Boombox", "Radio Party",
-	"CD", "Lek", "Vitamina C", "Alarm", "Immobiliser", "Zderzak przedni", "Zderzak tylny", "Drzwi kierowcy", "Drzwi pasa¿era", "Baga¿nik", "Maska samochodowa", "Opona (LP)",
-	"Opona (LT)", "Opona (PP)", "Opona (PT)", "Opona (LP/motor)", "Opona (LT/motor)", "Opona (PP/motor)", "Opona (PT/motor)", "Œwiat³o (LP)", "Œwiat³o (PP)", "Œwiat³o (LT)",
-	"Œwiat³o (PT)", "Alien Sultan", "Kanister", "Karnet", "Heroina", "Canon 450D", "Linka holownicza", "Casio", "Karta pamieci", "Latarka", "Loteria", "Mebel", "Naboj lakieru",
-	"Napis 3D", "Wytrych"
-};
-
-new serviceTypes[] = { G_GOV, G_RADIO, G_BAR, G_SALON, G_MECHANIC, G_GYM, G_SECURITY, G_TAXI, G_SHOP, G_DRIVERLICENSE, G_MOBILE, G_SHOOT };
+new serviceKinds[] = { G_GOV, G_RADIO, G_BAR, G_SALON, G_MECHANIC, G_GYM, G_SECURITY, G_TAXI, G_SHOP, G_DRIVERLICENSE, G_MOBILE, G_SHOOT };
 new serviceNames[][] = {
 	"Rzad", "Radio", "Bar lub restauracja", "Salon samochodowy", "Warsztat", "Silownia", "Ochrona",
 	"Taxi", "24/7", "Nauka jazdy", "Operator komorkowy", "Airsoft gun"
 };
 
 new weaponNames[][] = {
-	"", "Kastet", "Kij golfowy", "Pa³ka", "Nó¿", "Kij baseballowy", "£opata", "Pool Cue", "Katana", "Chainsaw", "Dildo",
+	"", "Kastet", "Kij golfowy", "Pa³ka", "Nó¿", "Baseball Bat", "£opata", "Pool Cue", "Katana", "Chainsaw", "Dildo",
 	"Dildo 2", "Wibrator", "Wibrator 2", "Kwiaty", "Laska", "Granat", "Gaz ³zawi¹cy", "Mo³otow", "Pistolet", "Pistolet z t³umikiem",
 	"Desert Eagle", "Shotgun", "Sawn OFF", "Combat", "UZI", "MP5", "AK-47", "M4", "TEC9", "Karabin", "Snajperka", "RPG", "Wyrzutnia rakiet",
 	"Flamethrower", "Minigun", "Satchel charge", "Detonator", "Spray", "Gaœnica", "Aparat", "Gogle", "Gogle", "Spadochron"
@@ -300,7 +275,7 @@ new vehicleNames[212][] = {
 	"Freight",
 	"Trailer",
 	"Kart",
-	"Kosiarka",
+	"Mower",
 	"Duneride",
 	"Sweeper",
 	"Broadway",
@@ -399,20 +374,20 @@ new weaponObjects[] = {
 };
 
 new tWeapon[][WeaponData] = {
-	{5, 1, 0.3, -0.15, -0.15, 0.0, -85.0, 0.0, 0.0, 0.0, 0.0}, // Baseball
-	{3, 8, 0.0, -0.1, 0.05, 90.0, 80.0, 0.0, 0.0, 0.0, 0.0}, // Palka
-	{7, 1, 0.3, -0.12, -0.15, 0.0, -85.0, 0.0, 0.0, 0.0, 0.0}, // Bilard
-	{22, 8, -0.05, -0.18, -0.1, -20.0, 0.0, 0.0, 0.0, 0.0, 0.0}, // Glock
-	{23, 8, -0.05, -0.18, -0.1, -20.0, 0.0, 0.0, 0.0, 0.0, 0.0}, // Paralizator
-	{24, 8, -0.05, -0.18, -0.1, -20.0, 0.0, 0.0, 0.0, 0.0, 0.0}, // Deagle
+	{5, 1,0.3, -0.15,-0.15,0.0,-85.0,0.0},
+	{3, 8, 0.0, -0.1, 0.05, 90.0, 80.0, 0.0},
+	{7, 1, 0.3, -0.12,-0.15,0.0,-85.0,0.0},
+	{22, 8, -0.05, -0.18,-0.1,-20.0,0.0,0.0},
+	{23, 8, -0.05, -0.18,-0.1,-20.0,0.0,0.0},
+	{24, 8, -0.05, -0.18,-0.1,-20.0,0.0,0.0},
+	{25, 1, 0.3, -0.13, -0.07, 0.0, 210.0, 0.0},
+	{28, 7, 0.15, 0.1, -0.13  , 90.0, -80.0, 0.0},
+	{29, 1, -0.1, -0.15,0.0,0.0,35.0,0.0},
+	{32, 7, 0.15, 0.1, -0.13  , 90.0, -70.0, 0.0},
+	{30, 1, -0.1, -0.15,0.0,0.0,35.0,0.0},
+	{31, 1, -0.1, -0.15,0.0,0.0,35.0,0.0},
+	{34, 1, 0.3, -0.13, -0.07, 0.0, 210.0, 0.0}
 	//{24, 1, -0.317999, -0.170000, -0.074999, -0.199982, 23.599971, -0.500006, 1.000000, 1.000000, 1.000000} // Deagle
-	{25, 1, 0.3, -0.13, -0.07, 0.0, 210.0, 0.0, 0.0, 0.0, 0.0}, // Shotgun
-	{28, 7, 0.15, 0.1, -0.13, 90.0, -80.0, 0.0, 0.0, 0.0, 0.0}, // Uzi
-	{29, 1, -0.1, -0.15, 0.0, 0.0, 35.0, 0.0, 0.0, 0.0, 0.0}, // MP5
-	{32, 7, 0.15, 0.1, -0.13, 90.0, -70.0, 0.0, 0.0, 0.0, 0.0}, // Tec
-	{30, 1, -0.1, -0.15, 0.0, 0.0, 35.0, 0.0, 0.0, 0.0, 0.0}, // AK-47
-	{31, 1, -0.1, -0.15, 0.0, 0.0, 35.0, 0.0, 0.0, 0.0, 0.0}, // M4
-	{34, 1, 0.3, -0.13, -0.07, 0.0, 210.0, 0.0, 0.0, 0.0, 0.0} // Snajperka
 	//{29, 1, 0.071999, -0.143000, -0.024999, 1.599999, 32.300018, 1.100003, 1.000000, 1.000000, 1.000000}, // MP5
 };
 

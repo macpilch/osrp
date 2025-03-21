@@ -18,10 +18,10 @@ enum PlayerData {
 	pCharNum,
 	pAccName[24],
 	pCharName[24],
-	pPass[32],
+	pPass[32 + 1],
 	pIp[16],
-	pDateReg[64],
-	pLastDate[64],
+	pDateReg[32],
+	pLastDate[32],
 	pGS,
 	pBlock,
 	pRank,
@@ -68,11 +68,11 @@ enum PlayerData {
 	pGroup[MAX_PLAYER_GROUPS],
 	pGroupNow,
 	pGroupActivity[64],
-	pGroupPerms[MAX_PLAYER_GROUPS],
+	pGroupPerm[MAX_PLAYER_GROUPS],
 	pGroupPermNow,
 	pPayDay[MAX_PLAYER_GROUPS],
 	pPayDayNow,
-	pGroupItem,
+	pGroupThing,
 	pRedScreen,
 	pArea,
 	pAreaWarn,
@@ -92,16 +92,17 @@ enum PlayerData {
 	pStyleFight,
 	pInterview,
 	pOrder,
-	pItem,
+	pThing,
 	pRace,
 	pVehicle,
-	pCashpoint,
+	pCashPoint,
 	pDrugs, // 15 min dzialania
 	pDrugsTime,
 	pGloves,
 	pMusic,
 	pSelectSkin,
 	pSkinNum,
+	pEditObj,
 	Float:pPosX,
 	Float:pPosY,
 	Float:pPosZ,
@@ -116,11 +117,11 @@ enum PlayerData {
 };
 
 enum PenaltyData {
-	penUID,
-	penSUID,
-	penOUID,
+	penUid,
+	penSUid,
+	penOUid,
 	penIp[16],
-	penType,
+	penKind,
 	penDays,
 	penDate[64],
 	penReason[128]
@@ -134,10 +135,7 @@ enum WeaponData {
 	Float:wPosZ,
 	Float:wPosRX,
 	Float:wPosRY,
-	Float:wPosRZ,
-	Float:wScaleX,
-	Float:wScaleY,
-	Float:wScaleZ
+	Float:wPosRZ
 };
 
 enum ClothesData {

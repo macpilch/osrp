@@ -91,11 +91,6 @@
         #define PC_HasFlag(%0,%1) \
             (PC_GetFlags(%0) & %1)
 
-        #if !defined isnull
-            #define isnull(%0) \
-                ((!(%0[0])) || (((%0[0]) == '\1') && (!(%0[1]))))
-        #endif
-
         #if defined FILTERSCRIPT
             public OnFilterScriptInit()
             {

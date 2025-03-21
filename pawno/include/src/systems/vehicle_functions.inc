@@ -32,7 +32,7 @@ stock initVehicleValues() {
 		sscanf(queryStr, "p<|>iiiiiifffffiifiiiiiiiiiiiiiiiiffis[64]s[32]",
 			tVehicle[i][vUid],
 			tVehicle[i][vOUid],
-			tVehicle[i][vGUid],
+			tVehicle[i][vKind],
 			tVehicle[i][vModelId],
 			tVehicle[i][vColor1],
 			tVehicle[i][vColor2],
@@ -101,10 +101,10 @@ stock initVehicleValues() {
 		spawnedVehicleSec[i] = 0;
 
 #if defined DEBUG
-		printf("[DEBUG]: Uid: %d, OUid: %d, GUid: %d, ModelId: %d, Color1: %d, Color2: %d, PosX: %f, PosY: %f, PosZ: %f, Angle: %f, Fuel: %f, Lock: %d, Engine: %d, EngineHp: %f, Spawned: %d, LightsOn: %d, Window: %d, Alarm: %d, Immo: %d, CBRadio: %d, Audio: %d, Limiter: %d, Panels: %d, Doors: %d, Lights: %d, Tires: %d, VW: %d, Int: %d, Paintjob: %d, Nitro: %d, Repair: %f, Mileage: %f, Block: %d, Desc: %s, Plate: %s",
+		printf("[DEBUG]: Uid: %d, OUid: %d, Kind: %d, ModelId: %d, Color1: %d, Color2: %d, PosX: %f, PosY: %f, PosZ: %f, Angle: %f, Fuel: %f, Lock: %d, Engine: %d, EngineHp: %f, Spawned: %d, LightsOn: %d, Window: %d, Alarm: %d, Immo: %d, CBRadio: %d, Audio: %d, Limiter: %d, Panels: %d, Doors: %d, Lights: %d, Tires: %d, VW: %d, Int: %d, Paintjob: %d, Nitro: %d, Repair: %f, Mileage: %f, Block: %d, Desc: %s, Plate: %s",
 			tVehicle[i][vUid],
 			tVehicle[i][vOUid],
-			tVehicle[i][vGUid],
+			tVehicle[i][vKind],
 			tVehicle[i][vModelId],
 			tVehicle[i][vColor1],
 			tVehicle[i][vColor2],
@@ -269,7 +269,7 @@ stock addPlayerVehicle(playerid, modelid, color1, color2) {
 	tVehicle[freeId][vUid] = freeId + 1;
 	tVehicle[freeId][vId] = INVALID_VEHICLE_ID;
 	tVehicle[freeId][vOUid] = tPlayer[playerid][pUid];
-	tVehicle[freeId][vGUid] = 0;
+	tVehicle[freeId][vKind] = VEHICLE_OWNER_PLAYER;
 	tVehicle[freeId][vModelId] = modelid;
 	tVehicle[freeId][vColor1] = color1;
 	tVehicle[freeId][vColor2] = color2;
@@ -295,7 +295,7 @@ stock addPlayerVehicle(playerid, modelid, color1, color2) {
 	tVehicle[freeId][vVw] = 0;
 	tVehicle[freeId][vInt] = 0;
 	tVehicle[freeId][vPaintjob] = -1;
-	tVehicle[freeId][vNitro] = -1;
+	tVehicle[freeId][vNitro] = 0;
 	tVehicle[freeId][vRepair] = 0.0;
 	tVehicle[freeId][vMileage] = 0;
 	tVehicle[freeId][vBlock] = 0;
@@ -310,10 +310,10 @@ stock addPlayerVehicle(playerid, modelid, color1, color2) {
 	spawnedVehicleSec[freeId] = 0;
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`UID`, `OUID`, `GUID`, `ModelId`, `Color1`, `Color2`, `PosX`, `PosY`, `PosZ`, `Fuel`, `EngineHealth`) VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%f', '%f', '%f', '%f', '%f')",
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`UID`, `OUID`, `Kind`, `ModelId`, `Color1`, `Color2`, `PosX`, `PosY`, `PosZ`, `Fuel`, `EngineHealth`) VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%f', '%f', '%f', '%f', '%f')",
 		tVehicle[freeId][vUid],
 		tVehicle[freeId][vOUid],
-		tVehicle[freeId][vGUid],
+		tVehicle[freeId][vKind],
 		tVehicle[freeId][vModelId],
 		tVehicle[freeId][vColor1],
 		tVehicle[freeId][vColor2],
@@ -381,11 +381,11 @@ stock spawnVehicle(playerid, uid, bool:groupVeh) {
 		UpdateDynamic3DTextLabelText(tVehicle[srvVehId][vDesc], COLOR_PURPLE, tVehicle[srvVehId][vDescInfo]);
 
 		if(groupVeh) {
-			TextDrawSetString(vehicleSpawn[playerid][0], "~w~Pojazd zostal zespawnowany.~n~Jezeli nie mozesz go znalezc w~n~miejscu zaznaczonym na radarze,~n~uzyj /g v, by go zresetowac.");
+			TextDrawSetString(vehicleSpawn[playerid][1], "~w~Pojazd zostal zespawnowany.~n~Jezeli nie mozesz go znalezc w~n~miejscu zaznaczonym na radarze,~n~uzyj /g v, by go zresetowac.");
 
 			// Info dla innych graczy
 			format(mainStr, sizeof(mainStr), "~w~%s: ~r~-%s", tPlayer[playerid][pCharName], vehicleNames[tVehicle[srvVehId][vModelId] - 400]);
-			gameTextForGroup(getServerGroupId(playerid), mainStr, 5000, 3);
+			gameTextForGroup(getServerGroupId(playerid), mainStr, 5000, 3, playerid);
 		}
 
 		for(new i = 0; i < 2; i++) {
@@ -466,12 +466,8 @@ stock vehicleEngineStatus(playerid) {
 		GetVehicleParamsEx(tVehicle[srvVehId][vId], engine, lights, alarm, doors, bonnet, boot, objective);
 		SetVehicleParamsEx(tVehicle[srvVehId][vId], 0, lights, alarm, doors, bonnet, boot, objective);		
 
-		KillTimer(fuelTimer[playerid]);
-		fuelTimer[playerid] = -1;
-
-		for(new i = 0; i < 3; i++) {
-			TextDrawHideForPlayer(playerid, vehicleFuelStatus[playerid][i]);
-		}
+		PlayerPlaySound(playerid, 1084, 0.0, 0.0, 0.0);
+		
 
 		for(new i = 0; i < 2; i++) {
 			TextDrawShowForPlayer(playerid, vehicleTips[playerid][i]);
@@ -504,41 +500,8 @@ Callback:vehicleEngineOn(playerid) {
 		GetVehicleParamsEx(tVehicle[srvVehId][vId], engine, lights, alarm, doors, bonnet, boot, objective);
 		SetVehicleParamsEx(tVehicle[srvVehId][vId], 1, lights, alarm, doors, bonnet, boot, objective);
 
-		for(new i = 0; i < 3; i++) {
-			TextDrawShowForPlayer(playerid, vehicleFuelStatus[playerid][i]);
-		}
-
-		fuelTimer[playerid] = SetTimerEx("updateVehicleFuel", 1000, false, "if", playerid, tVehicle[srvVehId][vFuel]);
+		
 		tVehicle[srvVehId][vEngine] = true;
-	}
-	return 1;
-}
-
-new Float:FuelProgress[MAX_PLAYERS] = { 609.585083, ... };
-
-Callback:updateVehicleFuel(playerid, Float:fuel) {
-	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
-		return 1;
-	}
-
-	FuelProgress[playerid] -= 0.1;
-	TextDrawDestroy(vehicleFuelStatus[playerid][2]);
-
-	vehicleFuelStatus[playerid][2] = TextDrawCreate(FuelProgress[playerid], 59.833312, "_");
-	TextDrawLetterSize(vehicleFuelStatus[playerid][2], 0.000000, -0.115186);
-	TextDrawTextSize(vehicleFuelStatus[playerid][2], 548.981140, 0.000000);
-	TextDrawAlignment(vehicleFuelStatus[playerid][2], 1);
-	TextDrawColor(vehicleFuelStatus[playerid][2], 0);
-	TextDrawUseBox(vehicleFuelStatus[playerid][2], 1);
-	TextDrawBoxColor(vehicleFuelStatus[playerid][2], 16711935);
-	TextDrawSetShadow(vehicleFuelStatus[playerid][2], 0);
-	TextDrawSetOutline(vehicleFuelStatus[playerid][2], 1);
-	TextDrawBackgroundColor(vehicleFuelStatus[playerid][2], 16711935);
-	TextDrawFont(vehicleFuelStatus[playerid][2], 0);
-
-	if(tVehicle[getServerVehicleId(playerid)][vEngine]) {
-		TextDrawShowForPlayer(playerid, vehicleFuelStatus[playerid][2]);
-		SetTimerEx("updateVehicleFuel", 1000, false, "if", playerid, fuel);
 	}
 	return 1;
 }

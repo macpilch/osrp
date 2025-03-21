@@ -705,8 +705,8 @@ CMD:set(playerid, params[]) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set weather [Pogoda]");
 			}
 
-			serverWeat = weather;
-			SetWeather(serverWeat);
+			serverWeather = weather;
+			SetWeather(serverWeather);
 		}
 	} else if(!strcmp(type, "job", true)) {
 		new pId, job;
@@ -1057,10 +1057,10 @@ CMD:av(playerid, params[]) {
 		}
 
 		if(!strcmp(type, "stworz", true)) {
-			new vehicleId, modelId, ownerId, groupUid, freeId, color1, color2;
+			new vehicleId, modelId, ownerId, ownerKind, freeId, color1, color2;
 
-			if(sscanf(parms, "iiiii", modelId, ownerId, groupUid, color1, color2)) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /av stworz [Model ID] [ID w³aœciciela] [UID grupy] [Kolor 1] [Kolor 2]");
+			if(sscanf(parms, "iiiii", modelId, ownerId, ownerKind, color1, color2)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /av stworz [Model ID] [ID w³aœciciela] [Rodzaj w³aœciciela] [Kolor 1] [Kolor 2]");
 			}
 
 			if(modelId > 611 || modelId < 400) {
@@ -1088,7 +1088,7 @@ CMD:av(playerid, params[]) {
 			tVehicle[freeId][vUid] = freeId + 1;
 			tVehicle[freeId][vId] = vehicleId;
 			tVehicle[freeId][vOUid] = tPlayer[ownerId][pUid];
-			tVehicle[freeId][vGUid] = groupUid;
+			tVehicle[freeId][vKind] = ownerKind;
 			tVehicle[freeId][vModelId] = modelId;
 			tVehicle[freeId][vColor1] = color1;
 			tVehicle[freeId][vColor2] = color2;
@@ -1130,8 +1130,9 @@ CMD:av(playerid, params[]) {
 			UpdateDynamic3DTextLabelText(tVehicle[freeId][vDesc], COLOR_WHITE, tVehicle[freeId][vDescInfo]);
 
 			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`UID`, `OUID`, `GUID`, `ModelId`, `Color1`, `Color2`, `X`, `Y`, `Z`, `Angle`, `Fuel`, `EngineHealth`, `Spawned`) VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%f', '%f', '%f', '%f', '%f', '%f', '%d')",
-			tVehicle[freeId][vUid], tVehicle[freeId][vOUid], tVehicle[freeId][vGUid], tVehicle[freeId][vModelId], tVehicle[freeId][vColor1], tVehicle[freeId][vColor2], tVehicle[freeId][vPosX], tVehicle[freeId][vPosY], tVehicle[freeId][vPosZ], tVehicle[freeId][vAngle], tVehicle[freeId][vFuel], tVehicle[freeId][vEngineHp], tVehicle[freeId][vSpawned]);
+			format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`UID`, `OUID`, `Kind`, `ModelId`, `Color1`, `Color2`, `PosX`, `PosY`, `PosZ`, `Angle`, `Fuel`, `EngineHealth`, `Spawned`) VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%f', '%f', '%f', '%f', '%f', '%f', '%d')",
+			tVehicle[freeId][vUid], tVehicle[freeId][vOUid], tVehicle[freeId][vKind], tVehicle[freeId][vModelId], tVehicle[freeId][vColor1], tVehicle[freeId][vColor2], tVehicle[freeId][vPosX], tVehicle[freeId][vPosY], tVehicle[freeId][vPosZ], tVehicle[freeId][vAngle], tVehicle[freeId][vFuel],
+			tVehicle[freeId][vEngineHp], tVehicle[freeId][vSpawned]);
 			mysql_query(queryStr);
 		} else if(!strcmp(type, "usun", true)) {
 			new vehUid, srvVehId = -1;
@@ -1171,7 +1172,7 @@ CMD:av(playerid, params[]) {
 			tVehicle[srvVehId][vUid] = 0;
 			tVehicle[srvVehId][vId] = -1;
 			tVehicle[srvVehId][vOUid] = 0;
-			tVehicle[srvVehId][vGUid] = 0;
+			tVehicle[srvVehId][vKind] = 0;
 			format(tVehicle[srvVehId][vDescInfo], 64, NULL);
 			format(tVehicle[srvVehId][vPlate], 32, NULL);
 			tVehicle[srvVehId][vModelId] = 0;
@@ -1227,10 +1228,10 @@ CMD:av(playerid, params[]) {
 				srvVehId = getClosestServerVehicleId(vehicleid);
 				GetVehicleHealth(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngineHp]);
 
-				if(tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && !tVehicle[srvVehId][vGUid]) {
+				if(tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && tVehicle[srvVehId][vKind] == VEHICLE_OWNER_PLAYER) {
 					format(mainStr, sizeof(mainStr), "~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
 					tVehicle[srvVehId][vModelId], tVehicle[srvVehId][vId], tVehicle[srvVehId][vColor1], tVehicle[srvVehId][vColor2], tVehicle[srvVehId][vEngineHp]);
-				} else if(tVehicle[srvVehId][vGUid] && !tVehicle[srvVehId][vOUid]) {
+				} else if(tVehicle[srvVehId][vKind] == VEHICLE_OWNER_GROUP) {
 					format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~11:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
 					tVehicle[srvVehId][vUid], tVehicle[srvVehId][vOUid], tVehicle[srvVehId][vModelId], tVehicle[srvVehId][vId], tVehicle[srvVehId][vColor1], tVehicle[srvVehId][vColor2], tVehicle[srvVehId][vEngineHp]);
 				} else {
@@ -1270,31 +1271,23 @@ CMD:av(playerid, params[]) {
 CMD:ap(playerid, params[]) {
 	if(tPlayer[playerid][pRank] >= RANK_ADMIN2 && isAdminDuty[playerid]) {
 		new str[16], parms[64];
-		new pId, itemid, value1, value2;
+		new owner, place, kind, name[32], value1, value2;
 
 		if(sscanf(params, "s[16]S()[64]", str, parms)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ap [stworz]");
 		}
 
 		if(!strcmp(str, "stworz", true)) {
-			if(sscanf(parms, "iiii", pId, itemid, value1, value2)) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ap stworz [Gracz] [ID przedmiotu] [Wartoœæ 1] [Wartoœæ 2]");
+			if(sscanf(parms, "iiis[32]ii", owner, place, kind, name, value1, value2)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ap stworz [Owner] [Place] [Kind] [Name] [Value 1] [Value 2]");
 			}
 
 			if((value1 < 0 || value1 > 9999) || (value2 < 0 || value2 > 9999)) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ap stworz [Gracz] [ID przedmiotu] [Wartoœæ 1] [Wartoœæ 2]");
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ap stworz [Owner] [Place] [Kind] [Name] [Value 1] [Value 2]");
 			}
 
-			if(!IsPlayerConnected(pId)) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
-			}
-
-			addPlayerItem(pId, itemid, value1, value2);
-			SendClientMessage(pId, COLOR_GREEN, "Dosta³eœ przedmiot od administracji.");
-
-			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "Da³eœ(aœ) przedmiot %s graczowi %s.", itemNames[itemid], tPlayer[pId][pCharName]);
-			SendClientMessage(playerid, COLOR_GREEN, mainStr);
+			addPlayerThing(owner, kind, name, value1, value2, place);
+			//SendClientMessage(pId, COLOR_GREEN, "Dosta³eœ przedmiot od administracji.");
 		}
 	}
 	return 1;
@@ -1305,13 +1298,13 @@ CMD:iorder(playerid, params[]) {
 		return 0;
 	}
 
-	new uid, name[32], owner[64], id, price, amount;
+	new ouid, dname[32], iname[32], owner[24], kind, value1, value2, price, amount;
 
-	if(sscanf(params, "is[32]s[64]iii", uid, name, owner, id, price, amount)) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /iorder [UID] [Name] [Owner] [ID] [Price] [Amount]");
+	if(sscanf(params, "is[32]s[32]s[24]iiiii", ouid, dname, iname, owner, kind, value1, value2, price, amount)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /iorder [OUID] [DName] [IName] [Owner] [Kind] [Value 1] [Value 2] [Price] [Amount]");
 	}
 
-	addGroupOrder(uid, name, owner, id, price, amount);
+	addGroupOrder(ouid, dname, iname, owner, kind, value1, value2, price, amount);
 	return 1;
 }
 
@@ -1320,7 +1313,7 @@ CMD:ad(playerid, params[]) {
 		new type[32], parms[64];
 
 		if(sscanf(params, "s[32]S()[64]", type, parms)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ad [goto, gethere, owner, edit, vw, int, type, lock]");
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ad [goto, gethere, owner, edit, vw, int, kind, lock]");
 		}
 
 		if(!strcmp(type, "goto", true)) {
@@ -1420,11 +1413,11 @@ CMD:ad(playerid, params[]) {
 			}
 
 			tDoor[srvDoorId][dOUid] = owner;
-		} else if(!strcmp(type, "type", true)) {
-			new uid, dtype, srvDoorId;
+		} else if(!strcmp(type, "kind", true)) {
+			new uid, kind, srvDoorId;
 
-			if(sscanf(parms, "ii", uid, dtype)) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ad type [UID] [Type]");
+			if(sscanf(parms, "ii", uid, kind)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ad kind [UID] [Kind]");
 			}
 
 			srvDoorId = getServerDoorIdFromUid(uid);
@@ -1432,7 +1425,7 @@ CMD:ad(playerid, params[]) {
 				return GameTextForPlayer(playerid, "~r~Takie drzwi nie istnieja", 5000, 3);
 			}
 
-			tDoor[srvDoorId][dOType] = dtype;
+			tDoor[srvDoorId][dOKind] = kind;
 		} else if(!strcmp(type, "lock", true)) {
 			new uid, srvDoorId;
 
@@ -1484,9 +1477,9 @@ CMD:acash(playerid, params[]) {
 CMD:ag(playerid, params[]) {
 	if(tPlayer[playerid][pRank] >= RANK_GAMEMASTER6 && isAdminDuty[playerid]) {
 		new name[32], tag[8];
-		new pId, type;
+		new pId, kind;
 
-		if(sscanf(params, "iis[8]s[32]", pId, type, tag, name)) {
+		if(sscanf(params, "iis[8]s[32]", pId, kind, tag, name)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ag [Gracz] [Rodzaj] [Tag] [Nazwa grupy]");
 		}
 
@@ -1494,7 +1487,7 @@ CMD:ag(playerid, params[]) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
-		createNewGroup(playerid, pId, type, tag, name);
+		createNewGroup(playerid, pId, kind, tag, name);
 	}
 	return 1;
 }

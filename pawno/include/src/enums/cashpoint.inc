@@ -12,18 +12,18 @@
 #define __CASHPOINT_INC__
 #pragma library osrp
 
-enum CashpointData {
-	cUid,
-	cName[32],
-	cObject,
-	bool:cIsOpen,
-	Float:cPosX,
-	Float:cPosY,
-	Float:cPosZ,
-	Float:cRotX,
-	Float:cRotY,
-	Float:cRotZ,
-	Float:cDistance,
-	cVw,
-	cInt
+enum CashPointData {
+	cpUid,
+	cpName[32],
+	cpObject,
+	bool:cpIsOpen,
+	Float:cpPosX,
+	Float:cpPosY,
+	Float:cpPosZ,
+	Float:cpRotX,
+	Float:cpRotY,
+	Float:cpRotZ,
+	Float:cpDistance,
+	cpVw,
+	cpInt
 };

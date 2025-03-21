@@ -22,7 +22,7 @@ stock init3DTextValues() {
 		sscanf(queryStr, "p<|>iiis[64]s[10]ffffii",
 			t3DText[i][t3dUid],
 			t3DText[i][t3dOUid],
-			t3DText[i][t3dType],
+			t3DText[i][t3dKind],
 			t3DText[i][t3dDesc],
 			t3DText[i][t3dColor],
 			t3DText[i][t3dPosX],

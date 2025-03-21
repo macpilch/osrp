@@ -66,7 +66,7 @@ stock searchPlayerBooth(playerid) {
 
 				foreach(new j : groupItter) {
 					foreach(new k : Player) {
-						if(tGroup[j][gType] == G_TAXI) {
+						if(tGroup[j][gKind] == G_TAXI) {
 							if(tPlayer[k][pGroupNow] == tGroup[j][gUid] && isPlayerDuty[k] && tPlayer[k][pDuty] > 0) {
 								countPlayers++;
 							}

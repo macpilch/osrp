@@ -11,14 +11,14 @@
 #endif
 
 #include <a_samp>
-#include <Pawn.CMD>
-#include <mysql>
-#include <streamer>
-#include <sscanf2>
-#include <YSI\y_timers>
 #include <foreach>
-#include <crashdetect>
-#include <md5>
+#include <MD5>
+#include <mysql>
+#include <Pawn.CMD>
+#include <progress>
+#include <sscanf2>
+#include <streamer>
+#include <YSI\y_timers>
 
 #include "src\macros\defines"
 #include "src\macros\dialogs"
@@ -27,7 +27,7 @@
 #include "src\enums\anim"
 #include "src\enums\area"
 #include "src\enums\group"
-#include "src\enums\item"
+#include "src\enums\thing"
 #include "src\enums\door"
 #include "src\enums\booth"
 #include "src\enums\busstop"
@@ -51,7 +51,7 @@
 #include "src\systems\vehicle_functions"
 #include "src\systems\anim_functions"
 #include "src\systems\area_functions"
-#include "src\systems\item_functions"
+#include "src\systems\thing_functions"
 #include "src\systems\door_functions"
 #include "src\systems\booth_functions"
 #include "src\systems\bus_functions"

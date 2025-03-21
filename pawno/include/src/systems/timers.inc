@@ -56,7 +56,7 @@ Timer:globalTimer[1000]() {
 					tPlayer[i][pHours]++;
 					tPlayer[i][pMinutes] = 0;
 				}
-				
+
 				if(insidedHotel[i] && tPlayer[i][pHotel] && playerToPoint(i, 5.0, 2216.12, -1076.30, 1050.48)) {
 					GameTextForPlayer(i, "~n~~n~~n~~n~~n~~w~[~k~~SNEAK_ABOUT~+~k~~PED_SPRINT~] ~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
 				}
@@ -87,6 +87,7 @@ Timer:globalTimer[1000]() {
 					}
 
 					calcsVehicleDistance(i, j);
+					
 
 					if(tVehicle[j][vFuel] <= 0.0) {
 						new engine, lights, alarm, doors, bonnet, boot, objective;
@@ -164,7 +165,7 @@ Timer:saveAllValuesTimer[60000]() {
 	}
 
 	saveServerValues();
-	saveItemsValues();
+	saveThingsValues();
 	saveDoorsValues();
 	saveVehiclesValues();
 }
@@ -222,22 +223,22 @@ Timer:updateDaysTimer[3600000]() {
 		foreach(new i : penItter) {
 			queryStr[0] = EOS;
 
-			if(tPenalty[i][penOUID] != 0 && tPenalty[i][penDays] > 0) {
+			if(tPenalty[i][penOUid] != 0 && tPenalty[i][penDays] > 0) {
 				tPenalty[i][penDays]--;
 
-				format(queryStr, sizeof(queryStr), "UPDATE `osrp_Penalties` SET `Days` = '%d' WHERE `UID` = '%d'", tPenalty[i][penDays], tPenalty[i][penUID]);
+				format(queryStr, sizeof(queryStr), "UPDATE `osrp_Penalties` SET `Days` = '%d' WHERE `UID` = '%d'", tPenalty[i][penDays], tPenalty[i][penUid]);
 				mysql_query(queryStr);
 			}
 
 			if(!tPenalty[i][penDays]) {
-				format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Penalties` WHERE `UID` = '%d'", tPenalty[i][penUID]);
+				format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Penalties` WHERE `UID` = '%d'", tPenalty[i][penUid]);
 				mysql_query(queryStr);
 
-				tPenalty[i][penUID] = 0;
-				tPenalty[i][penSUID] = 0;
-				tPenalty[i][penOUID] = 0;
+				tPenalty[i][penUid] = 0;
+				tPenalty[i][penSUid] = 0;
+				tPenalty[i][penOUid] = 0;
 				format(tPenalty[i][penIp], 16, NULL);
-				tPenalty[i][penType] = -1;
+				tPenalty[i][penKind] = -1;
 				tPenalty[i][penDays] = 0;
 				format(tPenalty[i][penDate], 64, NULL);
 				format(tPenalty[i][penReason], 128, NULL);
@@ -285,9 +286,15 @@ Timer:antiCheatTimer[1000]() {
 			}
 
 			if(GetPlayerWeapon(i) != 0) {
-				if(tPlayer[i][pWeapon] != GetPlayerWeapon(i) && getServerItemId(i) != INVALID_ITEM_ID) {
-					format(timerStr, sizeof(timerStr), "Bron: %d/%d(%s). Systemowa: %d/%d:%d (Weap)", GetPlayerWeapon(i), GetPlayerAmmo(i), weaponNames[GetPlayerWeapon(i)], tItem[getServerItemId(i)][iUid], tItem[getServerItemId(i)][iValue1], tItem[getServerItemId(i)][iValue2]);
+				if(tPlayer[i][pWeapon] != GetPlayerWeapon(i) && getServerThingId(i) != INVALID_THING_ID) {
+					format(timerStr, sizeof(timerStr), "Bron: %d/%d(%s). Systemowa: %d/%d:%d (Weap)", GetPlayerWeapon(i), GetPlayerAmmo(i), weaponNames[GetPlayerWeapon(i)], tThing[getServerThingId(i)][tUid], tThing[getServerThingId(i)][tValue1], tThing[getServerThingId(i)][tValue2]);
 					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, 0, timerStr);
+				}
+			}
+
+			if(tPlayer[i][pAj] > 0) {
+				if(!playerToPoint(i, 20.0, 1174.3706, -1180.3267, 87.0350)) {
+					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, 0, "Admin-jail break");
 				}
 			}
 		}
@@ -314,9 +321,8 @@ Timer:tutorialTipsTimer[480000]() {
 	static bool:hasPhone[MAX_PLAYERS] = { false, ... };
 
 	foreach(new i : Player) {
-		foreach(new j : itemItter) {
-			if(tItem[j][iOUid] == tPlayer[i][pUid] && (tItem[j][iId] == I_TELEPHONE || tItem[j][iId] == I_NKA8110 || tItem[j][iId] == I_SMARTPHONE) &&
-			   tItem[j][iPlace] == ITEM_PLACE_PLAYER) {
+		foreach(new j : thingItter) {
+			if(tThing[j][tOUid] == tPlayer[i][pUid] && tThing[j][tKind] == TKIND_TELEPHONE && tThing[j][tPlace] == THING_PLACE_PLAYER) {
 				hasPhone[i] = true;
 			}
 		}

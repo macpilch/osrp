@@ -13,13 +13,13 @@
 #pragma library osrp
 
 enum RaceData {
-	rcUid,
-	rcName[64],
-	bool:rcCreated,
-	rcBesetments,
-	rcCps,
-	rcPlayers,
-	Float:rcCpX[MAX_CPS],
-	Float:rcCpY[MAX_CPS],
-	Float:rcCpZ[MAX_CPS]
+	rUid,
+	rName[64],
+	bool:rCreated,
+	rBesetments,
+	rCps,
+	rPlayers,
+	Float:rCpX[MAX_CPS],
+	Float:rCpY[MAX_CPS],
+	Float:rCpZ[MAX_CPS]
 };

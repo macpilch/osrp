@@ -55,15 +55,15 @@ sampCallback:OSRP_OnGameModeInit() {
 	initVehicleValues();
 	initAnimValues();
 	initAreaValues();
-	initItemValues();
+	initThingValues();
 	initDoorValues();
 	initDimensionValues();
 	initBoothValues();
 	initBusStopValues();
-	initCashpointValues();
+	initCashPointValues();
 	initGroupValues();
 	initGroupPermValues();
-	initGroupItemValues();
+	initGroupThingValues();
 	initGroupTaskValues();
 	initGroupOrderValues();
 	initGroupVehicleValues();
@@ -71,12 +71,12 @@ sampCallback:OSRP_OnGameModeInit() {
 	initServerPenalties();
 
 	for(new i = 0; i < MAX_PLAYERS; i++) {
-		tPlayer[i][p3dInfo] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 0.15, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);
-		tPlayer[i][pCharDesc] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, -0.7, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);
+		tPlayer[i][p3dInfo] = CreateDynamic3DTextLabel("", COLOR_WHITE, 0.0, 0.0, 0.15, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);
+		tPlayer[i][pCharDesc] = CreateDynamic3DTextLabel("", COLOR_DESC, 0.0, 0.0, -0.7, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);
 	}
 
 	for(new i = 0; i < MAX_VEHICLES; i++) {
-		tVehicle[i][vDesc] = CreateDynamic3DTextLabel(NULL, COLOR_WHITE, 0.0, 0.0, 0.1, 20.0, INVALID_PLAYER_ID, i, 0, 0, 0, -1, 20.0, -1, 0);
+		tVehicle[i][vDesc] = CreateDynamic3DTextLabel("", COLOR_DESC, 0.0, 0.0, 0.1, 20.0, INVALID_PLAYER_ID, i, 0, 0, 0, -1, 20.0, -1, 0);
 	}
 
 	gymObject[0] = CreateDynamicObject(2629, 758.8672, -76.0945, 1000.6500 - 1, 0.0, 0.0, 90.0, 2, 7, -1, 50.0);

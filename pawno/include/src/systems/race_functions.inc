@@ -32,15 +32,15 @@ stock initRaceValues() {
 		mysql_fetch_row(queryStr, ",");
 
 		sscanf(queryStr, "p<,>is[64]iiii",
-			tRace[i][rcUid],
-			tRace[i][rcName],
-			tRace[i][rcCreated],
-			tRace[i][rcBesetments],
-			tRace[i][rcCps],
-			tRace[i][rcPlayers]
+			tRace[i][rUid],
+			tRace[i][rName],
+			tRace[i][rCreated],
+			tRace[i][rBesetments],
+			tRace[i][rCps],
+			tRace[i][rPlayers]
 		);
 		
-		cps = tRace[i][rcCps];
+		cps = tRace[i][rCps];
 		
 		for(new j = 0; j < cps; j++) {
 			format(tmpQuery, sizeof(tmpQuery), "SELECT `CP%d` FROM `osrp_Races` WHERE `UID` = '%d'", j, i + 1);
@@ -49,14 +49,14 @@ stock initRaceValues() {
 			mysql_store_result();
 			
 			mysql_fetch_row(queryStr, " ");
-			sscanf(queryStr, "fff", tRace[i][rcCpX][j], tRace[i][rcCpY][j], tRace[i][rcCpZ][j]);
+			sscanf(queryStr, "fff", tRace[i][rCpX][j], tRace[i][rCpY][j], tRace[i][rCpZ][j]);
 			
-			if(tRace[i][rcCpX][j] == 0 && tRace[i][rcCpY][j] == 0 && tRace[i][rcCpZ][j] == 0) {
+			if(tRace[i][rCpX][j] == 0 && tRace[i][rCpY][j] == 0 && tRace[i][rCpZ][j] == 0) {
 				continue;
 			}
 			
 #if defined DEBUG
-			printf("[DEBUG]: Cp%d %f, %f, %f", j, tRace[i][rcCpX][j], tRace[i][rcCpY][j], tRace[i][rcCpZ][j]);
+			printf("[DEBUG]: Cp%d %f, %f, %f", j, tRace[i][rCpX][j], tRace[i][rCpY][j], tRace[i][rCpZ][j]);
 #endif
 		}
 		
@@ -80,9 +80,9 @@ stock onEnterRaceCheckpoint(playerid) {
 	playerCps[playerid]++;
 	playerRcPosition[playerid] = 1;
 
-	if(playerCps[playerid] != 0 && playerCps[playerid] < tRace[srvRcId][rcCps] - 1) {
+	if(playerCps[playerid] != 0 && playerCps[playerid] < tRace[srvRcId][rCps] - 1) {
 		DisablePlayerRaceCheckpoint(playerid);
-		SetPlayerRaceCheckpoint(playerid, 0, tRace[srvRcId][rcCpX][playerCps[playerid]], tRace[srvRcId][rcCpY][playerCps[playerid]], tRace[srvRcId][rcCpZ][playerCps[playerid]], tRace[srvRcId][rcCpX][playerCps[playerid] + 1], tRace[srvRcId][rcCpY][playerCps[playerid] + 1], tRace[srvRcId][rcCpZ][playerCps[playerid] + 1], 5.0);
+		SetPlayerRaceCheckpoint(playerid, 0, tRace[srvRcId][rCpX][playerCps[playerid]], tRace[srvRcId][rCpY][playerCps[playerid]], tRace[srvRcId][rCpZ][playerCps[playerid]], tRace[srvRcId][rCpX][playerCps[playerid] + 1], tRace[srvRcId][rCpY][playerCps[playerid] + 1], tRace[srvRcId][rCpZ][playerCps[playerid] + 1], 5.0);
 
 		foreach(new i : Player) {
 			if(isRace[i]) {
@@ -93,9 +93,9 @@ stock onEnterRaceCheckpoint(playerid) {
 				}
 			}
 		}
-	} else if(playerCps[playerid] == tRace[srvRcId][rcCps] - 1) {
+	} else if(playerCps[playerid] == tRace[srvRcId][rCps] - 1) {
 		DisablePlayerRaceCheckpoint(playerid);
-		SetPlayerRaceCheckpoint(playerid, 1, tRace[srvRcId][rcCpX][playerCps[playerid]], tRace[srvRcId][rcCpY][playerCps[playerid]], tRace[srvRcId][rcCpZ][playerCps[playerid]], 0.0, 0.0, 0.0, 5.0);
+		SetPlayerRaceCheckpoint(playerid, 1, tRace[srvRcId][rCpX][playerCps[playerid]], tRace[srvRcId][rCpY][playerCps[playerid]], tRace[srvRcId][rCpZ][playerCps[playerid]], 0.0, 0.0, 0.0, 5.0);
 	
 		foreach(new i : Player) {
 			if(isRace[i]) {
@@ -106,7 +106,7 @@ stock onEnterRaceCheckpoint(playerid) {
 				}
 			}
 		}		
-	} else if(playerCps[playerid] == tRace[srvRcId][rcCps]) {
+	} else if(playerCps[playerid] == tRace[srvRcId][rCps]) {
 		DisablePlayerRaceCheckpoint(playerid);
 		mainStr[0] = EOS;
 
@@ -119,7 +119,7 @@ stock onEnterRaceCheckpoint(playerid) {
 	}
 
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "~n~~n~~n~~n~~n~~n~~p~Okrazenie ~w~1/%d~n~~b~Checkpoint ~w~%d/%d~n~~y~~h~%0.2fs ~w~[%d/%d]", tRace[srvRcId][rcBesetments], playerCps[playerid], tRace[srvRcId][rcCps], playerRcActualTime[playerid], playerRcPosition[playerid], numPlayerRace);
+	format(mainStr, sizeof(mainStr), "~n~~n~~n~~n~~n~~n~~p~Okrazenie ~w~1/%d~n~~b~Checkpoint ~w~%d/%d~n~~y~~h~%0.2fs ~w~[%d/%d]", tRace[srvRcId][rBesetments], playerCps[playerid], tRace[srvRcId][rCps], playerRcActualTime[playerid], playerRcPosition[playerid], numPlayerRace);
 	GameTextForPlayer(playerid, mainStr, 10000, 3);
 	return 1;
 }
@@ -167,7 +167,7 @@ stock getServerRaceId(playerid) {
 	new id = INVALID_RACE_ID;
 
 	foreach(new i : raceItter) {
-		if(tRace[i][rcUid] == tPlayer[playerid][pRace]) {
+		if(tRace[i][rUid] == tPlayer[playerid][pRace]) {
 			id = i;
 			break;
 		}

@@ -18,7 +18,7 @@ enum GroupData {
 	gName[32],
 	gTag[8],
 	gDate[32],
-	gType,
+	gKind,
 	gMembers,
 	gVehsLimit,
 	gVehsCount,
@@ -29,38 +29,43 @@ enum GroupData {
 	gRegister
 };
 
-enum GroupItem {
-	gIUid,
-	gIOUid,
-	gIId,
-	gIName[64],
-	gIPrice,
-	gIAmount
+enum GroupThingData {
+	gtUid,
+	gtOUid,
+	gtKind,
+	gtName[32],
+	gtValue1,
+	gtValue2,
+	gtPrice,
+	gtAmount
 };
 
-enum GroupTask {
-	gTUid,
-	gTGUid,
-	gTDesc[128],
-	gTDate[64],
-	gTCaller[24]
+enum GroupTaskData {
+	gtaUid,
+	gtaOUid,
+	gtaDesc[128],
+	gtaDate[64],
+	gtaCaller[24]
 };
 
-enum GroupOrder {
-	gOUid,
-	gOOUid,
-	gOName[32],
-	gOOwner[24],
-	gOCourier,
-	gOId,
-	gOPrice,
-	gOAmount,
-	bool:gOIsDelivering
+enum GroupOrderData {
+	goUid,
+	goOUid,
+	goDName[32],
+	goIName[32],
+	goOwner[24],
+	goCourier,
+	goKind,
+	goValue1,
+	goValue2,
+	goPrice,
+	goAmount,
+	bool:goIsDelivering
 };
 
-enum GroupVehicle {
-	gVUid,
-	gVGUid,
-	gVOUid,
-	gVVehs[10]
+enum GroupVehicleData {
+	gvUid,
+	gvGUid,
+	gvOUid,
+	gvVehs[10]
 };

@@ -15,7 +15,7 @@
 enum ObjectData {
 	oUid,
 	oOUid,
-	oType,
+	oKind,
 	oId,
 	oModelId,
 	Float:oPosX,

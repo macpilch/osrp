@@ -192,10 +192,10 @@ stock sendClientMessageToAllOOC(playerid, color, const str[]) {
 	}
 }
 
-stock getPenaltyName(type) {
+stock getPenaltyName(kind) {
 	new name[32];
 
-	switch(type) {
+	switch(kind) {
 		case PEN_BAN: {
 			strcat(name, "Ban");
 		}
@@ -216,6 +216,9 @@ stock getPenaltyName(type) {
 		}
 		case PEN_BLCKVEH: {
 			strcat(name, "Blokada prowadzenia pojazdow");
+		}
+		case PEN_BLCKWEAP: {
+			strcat(name, "Blokada broni");
 		}
 		case PEN_BLCKOOC: {
 			strcat(name, "Blokada czatu OOC");

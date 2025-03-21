@@ -59,7 +59,7 @@ stock getServerAnimIdFromName(name[]) {
 	new id = INVALID_ANIM_ID;
 
 	for(new i = 0; i < MAX_ANIMATIONS; i++) {
-		if(!strcmp(name, tAnim[i][Name])) {
+		if(!isnull(name) && !strcmp(name, tAnim[i][Name], true)) {
 			id = i;
 			break;
 		}

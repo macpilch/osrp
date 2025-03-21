@@ -27,10 +27,11 @@ stock initDoorValues() {
 		}
 
 		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iiis[32]ffffffiis[24]iiiiiiiiii",
+		sscanf(queryStr, "p<|>iiiis[32]ffffffiis[24]iiiiiiii",
 			tDoor[i][dUid],
 			tDoor[i][dOUid],
-			tDoor[i][dOType],
+			tDoor[i][dOKind],
+			tDoor[i][dKind],
 			tDoor[i][dName],
 			tDoor[i][dEnterX],
 			tDoor[i][dEnterY],
@@ -42,15 +43,13 @@ stock initDoorValues() {
 			tDoor[i][dTax],
 			tDoor[i][dTaxDate],
 			tDoor[i][dTaxCost],
-			tDoor[i][dDimensions],
 			tDoor[i][dObjects],
 			tDoor[i][dMaxObjects],
 			tDoor[i][dTexts],
 			tDoor[i][dMaxTexts],
 			tDoor[i][dSecurity],
 			tDoor[i][dVw],
-			tDoor[i][dInt],
-			tDoor[i][dType]
+			tDoor[i][dInt]
 		);
 
 		Iter_Add(doorItter, i);
@@ -112,9 +111,10 @@ stock saveDoorValues(srvdoorid) {
 	}
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Doors` SET `OUID` = '%d', `OType` = '%d', `Name` = '%s', `EnterX` = '%f', `EnterY` = '%f', `EnterZ` = '%f', `ExitX` = '%f', `ExitY` = '%f', `ExitZ` = '%f', `Open` = '%d', `Tax` = '%d', `TaxDate` = '%s', `TaxCost` = '%d', `Dimensions` = '%d', `Objects` = '%d', `MaxObjects` = '%d', `Texts` = '%d', `MaxTexts` = '%d', `Security` = '%d', `VW` = '%d', `INT` = '%d', `Type` = '%d' WHERE `UID` = '%d'",
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Doors` SET `OUID` = '%d', `OKind` = '%d', `Kind` = '%d', `Name` = '%s', `EnterX` = '%f', `EnterY` = '%f', `EnterZ` = '%f', `ExitX` = '%f', `ExitY` = '%f', `ExitZ` = '%f', `Open` = '%d', `Tax` = '%d', `TaxDate` = '%s', `TaxCost` = '%d', `Objects` = '%d', `MaxObjects` = '%d', `Texts` = '%d', `MaxTexts` = '%d', `Security` = '%d', `VW` = '%d', `INT` = '%d' WHERE `UID` = '%d'",
 		tDoor[srvdoorid][dOUid],
-		tDoor[srvdoorid][dOType],
+		tDoor[srvdoorid][dOKind],
+		tDoor[srvdoorid][dKind],
 		tDoor[srvdoorid][dName],
 		tDoor[srvdoorid][dEnterX],
 		tDoor[srvdoorid][dEnterY],
@@ -126,15 +126,13 @@ stock saveDoorValues(srvdoorid) {
 		tDoor[srvdoorid][dTax],
 		tDoor[srvdoorid][dTaxDate],
 		tDoor[srvdoorid][dTaxCost],
-		tDoor[srvdoorid][dDimensions],
 		tDoor[srvdoorid][dObjects],
 		tDoor[srvdoorid][dMaxObjects],
 		tDoor[srvdoorid][dTexts],
 		tDoor[srvdoorid][dMaxTexts],
 		tDoor[srvdoorid][dSecurity],
 		tDoor[srvdoorid][dVw],
-		tDoor[srvdoorid][dInt],
-		tDoor[srvdoorid][dType]
+		tDoor[srvdoorid][dInt]
 	);
 	mysql_query(queryStr);
 	return 1;
@@ -182,8 +180,8 @@ stock getServerDoorIdFromUid(uid) {
 	return id;
 }
 
-stock isDoorHaveType(srvdoorid, type) {
-	if(tDoor[srvdoorid][dType] == type) {
+stock isDoorHaveKind(srvdoorid, kind) {
+	if(tDoor[srvdoorid][dKind] == kind) {
 		return 1;
 	}
 	return 0;

@@ -16,13 +16,15 @@ enum {
 	D_SHOP = 0,
 	D_HOTEL,
 	D_GYM,
-	D_CLOTHES
+	D_CLOTHES,
+	D_PHARMACY
 };
 
 enum DoorData {
 	dUid,
 	dOUid,
-	dOType,
+	dOKind,
+	dKind,
 	dName[32],
 	Float:dEnterX,
 	Float:dEnterY,
@@ -43,8 +45,7 @@ enum DoorData {
 	bool:dSecurity,
 	dSecurityName[32],
 	dVw,
-	dInt,
-	dType
+	dInt
 };
 
 enum DimensionData {

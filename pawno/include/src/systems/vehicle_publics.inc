@@ -14,6 +14,7 @@
 
 sampCallback:OSRP_OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 	new srvVehId = getClosestServerVehicleId(vehicleid);
+	new srvThingId = getServerThingId(playerid);
 
 	tPlayer[playerid][pVehicle] = tVehicle[srvVehId][vUid];
 
@@ -35,6 +36,11 @@ sampCallback:OSRP_OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		}
 	}
 
+	if(tPlayer[playerid][pHours] > 70 && !tPlayer[playerid][pHotel]) {
+		ClearAnimations(playerid);
+		SendClientMessage(playerid, COLOR_GRAY, "Grasz na tej postaci ponad 70h. Aby prowadziæ pojazdy, wynajmij lub kup mieszkanie.");
+	}
+
 	if(!isBicycle(GetVehicleModel(vehicleid)) && !(tPlayer[playerid][pDocuments] & DOC_L_DRIVING) && !drivingCourse[playerid] && !ispassenger) {
 		ClearAnimations(playerid);
 
@@ -49,10 +55,18 @@ sampCallback:OSRP_OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		GameTextForPlayer(playerid, "~n~~n~~r~Pojazd jest zamkniety.~n~~w~/v zamknij", 6000, 3);
 	}
 
-	if((tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && !tVehicle[srvVehId][vGUid]) && (tPlayer[playerid][pDocuments] & DOC_L_DRIVING) && !ispassenger) {
+	if((tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && tVehicle[srvVehId][vKind] == VEHICLE_OWNER_PLAYER) && (tPlayer[playerid][pDocuments] & DOC_L_DRIVING) &&
+	    !ispassenger) {
 		ClearAnimations(playerid);
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Nie mozesz prowadzic tego~n~pojazdu.", 6000, 3);
 	}
+
+	if(srvThingId != INVALID_THING_ID && tThing[srvThingId][tUsed] && tThing[srvThingId][tKind] == TKIND_ROLLER) {
+		ClearAnimations(playerid);
+		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Nie mo¿esz wsiadaæ do pojazdu z za³o¿onymi rolkami.", "OK", "");
+	}
+
+	//ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Ten pojazd jest tylko dla graczy z kontem premium.", "OK", "");
 	return 1;
 }
 

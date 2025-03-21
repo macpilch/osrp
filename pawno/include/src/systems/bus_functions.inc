@@ -29,20 +29,20 @@ stock initBusStopValues() {
 
 		mysql_fetch_row(queryStr, "|");
 		sscanf(queryStr, "p<|>is[32]ffffff",
-			tBusStop[i][bUid],
-			tBusStop[i][bName],
-			tBusStop[i][bPosX],
-			tBusStop[i][bPosY],
-			tBusStop[i][bPosZ],
-			tBusStop[i][bRotX],
-			tBusStop[i][bRotY],
-			tBusStop[i][bRotZ]
+			tBusStop[i][bsUid],
+			tBusStop[i][bsName],
+			tBusStop[i][bsPosX],
+			tBusStop[i][bsPosY],
+			tBusStop[i][bsPosZ],
+			tBusStop[i][bsRotX],
+			tBusStop[i][bsRotY],
+			tBusStop[i][bsRotZ]
 		);
 
 		Iter_Add(busStopItter, i);
-		tBusStop[i][bObject] = CreateDynamicObject(1257, tBusStop[i][bPosX], tBusStop[i][bPosY], tBusStop[i][bPosZ], tBusStop[i][bRotX], tBusStop[i][bRotY], tBusStop[i][bRotZ], 0, 0, -1, 100.0);
+		tBusStop[i][bsObject] = CreateDynamicObject(1257, tBusStop[i][bsPosX], tBusStop[i][bsPosY], tBusStop[i][bsPosZ], tBusStop[i][bsRotX], tBusStop[i][bsRotY], tBusStop[i][bsRotZ], 0, 0, -1, 100.0);
 
-		printf("[DEBUG] Uid: %d,  Name: %s", i + 1, tBusStop[i][bName]);
+		printf("[DEBUG] Uid: %d,  Name: %s", i + 1, tBusStop[i][bsName]);
 	}
 
 	if(Iter_Count(busStopItter)) {
@@ -59,7 +59,7 @@ stock getServerBusStopId(playerid) {
 	new id = INVALID_BUS_ID;
 
 	foreach(new i : busStopItter) {
-		if(tPlayer[playerid][pBus] == tBusStop[i][bUid]) {
+		if(tPlayer[playerid][pBus] == tBusStop[i][bsUid]) {
 			id = i;
 			break;
 		}
@@ -80,7 +80,7 @@ stock createNewBusStop(playerid, busstopname[]) {
 
 stock searchPlayerBusStop(playerid) {
 	foreach(new i : busStopItter) {
-		if(playerToPoint(playerid, 2.0, tBusStop[i][bPosX], tBusStop[i][bPosY], tBusStop[i][bPosZ]) && !tBusStop[i][bUsed]) {
+		if(playerToPoint(playerid, 2.0, tBusStop[i][bsPosX], tBusStop[i][bsPosY], tBusStop[i][bsPosZ]) && !tBusStop[i][bsUsed]) {
 			if(!busCameraChoose[playerid] && !busCameraSelect[playerid] && !isInBus[playerid]) {
 				GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
 
@@ -95,7 +95,7 @@ stock searchPlayerBusStop(playerid) {
 				}
 
 				SetTimerEx("delayBusCamera", 500, false, "ifff", playerid, tPlayer[playerid][pBusX], tPlayer[playerid][pBusY], tPlayer[playerid][pBusZ]);
-				tPlayer[playerid][pBus] = tBusStop[i][bUid];
+				tPlayer[playerid][pBus] = tBusStop[i][bsUid];
 			}
 		}
 	}
@@ -210,18 +210,18 @@ Callback:teleportToBusStop(playerid, busstopid) {
 	GetPlayerCameraPos(playerid, CamX, CamY, CamZ);
 	SetPlayerPos(playerid, tPlayer[playerid][pBusX], tPlayer[playerid][pBusY], tPlayer[playerid][pBusZ] - 20.0);
 
-	InterpolateCameraPos(playerid, CamX - 20.0, CamY, CamZ, tBusStop[busstopid][bPosX], tBusStop[busstopid][bPosY] + 10.0, tBusStop[busstopid][bPosZ] + 100.0, tPlayer[playerid][pBusTime], CAMERA_MOVE);
-	InterpolateCameraLookAt(playerid, CamX, CamY, CamZ, tBusStop[busstopid][bPosX], tBusStop[busstopid][bPosY], tBusStop[busstopid][bPosZ], tPlayer[playerid][pBusTime], CAMERA_MOVE);
+	InterpolateCameraPos(playerid, CamX - 25.0, CamY, CamZ, tBusStop[busstopid][bsPosX], tBusStop[busstopid][bsPosY] - 10.0, tBusStop[busstopid][bsPosZ] + 100.0, tPlayer[playerid][pBusTime], CAMERA_MOVE);
+	InterpolateCameraLookAt(playerid, CamX, CamY, CamZ, tBusStop[busstopid][bsPosX], tBusStop[busstopid][bsPosY], tBusStop[busstopid][bsPosZ], tPlayer[playerid][pBusTime], CAMERA_MOVE);
 
-	tPlayer[playerid][pBusX] = tBusStop[busstopid][bPosX];
-	tPlayer[playerid][pBusY] = tBusStop[busstopid][bPosY];
-	tPlayer[playerid][pBusZ] = tBusStop[busstopid][bPosZ];
+	tPlayer[playerid][pBusX] = tBusStop[busstopid][bsPosX];
+	tPlayer[playerid][pBusY] = tBusStop[busstopid][bsPosY];
+	tPlayer[playerid][pBusZ] = tBusStop[busstopid][bsPosZ];
 
 	busCameraSelect[playerid] = false;
 	isInBus[playerid] = true;
 
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "* %s wsiad³ do autobusu jad¹cego w kierunku przystanku nr %d", tPlayer[playerid][pCharName], tBusStop[busstopid][bUid]);
+	format(mainStr, sizeof(mainStr), "* %s wsiad³ do autobusu jad¹cego w kierunku przystanku nr %d", tPlayer[playerid][pCharName], tBusStop[busstopid][bsUid]);
 	sendMeMessage(playerid, mainStr);
 
 	SetTimerEx("unFreezeBusStop", tPlayer[playerid][pBusTime], false, "ii", playerid, busstopid);
@@ -239,7 +239,7 @@ Callback:unFreezeBusStop(playerid, busstopid) {
 	tPlayer[playerid][pBusTime] = 0;
 	tPlayer[playerid][pBusNext] = INVALID_BUS_ID;
 
-	tBusStop[busstopid][bUsed] = false;
+	tBusStop[busstopid][bsUsed] = false;
 	isInBus[playerid] = false;
 	tPlayer[playerid][pBus] = INVALID_BUS_ID;
 	return 1;
