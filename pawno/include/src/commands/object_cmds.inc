@@ -1,4 +1,10 @@
-
+/*
+	Project: OSRP
+	Author: steeZ (macpilch)
+	File: object_cmds.inc
+	Date: 06.06.2024
+	Modified: 06.06.2024
+*/
 
 #if defined __OBJECT_CMDS_INC__
 	#endinput
@@ -8,168 +14,35 @@
 
 CMD:mc(playerid, params[]) {
 	new srvDoorId = getServerDoorId(playerid);
+	new srvGroupId = getServerGroupId(playerid, tPlayer[playerid][pLastGroup]);
 
-	if(srvDoorId != INVALID_DOOR_ID) {
-		new srvGroupId = getServerGroupId(playerid);
-
-		if((tDoor[srvDoorId][dOUid] == tPlayer[playerid][pUid] && tDoor[srvDoorId][dOKind] == DOOR_OWNER_PLAYER) || (srvGroupId != INVALID_GROUP_ID &&
-		    tDoor[srvDoorId][dOUid] == tGroup[srvGroupId][gUid] && tDoor[srvDoorId][dOKind] == DOOR_OWNER_GROUP && (tPlayer[playerid][pGroupPermNow] & P_GROUP_PERM_LEADER))) {
-			if(tDoor[srvDoorId][dMaxObjects] <= 0) {
-				return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Ten budynek nie ma przypisanych Å¼adnych obiektÃ³w do stworzenia.\n\nUÅ¼yj komendy /drzwi, by przypisaÄ‡ mu wybranÄ… iloÅ›Ä‡ obiektÃ³w.", "OK", "");
-			}
-
-			if(!GetPlayerVirtualWorld(playerid)) {
-				return 1;
-			}
-
-			new modelId;
-
-			if(sscanf(params, "i", modelId)) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /mc [ID modelu] - tworzy obiekt");
-			}
-
-			new freeId = -1;
-
-			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Objects`");
-			mysql_query(queryStr);
-
-			mysql_store_result();
-			freeId = mysql_fetch_int();
-
-			mysql_free_result();
-
-			GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
-
-			tObject[freeId][oOUid] = tDoor[srvDoorId][dUid];
-			tObject[freeId][oKind] = OBJECT_OWNER_DOOR;
-			tObject[freeId][oModelId] = modelId;
-			tObject[freeId][oPosX] = tPlayer[playerid][pPosX];
-			tObject[freeId][oPosY] = tPlayer[playerid][pPosY] + 0.5;
-			tObject[freeId][oPosZ] = tPlayer[playerid][pPosZ];
-			tObject[freeId][oRotX] = 0.0;
-			tObject[freeId][oRotY] = 0.0;
-			tObject[freeId][oRotZ] = 0.0;
-			tObject[freeId][oVw] = tPlayer[playerid][pVw];
-			tObject[freeId][oInt] = 0;
-			tObject[freeId][oDist] = 400.0;
-
-			tObject[freeId][oId] = CreateDynamicObject(tObject[freeId][oModelId], tObject[freeId][oPosX], tObject[freeId][oPosY], tObject[freeId][oPosZ], tObject[freeId][oRotX], tObject[freeId][oRotY], tObject[freeId][oRotZ], tObject[freeId][oVw], tObject[freeId][oInt], -1, tObject[freeId][oDist]);
-			Streamer_SetIntData(STREAMER_TYPE_OBJECT, tObject[freeId][oId], E_STREAMER_EXTRA_ID, freeId + 1);
-			Streamer_Update(playerid);
-
-			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "~w~Obiekt ~r~%d:%d~w~.__Model: ~y~%d~w~.__Owner: ~y~%d:%d", tObject[freeId][oId], freeId, tObject[freeId][oModelId], tObject[freeId][oKind], tObject[freeId][oOUid]);
-			TextDrawSetString(objectInfo[playerid][0], mainStr);
-			TextDrawShowForPlayer(playerid, objectInfo[playerid][0]);
-
-			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "~r~Pozycja: ~w~%0.2f, %0.2f, %0.2f~n~~r~Rotacja: ~w~%0.2f, %0.2f, %0.2f", tObject[freeId][oPosX], tObject[freeId][oPosY], tObject[freeId][oPosZ], tObject[freeId][oRotX], tObject[freeId][oRotY], tObject[freeId][oRotZ]);
-			TextDrawSetString(objectInfo[playerid][1], mainStr);
-			TextDrawShowForPlayer(playerid, objectInfo[playerid][1]);
-
-			tPlayer[playerid][pEditObj] = freeId;
-			tDoor[srvDoorId][dObjects]++;
-			saveDoorValues(srvDoorId);
-
-			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Objects` (`OUID`, `Kind`, `ModelId`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`, `Distance`, `VW`, `INT`) VALUES ('%d', '%d', '%d', '%f', '%f', '%f', '%f', '%f', '%f', '%d', '%d', '%d')",
-				tObject[freeId][oOUid],
-				tObject[freeId][oKind],
-				tObject[freeId][oModelId],
-				tObject[freeId][oPosX],
-				tObject[freeId][oPosY],
-				tObject[freeId][oPosZ],
-				tObject[freeId][oRotX],
-				tObject[freeId][oRotY],
-				tObject[freeId][oRotZ],
-				tObject[freeId][oDist],
-				tObject[freeId][oVw],
-				tObject[freeId][oInt]
-			);
-			mysql_query(queryStr);
-		} else {
-			return 1;
-		}
+	if(srvDoorId != INVALID_DOOR_ID && (tDoor[srvDoorId][dOUid] != tPlayer[playerid][pUid] && tDoor[srvDoorId][dOType] == DOOR_OWNER_PLAYER) ||
+	   (srvGroupId != INVALID_GROUP_ID && tDoor[srvDoorId][dOUid] != tGroup[srvGroupId][gUid] && tDoor[srvDoorId][dOType] == DOOR_OWNER_GROUP ||
+	   ((tPlayer[playerid][pPerm][0] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_LEADER) ||
+	   (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_LEADER)))) {
+		return 1;
 	}
+
+	if(tDoor[srvDoorId][dMaxObjects] <= 0) {
+		return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Ten budynek nie ma przypisanych ¿adnych obiektów do stworzenia.\n\nU¿yj komendy /drzwi, by przypisaæ mu wybran¹ iloœæ obiektów.", "OK", "");
+	}
+
+	if(!GetPlayerVirtualWorld(playerid)) {
+		return 1;
+	}
+
+	new modelId;
+
+	if(sscanf(params, "i", modelId)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /mc [ID modelu] - tworzy obiekt");
+	}
+
+	createNewObject(playerid, modelId, tDoor[srvDoorId][dUid], OBJECT_OWNER_DOOR);
+
+	tDoor[srvDoorId][dObjects]++;
+	saveDoorValues(srvDoorId);
 	return 1;
 }
-/*
-CMD:tc(playerid, params[]) {
-	new srvDoorId = getServerDoorId(playerid), srvAreaId = getServerAreaId(playerid);
-	if(srvDoorId != INVALID_DOOR_ID && srvAreaId == INVALID_AREA_ID) {
-		new srvGroupId = getServerGroupId(playerid);
-
-		if((tDoor[srvDoorId][dOUid] == tPlayer[playerid][pUid] && tDoor[srvDoorId][tOKind] == DOOR_TYPE_PLAYER) || (srvGroupId != INVALID_GROUP_ID &&
-		    tDoor[srvDoorId][dOUid] == tGroup[srvGroupId][gUid] && tDoor[srvDoorId][tOKind] == DOOR_TYPE_GROUP && (tPlayer[playerid][pGroupPermNow] & P_GROUP_PERM_LEADER))) {
-			if(!tDoor[srvDoorId][dMaxTexts]) {
-				return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Ten budynek nie ma przypisanych Å¼adnych tekstÃ³w do stworzenia.\n\nUÅ¼yj komendy /drzwi, by przypisaÄ‡ mu wybranÄ… iloÅ›Ä‡ tekstÃ³w.", "OK", "");
-			}
-
-			new modelId;
-
-			if(sscanf(params, "i", modelId)) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /tc ");
-			}
-
-			new freeId = -1;
-
-			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_3DTexts`");
-			mysql_query(queryStr);
-
-			mysql_store_result();
-			freeId = mysql_fetch_int();
-
-			mysql_free_result();
-
-			GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
-
-			tObject[freeId][oOUid] = tDoor[srvDoorId][dUid];
-			tObject[freeId][oKind] = OBJECT_TYPE_DOOR;
-			tObject[freeId][oModelId] = modelId;
-			tObject[freeId][oPosX] = tPlayer[playerid][pPosX];
-			tObject[freeId][oPosY] = tPlayer[playerid][pPosY];
-			tObject[freeId][oPosZ] = tPlayer[playerid][pPosZ];
-			tObject[freeId][oRotX] = 0.0;
-			tObject[freeId][oRotY] = 0.0;
-			tObject[freeId][oRotZ] = 0.0;
-			tObject[freeId][oVw] = tPlayer[playerid][pVw];
-			tObject[freeId][oInt] = 0;
-			tObject[freeId][oDist] = 400.0;
-
-			tObject[freeId][oId] = CreateDynamicObject(tObject[freeId][oModelId], tObject[freeId][oPosX], tObject[freeId][oPosY], tObject[freeId][oPosZ], tObject[freeId][oRotX], tObject[freeId][oRotY], tObject[freeId][oRotZ], tObject[freeId][oVw], tObject[freeId][oInt], -1, tObject[freeId][oDist]);
-			Streamer_SetIntData(STREAMER_TYPE_OBJECT, tObject[freeId][oId], E_STREAMER_EXTRA_ID, freeId + 1);
-			Streamer_Update(playerid);
-
-			tPlayer[playerid][pEditObj] = tObject[freeId][oId];
-			tDoor[srvDoorId][dObjects]++;
-			saveDoorValues(srvDoorId);
-
-			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Objects` (`OUID`, `Kind`, `ModelId`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`, `Distance`, `VW`, `INT`) VALUES ('%d', '%d', '%d', '%f', '%f', '%f', '%f', '%f', '%f', '%d', '%d', '%d')",
-				tObject[freeId][oOUid],
-				tObject[freeId][oKind],
-				tObject[freeId][oModelId],
-				tObject[freeId][oPosX],
-				tObject[freeId][oPosY],
-				tObject[freeId][oPosZ],
-				tObject[freeId][oRotX],
-				tObject[freeId][oRotY],
-				tObject[freeId][oRotZ],
-				tObject[freeId][oDist]
-				tObject[freeId][oVw],
-				tObject[freeId][oInt],
-			);
-			mysql_query(queryStr);
-		} else {
-			return 1;
-		}
-	} else if(srvDoorId == INVALID_DOOR_ID && srvAreaId != INVALID_AREA_ID) {
-		
-	}
-	return 1;
-}*/
 
 CMD:amc(playerid, params[]) {
 	new objId;
@@ -179,203 +52,312 @@ CMD:amc(playerid, params[]) {
 	}
 
 	ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja",
-	"Ten budynek nie ma przypisanych Å¼adnych obiektÃ³w do stworzenia.\n\nUÅ¼yj komendy /drzwi, by przypisaÄ‡ mu wybranÄ… iloÅ›Ä‡ obiektÃ³w.", "OK", "");
+	"Ten budynek nie ma przypisanych ¿adnych obiektów do stworzenia.\n\nU¿yj komendy /drzwi, by przypisaæ mu wybran¹ iloœæ obiektów.", "OK", "");
 	return 1;
 }
 
 CMD:md(playerid, params[]) {
-	if(tPlayer[playerid][pEditObj] == -1) {
+	new srvObjId = getServerObjectId(playerid);
+	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
 		return GameTextForPlayer(playerid, "~w~Nie edytujesz obiektu.~n~~r~Uzyj /mc lub /msel.", 5000, 3);
 	}
+
+	TextDrawHideForPlayer(playerid, objectInfo[playerid][0]);
+	TextDrawHideForPlayer(playerid, objectInfo[playerid][1]);
+
+	destroyObject(srvObjId);
+	Streamer_Update(playerid);
+
+	tPlayer[playerid][pObject] = 0;
+	CancelEdit(playerid);
+
+	if(tPlayer[playerid][pEditObject]) {
+		ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.1, 0, 0, 0, 0, 0, 0);
+	}
+
+	tPlayer[playerid][pEditObject] = false;
 	return 1;
 }
 
 CMD:mgate(playerid, params[]) {
-	SendClientMessage(playerid, COLOR_RED, "Obiekt zostaÅ‚ przekonwertowany na zwykÅ‚Ä… bramÄ™.");
+	new srvObjId = getServerObjectId(playerid);
+	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
+		return GameTextForPlayer(playerid, "~w~Nie edytujesz obiektu.~n~~r~Uzyj /mc lub /msel.", 5000, 3);
+	}
+
+	new type, Float:x, Float:y, Float:z;
+
+	if(sscanf(params, "ifff", type, x, y, z)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /mgate [0-2, 0-off, 1-pozycja, 2-rotacja] [X] [Y] [Z]");
+	}
+
+	if(type > 2 || type < 0) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /mgate [0-2, 0-off, 1-pozycja, 2-rotacja] [X] [Y] [Z]");
+	}
+
+	tObject[srvObjId][oGate] = type;
+
+	switch(tObject[srvObjId][oGate]) {
+		case 1: {
+			tObject[srvObjId][oGateX] = tObject[srvObjId][oPosX] + x;
+			tObject[srvObjId][oGateY] = tObject[srvObjId][oPosY] + y;
+			tObject[srvObjId][oGateZ] = tObject[srvObjId][oPosZ] + z;
+		}
+
+		case 2: {
+			tObject[srvObjId][oGateX] = tObject[srvObjId][oRotX] + x;
+			tObject[srvObjId][oGateY] = tObject[srvObjId][oRotY] + y;
+			tObject[srvObjId][oGateZ] = tObject[srvObjId][oRotZ] + z;
+		}
+	}
+
+	saveObjectValues(srvObjId);
+	SendClientMessage(playerid, COLOR_DARKRED, "Obiekt zosta³ przekonwertowany na zwyk³¹ bramê.");
 	return 1;
 }
 
 CMD:mpick(playerid, params[]) {
+	new srvDoorId = getServerDoorId(playerid);
+	new srvGroupId = getServerGroupId(playerid, tPlayer[playerid][pLastGroup]);
+
+	if(srvDoorId != INVALID_DOOR_ID && (tDoor[srvDoorId][dOUid] != tPlayer[playerid][pUid] && tDoor[srvDoorId][dOType] == DOOR_OWNER_PLAYER) ||
+	   (srvGroupId != INVALID_GROUP_ID && tDoor[srvDoorId][dOUid] != tGroup[srvGroupId][gUid] && tDoor[srvDoorId][dOType] == DOOR_OWNER_GROUP ||
+	   ((tPlayer[playerid][pPerm][0] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_LEADER) ||
+	   (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_LEADER)))) {
+		return 1;
+	}
+
+	SelectObject(playerid);
 	return 1;
 }
 
 CMD:mmat(playerid, params[]) {
-	if(sscanf(params, "iiiis[32]s[32]")) {
-		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /mmat");
+	new srvObjId = getServerObjectId(playerid);
+	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
+		return GameTextForPlayer(playerid, "~w~Nie edytujesz obiektu.~n~~r~Uzyj /mc lub /msel.", 5000, 3);
 	}
 
-	SendClientMessage(playerid, COLOR_GRAY, "Niepoprawne parametry dla tekstury. Wpisz /mmat, by poznaÄ‡ listÄ™ parametrÃ³w.");
-	SendClientMessage(playerid, COLOR_GRAY, "matsize (material size) na strefach moÅ¼e wynosiÄ‡ maksymalnie 70.");
+	new index, type, values[128];
 
-	GameTextForPlayer(playerid, "~y~Tekstura ustawiona.", 5000, 3);
-	GameTextForPlayer(playerid, "~y~Tekst ustawiony.", 5000, 3);
+	if(sscanf(params, "iis[128]", index, type, values)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /mmat [index] [typ] [parametry]");
+	}
+
+	if(!type) {
+		new materialcolor, model, txdname[32], texturename[32];
+
+		if(sscanf(values, "iis[32]s[32]", materialcolor, model, txdname, texturename)) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Niepoprawne parametry dla tekstury. Wpisz /mmat, by poznaæ listê parametrów.");
+		}
+
+		addTexture(srvObjId, index, type, materialcolor, model, txdname, texturename, 0, 0, 0, 0, 0, 0, "", "");
+		GameTextForPlayer(playerid, "Tekstura ustawiona.", 5000, 3);
+	} else {
+		new matsize, fontsize, bold, fcolor, bcolor, align, font[32], text[32];
+
+		if(sscanf(values, "iiiiiis[32]s[32]", matsize, fontsize, bold, fcolor, bcolor, align, font, text)) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /mmat [index] [typ] [matsize] [fontsize] [bold] [fcolor] [bcolor] [align] [font] [text]");
+		}
+
+		addTexture(srvObjId, index, type, 0, 0, "", "", matsize, fontsize, bold, fcolor, bcolor, align, font, text);
+		GameTextForPlayer(playerid, "Tekst ustawiony.", 5000, 3);
+	}
+
+	//SendClientMessage(playerid, COLOR_GRAY, "matsize (material size) na strefach mo¿e wynosiæ maksymalnie 70.");
 	return 1;
 }
 
 CMD:msel(playerid, params[]) {
-	new objId;
+	new srvDoorId = getServerDoorId(playerid);
+	new srvGroupId = getServerGroupId(playerid, tPlayer[playerid][pLastGroup]);
 
-	if(sscanf(params, "i", objId)) {
-		
-	} else {
-		
+	if(srvDoorId != INVALID_DOOR_ID && (tDoor[srvDoorId][dOUid] != tPlayer[playerid][pUid] && tDoor[srvDoorId][dOType] == DOOR_OWNER_PLAYER) ||
+	   (srvGroupId != INVALID_GROUP_ID && tDoor[srvDoorId][dOUid] != tGroup[srvGroupId][gUid] && tDoor[srvDoorId][dOType] == DOOR_OWNER_GROUP ||
+	   ((tPlayer[playerid][pPerm][0] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_LEADER) ||
+	   (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_LEADER)))) {
+		return 1;
 	}
 
-	GameTextForPlayer(playerid, "~r~Nie ma obiektow w otoczeniu.", 5000, 3);
+	if(getServerObjectId(playerid) != OSRP_OBJECT_INVALID_ID) {
+		CancelEdit(playerid);
+		saveObjectValues(getServerObjectId(playerid));
+		ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.1, 0, 0, 0, 0, 0, 0);
 
-	SendClientMessage(playerid, COLOR_GRAY, "Nie moÅ¼esz zarzÄ…dzaÄ‡ obiektami w tych drzwiach. UÅ¼yj /asel, jeÅ¼eli chcesz modyfikowaÄ‡ strefÄ™.");
+		TextDrawHideForPlayer(playerid, objectInfo[playerid][0]);
+		TextDrawHideForPlayer(playerid, objectInfo[playerid][1]);
+
+		tPlayer[playerid][pObject] = 0;
+		tPlayer[playerid][pEditObject] = false;
+	}
+
+	new modelId;
+	static Float:radius = 0.5;
+
+	if(radius > 4.0) {
+		radius = 0.5;
+	}
+
+	if(sscanf(params, "i", modelId)) {
+		new count;
+
+		foreach(new i : objectItter) {
+			if(playerToPoint(playerid, radius, tObject[i][oPosX], tObject[i][oPosY], tObject[i][oPosZ])) {
+				if(tObject[i][oOUid] == tPlayer[playerid][pDoor] && tObject[i][oType] == OBJECT_OWNER_DOOR) {
+					tPlayer[playerid][pObject] = tObject[i][oUid];
+					count = 1;
+				}
+			} else {
+				radius += 0.5;
+			}
+		}
+
+		if(!count) {
+			return GameTextForPlayer(playerid, "~r~Nie ma obiektow w otoczeniu.", 5000, 3);
+		}
+	} else {
+		new count;
+
+		foreach(new i : objectItter) {
+			if(tObject[i][oObject] == modelId && tObject[i][oOUid] == tPlayer[playerid][pDoor] && tObject[i][oType] == OBJECT_OWNER_DOOR) {
+				if(playerToPoint(playerid, radius, tObject[i][oPosX], tObject[i][oPosY], tObject[i][oPosZ])) {
+					tPlayer[playerid][pObject] = tObject[i][oUid];
+					count = 1;
+				} else {
+					radius += 0.5;
+				}
+			}
+		}
+
+		if(!count) {
+			return GameTextForPlayer(playerid, "~r~Nie ma obiektow w otoczeniu.", 5000, 3);
+		}
+	}
+
+	//SendClientMessage(playerid, COLOR_GRAY, "Nie mo¿esz zarz¹dzaæ obiektami w tych drzwiach. U¿yj /asel, je¿eli chcesz modyfikowaæ strefê.");
 	return 1;
 }
 
 CMD:msave(playerid, params[]) {
-	tPlayer[playerid][pEditObj] = -1;
+	new srvObjId = getServerObjectId(playerid);
+	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
+		return GameTextForPlayer(playerid, "~w~Nie edytujesz obiektu.~n~~r~Uzyj /mc lub /msel.", 5000, 3);
+	}
+
+	tPlayer[playerid][pObject] = 0;
+	CancelEdit(playerid);
+
+	if(tPlayer[playerid][pEditObject]) {
+		ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.1, 0, 0, 0, 0, 0, 0);
+	}
+
+	tPlayer[playerid][pEditObject] = false;
 
 	TextDrawHideForPlayer(playerid, objectInfo[playerid][0]);
 	TextDrawHideForPlayer(playerid, objectInfo[playerid][1]);
+
+	saveObjectValues(srvObjId);
 	return 1;
 }
 
 CMD:px(playerid, params[]) {
-	new Float:posX;
-	if(sscanf(params, "f", posX)) {
-		return 1;
+	new srvObjId = getServerObjectId(playerid);
+	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
+		return GameTextForPlayer(playerid, "~w~Nie edytujesz obiektu.~n~~r~Uzyj /mc lub /msel.", 5000, 3);
 	}
 
-	new srvObjId = tPlayer[playerid][pEditObj];
+	new Float:posX;
+	if(sscanf(params, "f", posX)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /px [Pozycja]");
+	}
+
 	tObject[srvObjId][oPosX] += posX;
-
-	SetDynamicObjectPos(tObject[srvObjId][oId], tObject[srvObjId][oPosX], tObject[srvObjId][oPosY], tObject[srvObjId][oPosZ]);
-
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "~w~Obiekt ~r~%d:%d~w~.__Model: ~y~%d~w~.__Owner: ~y~%d:%d", tObject[srvObjId][oId], srvObjId, tObject[srvObjId][oModelId], tObject[srvObjId][oKind], tObject[srvObjId][oOUid]);
-	TextDrawSetString(objectInfo[playerid][0], mainStr);
-	TextDrawShowForPlayer(playerid, objectInfo[playerid][0]);
-
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "~r~Pozycja: ~w~%0.2f, %0.2f, %0.2f~n~~r~Rotacja: ~w~%0.2f, %0.2f, %0.2f", tObject[srvObjId][oPosX], tObject[srvObjId][oPosY], tObject[srvObjId][oPosZ], tObject[srvObjId][oRotX], tObject[srvObjId][oRotY], tObject[srvObjId][oRotZ]);
-	TextDrawSetString(objectInfo[playerid][1], mainStr);
-	TextDrawShowForPlayer(playerid, objectInfo[playerid][1]);
+	SetDynamicObjectPos(tObject[srvObjId][oObject], tObject[srvObjId][oPosX], tObject[srvObjId][oPosY], tObject[srvObjId][oPosZ]);
 	return 1;
 }
 
 CMD:py(playerid, params[]) {
-	new Float:posY;
-	if(sscanf(params, "f", posY)) {
-		return 1;
+	new srvObjId = getServerObjectId(playerid);
+	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
+		return GameTextForPlayer(playerid, "~w~Nie edytujesz obiektu.~n~~r~Uzyj /mc lub /msel.", 5000, 3);
 	}
 
-	new srvObjId = tPlayer[playerid][pEditObj];
+	new Float:posY;
+	if(sscanf(params, "f", posY)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /py [Pozycja]");
+	}
+
 	tObject[srvObjId][oPosY] += posY;
-
-	SetDynamicObjectPos(tObject[srvObjId][oId], tObject[srvObjId][oPosX], tObject[srvObjId][oPosY], tObject[srvObjId][oPosZ]);
-
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "~w~Obiekt ~r~%d:%d~w~.__Model: ~y~%d~w~.__Owner: ~y~%d:%d", tObject[srvObjId][oId], srvObjId, tObject[srvObjId][oModelId], tObject[srvObjId][oKind], tObject[srvObjId][oOUid]);
-	TextDrawSetString(objectInfo[playerid][0], mainStr);
-	TextDrawShowForPlayer(playerid, objectInfo[playerid][0]);
-
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "~r~Pozycja: ~w~%0.2f, %0.2f, %0.2f~n~~r~Rotacja: ~w~%0.2f, %0.2f, %0.2f", tObject[srvObjId][oPosX], tObject[srvObjId][oPosY], tObject[srvObjId][oPosZ], tObject[srvObjId][oRotX], tObject[srvObjId][oRotY], tObject[srvObjId][oRotZ]);
-	TextDrawSetString(objectInfo[playerid][1], mainStr);
-	TextDrawShowForPlayer(playerid, objectInfo[playerid][1]);
+	SetDynamicObjectPos(tObject[srvObjId][oObject], tObject[srvObjId][oPosX], tObject[srvObjId][oPosY], tObject[srvObjId][oPosZ]);
 	return 1;
 }
 
 CMD:pz(playerid, params[]) {
-	new Float:posZ;
-	if(sscanf(params, "f", posZ)) {
-		return 1;
+	new srvObjId = getServerObjectId(playerid);
+	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
+		return GameTextForPlayer(playerid, "~w~Nie edytujesz obiektu.~n~~r~Uzyj /mc lub /msel.", 5000, 3);
 	}
 
-	new srvObjId = tPlayer[playerid][pEditObj];
+	new Float:posZ;
+	if(sscanf(params, "f", posZ)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /pz [Pozycja]");
+	}
+
 	tObject[srvObjId][oPosZ] += posZ;
-
-	SetDynamicObjectPos(tObject[srvObjId][oId], tObject[srvObjId][oPosX], tObject[srvObjId][oPosY], tObject[srvObjId][oPosZ]);
-
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "~w~Obiekt ~r~%d:%d~w~.__Model: ~y~%d~w~.__Owner: ~y~%d:%d", tObject[srvObjId][oId], srvObjId, tObject[srvObjId][oModelId], tObject[srvObjId][oKind], tObject[srvObjId][oOUid]);
-	TextDrawSetString(objectInfo[playerid][0], mainStr);
-	TextDrawShowForPlayer(playerid, objectInfo[playerid][0]);
-
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "~r~Pozycja: ~w~%0.2f, %0.2f, %0.2f~n~~r~Rotacja: ~w~%0.2f, %0.2f, %0.2f", tObject[srvObjId][oPosX], tObject[srvObjId][oPosY], tObject[srvObjId][oPosZ], tObject[srvObjId][oRotX], tObject[srvObjId][oRotY], tObject[srvObjId][oRotZ]);
-	TextDrawSetString(objectInfo[playerid][1], mainStr);
-	TextDrawShowForPlayer(playerid, objectInfo[playerid][1]);
+	SetDynamicObjectPos(tObject[srvObjId][oObject], tObject[srvObjId][oPosX], tObject[srvObjId][oPosY], tObject[srvObjId][oPosZ]);
 	return 1;
 }
 
 CMD:rx(playerid, params[]) {
-	new Float:rotX;
-	if(sscanf(params, "f", rotX)) {
-		return 1;
+	new srvObjId = getServerObjectId(playerid);
+	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
+		return GameTextForPlayer(playerid, "~w~Nie edytujesz obiektu.~n~~r~Uzyj /mc lub /msel.", 5000, 3);
 	}
 
-	new srvObjId = tPlayer[playerid][pEditObj];
+	new Float:rotX;
+	if(sscanf(params, "f", rotX)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /rx [Rotacja]");
+	}
+
 	tObject[srvObjId][oRotX] += rotX;
-
-	SetDynamicObjectRot(tObject[srvObjId][oId], tObject[srvObjId][oRotX], tObject[srvObjId][oRotY], tObject[srvObjId][oRotZ]);
-
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "~w~Obiekt ~r~%d:%d~w~.__Model: ~y~%d~w~.__Owner: ~y~%d:%d", tObject[srvObjId][oId], srvObjId, tObject[srvObjId][oModelId], tObject[srvObjId][oKind], tObject[srvObjId][oOUid]);
-	TextDrawSetString(objectInfo[playerid][0], mainStr);
-	TextDrawShowForPlayer(playerid, objectInfo[playerid][0]);
-
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "~r~Pozycja: ~w~%0.2f, %0.2f, %0.2f~n~~r~Rotacja: ~w~%0.2f, %0.2f, %0.2f", tObject[srvObjId][oPosX], tObject[srvObjId][oPosY], tObject[srvObjId][oPosZ], tObject[srvObjId][oRotX], tObject[srvObjId][oRotY], tObject[srvObjId][oRotZ]);
-	TextDrawSetString(objectInfo[playerid][1], mainStr);
-	TextDrawShowForPlayer(playerid, objectInfo[playerid][1]);
+	SetDynamicObjectRot(tObject[srvObjId][oObject], tObject[srvObjId][oRotX], tObject[srvObjId][oRotY], tObject[srvObjId][oRotZ]);
 	return 1;
 }
 
 CMD:ry(playerid, params[]) {
-	new Float:rotY;
-	if(sscanf(params, "f", rotY)) {
-		return 1;
+	new srvObjId = getServerObjectId(playerid);
+	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
+		return GameTextForPlayer(playerid, "~w~Nie edytujesz obiektu.~n~~r~Uzyj /mc lub /msel.", 5000, 3);
 	}
 
-	new srvObjId = tPlayer[playerid][pEditObj];
+	new Float:rotY;
+	if(sscanf(params, "f", rotY)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ry [Rotacja]");
+	}
+
 	tObject[srvObjId][oRotY] += rotY;
-
-	SetDynamicObjectRot(tObject[srvObjId][oId], tObject[srvObjId][oRotX], tObject[srvObjId][oRotY], tObject[srvObjId][oRotZ]);
-
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "~w~Obiekt ~r~%d:%d~w~.__Model: ~y~%d~w~.__Owner: ~y~%d:%d", tObject[srvObjId][oId], srvObjId, tObject[srvObjId][oModelId], tObject[srvObjId][oKind], tObject[srvObjId][oOUid]);
-	TextDrawSetString(objectInfo[playerid][0], mainStr);
-	TextDrawShowForPlayer(playerid, objectInfo[playerid][0]);
-
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "~r~Pozycja: ~w~%0.2f, %0.2f, %0.2f~n~~r~Rotacja: ~w~%0.2f, %0.2f, %0.2f", tObject[srvObjId][oPosX], tObject[srvObjId][oPosY], tObject[srvObjId][oPosZ], tObject[srvObjId][oRotX], tObject[srvObjId][oRotY], tObject[srvObjId][oRotZ]);
-	TextDrawSetString(objectInfo[playerid][1], mainStr);
-	TextDrawShowForPlayer(playerid, objectInfo[playerid][1]);
+	SetDynamicObjectRot(tObject[srvObjId][oObject], tObject[srvObjId][oRotX], tObject[srvObjId][oRotY], tObject[srvObjId][oRotZ]);
 	return 1;
 }
 
 CMD:rz(playerid, params[]) {
-	new Float:rotZ;
-	if(sscanf(params, "f", rotZ)) {
-		return 1;
+	new srvObjId = getServerObjectId(playerid);
+	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
+		return GameTextForPlayer(playerid, "~w~Nie edytujesz obiektu.~n~~r~Uzyj /mc lub /msel.", 5000, 3);
 	}
 
-	new srvObjId = tPlayer[playerid][pEditObj];
+	new Float:rotZ;
+	if(sscanf(params, "f", rotZ)) {
+		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /rz [Rotacja]");
+	}
+
 	tObject[srvObjId][oRotZ] += rotZ;
-
-	SetDynamicObjectRot(tObject[srvObjId][oId], tObject[srvObjId][oRotX], tObject[srvObjId][oRotY], tObject[srvObjId][oRotZ]);
-
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "~w~Obiekt ~r~%d:%d~w~.__Model: ~y~%d~w~.__Owner: ~y~%d:%d", tObject[srvObjId][oId], srvObjId, tObject[srvObjId][oModelId], tObject[srvObjId][oKind], tObject[srvObjId][oOUid]);
-	TextDrawSetString(objectInfo[playerid][0], mainStr);
-	TextDrawShowForPlayer(playerid, objectInfo[playerid][0]);
-
-	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "~r~Pozycja: ~w~%0.2f, %0.2f, %0.2f~n~~r~Rotacja: ~w~%0.2f, %0.2f, %0.2f", tObject[srvObjId][oPosX], tObject[srvObjId][oPosY], tObject[srvObjId][oPosZ], tObject[srvObjId][oRotX], tObject[srvObjId][oRotY], tObject[srvObjId][oRotZ]);
-	TextDrawSetString(objectInfo[playerid][1], mainStr);
-	TextDrawShowForPlayer(playerid, objectInfo[playerid][1]);
+	SetDynamicObjectRot(tObject[srvObjId][oObject], tObject[srvObjId][oRotX], tObject[srvObjId][oRotY], tObject[srvObjId][oRotZ]);
 	return 1;
 }
 
 CMD:ac(playerid, params[]) {
 	ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja",
-	"Abonament obiektÃ³w w tej strefie nie pozwala na stworzenie kolejnego obiektu.\nMoÅ¼esz dokupiÄ‡ iloÅ›Ä‡ obiektÃ³w w /area.", "OK", "");
+	"Abonament obiektów w tej strefie nie pozwala na stworzenie kolejnego obiektu.\nMo¿esz dokupiæ iloœæ obiektów w /area.", "OK", "");
 
 	GameTextForPlayer(playerid, "~r~Poza limitem strefy.", 5000, 3);
 	return 1;

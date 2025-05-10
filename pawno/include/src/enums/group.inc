@@ -16,14 +16,12 @@
 enum GroupData {
 	gUid,
 	gName[32],
-	gTag[8],
 	gDate[32],
-	gKind,
+	gType,
 	gMembers,
-	gVehsLimit,
-	gVehsCount,
+	gVehLimit,
+	gVehCount,
 	gMoney,
-	gDoor,
 	gPerms,
 	gColor[10],
 	gRegister

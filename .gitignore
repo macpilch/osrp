@@ -2,6 +2,6 @@
 *.amx
 *.txt
 *.cfg
-*.dll
 *.ico
 *.ini
+*.sql1

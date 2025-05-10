@@ -14,20 +14,15 @@
 
 stock initAnimValues() {
 	printf("[LOG]: Zaczynam ladowac animacje...");
-	new i, anims;
+	new i;
 
-	for(i = 0; i < MAX_ANIMATIONS; i++) {
-		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Animations` WHERE `UID` = '%d'", i + 1);
-		mysql_query(queryStr);
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Animations`");
+	mysql_query(queryStr);
 
-		mysql_store_result();
+	mysql_store_result();
 
-		if(!mysql_num_rows()) {
-			break;
-		}
-
-		mysql_fetch_row(queryStr, "|");
+	while(mysql_fetch_row(queryStr, "|")) {
 		sscanf(queryStr, "p<|>is[32]s[32]s[32]fiiiiii",
 			tAnim[i][Uid],
 			tAnim[i][Name],
@@ -41,14 +36,14 @@ stock initAnimValues() {
 			tAnim[i][Time],
 			tAnim[i][Foresync]
 		);
+
+		i++;
 	}
 
-	anims = i + 1;
-
-	if(anims) {
-		printf("[LOG]: Wczytano %d animacji.", anims);
+	if(i) {
+		printf("[LOG]: Wczytano %d animacji.\n", i + 1);
 	} else {
-		printf("[LOG]: Brak animacji.");
+		printf("[LOG]: Brak animacji.\n");
 	}
 
 	mysql_free_result();

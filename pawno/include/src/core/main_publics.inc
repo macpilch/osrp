@@ -12,7 +12,7 @@
 #define __MAIN_PUBLICS_INC__
 #pragma library osrp
 
-sampCallback:OSRP_OnGameModeInit() {
+sampCallback:OnGameModeInit() {
 	new callSecs = gettime();
 
 	EnableStuntBonusForAll(0);
@@ -43,9 +43,9 @@ sampCallback:OSRP_OnGameModeInit() {
 		mySQLConnect = mysql_connect(gDB_HOST, gDB_NAME, gDB_PASS, gDB_DBNAME, hMySQL, 1);
 
 		if(mySQLConnect) {
-			printf("[LOG]: MYSQL DB Enabled!");
+			printf("[LOG]: MYSQL DB Enabled!\n");
 		} else {
-			printf("[LOG]: MYSQL DB has not been connected !");
+			printf("[LOG]: MYSQL DB has not been connected !\n");
 		}
 	}
 
@@ -71,12 +71,12 @@ sampCallback:OSRP_OnGameModeInit() {
 	initServerPenalties();
 
 	for(new i = 0; i < MAX_PLAYERS; i++) {
-		tPlayer[i][p3dInfo] = CreateDynamic3DTextLabel("", COLOR_WHITE, 0.0, 0.0, 0.15, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);
-		tPlayer[i][pCharDesc] = CreateDynamic3DTextLabel("", COLOR_DESC, 0.0, 0.0, -0.7, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);
+		tPlayer[i][p3dInfo] = CreateDynamic3DTextLabel(" ", COLOR_WHITE, 0.0, 0.0, 0.15, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);
+		tPlayer[i][p3dDesc] = CreateDynamic3DTextLabel(" ", COLOR_DESC, 0.0, 0.0, -0.7, 20.0, i, INVALID_VEHICLE_ID, 0, 0, 0, -1, 20.0, -1, 0);
 	}
 
 	for(new i = 0; i < MAX_VEHICLES; i++) {
-		tVehicle[i][vDesc] = CreateDynamic3DTextLabel("", COLOR_DESC, 0.0, 0.0, 0.1, 20.0, INVALID_PLAYER_ID, i, 0, 0, 0, -1, 20.0, -1, 0);
+		tVehicle[i][vDesc] = CreateDynamic3DTextLabel(" ", COLOR_DESC, 0.0, 0.0, 0.1, 20.0, INVALID_PLAYER_ID, i, 0, 0, 0, -1, 20.0, -1, 0);
 	}
 
 	gymObject[0] = CreateDynamicObject(2629, 758.8672, -76.0945, 1000.6500 - 1, 0.0, 0.0, 90.0, 2, 7, -1, 50.0);
@@ -87,7 +87,7 @@ sampCallback:OSRP_OnGameModeInit() {
 	TextDrawColor(website, -1);
 	TextDrawSetShadow(website, 0);
 	TextDrawSetOutline(website, 1);
-	TextDrawBackgroundColor(website, 0xFFFF0010);
+	TextDrawBackgroundColor(website, COLOR_WEBSITE);
 	TextDrawFont(website, 3);
 	TextDrawSetProportional(website, 1);
 
@@ -97,7 +97,7 @@ sampCallback:OSRP_OnGameModeInit() {
 	TextDrawAlignment(news, 1);
 	TextDrawColor(news, -1);
 	TextDrawUseBox(news, 1);
-	TextDrawBoxColor(news, 0xFFFFFF22);
+	TextDrawBoxColor(news, COLOR_NEWS);
 	TextDrawSetShadow(news, 0);
 	TextDrawSetOutline(news, 1);
 	TextDrawBackgroundColor(news, 255);
@@ -118,7 +118,7 @@ sampCallback:OSRP_OnGameModeInit() {
 	return 1;
 }
 
-sampCallback:OSRP_OnGameModeExit() {
+sampCallback:OnGameModeExit() {
 	new callSecs = gettime();
 
 	mysql_close(hMySQL);

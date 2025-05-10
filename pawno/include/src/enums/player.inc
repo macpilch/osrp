@@ -3,7 +3,7 @@
 	Author: steeZ (macpilch)
 	File: player.inc
 	Date: 25.07.2022
-	Modified: 02.02.2024
+	Modified: 25.07.2022
 */
 
 #if defined __PLAYER_INC__
@@ -22,7 +22,7 @@ enum PlayerData {
 	pIp[16],
 	pDateReg[32],
 	pLastDate[32],
-	pGS,
+	pGs,
 	pBlock,
 	pRank,
 	pSex,
@@ -35,7 +35,7 @@ enum PlayerData {
 	pBans,
 	pKicks,
 	pWarns,
-	pAJs,
+	pAjs,
 	pVw,
 	pInt,
 	pSkin,
@@ -48,9 +48,9 @@ enum PlayerData {
 	pAutomSkill,
 	pShotgSkill,
 	pRifleSkill,
-	pWeapons[13],
 	pWeapSlot,
 	pWeapon,
+	pWeapAmmo,
 	pBw,
 	pAj,
 	pAl,
@@ -66,43 +66,45 @@ enum PlayerData {
 	pBankAcc,
 	pGroupDesc[128],
 	pGroup[MAX_PLAYER_GROUPS],
-	pGroupNow,
-	pGroupActivity[64],
-	pGroupPerm[MAX_PLAYER_GROUPS],
-	pGroupPermNow,
+	pActivity[64],
+	pPerm[MAX_PLAYER_GROUPS],
 	pPayDay[MAX_PLAYER_GROUPS],
-	pPayDayNow,
+	pDuty[MAX_PLAYER_GROUPS],
+	pLastGroup,
+	pLastPerm,
 	pGroupThing,
-	pRedScreen,
+	bool:pRedScreen,
 	pArea,
 	pAreaWarn,
-	pDuty,
 	pBus,
 	pBusNext,
 	pBusTime,
+	pDesc[64],
 	pStatus[64],
 	p3dInfoStr[128],
 	Float:pTraveled,
 	Float:pAddiction,
 	pDoor,
-	pAudio,
+	bool:pAudio,
 	pChatStyle,
-	pComputer,
+	bool:pComputer,
 	pWalkAnim,
-	pStyleFight,
+	bool:pStyleFight,
 	pInterview,
 	pOrder,
 	pThing,
 	pRace,
 	pVehicle,
 	pCashPoint,
-	pDrugs, // 15 min dzialania
-	pDrugsTime,
-	pGloves,
-	pMusic,
-	pSelectSkin,
+	pObject,
+	pDrugs,
+	pDrugsTime, // 15 min dzialania
+	bool:pGloves,
+	bool:pMusic,
+	bool:pSelectSkin,
 	pSkinNum,
-	pEditObj,
+	bool:pEditObject,
+	pLang,
 	Float:pPosX,
 	Float:pPosY,
 	Float:pPosZ,
@@ -113,7 +115,7 @@ enum PlayerData {
 	Float:pBusY,
 	Float:pBusZ,
 	Text3D:p3dInfo,
-	Text3D:pCharDesc
+	Text3D:p3dDesc
 };
 
 enum PenaltyData {
@@ -121,25 +123,15 @@ enum PenaltyData {
 	penSUid,
 	penOUid,
 	penIp[16],
-	penKind,
+	penType,
 	penDays,
 	penDate[64],
 	penReason[128]
 };
 
-enum WeaponData {
-	wId,
-	wBody,
-	Float:wPosX,
-	Float:wPosY,
-	Float:wPosZ,
-	Float:wPosRX,
-	Float:wPosRY,
-	Float:wPosRZ
-};
-
 enum ClothesData {
-	cModel,
+	cSkin,
+	cName[32],
 	cPrice
 };
 

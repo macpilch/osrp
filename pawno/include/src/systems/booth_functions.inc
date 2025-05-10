@@ -14,19 +14,15 @@
 
 stock initBoothValues() {
 	printf("[LOG]: Zaczynam ladowac budki...");
-	
-	for(new i = 0; i < MAX_BOOTHS; i++) {
-		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Booths` WHERE `UID` = '%d'", i + 1);
-		mysql_query(queryStr);
+	new i;
 
-		mysql_store_result();
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Booths`");
+	mysql_query(queryStr);
 
-		if(!mysql_num_rows()) {
-			break;
-		}
+	mysql_store_result();
 
-		mysql_fetch_row(queryStr, "|");
+	while(mysql_fetch_row(queryStr, "|")) {
 		sscanf(queryStr, "p<|>is[32]ffffi",
 			tBooth[i][boUid],
 			tBooth[i][boName],
@@ -39,12 +35,14 @@ stock initBoothValues() {
 
 		Iter_Add(boothItter, i);
 		tBooth[i][boObject] = CreateDynamicObject(1216, tBooth[i][boPosX], tBooth[i][boPosY], tBooth[i][boPosZ], 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
+
+		i++;
 	}
 
 	if(Iter_Count(boothItter)) {
-		printf("[LOG]: Wczytano %d budek.", Iter_Count(boothItter));
+		printf("[LOG]: Wczytano %d budek.\n", Iter_Count(boothItter));
 	} else {
-		printf("[LOG]: Brak budek.");
+		printf("[LOG]: Brak budek.\n");
 	}
 
 	mysql_free_result();
@@ -59,24 +57,24 @@ stock searchPlayerBooth(playerid) {
 					return SendClientMessage(playerid, COLOR_GRAY, "Budki telefoniczne dostêpne s¹ tylko dla graczy, którzy przegrali mniej ni¿ 20 godzin.");
 				}
 
-				new countPlayers;
+				new count;
 
 				mainStr[0] = EOS;
 				strcat(mainStr, "{FFFFFF}Zadzwoñ do WSZYSTKICH taksówek >>\n--\n");
 
 				foreach(new j : groupItter) {
 					foreach(new k : Player) {
-						if(tGroup[j][gKind] == G_TAXI) {
-							if(tPlayer[k][pGroupNow] == tGroup[j][gUid] && isPlayerDuty[k] && tPlayer[k][pDuty] > 0) {
-								countPlayers++;
+						if(isGroupType(j, G_TAXI)) {
+							if(tPlayer[k][pGroup][0] == tGroup[j][gUid] && isPlayerOnDuty(k)) {
+								count++;
 							}
 						}
 
-						format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[j][gUid], countPlayers, tGroup[j][gName]);
+						format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[j][gUid], count, tGroup[j][gName]);
 					}
 				}
 
-				if(!countPlayers) {
+				if(!count) {
 					return GameTextForPlayer(playerid, "~r~Brak taksowkarzy.", 5000, 3);
 				}
 

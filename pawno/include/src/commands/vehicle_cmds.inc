@@ -28,15 +28,15 @@ CMD:v(playerid, params[]) {
 		}
 	}
 
-	new opt[16], parms[16];
+	new opt[16], values[64];
 
-	if(sscanf(params, "s[16]S()[16]", opt, parms)) {
+	if(sscanf(params, "s[16]S()[16]", opt, values)) {
 		if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 			new vehs;
 
 			foreach(new i : vehItter) {
-				if(tVehicle[i][vOUid] == tPlayer[playerid][pUid] && tVehicle[i][vKind] == VEHICLE_OWNER_PLAYER) {
-					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d   %s", mainStr, tVehicle[i][vUid], vehicleNames[tVehicle[i][vModelId] - 400]);
+				if(tVehicle[i][vOUid] == tPlayer[playerid][pUid] && tVehicle[i][vType] == VEHICLE_OWNER_PLAYER) {
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d  %s", mainStr, tVehicle[i][vUid], vehicleNames[tVehicle[i][vModelId] - 400]); // 2 spacje
 					vehs++;
 				}
 			}
@@ -63,7 +63,7 @@ CMD:v(playerid, params[]) {
 			}
 
 			new srvVehId = getServerVehicleId(playerid);
-			if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
+			if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 				return 1;
 			}
 
@@ -83,90 +83,74 @@ CMD:v(playerid, params[]) {
 		} else if(!strcmp(opt, "z", true) || !strcmp(opt, "zamknij", true)) {
 			new srvVehId;
 
-			if(getClosestVehicle(playerid, 5) != INVALID_VEHICLE_ID) {
-				new vehicleid = getClosestVehicle(playerid, 5);
-
+			if(getClosestCar(playerid) != INVALID_VEHICLE_ID) {
+				new vehicleid = getClosestCar(playerid);
 				srvVehId = getClosestServerVehicleId(vehicleid);
 			} else if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
 				new vehicleid = GetPlayerVehicleID(playerid);
-
 				srvVehId = getClosestServerVehicleId(vehicleid);
 			} else {
 				return 1;
 			}
 
-			if(tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && tVehicle[srvVehId][vKind] == VEHICLE_OWNER_PLAYER) {
+			if(tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && tVehicle[srvVehId][vType] == VEHICLE_OWNER_PLAYER) {
 				return GameTextForPlayer(playerid, "~r~Nie posiadasz kluczykow do tego~n~pojazdu.", 5000, 3);
 			}
 
 			if(isBicycle(tVehicle[srvVehId][vModelId])) {
-				return GameTextForPlayer(playerid, "~g~Pojazdy bez silnika nie~n~maja zamkow.", 5000, 6);
+				return GameTextForPlayer(playerid, "~w~Pojazdy bez silnika nie~n~maja zamkow.", 5000, 6);
 			}
 
 			GetVehiclePos(tVehicle[srvVehId][vId], tVehicle[srvVehId][vPosX], tVehicle[srvVehId][vPosY], tVehicle[srvVehId][vPosZ]);
 			tPlayer[playerid][pVehicle] = tVehicle[srvVehId][vUid];
 
-			if(playerToPoint(playerid, 2.0, tVehicle[srvVehId][vPosX], tVehicle[srvVehId][vPosY], tVehicle[srvVehId][vPosZ]) && GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
+			if(playerToPoint(playerid, 2.0, tVehicle[srvVehId][vPosX], tVehicle[srvVehId][vPosY], tVehicle[srvVehId][vPosZ])) {
 				if(tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_ALARM) {
 					ApplyAnimation(playerid, "HEIST9", "Use_SwipeCard", 4.1, 0, 0, 0, 0, 0);
 				} else {
 					ApplyAnimation(playerid, "INT_HOUSE", "wash_up", 4.1, 0, 0, 0, 0, 0);
 				}
 
-				goto closevehicle;
-			}
-
-			if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
-				goto closevehicle;
-			}
-
-closevehicle:
-			if(!tVehicle[srvVehId][vLock]) {
-				GameTextForPlayer(playerid, "~w~Pojazd ~r~zamkniety", 5000, 6);
-
-				tVehicle[srvVehId][vLock] = true;
-			} else {
-				GameTextForPlayer(playerid, "~w~Pojazd ~g~otwarty", 5000, 6);
-
-				tVehicle[srvVehId][vLock] = false;
+				if(!tVehicle[srvVehId][vLock]) {
+					GameTextForPlayer(playerid, "~w~Pojazd ~r~zamkniety", 5000, 6);
+					tVehicle[srvVehId][vLock] = true;
+				} else {
+					GameTextForPlayer(playerid, "~w~Pojazd ~g~otwarty", 5000, 6);
+					tVehicle[srvVehId][vLock] = false;
+				}
 			}
 		} else if(!strcmp(opt, "info", true)) {
 			new str[64], str2[128];
 			new srvVehId;
 
-			if(getClosestVehicle(playerid, 5) != INVALID_VEHICLE_ID) {
-				new vehicleid = getClosestVehicle(playerid, 5);
-
+			if(getClosestCar(playerid) != INVALID_VEHICLE_ID) {
+				new vehicleid = getClosestCar(playerid);
 				srvVehId = getClosestServerVehicleId(vehicleid);
 			} else if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER || GetPlayerState(playerid) == PLAYER_STATE_PASSENGER) {
 				new vehicleid = GetPlayerVehicleID(playerid);
-
 				srvVehId = getClosestServerVehicleId(vehicleid);
 			} else {
 				return SendClientMessage(playerid, COLOR_GRAY, "Musisz znajdowaæ siê w aucie, na którego temat chcesz zyskaæ informacje.");
 			}
 
-			GetVehicleHealth(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngineHp]);
-
-			if(tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && tVehicle[srvVehId][vKind] == VEHICLE_OWNER_PLAYER) {
-				format(mainStr, sizeof(mainStr), "~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
-				tVehicle[srvVehId][vModelId], tVehicle[srvVehId][vId], tVehicle[srvVehId][vColor1], tVehicle[srvVehId][vColor2], tVehicle[srvVehId][vEngineHp]);
-			} else if(tVehicle[srvVehId][vKind] == VEHICLE_OWNER_GROUP) {
-				format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~11:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
-				tVehicle[srvVehId][vUid], tVehicle[srvVehId][vOUid], tVehicle[srvVehId][vModelId], tVehicle[srvVehId][vId], tVehicle[srvVehId][vColor1], tVehicle[srvVehId][vColor2], tVehicle[srvVehId][vEngineHp]);
-			} else {
-				format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~9:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
-				tVehicle[srvVehId][vUid], tVehicle[srvVehId][vOUid], tVehicle[srvVehId][vModelId], tVehicle[srvVehId][vId], tVehicle[srvVehId][vColor1], tVehicle[srvVehId][vColor2], tVehicle[srvVehId][vEngineHp]);
+			if(tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid]) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Ten pojazd nie nale¿y do Ciebie.");
 			}
 
+			GetVehicleHealth(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngineHp]);
+
+			format(mainStr, sizeof(mainStr), "~p~UID~w~: %d   ~p~Owner: ~w~%d:%d  (0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d   ~p~Kolor~w~: %d:%d  ~p~HP~w~: %0.1f",
+			tVehicle[srvVehId][vUid], tVehicle[srvVehId][vType], tVehicle[srvVehId][vOUid], tVehicle[srvVehId][vModelId], tVehicle[srvVehId][vId], tVehicle[srvVehId][vColor1], tVehicle[srvVehId][vColor2], tVehicle[srvVehId][vEngineHp]);
 			TextDrawSetString(vehicleStats[playerid][0], mainStr);
 
 			format(str, sizeof(str), "~b~Przebieg~w~: %dkm ~b~Paliwo~w~: %0.1f", floatToInt(tVehicle[srvVehId][vMileage]), tVehicle[srvVehId][vFuel]);
 			TextDrawSetString(vehicleStats[playerid][1], str);
 
-			format(str2, sizeof(str2), "Alarm: %s___Immobiliser: %s___CB Radio: %s~n~Audio: %s___Limiter: %s___Napraw: %0.1fhp", (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_ALARM) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_IMMOBILISER) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_CBRADIO) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_AUDIO) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_LIMITER) ? ("T") : ("N"),
+			format(str2, sizeof(str2), "Alarm: %s   Immobiliser: %s   CB Radio: %s~n~Audio: %s   Limiter: %s   Napraw: %0.1fhp", (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_ALARM) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_IMMOBILISER) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_CBRADIO) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_AUDIO) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_LIMITER) ? ("T") : ("N"),
 			tVehicle[srvVehId][vRepair]);
 			TextDrawSetString(vehicleStats[playerid][2], str2);
+
+			resetPlayerTextTextDraws(playerid);
 
 			for(new i = 0; i < 3; i++) {
 				TextDrawShowForPlayer(playerid, vehicleStats[playerid][i]);
@@ -176,16 +160,16 @@ closevehicle:
 		} else if(!strcmp(opt, "namierz", true)) {
 			new slot, srvVehId;
 
-			if(sscanf(parms, "i", slot)) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v namierz [Slot]");
+			if(sscanf(values, "i", slot)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v namierz [slot]");
 			}
 
 			if(slot > 10 || slot < 1) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v namierz [Slot]");
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v namierz [slot]");
 			}
 
 			srvVehId = playerVehicles[playerid][slot - 1];
-			if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
+			if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 				return SendClientMessage(playerid, COLOR_GRAY, "W tym slocie nie masz ¿adnego pojazdu.");
 			}
 
@@ -207,16 +191,16 @@ closevehicle:
 		} else if(!strcmp(opt, "reset", true)) {
 			new slot, srvVehId;
 
-			if(sscanf(parms, "i", slot)) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v reset [Slot]");
+			if(sscanf(values, "i", slot)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v reset [slot]");
 			}
 
 			if(slot > 10 || slot < 1) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v reset [Slot]");
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v reset [slot]");
 			}
 
 			srvVehId = playerVehicles[playerid][slot - 1];
-			if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
+			if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 				return SendClientMessage(playerid, COLOR_GRAY, "W tym slocie nie masz ¿adnego pojazdu.");
 			}
 
@@ -233,7 +217,7 @@ closevehicle:
 			tVehicle[srvVehId][vPosX] = DEFAULT_VEH_POS_X;
 			tVehicle[srvVehId][vPosY] = DEFAULT_VEH_POS_Y;
 			tVehicle[srvVehId][vPosZ] = DEFAULT_VEH_POS_Z;
-			tVehicle[srvVehId][vAngle] = DEFAULT_VEH_POS_ANGLE;
+			tVehicle[srvVehId][vAngle] = DEFAULT_VEH_POS_A;
 			tVehicle[srvVehId][vBlock] = 20;
 
 			DestroyDynamicMapIcon(vehMapIcon[srvVehId]);
@@ -252,20 +236,23 @@ closevehicle:
 				return GameTextForPlayer(playerid, "~r~Musisz byc w pojezdzie.", 5000, 3);
 			}
 
-			new vehStr[64];
 			new srvVehId = getServerVehicleId(playerid);
-
-			if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
+			if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 				return 1;
 			}
 
-			if(sscanf(parms, "s[64]", vehStr)) {
+			new vehStr[64];
+
+			if(sscanf(values, "s[64]", vehStr)) {
+				UpdateDynamic3DTextLabelText(tVehicle[srvVehId][vDesc], COLOR_DESC, " ");
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v opis [Treœæ]");
 			}
 
 			if(tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid]) {
 				return GameTextForPlayer(playerid, "~r~To nie jest twoj pojazd.", 5000, 3);
 			}
+
+			UpdateDynamic3DTextLabelText(tVehicle[srvVehId][vDesc], COLOR_DESC, " ");
 
 			format(tVehicle[srvVehId][vDescInfo], 64, vehStr);
 			UpdateDynamic3DTextLabelText(tVehicle[srvVehId][vDesc], COLOR_DESC, tVehicle[srvVehId][vDescInfo]);
@@ -275,7 +262,7 @@ closevehicle:
 			mysql_query(queryStr);
 
 			SendClientMessage(playerid, COLOR_GRAY, "Opis pojazdu ustawiony (aby go usun¹æ, wpisz /opis usun):");
-			SendClientMessage(playerid, COLOR_DO, tVehicle[srvVehId][vDescInfo]);
+			SendClientMessage(playerid, COLOR_DO1, tVehicle[srvVehId][vDescInfo]);
 		} else {
 			SendClientMessage(playerid, COLOR_GRAY, "Tip: /v [zaparkuj/z(amknij)/info/namierz/reset]");
 		}
@@ -289,24 +276,36 @@ CMD:pasy(playerid, params[]) {
 	}
 
 	new srvVehId = getServerVehicleId(playerid);
-	if(srvVehId == INVALID_SERVER_VEHICLE_ID) {
+	if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 		return 1;
 	}
 
-	if(isBicycle(tVehicle[srvVehId][vModelId]) || isBike(tVehicle[srvVehId][vModelId])) {
-		return GameTextForPlayer(playerid, "~g~Ten pojazd nie ma pasow.", 5000, 3);
+	if(isBike(tVehicle[srvVehId][vModelId]) || isBicycle(tVehicle[srvVehId][vModelId])) {
+		return GameTextForPlayer(playerid, "Ten pojazd nie ma pasow.", 5000, 3);
 	}
+
+	ApplyAnimation(playerid, "PED", "CAR_tune_radio", 4.1, 0, 0, 0, 0, 0);
 
 	if(!hasBelts[playerid]) {
 		hasBelts[playerid] = true;
 
 		updatePlayerGameStatus(playerid);
-		GameTextForPlayer(playerid, "~w~Pasy ~g~zapiete", 5000, 6);
+		if(tPlayer[playerid][pLang] == LANG_PL)
+			GameTextForPlayer(playerid, "~w~Pasy ~g~zapiete", 5000, 6);
+		else
+			GameTextForPlayer(playerid, "~w~Seatbelt ~g~fastened", 5000, 6);
 	} else {
 		hasBelts[playerid] = false;
 
 		updatePlayerGameStatus(playerid);
-		GameTextForPlayer(playerid, "~w~Pasy ~r~odpiete", 5000, 6);		
+		if(tPlayer[playerid][pLang] == LANG_PL)
+			GameTextForPlayer(playerid, "~w~Pasy ~r~odpiete", 5000, 6);
+		else
+			GameTextForPlayer(playerid, "~w~Seatbelt ~r~unfastened", 5000, 6);
 	}
 	return 1;
+}
+
+CMD:seatbelt(playerid, params[]) {
+	return pc_cmd_pasy(playerid, params);
 }

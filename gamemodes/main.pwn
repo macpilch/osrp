@@ -6,9 +6,9 @@
 	Modified: 24.07.2022
 */
 
-#if !defined DEBUG
-#define DEBUG
-#endif
+//#if !defined DEBUG
+//#define DEBUG
+//#endif
 
 #include <a_samp>
 #include <foreach>
@@ -61,10 +61,11 @@
 #include "src\systems\3dtext_functions"
 #include "src\systems\race_functions"
 #include "src\systems\gym_functions"
+#include "src\systems\ac_functions"
 #include "src\systems\timers"
 
 main() {
-    new callSecs = GetTickCount();
+    new callSecs = gettime();
 
-	printf("[LOG]: main -- Called! (%d ms).", GetTickCount() - callSecs);
+	printf("[LOG]: main -- Called! (%d ms).", gettime() - callSecs);
 }

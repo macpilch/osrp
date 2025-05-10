@@ -35,8 +35,7 @@ new offerFor[MAX_PLAYERS]; // Przechowuje id osoby ktora otrzymala oferte
 new offerParams[MAX_PLAYERS][3]; // 0 - pieni¹dze, 1 - dodatkowe opcje, 2 - specjalna
 new offerType[MAX_PLAYERS];
 
-new groupOfferFor[MAX_PLAYERS];
-new groupOfferFrom[MAX_PLAYERS];
+new groupOffer[MAX_PLAYERS];
 
 new playerContacts[MAX_PLAYERS][MAX_CONTACTS];
 new playerContactsName[MAX_PLAYERS][MAX_CONTACTS][24];
@@ -48,7 +47,7 @@ new telEnterNumber[MAX_PLAYERS];
 new telEnterGroup[MAX_PLAYERS];
 
 new lastPmId[MAX_PLAYERS];
-new adminPmStr[MAX_PLAYERS][256];
+new adminPmStr[MAX_PLAYERS][128];
 
 new gymObject[2];
 new endBWTime[MAX_PLAYERS];
@@ -88,6 +87,8 @@ new calledCmds[MAX_PLAYERS];
 new calledSecsCmds[MAX_PLAYERS];
 
 new reportedPlayers[MAX_PLAYERS];
+new countPack[MAX_PLAYERS];
+new oldPackOwner[MAX_PLAYERS];
 
 new vehCP[MAX_VEHICLES];
 new vehMapIcon[MAX_VEHICLES];
@@ -103,10 +104,9 @@ new Float:playerRcActualTime[MAX_PLAYERS];
 new bool:isSpawned[MAX_PLAYERS];
 new bool:isLogged[MAX_PLAYERS];
 new bool:isAdminDuty[MAX_PLAYERS]; // false(0) is admin duty off or true(1) is admin duty on only when player have ranks: SUPPORT_RANK, ADMIN_RANK, HEADADMIN_RANK
-new bool:isPlayerDuty[MAX_PLAYERS]; 
+new bool:isPlayerDuty[MAX_PLAYERS][MAX_PLAYER_GROUPS];
 new	bool:isSpectating[MAX_PLAYERS];
 new	bool:isGodMode[MAX_PLAYERS];
-new	bool:isBW[MAX_PLAYERS];
 new bool:isFreeze[MAX_PLAYERS];
 new bool:isInBus[MAX_PLAYERS];
 new bool:busCameraChoose[MAX_PLAYERS];
@@ -114,13 +114,12 @@ new bool:busCameraSelect[MAX_PLAYERS];
 new bool:usedCmdLogin[MAX_PLAYERS];
 new bool:usedCmdReport[MAX_PLAYERS];
 new bool:hasBelts[MAX_PLAYERS];
-new bool:isCuffed[MAX_PLAYERS];
 stock bool:hasBank[MAX_PLAYERS];
 new bool:isDizzines[MAX_PLAYERS];
 new bool:usesTelephone[MAX_PLAYERS];
 new bool:chatMessages[MAX_PLAYERS][2]; // 0 - PM, 1 - Grupowe
 new bool:drivingCourse[MAX_PLAYERS];
-new bool:showGroupsInfo[MAX_PLAYERS];
+new bool:showGroupsInfo[MAX_PLAYERS][MAX_PLAYER_GROUPS];
 new bool:insidedHotel[MAX_PLAYERS];
 new bool:deliveringPackage[MAX_PLAYERS];
 new bool:isRace[MAX_PLAYERS];
@@ -130,7 +129,6 @@ new bool:acceptTraining[MAX_PLAYERS];
 new bool:usedAdminToken[MAX_PLAYERS];
 new bool:pressedBarbell[MAX_PLAYERS];
 new bool:chatEnabled[MAX_PLAYERS];
-new bool:telephoneState[MAX_PLAYERS];
 new bool:isPlayerFight[MAX_PLAYERS];
 new bool:haveTaxiCourse[MAX_PLAYERS];
 new bool:selectChatStyle[MAX_PLAYERS];
@@ -155,15 +153,16 @@ new Text:thingTips[MAX_PLAYERS][2];
 new Text:thingNoNearby[MAX_PLAYERS][2];
 new Text:thingGivePlayerTips[MAX_PLAYERS][2];
 new Text:scrimmageTips[MAX_PLAYERS][5];
-new Text:gmDutyInfo[MAX_PLAYERS][2];
 new Text:busStopInfo[MAX_PLAYERS][3];
 new Text:busStopSelect[MAX_PLAYERS][3];
+new Text:busStopNearestInfo[MAX_PLAYERS][2];
 new Text:firstHoursInfo[3];
 new Text:showInfoGym[MAX_PLAYERS][4];
-new Text:vehicleTips[MAX_PLAYERS][2];
+new Text:vehicleTips[MAX_PLAYERS];
 new Text:vehicleStats[MAX_PLAYERS][3];
 new Text:vehicleSpawn[MAX_PLAYERS][2];
 new Text:vehicleDeath[MAX_PLAYERS][3];
+new Text:windowInfo[MAX_PLAYERS][2];
 new Text:areaSpeedWarning[MAX_PLAYERS][2];
 new Text:areaMandate[MAX_PLAYERS][3];
 new Text:courseDrivingInfo[MAX_PLAYERS][2];
@@ -172,13 +171,15 @@ new Text:oocWarning[MAX_PLAYERS][2];
 new Text:damageRedScreen[MAX_PLAYERS];
 new Text:photoRadarScreen[MAX_PLAYERS];
 new Text:doorInfo[MAX_PLAYERS][3];
+new Text:doorExtraInfo[MAX_PLAYERS];
 new Text:telephoneCall[MAX_PLAYERS][2];
-new Text:groupsInfo[MAX_PLAYERS][7];
+new Text:groupsInfo[MAX_PLAYERS][37];
 new Text:usedRollersInfo[MAX_PLAYERS][2];
 new Text:hotelInfo[MAX_PLAYERS][3];
 new Text:collisionInfo[MAX_PLAYERS];
 new Text:afkPrivateMessage[MAX_PLAYERS][2];
 new Text:buildingMusicInfo[MAX_PLAYERS][2];
+new Text:bwInfo[MAX_PLAYERS][4];
 new Text:endBWTimeInfo[MAX_PLAYERS];
 new Text:taxiInfo[MAX_PLAYERS][3];
 new Text:courierInfo[MAX_PLAYERS];
@@ -186,9 +187,10 @@ new Text:courierTips[MAX_PLAYERS][3];
 new Text:specialServicesInfo[MAX_PLAYERS];
 new Text:skinInfo[MAX_PLAYERS][2];
 new Text:objectInfo[MAX_PLAYERS][2];
+new Text:gateInfo[MAX_PLAYERS][2];
 
 // type - Bar
-new Bar:vehicleFuelProgressBar[MAX_PLAYERS];
+new Bar:fuelProgressBar[MAX_PLAYERS];
 
 // type - Iterator
 new Iterator:vehItter<MAX_VEHICLES>;

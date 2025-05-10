@@ -19,21 +19,29 @@ CMD:ban(playerid, params[]) {
 		new reason[128];
 
 		if(sscanf(params, "iis[128]", pId, days, reason)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ban [Gracz] [Iloœæ dni] [Powód]");
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ban [Gracz] [Iloœæ dni] [Powód] | 0 dni daje bana na zawsze");
 		}
 
 		if(!IsPlayerConnected(pId)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
+		if(days > 999 || days < 0) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ban [Gracz] [Iloœæ dni] [Powód] | 0 dni daje bana na zawsze");
+		}
+
 		if(tPlayer[pId][pRank] >= RANK_GAMEMASTER1) {
 			return 1;
 		}
 
-		if(!days && tPlayer[playerid][pRank] > RANK_GAMEMASTER4) {
-			givePlayerPenalty(playerid, pId, PEN_BAN, 0, reason);
+		if(tPlayer[pId][pBlock] & BLOCK_CURSE) {
+			return givePlayerPenalty(playerid, pId, PEN_BANCURSE, 14, 0, reason);
+		}
+
+		if(!days && tPlayer[playerid][pRank] < RANK_GAMEMASTER4) {
+			givePlayerPenalty(playerid, pId, PEN_BAN, 0, 0, reason);
 		} else {
-			givePlayerPenalty(playerid, pId, PEN_BAN, days, reason);
+			givePlayerPenalty(playerid, pId, PEN_BAN, days, 0, reason);
 		}
 	}
 	return 1;
@@ -56,7 +64,11 @@ CMD:kick(playerid, params[]) {
 			return 1;
 		}
 
-		givePlayerPenalty(playerid, pId, PEN_KICK, 0, reason);
+		if(tPlayer[pId][pBlock] & BLOCK_CURSE) {
+			return givePlayerPenalty(playerid, pId, PEN_BANCURSE, 14, 0, reason);
+		}
+
+		givePlayerPenalty(playerid, pId, PEN_KICK, 0, 0, reason);
 	}
 	return 1;
 }
@@ -78,7 +90,11 @@ CMD:warn(playerid, params[]) {
 			return 1;
 		}
 
-		givePlayerPenalty(playerid, pId, PEN_WARN, 0, reason);
+		if(tPlayer[pId][pBlock] & BLOCK_CURSE) {
+			return givePlayerPenalty(playerid, pId, PEN_BANCURSE, 14, 0, reason);
+		}
+
+		givePlayerPenalty(playerid, pId, PEN_WARN, 0, 0, reason);
 	}
 	return 1;
 }
@@ -89,21 +105,29 @@ CMD:block(playerid, params[]) {
 		new reason[128];
 
 		if(sscanf(params, "iis[128]", pId, days, reason)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /block [Gracz] [Iloœæ dni] [Powód]");
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /block [Gracz] [Iloœæ dni] [Powód] | 0 dni daje blokadê na zawsze");
 		}
 
 		if(!IsPlayerConnected(pId)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
+		if(days > 999 || days < 0) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /block [Gracz] [Iloœæ dni] [Powód] | 0 dni daje blokadê na zawsze");
+		}
+
 		if(tPlayer[pId][pRank] >= RANK_GAMEMASTER1) {
 			return 1;
 		}
 
+		if(tPlayer[pId][pBlock] & BLOCK_CURSE) {
+			return givePlayerPenalty(playerid, pId, PEN_BANCURSE, 14, 0, reason);
+		}
+
 		if(!days && tPlayer[playerid][pRank] > RANK_GAMEMASTER4) {
-			givePlayerPenalty(playerid, pId, PEN_BLCKACC, 0, reason);
+			givePlayerPenalty(playerid, pId, PEN_BLCKACC, 0, 0, reason);
 		} else {
-			givePlayerPenalty(playerid, pId, PEN_BLCKACC, days, reason);
+			givePlayerPenalty(playerid, pId, PEN_BLCKACC, days, 0, reason);
 		}
 	}
 	return 1;
@@ -115,18 +139,26 @@ CMD:norun(playerid, params[]) {
 		new reason[128];
 
 		if(sscanf(params, "iis[128]", pId, days, reason)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /norun [Gracz] [Iloœæ dni] [Powód]");
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /norun [Gracz] [Iloœæ dni] [Powód] | 0 dni daje blokadê na zawsze");
 		}
 
 		if(!IsPlayerConnected(pId)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
+		if(days > 999 || days < 0) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /norun [Gracz] [Iloœæ dni] [Powód] | 0 dni daje blokadê na zawsze");
+		}
+
 		if(tPlayer[pId][pRank] >= RANK_GAMEMASTER1) {
 			return 1;
 		}
 
-		givePlayerPenalty(playerid, pId, PEN_RUNNBLW, days, reason);
+		if(tPlayer[pId][pBlock] & BLOCK_CURSE) {
+			return givePlayerPenalty(playerid, pId, PEN_BANCURSE, 14, 0, reason);
+		}
+
+		givePlayerPenalty(playerid, pId, PEN_RUNNBLW, days, 0, reason);
 	}
 	return 1;
 }
@@ -137,18 +169,26 @@ CMD:nob(playerid, params[]) {
 		new reason[128];
 
 		if(sscanf(params, "iis[128]", pId, days, reason)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /nob [Gracz] [Iloœæ dni] [Powód]");
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /nob [Gracz] [Iloœæ dni] [Powód] | 0 dni daje blokadê na zawsze");
 		}
 
 		if(!IsPlayerConnected(pId)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
-		if(tPlayer[pId][pRank] >= RANK_GAMEMASTER1) {
-			return 1;
+		if(days > 999 || days < 0) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /nob [Gracz] [Iloœæ dni] [Powód] | 0 dni daje blokadê na zawsze");
 		}
 
-		givePlayerPenalty(playerid, pId, PEN_BLCKOOC, days, reason);
+		if(tPlayer[pId][pRank] >= RANK_GAMEMASTER1) {
+			//return 1;
+		}
+
+		if(tPlayer[pId][pBlock] & BLOCK_CURSE) {
+			return givePlayerPenalty(playerid, pId, PEN_BANCURSE, 14, 0, reason);
+		}
+
+		givePlayerPenalty(playerid, pId, PEN_BLCKOOC, days, 0, reason);
 	}
 	return 1;
 }
@@ -159,18 +199,26 @@ CMD:now(playerid, params[]) {
 		new reason[128];
 
 		if(sscanf(params, "iis[128]", pId, days, reason)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /now [Gracz] [Iloœæ dni] [Powód]");
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /now [Gracz] [Iloœæ dni] [Powód] | 0 dni daje blokadê na zawsze");
 		}
 
 		if(!IsPlayerConnected(pId)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
+		if(days > 999 || days < 0) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /now [Gracz] [Iloœæ dni] [Powód] | 0 dni daje blokadê na zawsze");
+		}
+
 		if(tPlayer[pId][pRank] >= RANK_GAMEMASTER1) {
 			return 1;
 		}
 
-		givePlayerPenalty(playerid, pId, PEN_WRITING, days, reason);
+		if(tPlayer[pId][pBlock] & BLOCK_CURSE) {
+			return givePlayerPenalty(playerid, pId, PEN_BANCURSE, 14, 0, reason);
+		}
+
+		givePlayerPenalty(playerid, pId, PEN_WRITING, days, 0, reason);
 	}
 	return 1;
 }
@@ -181,18 +229,26 @@ CMD:norp(playerid, params[]) {
 		new reason[128];
 
 		if(sscanf(params, "iis[128]", pId, days, reason)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /norp [Gracz] [Iloœæ dni] [Powód]");
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /norp [Gracz] [Iloœæ dni] [Powód] | 0 dni daje blokadê na zawsze");
 		}
 
 		if(!IsPlayerConnected(pId)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
+		if(days > 999 || days < 0) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /norp [Gracz] [Iloœæ dni] [Powód] | 0 dni daje blokadê na zawsze");
+		}
+
 		if(tPlayer[pId][pRank] >= RANK_GAMEMASTER1) {
 			return 1;
 		}
 
-		givePlayerPenalty(playerid, pId, PEN_RPACTN, days, reason);
+		if(tPlayer[pId][pBlock] & BLOCK_CURSE) {
+			return givePlayerPenalty(playerid, pId, PEN_BANCURSE, 14, 0, reason);
+		}
+
+		givePlayerPenalty(playerid, pId, PEN_RPACTN, days, 0, reason);
 	}
 	return 1;
 }
@@ -203,18 +259,26 @@ CMD:noveh(playerid, params[]) {
 		new reason[128];
 
 		if(sscanf(params, "iis[128]", pId, days, reason)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /noveh [Gracz] [Iloœæ dni] [Powód]");
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /noveh [Gracz] [Iloœæ dni] [Powód] | 0 dni daje blokadê na zawsze");
 		}
 
 		if(!IsPlayerConnected(pId)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
+		if(days > 999 || days < 0) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /noveh [Gracz] [Iloœæ dni] [Powód] | 0 dni daje blokadê na zawsze");
+		}
+
 		if(tPlayer[pId][pRank] >= RANK_GAMEMASTER1) {
 			return 1;
 		}
 
-		givePlayerPenalty(playerid, pId, PEN_BLCKVEH, days, reason);
+		if(tPlayer[pId][pBlock] & BLOCK_CURSE) {
+			return givePlayerPenalty(playerid, pId, PEN_BANCURSE, 14, 0, reason);
+		}
+
+		givePlayerPenalty(playerid, pId, PEN_BLCKVEH, days, 0, reason);
 	}
 	return 1;
 }
@@ -225,18 +289,26 @@ CMD:klatwa(playerid, params[]) {
 		new reason[128];
 
 		if(sscanf(params, "iis[128]", pId, days, reason)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /klatwa [Gracz] [Iloœæ dni] [Powód]");
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /klatwa [Gracz] [Iloœæ dni] [Powód] | 0 dni daje kl¹twe na zawsze");
 		}
 
 		if(!IsPlayerConnected(pId)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
-		if(tPlayer[pId][pRank] >= RANK_GAMEMASTER1) {
-			return 1;
+		if(days > 999 || days < 0) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /klatwa [Gracz] [Iloœæ dni] [Powód] | 0 dni daje kl¹twe na zawsze");
 		}
 
-		givePlayerPenalty(playerid, pId, PEN_CURSE, days, reason);
+		if(tPlayer[pId][pRank] >= RANK_GAMEMASTER1) {
+			//return 1;
+		}
+
+		if(tPlayer[pId][pBlock] & BLOCK_CURSE) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Ten gracz posiada ju¿ aktywn¹ kl¹twe.");
+		}
+
+		givePlayerPenalty(playerid, pId, PEN_CURSE, days, 0, reason);
 	}
 	return 1;
 }
@@ -247,18 +319,26 @@ CMD:aj(playerid, params[]) {
 		new reason[128];
 
 		if(sscanf(params, "is[128]i", pId, reason, time)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /aj [Gracz] [Powód] [Czas]");
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /aj [Gracz] [Powód] [Czas, 0 - daje czas dozywotni]");
 		}
 
 		if(!IsPlayerConnected(pId)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
+		if(sscanf(params, "is[128]i", pId, reason, time)) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /aj [Gracz] [Powód] [Czas]");
+		}
+
 		if(tPlayer[pId][pRank] >= RANK_GAMEMASTER1) {
 			return 1;
 		}
 
-		givePlayerPenalty(playerid, pId, PEN_ADMJAIL, time, reason);
+		if(tPlayer[pId][pBlock] & BLOCK_CURSE) {
+			return givePlayerPenalty(playerid, pId, PEN_BANCURSE, 14, 0, reason);
+		}
+
+		givePlayerPenalty(playerid, pId, PEN_ADMJAIL, time, 0, reason);
 	}
 	return 1;
 }
@@ -282,26 +362,34 @@ CMD:unaj(playerid, params[]) {
 		tPlayer[pId][pAj] = 0;
 
 		SetPlayerPos(playerid, tPlayer[pId][pPosX], tPlayer[pId][pPosY], tPlayer[pId][pPosZ]);
-		SetPlayerVirtualWorld(pId, 0);
-		SetPlayerInterior(pId, 0);
+		OSRP_SetPlayerVirtualWorld(pId, 0);
+		OSRP_SetPlayerInterior(pId, 0);
 	}
 	return 1;
 }
 
-CMD:score(playerid, params[]) {
+CMD:gs(playerid, params[]) {
 	if(tPlayer[playerid][pRank] >= RANK_GAMEMASTER6 && isAdminDuty[playerid]) {
 		new pId, amount;
 		new reason[128];
 
 		if(sscanf(params, "iis[128]", pId, amount, reason)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /score [Gracz] [Iloœæ] [Powód]");
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /gs [Gracz] [Iloœæ] [Powód]");
 		}
 
 		if(!IsPlayerConnected(pId)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
-		givePlayerPenalty(playerid, pId, PEN_SCORE, amount, reason);
+		if(amount > 999 || amount < -999) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /gs [Gracz] [Iloœæ] [Powód]");
+		}
+
+		if(tPlayer[pId][pBlock] & BLOCK_CURSE) {
+			return givePlayerPenalty(playerid, pId, PEN_BANCURSE, 14, 0, reason);
+		}
+
+		givePlayerPenalty(playerid, pId, PEN_SCORE, amount, 0, reason);
 	}
 	return 1;
 }
@@ -318,7 +406,7 @@ CMD:bw(playerid, params[]) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
-		if(!isBW[pId] && !tPlayer[pId][pBw]) {
+		if(!tPlayer[pId][pBw]) {
 			setPlayerBW(pId, 30);
 
 			foreach(new i : Player) {
@@ -342,16 +430,15 @@ CMD:bw(playerid, params[]) {
 			SendClientMessage(pId, COLOR_GREEN, mainStr);
 		} else {
 			OSRP_SetPlayerHealth(pId, 100.0);
-			OSRP_TogglePlayerControllable(pId, true);
+			OSRP_TogglePlayerControllable(pId, 1);
 
 			SetPlayerDrunkLevel(pId, 0);
 			ClearAnimations(pId);
 
 			SetCameraBehindPlayer(pId);
-			ApplyAnimation(playerid, "MD_END", "END_SC1_PLY", 4.1, 0, 1, 1, 0, 0, 1);
+			ApplyAnimation(pId, "MD_END", "END_SC1_PLY", 4.1, 0, 1, 1, 0, 0, 1);
 
 			tPlayer[pId][pBw] = 0;
-			isBW[pId] = false;
 
 			foreach(new i : Player) {
 				if(tPlayer[i][pRank] >= RANK_GAMEMASTER1 && tPlayer[i][pRank] <= RANK_ADMIN4) {
@@ -401,8 +488,11 @@ CMD:rc(playerid, params[]) {
 			vw = GetPlayerVirtualWorld(pId);
 			int = GetPlayerInterior(pId);
 
-			OSRP_TogglePlayerControllable(playerid, true);
-			TogglePlayerSpectating(playerid, 1);
+			tPlayer[playerid][pVw] = GetPlayerVirtualWorld(playerid);
+			tPlayer[playerid][pInt] = GetPlayerInterior(playerid);
+
+			GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
+			OSRP_TogglePlayerSpectating(playerid, true);
 
 			if(GetPlayerState(pId) == PLAYER_STATE_DRIVER || GetPlayerState(pId) == PLAYER_STATE_PASSENGER) {
 				PlayerSpectateVehicle(playerid, GetPlayerVehicleID(pId));
@@ -412,17 +502,15 @@ CMD:rc(playerid, params[]) {
 
 			SetPlayerVirtualWorld(playerid, vw);
 			SetPlayerInterior(playerid, int);
-
-			isSpectating[playerid] = true;
 		} else
-		{	
-			TogglePlayerSpectating(playerid, 0);
-			OSRP_TogglePlayerControllable(playerid, false);
+		{
+			SetCameraBehindPlayer(playerid);
+			SetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
 
-			SetPlayerVirtualWorld(playerid, 0);
-			SetPlayerInterior(playerid, 0);
+			OSRP_TogglePlayerSpectating(playerid, false);
 
-			isSpectating[playerid] = false;
+			SetPlayerVirtualWorld(playerid, tPlayer[playerid][pVw]);
+			SetPlayerInterior(playerid, tPlayer[playerid][pInt]);
 		}
 	}
 	return 1;
@@ -438,7 +526,7 @@ CMD:glob(playerid, params[]) {
 
 		mainStr[0] = EOS;
 		format(mainStr, sizeof(mainStr), "[[ %s: %s ]]", tPlayer[playerid][pCharName], str);
-		sendClientMessageToAllOOC(playerid, COLOR_OOC, mainStr);
+		sendClientMessageToAllOOC(mainStr);
 	}
 	return 1;
 }
@@ -457,7 +545,7 @@ CMD:gm(playerid, params[]) {
 		foreach(new i : Player) {
 			if(tPlayer[i][pRank] >= RANK_GAMEMASTER1 && tPlayer[i][pRank] <= RANK_ADMIN4) {
 				if(isAdminDuty[i]) {
-					SendClientMessage(i, 0x20B2AAFF, mainStr);
+					SendClientMessage(i, COLOR_GM, mainStr);
 				}
 			}
 		}
@@ -478,21 +566,22 @@ CMD:to(playerid, params[]) {
 		}
 
 		new int, vw;
+		new Float:pX, Float:pY, Float:pZ;
 
 		vw = GetPlayerVirtualWorld(pId);
 		int = GetPlayerInterior(pId);
 
 		SetCameraBehindPlayer(playerid);
-		GetPlayerPos(pId, tPlayer[pId][pPosX], tPlayer[pId][pPosY], tPlayer[pId][pPosZ]);
+		GetPlayerPos(pId, pX, pY, pZ);
 
 		if(!IsPlayerInAnyVehicle(playerid)) {
-			SetPlayerPos(playerid, tPlayer[pId][pPosX], tPlayer[pId][pPosY] + 2.0, tPlayer[pId][pPosZ]);
+			SetPlayerPos(playerid, pX, pY + 2.0, pZ);
 		} else {
-			SetVehiclePos(GetPlayerVehicleID(playerid), tPlayer[pId][pPosX], tPlayer[pId][pPosY] + 2.0, tPlayer[pId][pPosZ]);
+			SetVehiclePos(GetPlayerVehicleID(playerid), pX, pY + 2.0, pZ);
 		}
 
-		SetPlayerInterior(playerid, int);
-		SetPlayerVirtualWorld(playerid, vw);
+		OSRP_SetPlayerInterior(playerid, int);
+		OSRP_SetPlayerVirtualWorld(playerid, vw);
 
 		SendClientMessage(pId, COLOR_GREEN, "Administracja teleportowa³a siê do Ciebie.");
 	}
@@ -512,21 +601,22 @@ CMD:tm(playerid, params[]) {
 		}
 
 		new int, vw;
+		new Float:pX, Float:pY, Float:pZ;
 
 		vw = GetPlayerVirtualWorld(playerid);
 		int = GetPlayerInterior(playerid);
 
 		SetCameraBehindPlayer(pId);
-		GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
+		GetPlayerPos(playerid, pX, pY, pZ);
 
 		if(!IsPlayerInAnyVehicle(pId)) {
-			SetPlayerPos(pId, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY] + 2.0, tPlayer[playerid][pPosZ]);
+			SetPlayerPos(pId, pX, pY + 2.0, pZ);
 		} else {
-			SetVehiclePos(GetPlayerVehicleID(pId), tPlayer[playerid][pPosX], tPlayer[playerid][pPosY] + 2.0, tPlayer[playerid][pPosZ]);
+			SetVehiclePos(GetPlayerVehicleID(pId), pX, pY + 2.0, pZ);
 		}
 
-		SetPlayerInterior(pId, int);
-		SetPlayerVirtualWorld(pId, vw);
+		OSRP_SetPlayerInterior(pId, int);
+		OSRP_SetPlayerVirtualWorld(pId, vw);
 
 		SendClientMessage(pId, COLOR_GREEN, "Administracja teleportowa³a Ciebie do siebie.");
 	}
@@ -546,21 +636,22 @@ CMD:toto(playerid, params[]) {
 		}
 
 		new int, vw;
+		new Float:pX, Float:pY, Float:pZ;
 
 		vw = GetPlayerVirtualWorld(pId2);
 		int = GetPlayerInterior(pId2);
 
 		SetCameraBehindPlayer(pId);
-		GetPlayerPos(pId2, tPlayer[pId2][pPosX], tPlayer[pId2][pPosY], tPlayer[pId2][pPosZ]);
+		GetPlayerPos(pId2, pX, pY, pZ);
 
 		if(!IsPlayerInAnyVehicle(pId)) {
-			SetPlayerPos(pId, tPlayer[pId2][pPosX], tPlayer[pId2][pPosY] + 2.0, tPlayer[pId2][pPosZ]);
+			SetPlayerPos(pId, pX, pY + 2.0, pZ);
 		} else {
-			SetVehiclePos(GetPlayerVehicleID(pId), tPlayer[pId2][pPosX], tPlayer[pId2][pPosY] + 2.0, tPlayer[pId2][pPosZ]);
+			SetVehiclePos(GetPlayerVehicleID(pId), pX, pY + 2.0, pZ);
 		}
 
-		SetPlayerInterior(pId, int);
-		SetPlayerVirtualWorld(pId, vw);
+		OSRP_SetPlayerInterior(pId, int);
+		OSRP_SetPlayerVirtualWorld(pId, vw);
 	}
 	return 1;
 }
@@ -577,8 +668,10 @@ CMD:slap(playerid, params[]) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
-		GetPlayerPos(pId, tPlayer[pId][pPosX], tPlayer[pId][pPosY], tPlayer[pId][pPosZ]);
-		SetPlayerPos(pId, tPlayer[pId][pPosX], tPlayer[pId][pPosY], tPlayer[pId][pPosZ] + 15.0);
+		new Float:pX, Float:pY, Float:pZ;
+
+		GetPlayerPos(pId, pX, pY, pZ);
+		SetPlayerPos(pId, pX, pY, pZ + 10.0);
 	}
 	return 1;
 }
@@ -603,6 +696,7 @@ CMD:freeze(playerid, params[]) {
 				mainStr[0] = EOS;
 				format(mainStr, sizeof(mainStr), "Odmrozi³eœ gracza %s.", tPlayer[toPlayerid][pCharName]);
 			}
+
 			case 1: {
 				OSRP_TogglePlayerControllable(toPlayerid, 0);
 				SendClientMessage(toPlayerid, COLOR_GREEN, "Administracja zamrozi³a Ciê.");
@@ -620,13 +714,12 @@ CMD:freeze(playerid, params[]) {
 CMD:god(playerid, params[]) {
 	if(tPlayer[playerid][pRank] >= RANK_ADMIN1 && isAdminDuty[playerid]) {
 		if(!isGodMode[playerid]) {
-			GetPlayerHealth(playerid, tPlayer[playerid][pHp]);
-			SetPlayerHealth(playerid, 9999999);
+			OSRP_SetPlayerHealth(playerid, 9999999.0);
 			SendClientMessage(playerid, COLOR_GREEN, "W³¹czono godmode.");
 
 			isGodMode[playerid] = true;
 		} else {
-			SetPlayerHealth(playerid, tPlayer[playerid][pHp]);
+			OSRP_SetPlayerHealth(playerid, 100.0);
 			SendClientMessage(playerid, COLOR_GREEN, "Wy³¹czono godmode.");
 
 			isGodMode[playerid] = false;
@@ -658,14 +751,24 @@ CMD:res(playerid, params[]) {
 		}
 
 		SetCameraBehindPlayer(pId);
-		SetPlayerPos(pId, DEFAULT_POS_X, DEFAULT_POS_Y, DEFAULT_POS_Z);
-		OSRP_SetPlayerVirtualWorld(pId, 0);
-		OSRP_SetPlayerInterior(pId, 0);
 
-		PlayerPlaySound(playerid, 1190, 0.0, 0.0, 0.0);
-		PlayerPlaySound(pId, 1190, 0.0, 0.0, 0.0);
+		if(tPlayer[pId][pHotel]) {
+			SetPlayerPos(pId, 2216.12, -1076.30, 1050.48);
+			OSRP_SetPlayerVirtualWorld(pId, pId + 1);
+			OSRP_SetPlayerInterior(pId, 1);
 
-		SendClientMessage(pId, COLOR_GREEN, "Administracja zresetowa³a Ciê na spawn.");
+			tPlayer[pId][pDoor] = tPlayer[pId][pHotel];
+			insidedHotel[pId] = true;
+		} else {
+			SetPlayerPos(pId, DEFAULT_POS_X, DEFAULT_POS_Y, DEFAULT_POS_Z);
+			OSRP_SetPlayerVirtualWorld(pId, 0);
+			OSRP_SetPlayerInterior(pId, 0);
+		}
+
+		if(tPlayer[pId][pWeapon] && tPlayer[pId][pWeapSlot] != 0) {
+			OSRP_ResetPlayerWeapons(pId);
+			resetThingValues(pId, TKIND_NONE);
+		}
 	}
 	return 1;
 }
@@ -675,16 +778,16 @@ CMD:set(playerid, params[]) {
 		return 1;
 	}
 
-	new type[32], parms[64];
+	new opt[32], values[64];
 
-	if(sscanf(params, "s[32]S()[64]", type, parms)) {
+	if(sscanf(params, "s[32]S()[64]", opt, values)) {
 		return 1;
 	}
 
-	if(!strcmp(type, "spawn", true)) {
+	if(!strcmp(opt, "spawn", true)) {
 		new pId, uid;
 
-		if(sscanf(parms, "ii", pId, uid)) {
+		if(sscanf(values, "ii", pId, uid)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set spawn [Gracz] [UID drzwi/0]");
 		}
 
@@ -697,21 +800,37 @@ CMD:set(playerid, params[]) {
 
 		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ spawn graczowi.");
 		SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twój spawn.");
-	} else if(!strcmp(type, "weather", true)) {
+	} else if(!strcmp(opt, "time", true)) {
+		if(tPlayer[playerid][pRank] >= RANK_ADMIN1 && isAdminDuty[playerid]) {
+			new hour;
+
+			if(sscanf(values, "i", hour)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set time [Godzina]");
+			}
+
+			serverTime = hour;
+
+			foreach(new i : Player) {
+				if(isLogged[i] && isSpawned[i]) {
+					SetPlayerTime(i, serverTime, 0);
+				}
+			}
+		}
+	} else if(!strcmp(opt, "weather", true)) {
 		if(tPlayer[playerid][pRank] >= RANK_ADMIN1 && isAdminDuty[playerid]) {
 			new weather;
 
-			if(sscanf(parms, "i", weather)) {
+			if(sscanf(values, "i", weather)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set weather [Pogoda]");
 			}
 
 			serverWeather = weather;
 			SetWeather(serverWeather);
 		}
-	} else if(!strcmp(type, "job", true)) {
+	} else if(!strcmp(opt, "job", true)) {
 		new pId, job;
 
-		if(sscanf(parms, "ii", pId, job)) {
+		if(sscanf(values, "ii", pId, job)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set job [Gracz] [Praca Dorywcza]");
 		}
 
@@ -721,11 +840,11 @@ CMD:set(playerid, params[]) {
 
 		casualJob[pId] = job;
 		savePlayerValues(pId, SAVE_GROUPS);
-	} else if(!strcmp(type, "hp", true)) {
+	} else if(!strcmp(opt, "hp", true)) {
 		if(tPlayer[playerid][pRank] >= RANK_GAMEMASTER1 && isAdminDuty[playerid]) {
 			new pId, Float:hp;
 
-			if(sscanf(parms, "if", pId, hp)) {
+			if(sscanf(values, "if", pId, hp)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set hp [Gracz] [Zdrowie]");
 			}
 
@@ -753,11 +872,26 @@ CMD:set(playerid, params[]) {
 				}
 			}
 		}
-	} else if(!strcmp(type, "vw", true)) {
+	} else if(!strcmp(opt, "pos", true)) {
+		if(tPlayer[playerid][pRank] >= RANK_GAMEMASTER5 && isAdminDuty[playerid]) {
+			new pId;
+			new Float:x, Float:y, Float:z;
+
+			if(sscanf(values, "ifff", pId, x, y, z)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set pos [Gracz] [X] [Y] [Z]");
+			}
+
+			if(!IsPlayerConnected(pId)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+			}
+
+			SetPlayerPos(pId, x, y, z);
+		}
+	} else if(!strcmp(opt, "vw", true)) {
 		if(tPlayer[playerid][pRank] >= RANK_GAMEMASTER3 && isAdminDuty[playerid]) {
 			new pId, vw;
 
-			if(sscanf(parms, "ii", pId, vw)) {
+			if(sscanf(values, "ii", pId, vw)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set vw [Gracz] [Virtual World]");
 			}
 
@@ -767,11 +901,11 @@ CMD:set(playerid, params[]) {
 
 			OSRP_SetPlayerVirtualWorld(pId, vw);
 		}
-	} else if(!strcmp(type, "int", true)) {
+	} else if(!strcmp(opt, "int", true)) {
 		if(tPlayer[playerid][pRank] >= RANK_GAMEMASTER6 && isAdminDuty[playerid]) {
 			new pId, int;
 
-			if(sscanf(parms, "ii", pId, int)) {
+			if(sscanf(values, "ii", pId, int)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set int [Gracz] [Interior]");
 			}
 
@@ -781,11 +915,11 @@ CMD:set(playerid, params[]) {
 
 			OSRP_SetPlayerInterior(pId, int);
 		}
-	} else if(!strcmp(type, "subname", true)) {
+	} else if(!strcmp(opt, "subname", true)) {
 		if(tPlayer[playerid][pRank] >= RANK_GAMEMASTER5 && isAdminDuty[playerid]) {
 			new pId, name[24];
 
-			if(sscanf(parms, "is[24]", pId, name)) {
+			if(sscanf(values, "is[24]", pId, name)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set subname [Gracz] [Imie tymczasowe]");
 			}
 
@@ -795,10 +929,10 @@ CMD:set(playerid, params[]) {
 
 			SetPlayerName(pId, name);
 		}
-	} else if(!strcmp(type, "subskin", true)) {
+	} else if(!strcmp(opt, "subskin", true)) {
 		new pId, skin;
 
-		if(sscanf(parms, "ii", pId, skin)) {
+		if(sscanf(values, "ii", pId, skin)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set subskin [Gracz] [Skin tymczasowy]");
 		}
 
@@ -807,10 +941,10 @@ CMD:set(playerid, params[]) {
 		}
 
 		SetPlayerSkin(pId, skin);
-	} else if(!strcmp(type, "attach", true)) {
+	} else if(!strcmp(opt, "attach", true)) {
 		new pId, model, bone;
 
-		if(sscanf(parms, "iii", pId, model, bone)) {
+		if(sscanf(values, "iii", pId, model, bone)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set attach [Gracz] [Model] [Bone]");
 		}
 
@@ -822,11 +956,11 @@ CMD:set(playerid, params[]) {
 		SetPlayerAttachedObject(pId, SLOT_ACCESS, model, bone, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
 		GameTextForPlayer(pId, "~y~Akcesoria zmienione", 5000, 3);
-	} else if(!strcmp(type, "skin", true)) {
+	} else if(!strcmp(opt, "skin", true)) {
 		if(tPlayer[playerid][pRank] >= RANK_GAMEMASTER3 && isAdminDuty[playerid]) {
 			new pId, skin;
 
-			if(sscanf(parms, "ii", pId, skin)) {
+			if(sscanf(values, "ii", pId, skin)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set skin [Gracz] [Skin]");
 			}
 
@@ -843,11 +977,11 @@ CMD:set(playerid, params[]) {
 			SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ skin graczowi.");
 			SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twój skin.");
 		}
-	} else if(!strcmp(type, "sila", true)) {
+	} else if(!strcmp(opt, "sila", true)) {
 		if(tPlayer[playerid][pRank] >= RANK_ADMIN2 && isAdminDuty[playerid]) {
 			new pId, strength;
 
-			if(sscanf(parms, "ii", pId, strength)) {
+			if(sscanf(values, "ii", pId, strength)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set sila [Gracz] [Sila]");
 			}
 
@@ -863,10 +997,120 @@ CMD:set(playerid, params[]) {
 			SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ si³ê graczowi.");
 			SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twoj¹ si³ê.");
 		}
-	} else if(!strcmp(type, "cash", true)) {
+	} else if(!strcmp(opt, "online", true)) {
+		if(tPlayer[playerid][pRank] >= RANK_ADMIN2 && isAdminDuty[playerid]) {
+			new pId, hours;
+
+			if(sscanf(values, "ii", pId, hours)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set online [Gracz] [Godziny]");
+			}
+
+			if(!IsPlayerConnected(pId)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+			}
+
+			tPlayer[pId][pHours] = hours;
+
+			savePlayerValues(pId, SAVE_ONLINE);
+			updatePlayerGameStatus(pId);
+
+			SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ godziny graczowi.");
+			SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twoje godziny.");
+		}
+	} else if(!strcmp(opt, "pistol", true)) {
+		if(tPlayer[playerid][pRank] >= RANK_ADMIN2 && isAdminDuty[playerid]) {
+			new pId, skill;
+
+			if(sscanf(values, "ii", pId, skill)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set pistol [Gracz] [Skill]");
+			}
+
+			if(!IsPlayerConnected(pId)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+			}
+
+			tPlayer[pId][pPistSkill] = skill;
+			savePlayerValues(pId, SAVE_SKILL);
+
+			SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ skill pistoletu graczowi.");
+			SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twój skill pistoletu.");
+		}
+	}  else if(!strcmp(opt, "semi", true)) {
+		if(tPlayer[playerid][pRank] >= RANK_ADMIN2 && isAdminDuty[playerid]) {
+			new pId, skill;
+
+			if(sscanf(values, "ii", pId, skill)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set semi [Gracz] [Skill]");
+			}
+
+			if(!IsPlayerConnected(pId)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+			}
+
+			tPlayer[pId][pSemiSkill] = skill;
+			savePlayerValues(pId, SAVE_SKILL);
+
+			SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ skill semi graczowi.");
+			SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twój skill semi.");
+		}
+	}  else if(!strcmp(opt, "autom", true)) {
+		if(tPlayer[playerid][pRank] >= RANK_ADMIN2 && isAdminDuty[playerid]) {
+			new pId, skill;
+
+			if(sscanf(values, "ii", pId, skill)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set autom [Gracz] [Skill]");
+			}
+
+			if(!IsPlayerConnected(pId)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+			}
+
+			tPlayer[pId][pAutomSkill] = skill;
+			savePlayerValues(pId, SAVE_SKILL);
+
+			SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ skill autom graczowi.");
+			SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twój skill autom.");
+		}
+	}  else if(!strcmp(opt, "shotg", true)) {
+		if(tPlayer[playerid][pRank] >= RANK_ADMIN2 && isAdminDuty[playerid]) {
+			new pId, skill;
+
+			if(sscanf(values, "ii", pId, skill)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set shotg [Gracz] [Skill]");
+			}
+
+			if(!IsPlayerConnected(pId)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+			}
+
+			tPlayer[pId][pShotgSkill] = skill;
+			savePlayerValues(pId, SAVE_SKILL);
+
+			SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ skill shotg graczowi.");
+			SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twój skill shotg.");
+		}
+	}  else if(!strcmp(opt, "rifle", true)) {
+		if(tPlayer[playerid][pRank] >= RANK_ADMIN2 && isAdminDuty[playerid]) {
+			new pId, skill;
+
+			if(sscanf(values, "ii", pId, skill)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set rifle [Gracz] [Skill]");
+			}
+
+			if(!IsPlayerConnected(pId)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
+			}
+
+			tPlayer[pId][pRifleSkill] = skill;
+			savePlayerValues(pId, SAVE_SKILL);
+
+			SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ skill rifle graczowi.");
+			SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twój skill rifle.");
+		}
+	} else if(!strcmp(opt, "cash", true)) {
 		new pId, money;
 
-		if(sscanf(parms, "ii", pId, money)) {
+		if(sscanf(values, "ii", pId, money)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set cash [Gracz] [Iloœæ]");
 		}
 
@@ -882,10 +1126,10 @@ CMD:set(playerid, params[]) {
 
 		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ gotówkê graczowi.");
 		SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twoj¹ gotówkê.");
-	} else if(!strcmp(type, "addcash", true)) {
+	} else if(!strcmp(opt, "addcash", true)) {
 		new pId, money;
 
-		if(sscanf(parms, "ii", pId, money)) {
+		if(sscanf(values, "ii", pId, money)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set addcash [Gracz] [Iloœæ]");
 		}
 
@@ -914,10 +1158,10 @@ CMD:set(playerid, params[]) {
 		mainStr[0] = EOS;
 		format(mainStr, sizeof(mainStr), "%s da³ Ci $%d.", tPlayer[playerid][pCharName], money);
 		SendClientMessage(pId, COLOR_GREEN, mainStr);
-	} else if(!strcmp(type, "group1", true)) {
+	} else if(!strcmp(opt, "group1", true)) {
 		new pId, uid;
 
-		if(sscanf(parms, "ii", pId, uid)) {
+		if(sscanf(values, "ii", pId, uid)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set group1 [Gracz] [UID]");
 		}
 
@@ -930,10 +1174,10 @@ CMD:set(playerid, params[]) {
 
 		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ grupê na slocie 1 graczowi.");
 		SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twoj¹ grupê na slocie 1.");
-	} else if(!strcmp(type, "group2", true)) {
+	} else if(!strcmp(opt, "group2", true)) {
 		new pId, uid;
 
-		if(sscanf(parms, "ii", pId, uid)) {
+		if(sscanf(values, "ii", pId, uid)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set group2 [Gracz] [UID]");
 		}
 
@@ -946,10 +1190,10 @@ CMD:set(playerid, params[]) {
 
 		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ grupê na slocie 2 graczowi.");
 		SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twoj¹ grupê na slocie 2.");
-	} else if(!strcmp(type, "group3", true)) {
+	} else if(!strcmp(opt, "group3", true)) {
 		new pId, uid;
 
-		if(sscanf(parms, "ii", pId, uid)) {
+		if(sscanf(values, "ii", pId, uid)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set group3 [Gracz] [UID]");
 		}
 
@@ -962,10 +1206,10 @@ CMD:set(playerid, params[]) {
 
 		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ grupê na slocie 3 graczowi.");
 		SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twoj¹ grupê na slocie 3.");
-	} else if(!strcmp(type, "group4", true)) {
+	} else if(!strcmp(opt, "group4", true)) {
 		new pId, uid;
 
-		if(sscanf(parms, "ii", pId, uid)) {
+		if(sscanf(values, "ii", pId, uid)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set group4 [Gracz] [UID]");
 		}
 
@@ -978,10 +1222,10 @@ CMD:set(playerid, params[]) {
 
 		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ grupê na slocie 4 graczowi.");
 		SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twoj¹ grupê na slocie 4.");
-	} else if(!strcmp(type, "group5", true)) {
+	} else if(!strcmp(opt, "group5", true)) {
 		new pId, uid;
 
-		if(sscanf(parms, "ii", pId, uid)) {
+		if(sscanf(values, "ii", pId, uid)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set group5 [Gracz] [UID]");
 		}
 
@@ -994,73 +1238,103 @@ CMD:set(playerid, params[]) {
 
 		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ grupê na slocie 5 graczowi.");
 		SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twoj¹ grupê na slocie 5.");
-	} else if(!strcmp(type, "group1upr", true)) {
+	} else if(!strcmp(opt, "group1upr", true)) {
 		new pId, perm;
 
-		if(sscanf(parms, "ii", pId, perm)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set group1upr [Gracz] [Uprawnienie]");
+		if(sscanf(values, "ii", pId, perm)) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set group1upr [Gracz] [Flaga uprawnienia]");
 		}
 
 		if(!IsPlayerConnected(pId)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
-	} else if(!strcmp(type, "group2upr", true)) {
+
+		tPlayer[pId][pPerm][0] = perm;
+		savePlayerValues(pId, SAVE_GROUPS);
+
+		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ uprawnienia grupy na slocie 1 graczowi.");
+		SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twoje uprawnienia grupy na slocie 1.");
+	} else if(!strcmp(opt, "group2upr", true)) {
 		new pId, perm;
 
-		if(sscanf(parms, "ii", pId, perm)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set group2upr [Gracz] [Uprawnienie]");
+		if(sscanf(values, "ii", pId, perm)) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set group2upr [Gracz] [Flaga uprawnienia]");
 		}
 
 		if(!IsPlayerConnected(pId)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
-	} else if(!strcmp(type, "group3upr", true)) {
+
+		tPlayer[pId][pPerm][1] = perm;
+		savePlayerValues(pId, SAVE_GROUPS);
+
+		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ uprawnienia grupy na slocie 2 graczowi.");
+		SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twoje uprawnienia grupy na slocie 2.");
+	} else if(!strcmp(opt, "group3upr", true)) {
 		new pId, perm;
 
-		if(sscanf(parms, "ii", pId, perm)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set group3upr [Gracz] [Uprawnienie]");
+		if(sscanf(values, "ii", pId, perm)) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set group3upr [Gracz] [Flaga uprawnienia]");
 		}
 
 		if(!IsPlayerConnected(pId)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
-	} else if(!strcmp(type, "group4upr", true)) {
+
+		tPlayer[pId][pPerm][2] = perm;
+		savePlayerValues(pId, SAVE_GROUPS);
+
+		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ uprawnienia grupy na slocie 3 graczowi.");
+		SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twoje uprawnienia grupy na slocie 3.");
+	} else if(!strcmp(opt, "group4upr", true)) {
 		new pId, perm;
 
-		if(sscanf(parms, "ii", pId, perm)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set group4upr [Gracz] [Uprawnienie]");
+		if(sscanf(values, "ii", pId, perm)) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set group4upr [Gracz] [Flaga uprawnienia]");
 		}
 
 		if(!IsPlayerConnected(pId)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
-	} else if(!strcmp(type, "group5upr", true)) {
+
+		tPlayer[pId][pPerm][3] = perm;
+		savePlayerValues(pId, SAVE_GROUPS);
+
+		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ uprawnienia grupy na slocie 4 graczowi.");
+		SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twoje uprawnienia grupy na slocie 4.");
+	} else if(!strcmp(opt, "group5upr", true)) {
 		new pId, perm;
 
-		if(sscanf(parms, "ii", pId, perm)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set group5upr [Gracz] [Uprawnienie]");
+		if(sscanf(values, "ii", pId, perm)) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /set group5upr [Gracz] [Flaga uprawnienia]");
 		}
 
 		if(!IsPlayerConnected(pId)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
+
+		tPlayer[pId][pPerm][4] = perm;
+		savePlayerValues(pId, SAVE_GROUPS);
+
+		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ uprawnienia grupy na slocie 5 graczowi.");
+		SendClientMessage(pId, COLOR_GREEN, "Administracja zmieni³a Twoje uprawnienia grupy na slocie 5.");
 	}
 	return 1;
 }
 
 CMD:av(playerid, params[]) {
 	if(tPlayer[playerid][pRank] >= RANK_GAMEMASTER6 && isAdminDuty[playerid]) {
-		new type[32], parms[64];
+		new type[32], opt[64];
 
-		if(sscanf(params, "s[32]S()[64]", type, parms)) {
+		if(sscanf(params, "s[32]S()[64]", type, opt)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /av [stworz, usun, fix, info, goto]");
 		}
 
 		if(!strcmp(type, "stworz", true)) {
-			new vehicleId, modelId, ownerId, ownerKind, freeId, color1, color2;
+			new vehicleId, modelId, ownerUid, ownerType, freeId = OSRP_VEHICLE_INVALID_ID, color1, color2;
 
-			if(sscanf(parms, "iiiii", modelId, ownerId, ownerKind, color1, color2)) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /av stworz [Model ID] [ID w³aœciciela] [Rodzaj w³aœciciela] [Kolor 1] [Kolor 2]");
+			if(sscanf(opt, "iiiii", modelId, ownerUid, ownerType, color1, color2)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /av stworz [Model ID] [UID] [Rodzaj w³aœciciela] [Kolor 1] [Kolor 2]");
 			}
 
 			if(modelId > 611 || modelId < 400) {
@@ -1074,25 +1348,25 @@ CMD:av(playerid, params[]) {
 			mysql_store_result();
 
 			freeId = mysql_fetch_int();
-	#if defined DEBUG
+#if defined DEBUG
 			printf("freeId: %d", freeId);
-	#endif
+#endif
 			mysql_free_result();
 
 			GetPlayerPos(playerid, tVehicle[freeId][vPosX], tVehicle[freeId][vPosY], tVehicle[freeId][vPosZ]);
 			GetPlayerFacingAngle(playerid, tVehicle[freeId][vAngle]);
 			Iter_Add(vehItter, freeId);
 
-			vehicleId = CreateVehicle(modelId, tVehicle[freeId][vPosX] + 2.0, tVehicle[freeId][vPosY] + 2.0, tVehicle[freeId][vPosZ] + 2.0, tVehicle[freeId][vAngle], color1, color2, 0);
+			vehicleId = CreateVehicle(modelId, tVehicle[freeId][vPosX] + 2.0, tVehicle[freeId][vPosY] + 2.0, tVehicle[freeId][vPosZ], tVehicle[freeId][vAngle], color1, color2, 0);
 
 			tVehicle[freeId][vUid] = freeId + 1;
 			tVehicle[freeId][vId] = vehicleId;
-			tVehicle[freeId][vOUid] = tPlayer[ownerId][pUid];
-			tVehicle[freeId][vKind] = ownerKind;
+			tVehicle[freeId][vOUid] = ownerUid;
+			tVehicle[freeId][vType] = ownerType;
 			tVehicle[freeId][vModelId] = modelId;
 			tVehicle[freeId][vColor1] = color1;
 			tVehicle[freeId][vColor2] = color2;
-			tVehicle[freeId][vLock] = false;
+			tVehicle[freeId][vLock] = true;
 			tVehicle[freeId][vEngineHp] = 1000.0;
 			tVehicle[freeId][vSpawned] = true;
 			tVehicle[freeId][vMileage] = 0.0;
@@ -1111,9 +1385,10 @@ CMD:av(playerid, params[]) {
 				tVehicle[freeId][vVw] = 0;
 				tVehicle[freeId][vInt] = 0;
 				tVehicle[freeId][vPaintjob] = -1;
+				tVehicle[freeId][vNitro] = 0;
 				tVehicle[freeId][vRepair] = 0.0;
 
-				format(tVehicle[freeId][vPlate], 32, NULL);
+				format(tVehicle[freeId][vPlate], 32, VEHICLE_DEFAULT_PLATE);
 				SetVehicleNumberPlate(tVehicle[freeId][vId], tVehicle[freeId][vPlate]);
 
 				UpdateVehicleDamageStatus(tVehicle[freeId][vId], tVehicle[freeId][vPanels], tVehicle[freeId][vDoors], tVehicle[freeId][vLights], tVehicle[freeId][vTires]);
@@ -1130,26 +1405,36 @@ CMD:av(playerid, params[]) {
 			UpdateDynamic3DTextLabelText(tVehicle[freeId][vDesc], COLOR_WHITE, tVehicle[freeId][vDescInfo]);
 
 			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`UID`, `OUID`, `Kind`, `ModelId`, `Color1`, `Color2`, `PosX`, `PosY`, `PosZ`, `Angle`, `Fuel`, `EngineHealth`, `Spawned`) VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%f', '%f', '%f', '%f', '%f', '%f', '%d')",
-			tVehicle[freeId][vUid], tVehicle[freeId][vOUid], tVehicle[freeId][vKind], tVehicle[freeId][vModelId], tVehicle[freeId][vColor1], tVehicle[freeId][vColor2], tVehicle[freeId][vPosX], tVehicle[freeId][vPosY], tVehicle[freeId][vPosZ], tVehicle[freeId][vAngle], tVehicle[freeId][vFuel],
-			tVehicle[freeId][vEngineHp], tVehicle[freeId][vSpawned]);
+			format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`UID`, `OUID`, `Type`, `ModelId`, `Color1`, `Color2`, `PosX`, `PosY`, `PosZ`, `Angle`, `Fuel`, `EngineHealth`, `Spawned`) VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%f', '%f', '%f', '%f', '%f', '%f', '%d')",
+				tVehicle[freeId][vUid],
+				tVehicle[freeId][vOUid],
+				tVehicle[freeId][vType],
+				tVehicle[freeId][vModelId],
+				tVehicle[freeId][vColor1],
+				tVehicle[freeId][vColor2],
+				tVehicle[freeId][vPosX],
+				tVehicle[freeId][vPosY],
+				tVehicle[freeId][vPosZ],
+				tVehicle[freeId][vAngle],
+				tVehicle[freeId][vFuel],
+				tVehicle[freeId][vEngineHp],
+				tVehicle[freeId][vSpawned]
+			);
 			mysql_query(queryStr);
 		} else if(!strcmp(type, "usun", true)) {
-			new vehUid, srvVehId = -1;
+			new uid, srvVehId = OSRP_VEHICLE_INVALID_ID;
 
-			if(sscanf(parms, "i", vehUid)) {
+			if(sscanf(opt, "i", uid)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /av usun [UID]");
 			}
 
-			foreach(new i : vehItter) {
-				if(vehUid == tVehicle[i][vUid]) {
-					srvVehId = i;
-					break;
-				}
+			srvVehId = getServerVehicleIdFromUid(uid);
+			if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
+				return 1;
 			}
 
 			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "SELECT `UID` FROM `osrp_Vehicles` WHERE `UID` = '%d'", vehUid);
+			format(queryStr, sizeof(queryStr), "SELECT `UID` FROM `osrp_Vehicles` WHERE `UID` = '%d'", uid);
 			mysql_query(queryStr);
 
 			mysql_store_result();
@@ -1161,7 +1446,7 @@ CMD:av(playerid, params[]) {
 			mysql_free_result();
 
 			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Vehicles` WHERE `UID` = '%d'", vehUid);
+			format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Vehicles` WHERE `UID` = '%d'", uid);
 			mysql_query(queryStr);
 
 			DestroyVehicle(tVehicle[srvVehId][vId]);
@@ -1170,9 +1455,9 @@ CMD:av(playerid, params[]) {
 			Iter_Remove(vehItter, srvVehId);
 
 			tVehicle[srvVehId][vUid] = 0;
-			tVehicle[srvVehId][vId] = -1;
+			tVehicle[srvVehId][vId] = INVALID_VEHICLE_ID;
 			tVehicle[srvVehId][vOUid] = 0;
-			tVehicle[srvVehId][vKind] = 0;
+			tVehicle[srvVehId][vType] = 0;
 			format(tVehicle[srvVehId][vDescInfo], 64, NULL);
 			format(tVehicle[srvVehId][vPlate], 32, NULL);
 			tVehicle[srvVehId][vModelId] = 0;
@@ -1197,21 +1482,20 @@ CMD:av(playerid, params[]) {
 			tVehicle[srvVehId][vVw] = 0;
 			tVehicle[srvVehId][vInt] = 0;
 			tVehicle[srvVehId][vPaintjob] = -1;
+			tVehicle[srvVehId][vNitro] = 0;
 			tVehicle[srvVehId][vRepair] = 0.0;
 			tVehicle[srvVehId][vMileage] = 0.0;
 			tVehicle[srvVehId][vBlock] = 0;
 		} else if(!strcmp(type, "goto", true)) {
-			new vehUid, srvVehId = -1;
+			new uid, srvVehId = OSRP_VEHICLE_INVALID_ID;
 
-			if(sscanf(parms, "i", vehUid)) {
+			if(sscanf(opt, "i", uid)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /av goto [UID]");
 			}
 
-			foreach(new i : vehItter) {
-				if(vehUid == tVehicle[i][vUid]) {
-					srvVehId = i;
-					break;
-				}
+			srvVehId = getServerVehicleIdFromUid(uid);
+			if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
+				return 1;
 			}
 
 			GetVehiclePos(tVehicle[srvVehId][vId], tVehicle[srvVehId][vPosX], tVehicle[srvVehId][vPosY], tVehicle[srvVehId][vPosZ]);
@@ -1220,7 +1504,7 @@ CMD:av(playerid, params[]) {
 			SetPlayerVirtualWorld(playerid, tVehicle[srvVehId][vVw]);
 			SetPlayerInterior(playerid, tVehicle[srvVehId][vInt]);
 		} else if(!strcmp(type, "info", true)) {
-			new srvVehId, vehicleid = getClosestVehicle(playerid, 10);
+			new srvVehId, vehicleid = getClosestCar(playerid);
 
 			if(vehicleid != INVALID_VEHICLE_ID) {
 				new str[64], str2[128];
@@ -1228,14 +1512,14 @@ CMD:av(playerid, params[]) {
 				srvVehId = getClosestServerVehicleId(vehicleid);
 				GetVehicleHealth(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngineHp]);
 
-				if(tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && tVehicle[srvVehId][vKind] == VEHICLE_OWNER_PLAYER) {
-					format(mainStr, sizeof(mainStr), "~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
+				if(tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && tVehicle[srvVehId][vType] == VEHICLE_OWNER_PLAYER) {
+					format(mainStr, sizeof(mainStr), "~p~Model~w~: %d~n~~p~SAMP ID~w~: %d   ~p~Kolor~w~: %d:%d  ~p~HP~w~: %0.1f",
 					tVehicle[srvVehId][vModelId], tVehicle[srvVehId][vId], tVehicle[srvVehId][vColor1], tVehicle[srvVehId][vColor2], tVehicle[srvVehId][vEngineHp]);
-				} else if(tVehicle[srvVehId][vKind] == VEHICLE_OWNER_GROUP) {
-					format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~11:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
+				} else if(tVehicle[srvVehId][vType] == VEHICLE_OWNER_GROUP) {
+					format(mainStr, sizeof(mainStr), "~p~UID~w~: %d   ~p~Owner: ~w~11:%d  (0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d   ~p~Kolor~w~: %d:%d  ~p~HP~w~: %0.1f",
 					tVehicle[srvVehId][vUid], tVehicle[srvVehId][vOUid], tVehicle[srvVehId][vModelId], tVehicle[srvVehId][vId], tVehicle[srvVehId][vColor1], tVehicle[srvVehId][vColor2], tVehicle[srvVehId][vEngineHp]);
 				} else {
-					format(mainStr, sizeof(mainStr), "~p~UID~w~: %d___~p~Owner: ~w~9:%d__(0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d___~p~Kolor~w~: %d:%d__~p~HP~w~: %0.1f",
+					format(mainStr, sizeof(mainStr), "~p~UID~w~: %d   ~p~Owner: ~w~9:%d  (0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d   ~p~Kolor~w~: %d:%d  ~p~HP~w~: %0.1f",
 					tVehicle[srvVehId][vUid], tVehicle[srvVehId][vOUid], tVehicle[srvVehId][vModelId], tVehicle[srvVehId][vId], tVehicle[srvVehId][vColor1], tVehicle[srvVehId][vColor2], tVehicle[srvVehId][vEngineHp]);
 				}
 
@@ -1244,9 +1528,11 @@ CMD:av(playerid, params[]) {
 				format(str, sizeof(str), "~b~Przebieg~w~: %dkm ~b~Paliwo~w~: %0.1f", floatToInt(tVehicle[srvVehId][vMileage]), tVehicle[srvVehId][vFuel]);
 				TextDrawSetString(vehicleStats[playerid][1], str);
 
-				format(str2, sizeof(str2), "Alarm: %s___Immobiliser: %s___CB Radio: %s~n~Audio: %s___Limiter: %s___Napraw: %0.1fhp", (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_ALARM) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_IMMOBILISER) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_CBRADIO) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_AUDIO) ? ("T") : ("N"),
+				format(str2, sizeof(str2), "Alarm: %s   Immobiliser: %s   CB Radio: %s~n~Audio: %s   Limiter: %s   Napraw: %0.1fhp", (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_ALARM) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_IMMOBILISER) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_CBRADIO) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_AUDIO) ? ("T") : ("N"),
 				(tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_LIMITER) ? ("T") : ("N"), tVehicle[srvVehId][vRepair]);
 				TextDrawSetString(vehicleStats[playerid][2], str2);
+
+				resetPlayerTextTextDraws(playerid);
 
 				for(new i = 0; i < 3; i++) {
 					TextDrawShowForPlayer(playerid, vehicleStats[playerid][i]);
@@ -1255,7 +1541,7 @@ CMD:av(playerid, params[]) {
 				SetTimerEx("hideVehicleStats", 15000, false, "i", playerid);
 			}
 		} else if(!strcmp(type, "fix", true)) {
-			new srvVehId, vehicleid = getClosestVehicle(playerid, 10);
+			new srvVehId, vehicleid = getClosestCar(playerid);
 
 			if(vehicleid != INVALID_VEHICLE_ID) {
 				srvVehId = getClosestServerVehicleId(vehicleid);
@@ -1270,15 +1556,15 @@ CMD:av(playerid, params[]) {
 
 CMD:ap(playerid, params[]) {
 	if(tPlayer[playerid][pRank] >= RANK_ADMIN2 && isAdminDuty[playerid]) {
-		new str[16], parms[64];
+		new str[16], opt[64];
 		new owner, place, kind, name[32], value1, value2;
 
-		if(sscanf(params, "s[16]S()[64]", str, parms)) {
+		if(sscanf(params, "s[16]S()[64]", str, opt)) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ap [stworz]");
 		}
 
 		if(!strcmp(str, "stworz", true)) {
-			if(sscanf(parms, "iiis[32]ii", owner, place, kind, name, value1, value2)) {
+			if(sscanf(opt, "iiis[32]ii", owner, place, kind, name, value1, value2)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ap stworz [Owner] [Place] [Kind] [Name] [Value 1] [Value 2]");
 			}
 
@@ -1310,16 +1596,16 @@ CMD:iorder(playerid, params[]) {
 
 CMD:ad(playerid, params[]) {
 	if(tPlayer[playerid][pRank] >= RANK_GAMEMASTER6 && isAdminDuty[playerid]) {
-		new type[32], parms[64];
+		new type[32], opt[64];
 
-		if(sscanf(params, "s[32]S()[64]", type, parms)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ad [goto, gethere, owner, edit, vw, int, kind, lock]");
+		if(sscanf(params, "s[32]S()[64]", type, opt)) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ad [goto, gethere, owner, edit, vw, int, type, lock]");
 		}
 
 		if(!strcmp(type, "goto", true)) {
-			new uid, srvDoorId;
+			new uid, srvDoorId = INVALID_DOOR_ID;
 
-			if(sscanf(parms, "i", uid)) {
+			if(sscanf(opt, "i", uid)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ad goto [UID]");
 			}
 
@@ -1332,9 +1618,10 @@ CMD:ad(playerid, params[]) {
 			SetPlayerVirtualWorld(playerid, 0);
 			SetPlayerInterior(playerid, 0);
 		} else if(!strcmp(type, "gethere", true)) {
-			new uid, srvDoorId;
+			new uid, srvDoorId = INVALID_DOOR_ID;
+			new Float:pX, Float:pY, Float:pZ, Float:pAng;
 
-			if(sscanf(parms, "i", uid)) {
+			if(sscanf(opt, "i", uid)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ad gethere [UID]");
 			}
 
@@ -1343,19 +1630,23 @@ CMD:ad(playerid, params[]) {
 				return GameTextForPlayer(playerid, "~r~Takie drzwi nie istnieja", 5000, 3);
 			}
 
-			GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
+			GetPlayerPos(playerid, pX, pY, pZ);
+			GetPlayerFacingAngle(playerid, pAng);
 
-			tDoor[srvDoorId][dEnterX] = tPlayer[playerid][pPosX];
-			tDoor[srvDoorId][dEnterY] = tPlayer[playerid][pPosY];
-			tDoor[srvDoorId][dEnterZ] = tPlayer[playerid][pPosZ];
+			tDoor[srvDoorId][dEnterX] = pX;
+			tDoor[srvDoorId][dEnterY] = pY;
+			tDoor[srvDoorId][dEnterZ] = pZ;
+			tDoor[srvDoorId][dEnterAng] = pAng;
+
+			saveDoorValues(srvDoorId);
 
 			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "Nowa pozycja zewnêtrzna ustawiona:\n%0.1f, %0.1f, %0.1f", tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
+			format(mainStr, sizeof(mainStr), "Nowa pozycja zewnêtrzna ustawiona:\n%0.1f, %0.1f, %0.1f", tDoor[srvDoorId][dEnterX], tDoor[srvDoorId][dEnterY], tDoor[srvDoorId][dEnterZ]);
 			ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
 		} else if(!strcmp(type, "edit", true)) {
-			new uid, srvDoorId;
+			new uid, srvDoorId = INVALID_DOOR_ID;
 
-			if(sscanf(parms, "i", uid)) {
+			if(sscanf(opt, "i", uid)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ad edit [UID]");
 			}
 
@@ -1365,19 +1656,11 @@ CMD:ad(playerid, params[]) {
 			}
 
 			tPlayer[playerid][pDoor] = uid;
-
-			new str[64];
-			format(str, sizeof(str), "Drzwi %d (Op³acone: %s, do zap³aty: $%d; %d m2)", tDoor[srvDoorId][dUid], tDoor[srvDoorId][dTaxDate], tDoor[srvDoorId][dTaxCost], tDoor[srvDoorId][dDimensions]);
-
-			mainStr[0] = EOS;
-			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tPoka¿ informacje*\n27\tPrzypisz obiekty (%d + %d przypisanych)\n29\tPrzypisz napisy (%d + %d przypisanych)\n13\tWczytaj mapê obiektów\n30\tSkasuj ostatni obiekt (w razie crashów)\n40\tWykonaj kopiê zapasow¹\n4\tZmieñ interior (widocznoœæ przez okna)\n",
-			tDoor[srvDoorId][dMaxObjects], tDoor[srvDoorId][dObjects], tDoor[srvDoorId][dMaxTexts], tDoor[srvDoorId][dTexts]);
-			format(mainStr, sizeof(mainStr), "%s2\tEdytuj wewnêtrzn¹ pozycjê\n31\tEdytuj wymiary wnêtrza\n20\tW(y)³¹cz przejazd pojazdami\n24\tPrzepisz budynek pod grupê\n16\tZmieñ wyœwietlan¹ nazwê\n35\tPrze³¹cz pickup\n15\tUstal op³atê za wejœcie\n21\tZakup system HiFi ($2500)\n22\tZakup szafê na szyfr ($2000)\n34\tOchrona: %s", mainStr, "");
-			ShowPlayerDialog(playerid, DIALOG_DOORS_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
+			showDoorMenu(playerid, srvDoorId);
 		} else if(!strcmp(type, "vw", true)) {
-			new uid, vw, srvDoorId;
+			new uid, vw, srvDoorId = INVALID_DOOR_ID;
 
-			if(sscanf(parms, "ii", uid, vw)) {
+			if(sscanf(opt, "ii", uid, vw)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ad vw [UID] [Virtual World]");
 			}
 
@@ -1388,9 +1671,9 @@ CMD:ad(playerid, params[]) {
 
 			tDoor[srvDoorId][dVw] = vw;
 		} else if(!strcmp(type, "int", true)) {
-			new uid, int, srvDoorId;
+			new uid, int, srvDoorId = INVALID_DOOR_ID;
 
-			if(sscanf(parms, "ii", uid, int)) {
+			if(sscanf(opt, "ii", uid, int)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ad int [UID] [Interior]");
 			}
 
@@ -1401,9 +1684,9 @@ CMD:ad(playerid, params[]) {
 
 			tDoor[srvDoorId][dInt] = int;
 		} else if(!strcmp(type, "owner", true)) {
-			new uid, owner, srvDoorId;
+			new uid, owner, srvDoorId = INVALID_DOOR_ID;
 
-			if(sscanf(parms, "ii", uid, owner)) {
+			if(sscanf(opt, "ii", uid, owner)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ad owner [UID] [Owner]");
 			}
 
@@ -1413,11 +1696,11 @@ CMD:ad(playerid, params[]) {
 			}
 
 			tDoor[srvDoorId][dOUid] = owner;
-		} else if(!strcmp(type, "kind", true)) {
-			new uid, kind, srvDoorId;
+		} else if(!strcmp(type, "type", true)) {
+			new uid, dtype, srvDoorId = INVALID_DOOR_ID;
 
-			if(sscanf(parms, "ii", uid, kind)) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ad kind [UID] [Kind]");
+			if(sscanf(opt, "ii", uid, dtype)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ad type [UID] [Type]");
 			}
 
 			srvDoorId = getServerDoorIdFromUid(uid);
@@ -1425,11 +1708,11 @@ CMD:ad(playerid, params[]) {
 				return GameTextForPlayer(playerid, "~r~Takie drzwi nie istnieja", 5000, 3);
 			}
 
-			tDoor[srvDoorId][dOKind] = kind;
+			tDoor[srvDoorId][dOType] = dtype;
 		} else if(!strcmp(type, "lock", true)) {
-			new uid, srvDoorId;
+			new uid, srvDoorId = INVALID_DOOR_ID;
 
-			if(sscanf(parms, "i", uid)) {
+			if(sscanf(opt, "i", uid)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ad lock [UID]");
 			}
 
@@ -1476,18 +1759,25 @@ CMD:acash(playerid, params[]) {
 
 CMD:ag(playerid, params[]) {
 	if(tPlayer[playerid][pRank] >= RANK_GAMEMASTER6 && isAdminDuty[playerid]) {
-		new name[32], tag[8];
-		new pId, kind;
+		new type[16], opt[64];
 
-		if(sscanf(params, "iis[8]s[32]", pId, kind, tag, name)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ag [Gracz] [Rodzaj] [Tag] [Nazwa grupy]");
+		if(sscanf(params, "s[16]S()[64]", type, opt)) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ag [stworz, lider, flaga, typ]");
 		}
 
-		if(!IsPlayerConnected(pId)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
-		}
+		if(!strcmp(type, "stworz", true)) {
+			new uid, name[32], color[8], balance, perms, orderPerms;
 
-		createNewGroup(playerid, pId, kind, tag, name);
+			if(sscanf(opt, "s[32]s[8]iii", name, color, balance, perms, orderPerms)) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ag stworz [Nazwa] [Kolor HEX] [Saldo] [Flagi] [Flagi zamawiania]");
+			}
+
+			uid = createNewGroup(name, color, balance, perms, orderPerms);
+
+			mainStr[0] = EOS;
+			format(mainStr, sizeof(mainStr), "Grupa o nazwie '%s' (UID: %d) zosta³a pomyœlnie utworzona.", uid, name);
+			ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+		}
 	}
 	return 1;
 }
@@ -1505,6 +1795,21 @@ CMD:an(playerid, params[]) {
 		}
 
 		createNumber(pId);
+	}
+	return 1;
+}
+
+CMD:nazwa(playerid, params[]) {
+	if(tPlayer[playerid][pRank] >= RANK_ADMIN4 && isAdminDuty[playerid]) {
+		new name[32];
+
+		if(sscanf(params, "s[32]", name)) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /nazwa [Nowa nazwa servera]");
+		}
+
+		smallStr[0] = EOS;
+		format(smallStr, sizeof(smallStr), "hostname %s", name);
+		SendRconCommand(smallStr);
 	}
 	return 1;
 }

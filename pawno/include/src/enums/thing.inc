@@ -19,13 +19,17 @@ enum ThingData {
 	tName[32],
 	tValue1,
 	tValue2,
+	tValue3,
+	tValue4,
 	Float:tPosX,
 	Float:tPosY,
 	Float:tPosZ,
 	bool:tUsed,
 	bool:tCraft,
 	tTerm,
-	tPlace
+	tPlace,
+	tVw,
+	tInt
 };
 
 enum WholesaleData {

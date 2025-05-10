@@ -15,10 +15,16 @@
 enum AreaData {
 	aUid,
 	aOUid,
+	aType,
+	aOType,
 	aArea,
+	aColor,
 	Float:aMinX,
 	Float:aMinY,
+	Float:aMinZ,
 	Float:aMaxX,
 	Float:aMaxY,
-	aMaxSpeed
+	Float:aMaxZ,
+	aMaxSpeed,
+	aCost
 };

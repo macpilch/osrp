@@ -14,19 +14,15 @@
 
 stock initCashPointValues() {
 	printf("[LOG]: Zaczynam ladowac bankomaty...");
+	new i;
 
-	for(new i = 0; i < MAX_CASHPOINTS; i++) {
-		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_CashPoints` WHERE `UID` = '%d'", i + 1);
-		mysql_query(queryStr);
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_CashPoints`");
+	mysql_query(queryStr);
 
-		mysql_store_result();
+	mysql_store_result();
 
-		if(!mysql_num_rows()) {
-			break; 
-		}
-
-		mysql_fetch_row(queryStr, "|");
+	while(mysql_fetch_row(queryStr, "|")) {
 		sscanf(queryStr, "p<|>is[32]ifffffffii",
 			tCashPoint[i][cpUid],
 			tCashPoint[i][cpName],
@@ -46,12 +42,13 @@ stock initCashPointValues() {
 		Iter_Add(cashPointItter, i);
 
 		printf("[DEBUG] Id: %d,  Name: %s", i, tCashPoint[i][cpName]);
+		i++;
 	}
 
 	if(Iter_Count(cashPointItter)) {
-		printf("[LOG]: Wczytano %d bankomatow.", Iter_Count(cashPointItter));
+		printf("[LOG]: Wczytano %d bankomatow.\n", Iter_Count(cashPointItter));
 	} else {
-		printf("[LOG]: Brak bankomatow.");
+		printf("[LOG]: Brak bankomatow.\n");
 	}
 
 	mysql_free_result();
@@ -65,22 +62,14 @@ stock searchPlayerCashPoint(playerid) {
 				generateBankAccountNumber(playerid);
 			}
 
-			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "SELECT `Bank` FROM `osrp_Players` WHERE `UID` = '%d'", tPlayer[playerid][pUid]);
-			mysql_query(queryStr);
-
-			mysql_store_result();
-
-			tPlayer[playerid][pBank] = mysql_fetch_int();
-			mysql_free_result();
-
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tStan konta (%d)\n2\tWyp³aæ pieni¹dze\n3\tWp³aæ pieni¹dze\n4\tDokonaj przelewu\n5\tSp³aæ d³ug ($%d)", tPlayer[playerid][pBank], tPlayer[playerid][pDebt]);
 			ShowPlayerDialog(playerid, DIALOG_CASHPOINT, DIALOG_STYLE_LIST, "Bankomat", mainStr, "OK", "Anuluj");
 
+			ApplyAnimation(playerid, "HEIST9", "Use_SwipeCard", 4.1, 0, 0, 0, 0, 0, 0);
 			tPlayer[playerid][pCashPoint] = tCashPoint[i][cpUid];
-		} else if(playerToPoint(playerid, tCashPoint[i][cpDistance] * 2, tCashPoint[i][cpPosX], tCashPoint[i][cpPosY], tCashPoint[i][cpPosZ])) {
-			return GameTextForPlayer(playerid, "~n~~r~Podejdz blizej.", 5000, 3);
+		} else if(playerToPoint(playerid, tCashPoint[i][cpDistance] * 1.2, tCashPoint[i][cpPosX], tCashPoint[i][cpPosY], tCashPoint[i][cpPosZ])) {
+			GameTextForPlayer(playerid, "~n~~r~Podejdz blizej.", 5000, 3);
 		}
 	}
 	return 1;

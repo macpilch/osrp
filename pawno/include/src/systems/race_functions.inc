@@ -13,24 +13,18 @@
 #pragma library osrp
 
 stock initRaceValues() {
-	new tmpQuery[64];
-	new cps;
-
 	printf("[LOG]: Zaczynam ladowac wyscigi...");
 
-	for(new i = 0; i < MAX_RACES; i++) {		
-		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "SELECT `UID`, `Name`, `Created`, `Besetments`, `CPS`, `Players` FROM `osrp_Races` WHERE `UID` = '%d'", i + 1);
-		mysql_query(queryStr);
-		
-		mysql_store_result();
-		
-		if(!mysql_num_rows()) {
-			break;
-		}
-		
-		mysql_fetch_row(queryStr, ",");
+	new tmpQuery[64];
+	new cps, i;
 
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "SELECT `UID`, `Name`, `Created`, `Besetments`, `CPS`, `Players` FROM `osrp_Races`");
+	mysql_query(queryStr);
+
+	mysql_store_result();
+
+	while(mysql_fetch_row(queryStr, ",")) {
 		sscanf(queryStr, "p<,>is[64]iiii",
 			tRace[i][rUid],
 			tRace[i][rName],
@@ -39,36 +33,37 @@ stock initRaceValues() {
 			tRace[i][rCps],
 			tRace[i][rPlayers]
 		);
-		
+
 		cps = tRace[i][rCps];
-		
+
 		for(new j = 0; j < cps; j++) {
-			format(tmpQuery, sizeof(tmpQuery), "SELECT `CP%d` FROM `osrp_Races` WHERE `UID` = '%d'", j, i + 1);
+			format(tmpQuery, sizeof(tmpQuery), "SELECT `CP%d` FROM `osrp_Races` WHERE `UID` = '%d'", j, tRace[i][rUid]);
 			mysql_query(tmpQuery);
-			
+
 			mysql_store_result();
-			
+
 			mysql_fetch_row(queryStr, " ");
 			sscanf(queryStr, "fff", tRace[i][rCpX][j], tRace[i][rCpY][j], tRace[i][rCpZ][j]);
-			
+
 			if(tRace[i][rCpX][j] == 0 && tRace[i][rCpY][j] == 0 && tRace[i][rCpZ][j] == 0) {
 				continue;
 			}
-			
+
 #if defined DEBUG
 			printf("[DEBUG]: Cp%d %f, %f, %f", j, tRace[i][rCpX][j], tRace[i][rCpY][j], tRace[i][rCpZ][j]);
 #endif
 		}
-		
+
 		Iter_Add(raceItter, i);
+		i++;
 	}
-	
+
 	if(Iter_Count(raceItter)) {
-		printf("[LOG]: Wczytano %d tras.", Iter_Count(raceItter));
+		printf("[LOG]: Wczytano %d tras.\n", Iter_Count(raceItter));
 	} else {
-		printf("[LOG]: Brak tras.");
+		printf("[LOG]: Brak tras.\n");
 	}
-	
+
 	mysql_free_result();
 	return 1;
 }

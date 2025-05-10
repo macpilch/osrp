@@ -16,7 +16,7 @@ enum VehicleData {
 	vUid, //id from database
 	vId,   // id in game
 	vOUid,  // vehicle owner
-	vKind, // group uid
+	vType, // group uid
 	vModelId, // vehicle modelid
 	vColor1,
 	vColor2,

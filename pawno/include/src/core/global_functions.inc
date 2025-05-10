@@ -35,50 +35,110 @@ stock saveServerValues() {
 
 stock initServerPenalties() {
 	printf("[LOG]: Zaczynam ladowac kary...");
+	new i;
 
-	for(new i = 0; i < MAX_PENALTIES; i++) {
-		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Penalties` WHERE `UID` = '%d'", i + 1);
-		mysql_query(queryStr);
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Penalties`");
+	mysql_query(queryStr);
 
-		mysql_store_result();
+	mysql_store_result();
 
-		if(!mysql_num_rows()) {
-			break;
-		}
-
-		mysql_fetch_row(queryStr, " ");
-
+	while(mysql_fetch_row(queryStr, " ")) {
 		sscanf(queryStr, "iiis[16]iis[64]s[128]",
 			tPenalty[i][penUid],
 			tPenalty[i][penSUid],
 			tPenalty[i][penOUid],
 			tPenalty[i][penIp],
-			tPenalty[i][penKind],
+			tPenalty[i][penType],
 			tPenalty[i][penDays],
 			tPenalty[i][penDate],
 			tPenalty[i][penReason]
 		);
 
 		Iter_Add(penItter, i);
-		printf("UID: %d, SUID: %d, OUID: %d, IP: %s, Kind: %d, Days: %d, Date: %s, Reason: %s\n",
+		printf("UID: %d, SUID: %d, OUID: %d, IP: %s, Type: %d, Days: %d, Date: %s, Reason: %s\n",
 			tPenalty[i][penUid],
 			tPenalty[i][penSUid],
 			tPenalty[i][penOUid],
 			tPenalty[i][penIp],
-			tPenalty[i][penKind],
+			tPenalty[i][penType],
 			tPenalty[i][penDays],
 			tPenalty[i][penDate],
 			tPenalty[i][penReason]
 		);
+
+		i++;
 	}
 
 	mysql_free_result();
 
 	if(Iter_Count(penItter)) {
-		printf("[LOG]: Wczytano %d kar.", Iter_Count(penItter));
+		printf("[LOG]: Wczytano %d kar.\n", Iter_Count(penItter));
 	} else {
-		printf("[LOG]: Brak kar.");
+		printf("[LOG]: Brak kar.\n");
 	}
+	return 1;
+}
+
+stock addPenalty(playerid, victim, type, date[], days, reason[]) {
+	new freeId = -1;
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Penalties`");
+	mysql_query(queryStr);
+
+	mysql_store_result();
+
+	freeId = mysql_fetch_int();
+	mysql_free_result();
+
+	Iter_Add(penItter, freeId);
+
+	tPenalty[freeId][penUid] = freeId + 1;
+	tPenalty[freeId][penSUid] = playerid == INVALID_PLAYER_ID ? INVALID_PLAYER_ID : tPlayer[playerid][pUid];
+	tPenalty[freeId][penOUid] = tPlayer[victim][pUid];
+	tPenalty[freeId][penIp] = tPlayer[victim][pIp];
+	tPenalty[freeId][penType] = type;
+	tPenalty[freeId][penDays] = days;
+	format(tPenalty[freeId][penDate], 64, date);
+	format(tPenalty[freeId][penReason], 64, reason);
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Penalties` (`SUID`, `OUID`, `IP`, `Type`, `Days`, `Date`, `Reason`) VALUES ('%d', '%d', '%s', '%d', '%d', '%s', '%s')",
+		tPenalty[freeId][penSUid],
+		tPenalty[freeId][penOUid],
+		tPenalty[freeId][penIp],
+		tPenalty[freeId][penType],
+		tPenalty[freeId][penDays],
+		tPenalty[freeId][penDate],
+		tPenalty[freeId][penReason]
+	);
+	mysql_query(queryStr);
+	return 1;
+}
+
+stock removePenalty(srvpenid) {
+	if(srvpenid == -1) {
+		return 1;
+	}
+
+	if(!Iter_Count(penItter)) {
+		return 1;
+	}
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Penalties` WHERE `UID` = '%d'", tPenalty[srvpenid][penUid]);
+	mysql_query(queryStr);
+
+	Iter_Remove(penItter, srvpenid);
+
+	tPenalty[srvpenid][penUid] = 0;
+	tPenalty[srvpenid][penSUid] = 0;
+	tPenalty[srvpenid][penOUid] = 0;
+	format(tPenalty[srvpenid][penIp], 16, NULL);
+	tPenalty[srvpenid][penType] = 0;
+	tPenalty[srvpenid][penDays] = 0;
+	format(tPenalty[srvpenid][penDate], 64, NULL);
+	format(tPenalty[srvpenid][penReason], 128, NULL);
 	return 1;
 }

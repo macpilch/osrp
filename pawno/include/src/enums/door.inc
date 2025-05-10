@@ -12,32 +12,28 @@
 #define __DOOR_INC__
 #pragma library osrp
 
-enum {
-	D_SHOP = 0,
-	D_HOTEL,
-	D_GYM,
-	D_CLOTHES,
-	D_PHARMACY
-};
-
 enum DoorData {
 	dUid,
 	dOUid,
-	dOKind,
-	dKind,
+	dOType,
+	dType,
 	dName[32],
 	Float:dEnterX,
 	Float:dEnterY,
 	Float:dEnterZ,
+	Float:dEnterAng,
 	Float:dExitX,
 	Float:dExitY,
 	Float:dExitZ,
+	Float:dExitAng,
 	dPickup,
+	dCost,
+	bool:dPassing,
 	bool:dOpen,
-	bool:dTax,
-	dTaxDate[24],
+	dTax,
+	dTaxDate[16],
 	dTaxCost,
-	dDimensions,
+	dDimension,
 	dObjects,
 	dMaxObjects,
 	dTexts,
@@ -51,10 +47,10 @@ enum DoorData {
 enum DimensionData {
 	dimUid,
 	dimOUid,
-	dimMinX,
-	dimMinY,
-	dimMinZ,
-	dimMaxX,
-	dimMaxY,
-	dimMaxZ
+	Float:dimMinX,
+	Float:dimMinY,
+	Float:dimMinZ,
+	Float:dimMaxX,
+	Float:dimMaxY,
+	Float:dimMaxZ
 };

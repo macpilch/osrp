@@ -2,8 +2,8 @@
 	Project: OSRP
 	Author: steeZ (macpilch)
 	File: misc_functions.inc
-	Date: 14.11.2024
-	Modified: 14.11.2024
+	Date: 24.07.2022
+	Modified: 24.07.2022
 */
 
 #if defined __MISC_FUNCTIONS_INC__
@@ -70,38 +70,35 @@ stock sendDistanceMessage(playerid, Float:range, skipPlayer, const wholeStr[], c
 }
 
 stock sendChatMessage(playerid, const mess[]) {
-	new str1[256], str2[256],
-		tmpStr[95], tmpStr2[64];
+	new str1[128], str2[128], tmpStr[95], tmpStr2[64];
 
-	if(strlen(mess) > 94) {
-		strmid(tmpStr, mess, 0, 94);
-		strmid(tmpStr2, mess, 95, strlen(mess));
+	if(strlen(mess) > 96) {
+		strmid(tmpStr, mess, 0, 95);
+		strmid(tmpStr2, mess, 96, strlen(mess));
 
 		format(str1, sizeof(str1), "%s...", tmpStr);
 		format(str2, sizeof(str2), "... %s", tmpStr2);
 	}
 
-	sendDistanceMessage(playerid, 30.0, 0, mess, str1, str2, COLOR_CHAT, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
+	sendDistanceMessage(playerid, 30.0, 0, mess, str1, str2, COLOR_CHAT1, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
 }
 
 stock sendShoutMessage(playerid, const mess[]) {
-	new str1[256], str2[256],
-		tmpStr[95], tmpStr2[64];
+	new str1[128], str2[128], tmpStr[95], tmpStr2[64];
 
-	if(strlen(mess) > 94) {
-		strmid(tmpStr, mess, 0, 94);
-		strmid(tmpStr2, mess, 95, strlen(mess));
+	if(strlen(mess) > 96) {
+		strmid(tmpStr, mess, 0, 95);
+		strmid(tmpStr2, mess, 96, strlen(mess));
 
 		format(str1, sizeof(str1), "%s...", tmpStr);
 		format(str2, sizeof(str2), "... %s", tmpStr2);
 	}
 
-	sendDistanceMessage(playerid, 70.0, 0, mess, str1, str2, COLOR_CHAT, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
+	sendDistanceMessage(playerid, 70.0, 0, mess, str1, str2, COLOR_CHAT1, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
 }
 
 stock sendWhisperMessage(playerid, const mess[]) {
-	new str1[256], str2[256],
-		tmpStr[95], tmpStr2[64];
+	new str1[128], str2[128], tmpStr[95], tmpStr2[64];
 
 	if(strlen(mess) > 94) {
 		strmid(tmpStr, mess, 0, 94);
@@ -111,27 +108,11 @@ stock sendWhisperMessage(playerid, const mess[]) {
 		format(str2, sizeof(str2), "... %s", tmpStr2);
 	}
 
-	sendDistanceMessage(playerid, 10.0, 0, mess, str1, str2, COLOR_CHAT, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
-}
-
-stock sendMegaphoneMessage(playerid, const mess[]) {
-	new str1[256], str2[256],
-		tmpStr[95], tmpStr2[64];
-
-	if(strlen(mess) > 94) {
-		strmid(tmpStr, mess, 0, 94);
-		strmid(tmpStr2, mess, 95, strlen(mess));
-
-		format(str1, sizeof(str1), "%s...", tmpStr);
-		format(str2, sizeof(str2), "... %s", tmpStr2);
-	}
-
-	sendDistanceMessage(playerid, 100.0, 0, mess, str1, str2, COLOR_YELLOW, COLOR_YELLOW, COLOR_YELLOW, COLOR_YELLOW, COLOR_YELLOW);
+	sendDistanceMessage(playerid, 10.0, 0, mess, str1, str2, COLOR_CHAT1, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
 }
 
 stock sendMeMessage(playerid, const mess[]) {
-	new str1[256], str2[256],
-		tmpStr[95], tmpStr2[64];
+	new str1[128], str2[128], tmpStr[95], tmpStr2[64];
 
 	if(strlen(mess) > 94) {
 		strmid(tmpStr, mess, 0, 94);
@@ -141,12 +122,11 @@ stock sendMeMessage(playerid, const mess[]) {
 		format(str2, sizeof(str2), "** ... %s", tmpStr2);
 	}
 
-	sendDistanceMessage(playerid, 30.0, 0, mess, str1, str2, COLOR_PURPLE, COLOR_PURPLE2, COLOR_PURPLE3, COLOR_PURPLE4, COLOR_PURPLE5);
+	sendDistanceMessage(playerid, 30.0, 0, mess, str1, str2, COLOR_ME1, COLOR_ME2, COLOR_ME3, COLOR_ME4, COLOR_ME5);
 }
 
 stock sendDoMessage(playerid, const mess[]) {
-	new str1[256], str2[256],
-		tmpStr[95], tmpStr2[64];
+	new str1[128], str2[128], tmpStr[95], tmpStr2[64];
 
 	if(strlen(mess) > 94) {
 		strmid(tmpStr, mess, 0, 94);
@@ -156,12 +136,11 @@ stock sendDoMessage(playerid, const mess[]) {
 		format(str2, sizeof(str2), "** ... %s", tmpStr2);
 	}
 
-	sendDistanceMessage(playerid, 30.0, 0, mess, str1, str2, COLOR_DO, COLOR_DO, COLOR_DO, COLOR_DO, COLOR_DO);
+	sendDistanceMessage(playerid, 30.0, 0, mess, str1, str2, COLOR_DO1, COLOR_DO2, COLOR_DO3, COLOR_DO4, COLOR_DO5);
 }
 
 stock sendRadioMessage(playerid, const mess[]) {
-	new str1[256], str2[256],
-		tmpStr[95], tmpStr2[64];
+	new str1[128], str2[128], tmpStr[95], tmpStr2[64];
 
 	if(strlen(mess) > 94) {
 		strmid(tmpStr, mess, 0, 94);
@@ -171,67 +150,92 @@ stock sendRadioMessage(playerid, const mess[]) {
 		format(str2, sizeof(str2), "... %s", tmpStr2);
 	}
 
-	sendDistanceMessage(playerid, 30.0, 1, mess, "", "", COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN);
+	sendDistanceMessage(playerid, 30.0, 1, mess, "", "", COLOR_CHAT1, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
 }
 
-stock sendClientMessageToAllOOC(playerid, color, const str[]) {
-	new messStr[256], messStr2[256],
-		tmpStr[95], tmpStr2[128];
+stock sendClientMessageToAllOOC(const mess[]) {
+	new str1[128], str2[128], tmpStr[95], tmpStr2[128];
 
-	if(strlen(str) > 84) {
-		strmid(tmpStr, str, 0, 84);
-		strmid(tmpStr2, str, 85, strlen(str));
+	if(strlen(mess) > 84) {
+		strmid(tmpStr, mess, 0, 84);
+		strmid(tmpStr2, mess, 85, strlen(mess));
 
-		format(messStr, sizeof(messStr), "%s...", tPlayer[playerid][pCharName], tmpStr);
-		format(messStr2, sizeof(messStr2), "... %s", tmpStr2);
+		format(str1, sizeof(str1), "%s...", tmpStr);
+		format(str2, sizeof(str2), "... %s", tmpStr2);
 
-		SendClientMessageToAll(color, messStr);
-		SendClientMessageToAll(color, messStr2);
+		SendClientMessageToAll(COLOR_OOC, str1);
+		SendClientMessageToAll(COLOR_OOC, str2);
 	} else {
-		SendClientMessageToAll(color, str);
+		SendClientMessageToAll(COLOR_OOC, mess);
 	}
 }
 
-stock getPenaltyName(kind) {
-	new name[32];
+stock OSRP_Tip(playerid, const tip[]) {
+	new str[128];
+	format(str, sizeof(str), "Tip: %s", tip);
+	return SendClientMessage(playerid, COLOR_GRAY, tip);
+}
 
-	switch(kind) {
+stock getPenaltyName(type) {
+	new name[64];
+
+	switch(type) {
 		case PEN_BAN: {
 			strcat(name, "Ban");
 		}
+
 		case PEN_KICK: {
 			strcat(name, "Kick");
 		}
-		case PEN_ADMJAIL: {
-			strcat(name, "AdminJail");
-		}
+
 		case PEN_WARN: {
 			strcat(name, "Warn");
 		}
+
+		case PEN_ADMJAIL: {
+			strcat(name, "AdminJail");
+		}
+
 		case PEN_BLCKACC: {
 			strcat(name, "Blokada konta");
 		}
+
 		case PEN_RUNNBLW: {
 			strcat(name, "Blokada biegania i bicia");
 		}
+
 		case PEN_BLCKVEH: {
 			strcat(name, "Blokada prowadzenia pojazdow");
 		}
+
 		case PEN_BLCKWEAP: {
 			strcat(name, "Blokada broni");
 		}
+
 		case PEN_BLCKOOC: {
 			strcat(name, "Blokada czatu OOC");
 		}
+
 		case PEN_WRITING: {
 			strcat(name, "Blokada niechlujnego pisania");
 		}
+
+		case PEN_NOHP: {
+			strcat(name, "Blokada zabierania HP");
+		}
+
 		case PEN_RPACTN: {
 			strcat(name, "Wymuszenie odgrywania akcji RolePlay");
 		}
+
 		case PEN_CURSE: {
+			strcat(name, "Klatwa");
+		}
+
+		case PEN_BANCURSE: {
 			strcat(name, "Ban w wyniku klatwy");
 		}
+
 		case PEN_SCORE: {
 			strcat(name, "GamerScore");
 		}
@@ -240,19 +244,31 @@ stock getPenaltyName(kind) {
 }
 
 stock hexstr(string[]) {
-    new
-        ret,
-        val,
-        i;
-    if (string[0] == '0' && (string[1] == 'x' || string[1] == 'X')) i = 2;
-    while (string[i])
-    {
+    new ret, val, i;
+
+    if(string[0] == '0' && (string[1] == 'x' || string[1] == 'X')) {
+		i = 2;
+	}
+
+    while(string[i]) {
         ret <<= 4;
         val = string[i++] - '0';
-        if (val > 0x09) val -= 0x07;
-        if (val > 0x0F) val -= 0x20;
-        if (val < 0x01) continue;
-        if (val < 0x10) ret += val;
+
+        if(val > 0x09) {
+			val -= 0x07;
+		}
+
+        if(val > 0x0F) {
+			val -= 0x20;
+		}
+
+        if(val < 0x01) {
+			continue;
+		}
+
+        if(val < 0x10) {
+			ret += val;
+		}
     }
     return ret;
 }
@@ -436,7 +452,7 @@ stock getXYInFrontOfPlayer(playerid, &Float:x, &Float:y, Float:distance) {
 	y += (distance * floatcos(-a, degrees));
 }
 
-stock intToFloat(i) {
+stock Float:intToFloat(i) {
 	return float(i);
 }
 
@@ -447,7 +463,7 @@ stock floatToInt(Float:f) {
 	return strval(str);
 }
 
-stock strReplace(str[], const find[], const repl[], bool:ignorecase = true, size) {
+stock strreplace(str[], const find[], const repl[], bool:ignorecase = true, size) {
     new zn = strfind(str, find, ignorecase), len = strlen(find), len2 = strlen(repl);
 
     while(zn != -1) {
@@ -459,6 +475,71 @@ stock strReplace(str[], const find[], const repl[], bool:ignorecase = true, size
 
         zn = strfind(str, find, ignorecase, zn + len2);
     }
+}
+
+stock timestamp() {
+	new h, m, s, d, n, y;
+
+	gettime(h, m, s);
+	getdate(y, n, d);
+	return mktime(h - 24, m, s + 2400, d, n, y);
+}
+
+stock todate(dd, mm, yy, hh, min, ss) {
+	new h, m, s, d, n, y;
+
+	gettime(h, m, s);
+	getdate(y, n, d);
+	return mktime(h - 24 + hh, m + min, s + 2400 + ss, d + dd, n + mm, y + yy);
+}
+
+stock mktime(hour, minute, second, day, month, year) {
+	static days_of_month[] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }, lMinute, lHour, lDay, lMonth, lYear, lMinuteS, lHourS, lDayS, lMonthS, lYearS;
+
+	if(year != lYear) {
+		lYearS = 0;
+
+		for(new j = 1970; j < year; j++) {
+			lYearS += 31536000;
+
+			if((!(j % 4) && (j % 100)) || !(j % 400)) {
+				lYearS += 86400;
+			}
+		}
+
+		lYear = year;
+	}
+
+	if(month != lMonth) {
+		lMonthS = 0;
+		month--;
+
+		for(new i = 0; i < month; i++) {
+			lMonthS += days_of_month[i] * 86400;
+
+			if((i == 1) && ((!(year % 4) && (year % 100)) || !(year % 400))) {
+				lMonthS += 86400;
+			}
+		}
+
+		lMonth = month;
+	}
+
+	if(day != lDay) {
+		lDayS = day * 86400;
+		lDay = day;
+	}
+
+	if(hour != lHour) {
+		lHourS = hour * 3600;
+		lHour = hour;
+	}
+
+	if(minute != lMinute) {
+		lMinuteS = minute * 60;
+		lMinute = minute;
+	}
+	return (lYearS + lMonthS + lDayS + lHourS + lMinuteS + second);
 }
 
 stock removeGameObjects(playerid) {
@@ -809,5 +890,4 @@ stock removeGameObjects(playerid) {
 	RemoveBuildingForPlayer(playerid, 1284, 610.3828, -1223.7031, 20.5703, 0.25);
 	RemoveBuildingForPlayer(playerid, 1284, 621.5781, -1230.6953, 19.6953, 0.25);
 	RemoveBuildingForPlayer(playerid, 1284, 650.6563, -1207.2891, 20.4375, 0.25);
-	return 1;
 }

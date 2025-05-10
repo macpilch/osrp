@@ -36,18 +36,21 @@ Timer:globalTimer[1000]() {
 
 					OSRP_SetPlayerScore(i, 1);
 
-					if(isPlayerOnDuty(i)) {
-						tPlayer[i][pDuty]++;
+					for(new j = 0; j < MAX_PLAYER_GROUPS; j++) {
+						if(isPlayerDuty[i][j]) {
+							tPlayer[i][pDuty][j]++;
+							savePlayerValues(i, SAVE_GROUPS);
 
-						if((tPlayer[i][pDuty] % 30) == 0) {
-							giveGroupMoney(getServerGroupId(i), -tPlayer[i][pPayDayNow]);
-							tPlayer[i][pBank] += tPlayer[i][pPayDay][tPlayer[i][pGroupNow]];
-							savePlayerValues(i, SAVE_MONEY);
+							if((tPlayer[i][pDuty][j] % 30) == 0) {
+								giveGroupMoney(getServerGroupId(i, j + 1), -tPlayer[i][pPayDay][j]);
+								tPlayer[i][pBank] += tPlayer[i][pPayDay][j];
+								savePlayerValues(i, SAVE_MONEY);
 
-							format(timerStr, sizeof(timerStr), "* Otrzymujesz $%d wyp³aty. *", tPlayer[i][pPayDay][tPlayer[i][pGroupNow]]);
-							SendClientMessage(i, COLOR_WHITE, timerStr);
+								format(timerStr, sizeof(timerStr), "** Otrzymujesz $%d wyp³aty. **", tPlayer[i][pPayDay][j]);
+								SendClientMessage(i, COLOR_WHITE, timerStr);
 
-							PlayerPlaySound(i, 4201, 0.0, 0.0, 0.0);
+								PlayerPlaySound(i, 4201, 0.0, 0.0, 0.0);
+							}
 						}
 					}
 				}
@@ -58,8 +61,63 @@ Timer:globalTimer[1000]() {
 				}
 
 				if(insidedHotel[i] && tPlayer[i][pHotel] && playerToPoint(i, 5.0, 2216.12, -1076.30, 1050.48)) {
-					GameTextForPlayer(i, "~n~~n~~n~~n~~n~~w~[~k~~SNEAK_ABOUT~+~k~~PED_SPRINT~] ~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
+					GameTextForPlayer(i, "~n~~n~~n~~n~~w~''~k~~SNEAK_ABOUT~+~k~~PED_SPRINT~'' ~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
 				}
+
+				if(tPlayer[i][pDrugsTime] > 0 && tPlayer[i][pDrugs] != DRUG_NONE) {
+					tPlayer[i][pDrugsTime]--;
+
+					switch(tPlayer[i][pDrugs]) {
+						case DRUG_HEROINE: {
+							SetPlayerWeather(i, -66);
+
+							if(tPlayer[i][pHp] > 15.0) {
+								SetPlayerDrunkLevel(i, 5000);
+							}
+						}
+						case DRUG_METHA: {
+							SetPlayerWeather(i, -107);
+
+							if(tPlayer[i][pHp] > 15.0) {
+								SetPlayerDrunkLevel(i, 5000);
+							}
+						}
+						case DRUG_MARIJUANA: {
+							SetPlayerWeather(i, 65);
+
+							if(tPlayer[i][pHp] > 15.0) {
+								SetPlayerDrunkLevel(i, 3000);
+							}
+
+							if(tPlayer[i][pDrugsTime] == 480 || tPlayer[i][pDrugsTime] == 360 || tPlayer[i][pDrugsTime] == 240 || tPlayer[i][pDrugsTime] == 120) {
+								if(tPlayer[i][pHp] + 10.0 > 100.0) {
+									OSRP_SetPlayerHealth(i, 100.0);
+								} else {
+									SetPlayerHealth(i, tPlayer[i][pHp] + 10.0);
+								}
+							}
+						}
+						case DRUG_ANADRALL: {
+							SetPlayerWeather(i, -53);
+						}
+					}
+
+					if(!tPlayer[i][pDrugsTime]) {
+						SetPlayerWeather(i, 2);
+						tPlayer[i][pDrugs] = DRUG_NONE;
+
+						if(tPlayer[i][pHp] > 15.0) {
+							SetPlayerDrunkLevel(i, 0);
+						}
+					}
+				}
+
+				//AC
+				antySpeedHack(i);
+				antyUnFreeze(i);
+				antyWeapon(i);
+				//antyAdmJail(i);
+				antyAirBreak(i);
 			}
 		}
 
@@ -70,24 +128,26 @@ Timer:globalTimer[1000]() {
 
 					switch(getVehicleSpeed(tVehicle[j][vId])) {
 						case 1 .. 50: {
-							tVehicle[j][vFuel] -= 0.001;
-						}
-						case 51 .. 90: {
-							tVehicle[j][vFuel] -= 0.004;
-						}
-						case 91 .. 120: {
-							tVehicle[j][vFuel] -= 0.005;
-						}
-						case 121 .. 220: {
 							tVehicle[j][vFuel] -= 0.01;
 						}
+						case 51 .. 90: {
+							tVehicle[j][vFuel] -= 0.04;
+						}
+						case 91 .. 120: {
+							tVehicle[j][vFuel] -= 0.05;
+						}
+						case 121 .. 220: {
+							tVehicle[j][vFuel] -= 0.1;
+						}
 						default: {
-							tVehicle[j][vFuel] -= 0.0001;
+							tVehicle[j][vFuel] -= 0.001;
 						}
 					}
 
-					calcsVehicleDistance(i, j);
-					
+					if(IsPlayerInAnyVehicle(i)) {
+						SetProgressBarValue(fuelProgressBar[i], tVehicle[j][vFuel]);
+						ShowProgressBarForPlayer(i, fuelProgressBar[i]);
+					}
 
 					if(tVehicle[j][vFuel] <= 0.0) {
 						new engine, lights, alarm, doors, bonnet, boot, objective;
@@ -138,18 +198,25 @@ Timer:globalTimer[1000]() {
 							SetVehicleVelocity(tVehicle[j][vId], 0.0, 0.0, 0.0);
 						}
 					}
+
+					calcsVehicleDistance(i, j);
 				}
 
 				// Przesuwanie pojazdu przez innego gracza
 				new Float:vx, Float:vy, Float:vz;
 				GetVehiclePos(tVehicle[j][vId], vx, vy, vz);
 
-				if(tVehicle[j][vOUid] != tPlayer[i][pUid] && ((floatabs(tVehicle[j][vPosX] - vx) >= 0.1 && floatabs(tVehicle[j][vPosY] - vy) >= 0.1) && vz)) {
-					DestroyVehicle(tVehicle[j][vId]);
+				if(IsVehicleStreamedIn(tVehicle[j][vId], i)) {
+					if(tVehicle[j][vOUid] != tPlayer[i][pUid] && tVehicle[j][vType] == VEHICLE_OWNER_PLAYER && ((floatabs(tVehicle[j][vPosX] - vx) >= 0.5 && floatabs(tVehicle[j][vPosY] - vy) >= 0.5) && vz)) {
+						DestroyVehicle(tVehicle[j][vId]);
 
-					tVehicle[j][vSpawned] = false;
-					tVehicle[j][vEngine] = false;
-					tVehicle[j][vLightsOn] = false;
+						tVehicle[j][vId] = INVALID_VEHICLE_ID;
+						tVehicle[j][vSpawned] = false;
+						tVehicle[j][vEngine] = false;
+						tVehicle[j][vLightsOn] = false;
+
+						saveVehicleValues(j);
+					}
 				}
 			}
 		}
@@ -164,17 +231,23 @@ Timer:saveAllValuesTimer[60000]() {
 		}
 	}
 
+	foreach(new i : vehItter) {
+		if(tVehicle[i][vId] != INVALID_VEHICLE_ID && tVehicle[i][vSpawned]) {
+			saveVehicleValues(i);
+		}
+	}
+
 	saveServerValues();
 	saveThingsValues();
 	saveDoorsValues();
-	saveVehiclesValues();
 }
 
 Timer:setRealTimeTimer[5000]() {
 	new h, m, s;
-
 	gettime(h, m, s);
+
 	serverTime = h;
+	SetWorldTime(serverTime);
 
 	foreach(new i : Player) {
 		SetPlayerTime(i, serverTime, 0);
@@ -203,14 +276,14 @@ Timer:townHallBellsTimer[59000]() {
 
 	foreach(new i : Player) {
 		if(hours == 0 && minutes == 0) {
-			format(timerStr, sizeof(timerStr), "* Dzwony w ratuszu bij¹ 12 razy. *");
-			SendClientMessage(i, COLOR_DO, timerStr);
+			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ 12 razy. **");
+			SendClientMessage(i, COLOR_DO1, timerStr);
 		} else if(hours == 1 && minutes == 0) {
-			format(timerStr, sizeof(timerStr), "* Dzwony w ratuszu bij¹ 1 raz. *");
-			SendClientMessage(i, COLOR_DO, timerStr);
+			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ 1 raz. **");
+			SendClientMessage(i, COLOR_DO1, timerStr);
 		} else if((hours > 1 && hours <= 23) && minutes == 0) {
-			format(timerStr, sizeof(timerStr), "* Dzwony w ratuszu bij¹ %d razy. *", hours);
-			SendClientMessage(i, COLOR_DO, timerStr);
+			format(timerStr, sizeof(timerStr), "** Dzwony w ratuszu bij¹ %d razy. **", hours);
+			SendClientMessage(i, COLOR_DO1, timerStr);
 		}
 	}
 }
@@ -221,85 +294,19 @@ Timer:updateDaysTimer[3600000]() {
 
 	if(h == 0) {
 		foreach(new i : penItter) {
-			queryStr[0] = EOS;
-
 			if(tPenalty[i][penOUid] != 0 && tPenalty[i][penDays] > 0) {
 				tPenalty[i][penDays]--;
 
+				queryStr[0] = EOS;
 				format(queryStr, sizeof(queryStr), "UPDATE `osrp_Penalties` SET `Days` = '%d' WHERE `UID` = '%d'", tPenalty[i][penDays], tPenalty[i][penUid]);
 				mysql_query(queryStr);
 			}
 
 			if(!tPenalty[i][penDays]) {
-				format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Penalties` WHERE `UID` = '%d'", tPenalty[i][penUid]);
-				mysql_query(queryStr);
-
-				tPenalty[i][penUid] = 0;
-				tPenalty[i][penSUid] = 0;
-				tPenalty[i][penOUid] = 0;
-				format(tPenalty[i][penIp], 16, NULL);
-				tPenalty[i][penKind] = -1;
-				tPenalty[i][penDays] = 0;
-				format(tPenalty[i][penDate], 64, NULL);
-				format(tPenalty[i][penReason], 128, NULL);
+				removePenalty(i);
 			}
 		}
 	}
-}
-
-Timer:antiCheatTimer[1000]() {
-	foreach(new i : Player) {
-		if(isLogged[i] && isSpawned[i] && !spawnFreeze[i]) {
-			new Float:x, Float:y, Float:z, Float:totalPos;
-
-			GetPlayerPos(i, x, y, z);
-
-			if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
-				new srvVehId = getServerVehicleId(i);
-				GetVehicleVelocity(tVehicle[srvVehId][vId], x, y, z);
-
-				if(getVehicleSpeed(tVehicle[srvVehId][vId]) > 200) {
-					format(timerStr, sizeof(timerStr), "SpeedHack V %f %f %f", x, y, z);
-					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, 0, timerStr);
-				}
-			}
-
-			if(isFreeze[i] && !numberBlows[i] && !isBW[i] && !busCameraSelect[i] && !isInBus[i]) {
-				if(IsPlayerInAnyVehicle(i)) {
-					new srvVehId = getServerVehicleId(i);
-
-					if(getVehicleSpeed(tVehicle[srvVehId][vId]) > 0 && (x > tPlayer[i][pPosX] || x < tPlayer[i][pPosX]) && (tPlayer[i][pPosY] > y || tPlayer[i][pPosY] < y) && GetTickCount() < enteredVehicleSec[i]) {
-						enteredVehicleSec[i] = 0;
-						totalPos = floatabs((x - tPlayer[i][pPosX]) + (y - tPlayer[i][pPosY]));
-
-						format(timerStr, sizeof(timerStr), "Unfreeze~n~~w~3x ruch o %0.1fj podczas zamrozenia w pojezdzie.", totalPos);
-						return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, 0, timerStr);
-					}
-				}
-
-				if(((x > tPlayer[i][pPosX] || x < tPlayer[i][pPosX]) && (tPlayer[i][pPosY] > y || tPlayer[i][pPosY] < y)) && GetPlayerState(i) == PLAYER_STATE_ONFOOT) {
-					totalPos = floatabs((x - tPlayer[i][pPosX]) + (y - tPlayer[i][pPosY]));
-
-					format(timerStr, sizeof(timerStr), "Unfreeze~n~~w~Ruch o %0.1fj podczas zamrozenia pieszo.", totalPos);
-					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_ADMJAIL, 0, timerStr);
-				}
-			}
-
-			if(GetPlayerWeapon(i) != 0) {
-				if(tPlayer[i][pWeapon] != GetPlayerWeapon(i) && getServerThingId(i) != INVALID_THING_ID) {
-					format(timerStr, sizeof(timerStr), "Bron: %d/%d(%s). Systemowa: %d/%d:%d (Weap)", GetPlayerWeapon(i), GetPlayerAmmo(i), weaponNames[GetPlayerWeapon(i)], tThing[getServerThingId(i)][tUid], tThing[getServerThingId(i)][tValue1], tThing[getServerThingId(i)][tValue2]);
-					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, 0, timerStr);
-				}
-			}
-
-			if(tPlayer[i][pAj] > 0) {
-				if(!playerToPoint(i, 20.0, 1174.3706, -1180.3267, 87.0350)) {
-					return givePlayerPenalty(INVALID_PLAYER_ID, i, PEN_KICK, 0, "Admin-jail break");
-				}
-			}
-		}
-	}
-	return 1;
 }
 
 Timer:giveFreeMoneyTimer[590000]() {
@@ -307,8 +314,9 @@ Timer:giveFreeMoneyTimer[590000]() {
 		if(tPlayer[i][pHours] < 1) {
 			OSRP_GivePlayerMoney(i, 25);
 			GameTextForPlayer(i, "~w~+~g~$25", 2000, 6);
+			resetPlayerBoxTextDraws(i);
 
-			for(new j = 0; j < sizeof(firstHoursInfo); j++) {
+			for(new j = 0; j < 3; j++) {
 				TextDrawShowForPlayer(i, firstHoursInfo[j]);
 			}
 

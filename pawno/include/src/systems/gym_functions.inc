@@ -32,6 +32,7 @@ stock searchPlayerGym(playerid) {
 	SetTimerEx("givePlayerGymBarBell", 4000, false, "i", playerid);
 
 	acceptTraining[playerid] = false;
+	resetPlayerBoxTextDraws(playerid);
 
 	for(new i = 0; i < 2; i++) {
 		TextDrawShowForPlayer(playerid, showInfoGym[playerid][i]);

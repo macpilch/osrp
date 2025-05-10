@@ -14,45 +14,57 @@
 
 stock initAreaValues() {
 	printf("[LOG]: Zaczynam ladowac strefy...");
+	new i;
 
-	for(new i = 0; i < MAX_AREAS; i++) {		
-		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Areas` WHERE `UID` = '%d'", i + 1);
-		mysql_query(queryStr);
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Areas`");
+	mysql_query(queryStr);
 
-		mysql_store_result();
+	mysql_store_result();
 
-		if(!mysql_num_rows()) {
-			break;
-		}
-
-		mysql_fetch_row(queryStr, "|");
-		sscanf(queryStr, "p<|>iiffffi",
+	while(mysql_fetch_row(queryStr, "|")) {
+		sscanf(queryStr, "p<|>iiiiffffffi",
 			tArea[i][aUid],
 			tArea[i][aOUid],
+			tArea[i][aType],
+			tArea[i][aOType],
 			tArea[i][aMinX],
 			tArea[i][aMinY],
+			tArea[i][aMinZ],
 			tArea[i][aMaxX],
 			tArea[i][aMaxY],
+			tArea[i][aMaxZ],
 			tArea[i][aMaxSpeed]
 		);
 
 		Iter_Add(areaItter, i);
-
-		GangZoneCreate(tArea[i][aMinX], tArea[i][aMinY], tArea[i][aMaxX], tArea[i][aMaxY]);
 		tArea[i][aArea] = CreateDynamicRectangle(tArea[i][aMinX], tArea[i][aMinY], tArea[i][aMaxX], tArea[i][aMaxY], 0, 0, -1);
-		
+
 #if defined DEBUG
-		printf("UID: %d, OUID: %d, MinX: %f, MaxX: %f, MinY: %f, MaxY: %f, MaxSpeed: %d, Area: %d\n", tArea[i][aUid], tArea[i][aOUid], tArea[i][aMinX], tArea[i][aMaxX], tArea[i][aMinY], tArea[i][aMaxY], tArea[i][aMaxSpeed], tArea[i][aArea]);
+		printf("UID: %d, OUID: %d, Type: %d, OType: %d, MinX: %f, MinY: %f, MinZ: %f, MaxX: %f, MaxY: %f, MaxZ: %f, MaxSpeed: %d, Area: %d\n",
+			tArea[i][aUid],
+			tArea[i][aOUid],
+			tArea[i][aType],
+			tArea[i][aOType],
+			tArea[i][aMinX],
+			tArea[i][aMinY],
+			tArea[i][aMinZ],
+			tArea[i][aMaxX],
+			tArea[i][aMaxY],
+			tArea[i][aMaxZ],
+			tArea[i][aMaxSpeed],
+			tArea[i][aArea]
+		);
 #endif
+		i++;
 	}
 
 	if(Iter_Count(areaItter)) {
-		printf("[LOG]: Wczytano %d stref.", Iter_Count(areaItter));
+		printf("[LOG]: Wczytano %d stref.\n", Iter_Count(areaItter));
 	} else {
-		printf("[LOG]: Brak stref.");
+		printf("[LOG]: Brak stref.\n");
 	}
-	
+
 	mysql_free_result();
 	return 1;
 }

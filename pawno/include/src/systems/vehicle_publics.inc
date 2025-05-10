@@ -12,7 +12,7 @@
 #define __VEHICLE_PUBLICS_INC__
 #pragma library osrp
 
-sampCallback:OSRP_OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
+sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 	new srvVehId = getClosestServerVehicleId(vehicleid);
 	new srvThingId = getServerThingId(playerid);
 
@@ -55,7 +55,7 @@ sampCallback:OSRP_OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		GameTextForPlayer(playerid, "~n~~n~~r~Pojazd jest zamkniety.~n~~w~/v zamknij", 6000, 3);
 	}
 
-	if((tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && tVehicle[srvVehId][vKind] == VEHICLE_OWNER_PLAYER) && (tPlayer[playerid][pDocuments] & DOC_L_DRIVING) &&
+	if((tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && tVehicle[srvVehId][vType] == VEHICLE_OWNER_PLAYER) && (tPlayer[playerid][pDocuments] & DOC_L_DRIVING) &&
 	    !ispassenger) {
 		ClearAnimations(playerid);
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Nie mozesz prowadzic tego~n~pojazdu.", 6000, 3);
@@ -70,7 +70,7 @@ sampCallback:OSRP_OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 	return 1;
 }
 
-sampCallback:OSRP_OnPlayerExitVehicle(playerid, vehicleid) {
+sampCallback:OnPlayerExitVehicle(playerid, vehicleid) {
 #if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnPlayerExitVehicle");
 #endif
@@ -86,11 +86,11 @@ sampCallback:OSRP_OnPlayerExitVehicle(playerid, vehicleid) {
 	return 1;
 }
 
-sampCallback:OSRP_OnVehicleSpawn(vehicleid) {
+sampCallback:OnVehicleSpawn(vehicleid) {
 	return 1;
 }
 
-sampCallback:OSRP_OnVehicleDeath(vehicleid, killerid) {
+sampCallback:OnVehicleDeath(vehicleid, killerid) {
 #if defined DEBUG
 	SendClientMessage(killerid, COLOR_WHITE, "Witma ! OnVehicleDeath");
 #endif
@@ -111,9 +111,8 @@ sampCallback:OSRP_OnVehicleDeath(vehicleid, killerid) {
 	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Spawned` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Angle` = '%f', `Engine` = '%d', `EngineHealth` = '%f' WHERE `UID` = '%d'", tVehicle[srvVehId][vSpawned], tVehicle[srvVehId][vPosX], tVehicle[srvVehId][vPosY], tVehicle[srvVehId][vPosZ], tVehicle[srvVehId][vAngle], tVehicle[srvVehId][vEngine], tVehicle[srvVehId][vEngineHp], tVehicle[srvVehId][vUid]);
 	mysql_query(queryStr);
 
-	for(new i = 0; i < 2; i++) {
-		TextDrawHideForPlayer(killerid, vehicleTips[killerid][i]);
-	}
+	resetPlayerBoxTextDraws(killerid);
+	TextDrawHideForPlayer(killerid, vehicleTips[killerid]);
 
 	for(new i = 0; i < 3; i++) {
 		TextDrawShowForPlayer(killerid, vehicleDeath[killerid][i]);
@@ -123,28 +122,28 @@ sampCallback:OSRP_OnVehicleDeath(vehicleid, killerid) {
 	return 1;
 }
 
-sampCallback:OSRP_OnVehicleMod(playerid, vehicleid, componentid) {
+sampCallback:OnVehicleMod(playerid, vehicleid, componentid) {
 #if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehicleMod");
 #endif
 	return 1;
 }
 
-sampCallback:OSRP_OnVehiclePaintjob(playerid, vehicleid, paintjobid) {
+sampCallback:OnVehiclePaintjob(playerid, vehicleid, paintjobid) {
 #if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehiclePaintjob");
 #endif
 	return 1;
 }
 
-sampCallback:OSRP_OnVehicleRespray(playerid, vehicleid, color1, color2) {
+sampCallback:OnVehicleRespray(playerid, vehicleid, color1, color2) {
 #if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehicleRespray");
 #endif
 	return 1;
 }
 
-sampCallback:OSRP_OnVehicleDamageStatusUpdate(vehicleid, playerid) {
+sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 #if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehicleDamageStatusUpdate");
 #endif
@@ -165,7 +164,7 @@ sampCallback:OSRP_OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 		SetTimerEx("healthDamage", 100, false, "i", playerid);
 	}
 
-	if(pId != -1) {
+	if(pId != INVALID_PLAYER_ID) {
 		isCollision[playerid] = true;
 
 		mainStr[0] = EOS;
@@ -184,7 +183,7 @@ sampCallback:OSRP_OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 	return 1;
 }
 
-sampCallback:OSRP_OnVehicleStreamIn(vehicleid, forplayerid) {
+sampCallback:OnVehicleStreamIn(vehicleid, forplayerid) {
 #if defined DEBUG
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamIn");
 #endif
@@ -199,7 +198,7 @@ sampCallback:OSRP_OnVehicleStreamIn(vehicleid, forplayerid) {
 	return 1;
 }
 
-sampCallback:OSRP_OnVehicleStreamOut(vehicleid, forplayerid) {
+sampCallback:OnVehicleStreamOut(vehicleid, forplayerid) {
 #if defined DEBUG
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamOut");
 #endif
@@ -215,6 +214,7 @@ sampCallback:OSRP_OnVehicleStreamOut(vehicleid, forplayerid) {
 
 		TextDrawShowForPlayer(forplayerid, collisionInfo[forplayerid]);
 		SetTimerEx("hideCollisionInfo", 10000, false, "i", forplayerid);
+		return 1;
 	}
-	return 1;
+	return 0;
 }
