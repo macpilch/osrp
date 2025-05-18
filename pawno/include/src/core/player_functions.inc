@@ -502,7 +502,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][2] = TextDrawCreate(263.308898, 171.499923, "Sluzba");
 	TextDrawLetterSize(groupsInfo[playerid][2], 0.293982, 1.209166);
-	TextDrawTextSize(groupsInfo[playerid][2], 20.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][2], 20.000000, 47.833309);
 	TextDrawAlignment(groupsInfo[playerid][2], 2);
 	TextDrawColor(groupsInfo[playerid][2], -1);
 	TextDrawUseBox(groupsInfo[playerid][2], 1);
@@ -516,7 +516,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][3] = TextDrawCreate(323.279724, 170.916702, "Info");
 	TextDrawLetterSize(groupsInfo[playerid][3], 0.285548, 1.232499);
-	TextDrawTextSize(groupsInfo[playerid][3], 20.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][3], 20.000000, 47.250003);
 	TextDrawAlignment(groupsInfo[playerid][3], 2);
 	TextDrawColor(groupsInfo[playerid][3], -1);
 	TextDrawUseBox(groupsInfo[playerid][3], 1);
@@ -530,7 +530,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][4] = TextDrawCreate(382.781616, 170.916702, "Menu");
 	TextDrawLetterSize(groupsInfo[playerid][4], 0.287422, 1.244166);
-	TextDrawTextSize(groupsInfo[playerid][4], 20.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][4], 20.000000, 47.249977);
 	TextDrawAlignment(groupsInfo[playerid][4], 2);
 	TextDrawColor(groupsInfo[playerid][4], -1);
 	TextDrawUseBox(groupsInfo[playerid][4], 1);
@@ -544,7 +544,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][5] = TextDrawCreate(443.221099, 170.916641, "Online");
 	TextDrawLetterSize(groupsInfo[playerid][5], 0.293982, 1.290832);
-	TextDrawTextSize(groupsInfo[playerid][5], 20.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][5], 20.000000, 48.999980);
 	TextDrawAlignment(groupsInfo[playerid][5], 2);
 	TextDrawColor(groupsInfo[playerid][5], -1);
 	TextDrawUseBox(groupsInfo[playerid][5], 1);
@@ -558,7 +558,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][6] = TextDrawCreate(503.660430, 171.499923, "Zadania");
 	TextDrawLetterSize(groupsInfo[playerid][6], 0.292576, 1.238333);
-	TextDrawTextSize(groupsInfo[playerid][6], 20.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][6], 20.000000, 47.249980);
 	TextDrawAlignment(groupsInfo[playerid][6], 2);
 	TextDrawColor(groupsInfo[playerid][6], -1);
 	TextDrawUseBox(groupsInfo[playerid][6], 1);
@@ -572,7 +572,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][7] = TextDrawCreate(563.162658, 171.499954, "Pojazdy");
 	TextDrawLetterSize(groupsInfo[playerid][7], 0.299135, 1.238332);
-	TextDrawTextSize(groupsInfo[playerid][7], 20.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][7], 20.000000, 47.833320);
 	TextDrawAlignment(groupsInfo[playerid][7], 2);
 	TextDrawColor(groupsInfo[playerid][7], -1);
 	TextDrawUseBox(groupsInfo[playerid][7], 1);
@@ -599,7 +599,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][9] = TextDrawCreate(263.308898, 171.499923 + 22.0, "Sluzba");
 	TextDrawLetterSize(groupsInfo[playerid][9], 0.293982, 1.209166);
-	TextDrawTextSize(groupsInfo[playerid][9], 20.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][9], 20.000000, 47.833309);
 	TextDrawAlignment(groupsInfo[playerid][9], 2);
 	TextDrawColor(groupsInfo[playerid][9], -1);
 	TextDrawUseBox(groupsInfo[playerid][9], 1);
@@ -613,7 +613,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][10] = TextDrawCreate(323.279724, 170.916702 + 22.0, "Info");
 	TextDrawLetterSize(groupsInfo[playerid][10], 0.285548, 1.232499);
-	TextDrawTextSize(groupsInfo[playerid][10], 20.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][10], 20.000000, 47.250003);
 	TextDrawAlignment(groupsInfo[playerid][10], 2);
 	TextDrawColor(groupsInfo[playerid][10], -1);
 	TextDrawUseBox(groupsInfo[playerid][10], 1);
@@ -627,7 +627,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][11] = TextDrawCreate(382.781616, 170.916702 + 22.0, "Menu");
 	TextDrawLetterSize(groupsInfo[playerid][11], 0.287422, 1.244166);
-	TextDrawTextSize(groupsInfo[playerid][11], 20.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][11], 20.000000, 47.249977);
 	TextDrawAlignment(groupsInfo[playerid][11], 2);
 	TextDrawColor(groupsInfo[playerid][11], -1);
 	TextDrawUseBox(groupsInfo[playerid][11], 1);
@@ -641,7 +641,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][12] = TextDrawCreate(443.221099, 170.916641 + 22.0, "Online");
 	TextDrawLetterSize(groupsInfo[playerid][12], 0.293982, 1.290832);
-	TextDrawTextSize(groupsInfo[playerid][12], 20.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][12], 20.000000, 48.999980);
 	TextDrawAlignment(groupsInfo[playerid][12], 2);
 	TextDrawColor(groupsInfo[playerid][12], -1);
 	TextDrawUseBox(groupsInfo[playerid][12], 1);
@@ -655,7 +655,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][13] = TextDrawCreate(503.660430, 171.499923 + 22.0, "Zadania");
 	TextDrawLetterSize(groupsInfo[playerid][13], 0.292576, 1.238333);
-	TextDrawTextSize(groupsInfo[playerid][13], 20.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][13], 20.000000, 47.249980);
 	TextDrawAlignment(groupsInfo[playerid][13], 2);
 	TextDrawColor(groupsInfo[playerid][13], -1);
 	TextDrawUseBox(groupsInfo[playerid][13], 1);
@@ -669,7 +669,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][14] = TextDrawCreate(563.162658, 171.499954 + 22.0, "Pojazdy");
 	TextDrawLetterSize(groupsInfo[playerid][14], 0.299135, 1.238332);
-	TextDrawTextSize(groupsInfo[playerid][14], 20.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][14], 20.000000, 47.833320);
 	TextDrawAlignment(groupsInfo[playerid][14], 2);
 	TextDrawColor(groupsInfo[playerid][14], -1);
 	TextDrawUseBox(groupsInfo[playerid][14], 1);
@@ -696,7 +696,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][16] = TextDrawCreate(263.308898, 171.499923 + 44.0, "Sluzba");
 	TextDrawLetterSize(groupsInfo[playerid][16], 0.293982, 1.209166);
-	TextDrawTextSize(groupsInfo[playerid][16], 30.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][16], 30.000000, 47.833309);
 	TextDrawAlignment(groupsInfo[playerid][16], 2);
 	TextDrawColor(groupsInfo[playerid][16], -1);
 	TextDrawUseBox(groupsInfo[playerid][16], 1);
@@ -710,7 +710,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][17] = TextDrawCreate(323.279724, 170.916702 + 44.0, "Info");
 	TextDrawLetterSize(groupsInfo[playerid][17], 0.285548, 1.232499);
-	TextDrawTextSize(groupsInfo[playerid][17], 20.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][17], 20.000000, 47.250003);
 	TextDrawAlignment(groupsInfo[playerid][17], 2);
 	TextDrawColor(groupsInfo[playerid][17], -1);
 	TextDrawUseBox(groupsInfo[playerid][17], 1);
@@ -724,7 +724,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][18] = TextDrawCreate(382.781616, 170.916702 + 44.0, "Menu");
 	TextDrawLetterSize(groupsInfo[playerid][18], 0.287422, 1.244166);
-	TextDrawTextSize(groupsInfo[playerid][18], 25.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][18], 25.000000, 47.249977);
 	TextDrawAlignment(groupsInfo[playerid][18], 2);
 	TextDrawColor(groupsInfo[playerid][18], -1);
 	TextDrawUseBox(groupsInfo[playerid][18], 1);
@@ -738,7 +738,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][19] = TextDrawCreate(443.221099, 170.916641 + 44.0, "Online");
 	TextDrawLetterSize(groupsInfo[playerid][19], 0.293982, 1.290832);
-	TextDrawTextSize(groupsInfo[playerid][19], 25.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][19], 25.000000, 48.999980);
 	TextDrawAlignment(groupsInfo[playerid][19], 2);
 	TextDrawColor(groupsInfo[playerid][19], -1);
 	TextDrawUseBox(groupsInfo[playerid][19], 1);
@@ -752,7 +752,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][20] = TextDrawCreate(503.660430, 171.499923 + 44.0, "Zadania");
 	TextDrawLetterSize(groupsInfo[playerid][20], 0.292576, 1.238333);
-	TextDrawTextSize(groupsInfo[playerid][20], 30.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][20], 30.000000, 47.249980);
 	TextDrawAlignment(groupsInfo[playerid][20], 2);
 	TextDrawColor(groupsInfo[playerid][20], -1);
 	TextDrawUseBox(groupsInfo[playerid][20], 1);
@@ -766,7 +766,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][21] = TextDrawCreate(563.162658, 171.499954 + 44.0, "Pojazdy");
 	TextDrawLetterSize(groupsInfo[playerid][21], 0.299135, 1.238332);
-	TextDrawTextSize(groupsInfo[playerid][21], 30.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][21], 30.000000, 47.833320);
 	TextDrawAlignment(groupsInfo[playerid][21], 2);
 	TextDrawColor(groupsInfo[playerid][21], -1);
 	TextDrawUseBox(groupsInfo[playerid][21], 1);
@@ -793,7 +793,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][23] = TextDrawCreate(263.308898, 171.499923 + 66.0, "Sluzba");
 	TextDrawLetterSize(groupsInfo[playerid][23], 0.293982, 1.209166);
-	TextDrawTextSize(groupsInfo[playerid][23], 30.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][23], 30.000000, 47.833309);
 	TextDrawAlignment(groupsInfo[playerid][23], 2);
 	TextDrawColor(groupsInfo[playerid][23], -1);
 	TextDrawUseBox(groupsInfo[playerid][23], 1);
@@ -807,7 +807,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][24] = TextDrawCreate(323.279724, 170.916702 + 66.0, "Info");
 	TextDrawLetterSize(groupsInfo[playerid][24], 0.285548, 1.232499);
-	TextDrawTextSize(groupsInfo[playerid][24], 20.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][24], 20.000000, 47.250003);
 	TextDrawAlignment(groupsInfo[playerid][24], 2);
 	TextDrawColor(groupsInfo[playerid][24], -1);
 	TextDrawUseBox(groupsInfo[playerid][24], 1);
@@ -821,7 +821,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][25] = TextDrawCreate(382.781616, 170.916702 + 66.0, "Menu");
 	TextDrawLetterSize(groupsInfo[playerid][25], 0.287422, 1.244166);
-	TextDrawTextSize(groupsInfo[playerid][25], 25.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][25], 25.000000, 47.249977);
 	TextDrawAlignment(groupsInfo[playerid][25], 2);
 	TextDrawColor(groupsInfo[playerid][25], -1);
 	TextDrawUseBox(groupsInfo[playerid][25], 1);
@@ -835,7 +835,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][26] = TextDrawCreate(443.221099, 170.916641 + 66.0, "Online");
 	TextDrawLetterSize(groupsInfo[playerid][26], 0.293982, 1.290832);
-	TextDrawTextSize(groupsInfo[playerid][26], 25.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][26], 25.000000, 48.999980);
 	TextDrawAlignment(groupsInfo[playerid][26], 2);
 	TextDrawColor(groupsInfo[playerid][26], -1);
 	TextDrawUseBox(groupsInfo[playerid][26], 1);
@@ -849,7 +849,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][27] = TextDrawCreate(503.660430, 171.499923 + 66.0, "Zadania");
 	TextDrawLetterSize(groupsInfo[playerid][27], 0.292576, 1.238333);
-	TextDrawTextSize(groupsInfo[playerid][27], 30.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][27], 30.000000, 47.249980);
 	TextDrawAlignment(groupsInfo[playerid][27], 2);
 	TextDrawColor(groupsInfo[playerid][27], -1);
 	TextDrawUseBox(groupsInfo[playerid][27], 1);
@@ -863,7 +863,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][28] = TextDrawCreate(563.162658, 171.499954 + 66.0, "Pojazdy");
 	TextDrawLetterSize(groupsInfo[playerid][28], 0.299135, 1.238332);
-	TextDrawTextSize(groupsInfo[playerid][28], 30.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][28], 30.000000, 47.833320);
 	TextDrawAlignment(groupsInfo[playerid][28], 2);
 	TextDrawColor(groupsInfo[playerid][28], -1);
 	TextDrawUseBox(groupsInfo[playerid][28], 1);
@@ -890,7 +890,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][30] = TextDrawCreate(263.308898, 171.499923 + 88.0, "Sluzba");
 	TextDrawLetterSize(groupsInfo[playerid][30], 0.293982, 1.209166);
-	TextDrawTextSize(groupsInfo[playerid][30], 30.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][30], 30.000000, 47.833309);
 	TextDrawAlignment(groupsInfo[playerid][30], 2);
 	TextDrawColor(groupsInfo[playerid][30], -1);
 	TextDrawUseBox(groupsInfo[playerid][30], 1);
@@ -904,7 +904,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][31] = TextDrawCreate(323.279724, 170.916702 + 88.0, "Info");
 	TextDrawLetterSize(groupsInfo[playerid][31], 0.285548, 1.232499);
-	TextDrawTextSize(groupsInfo[playerid][31], 20.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][31], 20.000000, 47.250003);
 	TextDrawAlignment(groupsInfo[playerid][31], 2);
 	TextDrawColor(groupsInfo[playerid][31], -1);
 	TextDrawUseBox(groupsInfo[playerid][31], 1);
@@ -918,7 +918,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][32] = TextDrawCreate(382.781616, 170.916702 + 88.0, "Menu");
 	TextDrawLetterSize(groupsInfo[playerid][32], 0.287422, 1.244166);
-	TextDrawTextSize(groupsInfo[playerid][32], 25.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][32], 25.000000, 47.249977);
 	TextDrawAlignment(groupsInfo[playerid][32], 2);
 	TextDrawColor(groupsInfo[playerid][32], -1);
 	TextDrawUseBox(groupsInfo[playerid][32], 1);
@@ -932,7 +932,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][33] = TextDrawCreate(443.221099, 170.916641 + 88.0, "Online");
 	TextDrawLetterSize(groupsInfo[playerid][33], 0.293982, 1.290832);
-	TextDrawTextSize(groupsInfo[playerid][33], 25.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][33], 25.000000, 48.999980);
 	TextDrawAlignment(groupsInfo[playerid][33], 2);
 	TextDrawColor(groupsInfo[playerid][33], -1);
 	TextDrawUseBox(groupsInfo[playerid][33], 1);
@@ -946,7 +946,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][34] = TextDrawCreate(503.660430, 171.499923 + 88.0, "Zadania");
 	TextDrawLetterSize(groupsInfo[playerid][34], 0.292576, 1.238333);
-	TextDrawTextSize(groupsInfo[playerid][34], 30.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][34], 30.000000, 47.249980);
 	TextDrawAlignment(groupsInfo[playerid][34], 2);
 	TextDrawColor(groupsInfo[playerid][34], -1);
 	TextDrawUseBox(groupsInfo[playerid][34], 1);
@@ -960,7 +960,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][35] = TextDrawCreate(563.162658, 171.499954 + 88.0, "Pojazdy");
 	TextDrawLetterSize(groupsInfo[playerid][35], 0.299135, 1.238332);
-	TextDrawTextSize(groupsInfo[playerid][35], 30.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][35], 30.000000, 47.833320);
 	TextDrawAlignment(groupsInfo[playerid][35], 2);
 	TextDrawColor(groupsInfo[playerid][35], -1);
 	TextDrawUseBox(groupsInfo[playerid][35], 1);
@@ -1449,6 +1449,37 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawFont(gateInfo[playerid][1], 1);
 	TextDrawSetProportional(gateInfo[playerid][1], 1);
 
+	usedDrugsInfo[playerid][0] = TextDrawCreate(600.770141, 285.000000, "_");
+	TextDrawLetterSize(usedDrugsInfo[playerid][0], 0.000000, 11.090743);
+	TextDrawTextSize(usedDrugsInfo[playerid][0], 404.207916, 0.000000);
+	TextDrawAlignment(usedDrugsInfo[playerid][0], 1);
+	TextDrawColor(usedDrugsInfo[playerid][0], 0);
+	TextDrawUseBox(usedDrugsInfo[playerid][0], 1);
+	TextDrawBoxColor(usedDrugsInfo[playerid][0], 102);
+	TextDrawSetShadow(usedDrugsInfo[playerid][0], 0);
+	TextDrawSetOutline(usedDrugsInfo[playerid][0], 0);
+	TextDrawFont(usedDrugsInfo[playerid][0], 0);
+
+	usedDrugsInfo[playerid][1] = TextDrawCreate(500.849456, 284.666656, "Czas dzialania substancji~n~chemicznych jest zalezny od~n~czestotliwosci ich stosowania. Im~n~bardziej przyzwyczaisz do nich");
+	TextDrawLetterSize(usedDrugsInfo[playerid][1], 0.328184, 1.401666);
+	TextDrawAlignment(usedDrugsInfo[playerid][1], 2);
+	TextDrawColor(usedDrugsInfo[playerid][1], -1);
+	TextDrawSetShadow(usedDrugsInfo[playerid][1], 0);
+	TextDrawSetOutline(usedDrugsInfo[playerid][1], 1);
+	TextDrawBackgroundColor(usedDrugsInfo[playerid][1], 51);
+	TextDrawFont(usedDrugsInfo[playerid][1], 1);
+	TextDrawSetProportional(usedDrugsInfo[playerid][1], 1);
+
+	usedDrugsInfo[playerid][2] = TextDrawCreate(500.849609, 334.250030, "organizm, tym silniejszych~n~srodkow bedziesz potrzebowac.~n~Rozne substancje maja inny~n~ wplyw na organizm.");
+	TextDrawLetterSize(usedDrugsInfo[playerid][2], 0.330995, 1.413334);
+	TextDrawAlignment(usedDrugsInfo[playerid][2], 2);
+	TextDrawColor(usedDrugsInfo[playerid][2], -1);
+	TextDrawSetShadow(usedDrugsInfo[playerid][2], 0);
+	TextDrawSetOutline(usedDrugsInfo[playerid][2], 1);
+	TextDrawBackgroundColor(usedDrugsInfo[playerid][2], 51);
+	TextDrawFont(usedDrugsInfo[playerid][2], 1);
+	TextDrawSetProportional(usedDrugsInfo[playerid][2], 1);
+
 	/*
 Textdraw26 = TextDrawCreate(602.175781, 284.999969, "_");
 TextDrawLetterSize(Textdraw26, 0.000000, 5.501846);
@@ -1470,37 +1501,6 @@ TextDrawSetOutline(Textdraw27, 1);
 TextDrawBackgroundColor(Textdraw27, 51);
 TextDrawFont(Textdraw27, 1);
 TextDrawSetProportional(Textdraw27, 1);
-
-Textdraw26 = TextDrawCreate(600.770141, 285.000000, "_");
-TextDrawLetterSize(Textdraw26, 0.000000, 11.090743);
-TextDrawTextSize(Textdraw26, 404.207916, 0.000000);
-TextDrawAlignment(Textdraw26, 1);
-TextDrawColor(Textdraw26, 0);
-TextDrawUseBox(Textdraw26, true);
-TextDrawBoxColor(Textdraw26, 102);
-TextDrawSetShadow(Textdraw26, 0);
-TextDrawSetOutline(Textdraw26, 0);
-TextDrawFont(Textdraw26, 0);
-
-Textdraw27 = TextDrawCreate(500.849456, 284.666656, "Czas dzialania substancji~n~chemicznych jest zalezny od~n~czestotliwosci ich stosowania. Im~n~bardziej przyzwyczaisz do nich");
-TextDrawLetterSize(Textdraw27, 0.328184, 1.401666);
-TextDrawAlignment(Textdraw27, 2);
-TextDrawColor(Textdraw27, -1);
-TextDrawSetShadow(Textdraw27, 0);
-TextDrawSetOutline(Textdraw27, 1);
-TextDrawBackgroundColor(Textdraw27, 51);
-TextDrawFont(Textdraw27, 1);
-TextDrawSetProportional(Textdraw27, 1);
-
-Textdraw28 = TextDrawCreate(500.849609, 334.250030, "organizm, tym silniejszych~n~srodkow bedziesz potrzebowac.~n~Rozne substancje maja inny~n~ wplyw na organizm.");
-TextDrawLetterSize(Textdraw28, 0.330995, 1.413334);
-TextDrawAlignment(Textdraw28, 2);
-TextDrawColor(Textdraw28, -1);
-TextDrawSetShadow(Textdraw28, 0);
-TextDrawSetOutline(Textdraw28, 1);
-TextDrawBackgroundColor(Textdraw28, 51);
-TextDrawFont(Textdraw28, 1);
-TextDrawSetProportional(Textdraw28, 1);
 
 Textdraw27 = TextDrawCreate(600.770141, 284.416687, "_");
 TextDrawLetterSize(Textdraw27, 0.000000, 6.942590);
@@ -4040,6 +4040,18 @@ Callback:hideCourierTips(playerid) {
 
 Callback:hideSpecialServicesInfo(playerid) {
 	return TextDrawHideForPlayer(playerid, specialServicesInfo[playerid]);
+}
+
+Callback:hideGroupsInfo(playerid) {
+	TextDrawHideForPlayer(playerid, groupsInfo[playerid][36]);
+	return 1;
+}
+
+Callback:hideUsedDrugsInfo(playerid) {
+	for(new i = 0; i < 3; i++) {
+		TextDrawHideForPlayer(playerid, usedDrugsInfo[playerid][i]);
+	}
+	return 1;
 }
 
 Callback:destroyExit3dInfo(playerid) {

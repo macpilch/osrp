@@ -188,6 +188,7 @@ new Text:specialServicesInfo[MAX_PLAYERS];
 new Text:skinInfo[MAX_PLAYERS][2];
 new Text:objectInfo[MAX_PLAYERS][2];
 new Text:gateInfo[MAX_PLAYERS][2];
+new Text:usedDrugsInfo[MAX_PLAYERS][3];
 
 // type - Bar
 new Bar:fuelProgressBar[MAX_PLAYERS];

@@ -1916,6 +1916,7 @@ CMD:g(playerid, params[]) {
 
 		if(!showGroupsInfo[playerid][0]) {
 			TextDrawHideForPlayer(playerid, groupsInfo[playerid][0]);
+			SetTimerEx("hideGroupsInfo", 6000, false, "i", playerid);
 		}
 		return 1;
 	}

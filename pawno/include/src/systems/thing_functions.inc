@@ -460,6 +460,12 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 					
 				}
 			}
+
+			for(new i = 0; i < 3; i++) {
+				TextDrawShowForPlayer(playerid, usedDrugsInfo[playerid][i]);
+			}
+
+			SetTimerEx("hideUsedDrugsInfo", 5000, false, "i", playerid);
 		}
 
 		case TKIND_MEAL: {
