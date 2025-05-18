@@ -146,18 +146,19 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawFont(scrimmageTips[playerid][4], 1);
 	TextDrawSetProportional(scrimmageTips[playerid][4], 1);
 
-	firstHoursInfo[0] = TextDrawCreate(489.136047, 285.833221, "~w~Jako nowy gracz, co 10 minut~n~gry otrzymujesz $25 na~n~");
-	TextDrawLetterSize(firstHoursInfo[0], 0.305226, 1.273333);
-	TextDrawAlignment(firstHoursInfo[0], 2);
-	TextDrawColor(firstHoursInfo[0], -1);
+	firstHoursInfo[0] = TextDrawCreate(581.560852, 285.583374, "_");
+	TextDrawLetterSize(firstHoursInfo[0], 0.000000, 7.525923);
+	TextDrawTextSize(firstHoursInfo[0], 399.991180, 0.000000);
+	TextDrawAlignment(firstHoursInfo[0], 1);
+	TextDrawColor(firstHoursInfo[0], 0);
+	TextDrawUseBox(firstHoursInfo[0], 1);
+	TextDrawBoxColor(firstHoursInfo[0], 102);
 	TextDrawSetShadow(firstHoursInfo[0], 0);
 	TextDrawSetOutline(firstHoursInfo[0], 1);
-	TextDrawBackgroundColor(firstHoursInfo[0], 255);
-	TextDrawFont(firstHoursInfo[0], 1);
-	TextDrawSetProportional(firstHoursInfo[0], 1);
+	TextDrawFont(firstHoursInfo[0], 0);
 
-	firstHoursInfo[1] = TextDrawCreate(453.996887, 309.750000, "~w~pierwsze wydatki. Zatrudnij sie~n~w jakims biznesie, by zarabiac~n~wieksze pieniadze.");
-	TextDrawLetterSize(firstHoursInfo[1], 0.304289, 1.232499);
+	firstHoursInfo[1] = TextDrawCreate(489.136047, 285.833221, "~w~Jako nowy gracz, co 10 minut~n~gry otrzymujesz $25 na~n~");
+	TextDrawLetterSize(firstHoursInfo[1], 0.305226, 1.273333);
 	TextDrawAlignment(firstHoursInfo[1], 2);
 	TextDrawColor(firstHoursInfo[1], -1);
 	TextDrawSetShadow(firstHoursInfo[1], 0);
@@ -166,16 +167,15 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawFont(firstHoursInfo[1], 1);
 	TextDrawSetProportional(firstHoursInfo[1], 1);
 
-	firstHoursInfo[2] = TextDrawCreate(581.560852, 285.583374, "_");
-	TextDrawLetterSize(firstHoursInfo[2], 0.000000, 7.525923);
-	TextDrawTextSize(firstHoursInfo[2], 399.991180, 0.000000);
-	TextDrawAlignment(firstHoursInfo[2], 1);
-	TextDrawColor(firstHoursInfo[2], 0);
-	TextDrawUseBox(firstHoursInfo[2], 1);
-	TextDrawBoxColor(firstHoursInfo[2], 102);
+	firstHoursInfo[2] = TextDrawCreate(453.996887, 309.750000, "~w~pierwsze wydatki. Zatrudnij sie~n~w jakims biznesie, by zarabiac~n~wieksze pieniadze.");
+	TextDrawLetterSize(firstHoursInfo[2], 0.304289, 1.232499);
+	TextDrawAlignment(firstHoursInfo[2], 2);
+	TextDrawColor(firstHoursInfo[2], -1);
 	TextDrawSetShadow(firstHoursInfo[2], 0);
 	TextDrawSetOutline(firstHoursInfo[2], 1);
-	TextDrawFont(firstHoursInfo[2], 0);
+	TextDrawBackgroundColor(firstHoursInfo[2], 255);
+	TextDrawFont(firstHoursInfo[2], 1);
+	TextDrawSetProportional(firstHoursInfo[2], 1);
 
 	vehicleTips[playerid] = TextDrawCreate(306.412536, 38.500026, "~w~Nacisnij ~k~~VEHICLE_FIREWEAPON_ALT~, by odpalic silnik~n~lub ~k~~VEHICLE_FIREWEAPON~, by zapalic swiatla.");
 	TextDrawLetterSize(vehicleTips[playerid], 0.299604, 1.191667);
@@ -222,18 +222,19 @@ stock createPlayerTextDraws(playerid) {
 
 	fuelProgressBar[playerid] = CreateProgressBar(550.0, 59.0, 56.25, 3.5, 0x00FF00FF, 60.0);
 
-	vehicleDeath[playerid][0] = TextDrawCreate(499.444091, 284.666595, "Pojazd zostal odspawnowany.~n~Przy nastepnym spawnie~n~zespawnuje sie w tym miejscu.");
-	TextDrawLetterSize(vehicleDeath[playerid][0], 0.345051, 1.389999);
-	TextDrawAlignment(vehicleDeath[playerid][0], 2);
-	TextDrawColor(vehicleDeath[playerid][0], -1);
+	vehicleDeath[playerid][0] = TextDrawCreate(600.770202, 284.416687, "_");
+	TextDrawLetterSize(vehicleDeath[playerid][0], 0.000000, 9.794445);
+	TextDrawTextSize(vehicleDeath[playerid][0], 404.208099, 0.000000);
+	TextDrawAlignment(vehicleDeath[playerid][0], 1);
+	TextDrawColor(vehicleDeath[playerid][0], 0);
+	TextDrawUseBox(vehicleDeath[playerid][0], 1);
+	TextDrawBoxColor(vehicleDeath[playerid][0], 102);
 	TextDrawSetShadow(vehicleDeath[playerid][0], 0);
-	TextDrawSetOutline(vehicleDeath[playerid][0], 1);
-	TextDrawBackgroundColor(vehicleDeath[playerid][0], 255);
-	TextDrawFont(vehicleDeath[playerid][0], 1);
-	TextDrawSetProportional(vehicleDeath[playerid][0], 1);
+	TextDrawSetOutline(vehicleDeath[playerid][0], 0);
+	TextDrawFont(vehicleDeath[playerid][0], 0);
 
-	vehicleDeath[playerid][1] = TextDrawCreate(500.849273, 322.583312, "Mechanik musi tu przybyc, by go~n~naprawic. Uzyj /v reset, jezeli~n~masz problem z przywroceniem~n~go do dzialania.");
-	TextDrawLetterSize(vehicleDeath[playerid][1], 0.327715, 1.366666);
+	vehicleDeath[playerid][1] = TextDrawCreate(499.444091, 284.666595, "Pojazd zostal odspawnowany.~n~Przy nastepnym spawnie~n~zespawnuje sie w tym miejscu.");
+	TextDrawLetterSize(vehicleDeath[playerid][1], 0.345051, 1.389999);
 	TextDrawAlignment(vehicleDeath[playerid][1], 2);
 	TextDrawColor(vehicleDeath[playerid][1], -1);
 	TextDrawSetShadow(vehicleDeath[playerid][1], 0);
@@ -242,16 +243,15 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawFont(vehicleDeath[playerid][1], 1);
 	TextDrawSetProportional(vehicleDeath[playerid][1], 1);
 
-	vehicleDeath[playerid][2] = TextDrawCreate(600.770202, 284.416687, "_");
-	TextDrawLetterSize(vehicleDeath[playerid][2], 0.000000, 9.794445);
-	TextDrawTextSize(vehicleDeath[playerid][2], 404.208099, 0.000000);
-	TextDrawAlignment(vehicleDeath[playerid][2], 1);
-	TextDrawColor(vehicleDeath[playerid][2], 0);
-	TextDrawUseBox(vehicleDeath[playerid][2], 1);
-	TextDrawBoxColor(vehicleDeath[playerid][2], 102);
+	vehicleDeath[playerid][2] = TextDrawCreate(500.849273, 322.583312, "Mechanik musi tu przybyc, by go~n~naprawic. Uzyj /v reset, jezeli~n~masz problem z przywroceniem~n~go do dzialania.");
+	TextDrawLetterSize(vehicleDeath[playerid][2], 0.327715, 1.366666);
+	TextDrawAlignment(vehicleDeath[playerid][2], 2);
+	TextDrawColor(vehicleDeath[playerid][2], -1);
 	TextDrawSetShadow(vehicleDeath[playerid][2], 0);
-	TextDrawSetOutline(vehicleDeath[playerid][2], 0);
-	TextDrawFont(vehicleDeath[playerid][2], 0);
+	TextDrawSetOutline(vehicleDeath[playerid][2], 1);
+	TextDrawBackgroundColor(vehicleDeath[playerid][2], 255);
+	TextDrawFont(vehicleDeath[playerid][2], 1);
+	TextDrawSetProportional(vehicleDeath[playerid][2], 1);
 
 	windowInfo[playerid][0] = TextDrawCreate(601.707153, 283.833312, "_");
 	TextDrawLetterSize(windowInfo[playerid][0], 0.000000, 4.349999);
@@ -456,26 +456,26 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawFont(doorExtraInfo[playerid], 1);
 	TextDrawSetProportional(doorExtraInfo[playerid], 1);
 
-	telephoneCall[playerid][0] = TextDrawCreate(532.239624, 119.583267, "~w~Ktos do Ciebie dzwoni!~n~~y~Numer: 1234567~n~~n~~y~~h~Wejdz do menu telefonu,~n~~w~by odebrac lub odrzucic~n~polaczenie");
-	TextDrawLetterSize(telephoneCall[playerid][0], 0.269150, 1.139166);
-	TextDrawAlignment(telephoneCall[playerid][0], 2);
-	TextDrawColor(telephoneCall[playerid][0], -1);
+	telephoneCall[playerid][0] = TextDrawCreate(606.860900, 119.916664, "_");
+	TextDrawLetterSize(telephoneCall[playerid][0], 0.000000, 6.942592);
+	TextDrawTextSize(telephoneCall[playerid][0], 453.871154, 0.000000);
+	TextDrawAlignment(telephoneCall[playerid][0], 1);
+	TextDrawColor(telephoneCall[playerid][0], 0);
+	TextDrawUseBox(telephoneCall[playerid][0], 1);
+	TextDrawBoxColor(telephoneCall[playerid][0], 102);
 	TextDrawSetShadow(telephoneCall[playerid][0], 0);
-	TextDrawSetOutline(telephoneCall[playerid][0], 0);
-	TextDrawBackgroundColor(telephoneCall[playerid][0], 255);
-	TextDrawFont(telephoneCall[playerid][0], 1);
-	TextDrawSetProportional(telephoneCall[playerid][0], 1);
+	TextDrawSetOutline(telephoneCall[playerid][0], 1);
+	TextDrawFont(telephoneCall[playerid][0], 0);
 
-	telephoneCall[playerid][1] = TextDrawCreate(606.860900, 119.916664, "_");
-	TextDrawLetterSize(telephoneCall[playerid][1], 0.000000, 6.942592);
-	TextDrawTextSize(telephoneCall[playerid][1], 453.871154, 0.000000);
-	TextDrawAlignment(telephoneCall[playerid][1], 1);
-	TextDrawColor(telephoneCall[playerid][1], 0);
-	TextDrawUseBox(telephoneCall[playerid][1], 1);
-	TextDrawBoxColor(telephoneCall[playerid][1], 102);
+	telephoneCall[playerid][1] = TextDrawCreate(532.239624, 119.583267, "~w~Ktos do Ciebie dzwoni!~n~~y~Numer: 1234567~n~~n~~y~~h~Wejdz do menu telefonu,~n~~w~by odebrac lub odrzucic~n~polaczenie");
+	TextDrawLetterSize(telephoneCall[playerid][1], 0.269150, 1.139166);
+	TextDrawAlignment(telephoneCall[playerid][1], 2);
+	TextDrawColor(telephoneCall[playerid][1], -1);
 	TextDrawSetShadow(telephoneCall[playerid][1], 0);
-	TextDrawSetOutline(telephoneCall[playerid][1], 1);
-	TextDrawFont(telephoneCall[playerid][1], 0);
+	TextDrawSetOutline(telephoneCall[playerid][1], 0);
+	TextDrawBackgroundColor(telephoneCall[playerid][1], 255);
+	TextDrawFont(telephoneCall[playerid][1], 1);
+	TextDrawSetProportional(telephoneCall[playerid][1], 1);
 
 	groupsInfo[playerid][0] = TextDrawCreate(82.928298, 139.416717, "~>~  Grupy");
 	TextDrawLetterSize(groupsInfo[playerid][0], 0.426573, 1.734167);
@@ -502,7 +502,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][2] = TextDrawCreate(263.308898, 171.499923, "Sluzba");
 	TextDrawLetterSize(groupsInfo[playerid][2], 0.293982, 1.209166);
-	TextDrawTextSize(groupsInfo[playerid][2], 30.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][2], 20.000000, 10.000000);
 	TextDrawAlignment(groupsInfo[playerid][2], 2);
 	TextDrawColor(groupsInfo[playerid][2], -1);
 	TextDrawUseBox(groupsInfo[playerid][2], 1);
@@ -530,7 +530,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][4] = TextDrawCreate(382.781616, 170.916702, "Menu");
 	TextDrawLetterSize(groupsInfo[playerid][4], 0.287422, 1.244166);
-	TextDrawTextSize(groupsInfo[playerid][4], 25.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][4], 20.000000, 10.000000);
 	TextDrawAlignment(groupsInfo[playerid][4], 2);
 	TextDrawColor(groupsInfo[playerid][4], -1);
 	TextDrawUseBox(groupsInfo[playerid][4], 1);
@@ -544,7 +544,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][5] = TextDrawCreate(443.221099, 170.916641, "Online");
 	TextDrawLetterSize(groupsInfo[playerid][5], 0.293982, 1.290832);
-	TextDrawTextSize(groupsInfo[playerid][5], 25.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][5], 20.000000, 10.000000);
 	TextDrawAlignment(groupsInfo[playerid][5], 2);
 	TextDrawColor(groupsInfo[playerid][5], -1);
 	TextDrawUseBox(groupsInfo[playerid][5], 1);
@@ -558,7 +558,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][6] = TextDrawCreate(503.660430, 171.499923, "Zadania");
 	TextDrawLetterSize(groupsInfo[playerid][6], 0.292576, 1.238333);
-	TextDrawTextSize(groupsInfo[playerid][6], 30.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][6], 20.000000, 10.000000);
 	TextDrawAlignment(groupsInfo[playerid][6], 2);
 	TextDrawColor(groupsInfo[playerid][6], -1);
 	TextDrawUseBox(groupsInfo[playerid][6], 1);
@@ -572,7 +572,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][7] = TextDrawCreate(563.162658, 171.499954, "Pojazdy");
 	TextDrawLetterSize(groupsInfo[playerid][7], 0.299135, 1.238332);
-	TextDrawTextSize(groupsInfo[playerid][7], 30.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][7], 20.000000, 10.000000);
 	TextDrawAlignment(groupsInfo[playerid][7], 2);
 	TextDrawColor(groupsInfo[playerid][7], -1);
 	TextDrawUseBox(groupsInfo[playerid][7], 1);
@@ -627,7 +627,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][11] = TextDrawCreate(382.781616, 170.916702 + 22.0, "Menu");
 	TextDrawLetterSize(groupsInfo[playerid][11], 0.287422, 1.244166);
-	TextDrawTextSize(groupsInfo[playerid][11], 25.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][11], 20.000000, 10.000000);
 	TextDrawAlignment(groupsInfo[playerid][11], 2);
 	TextDrawColor(groupsInfo[playerid][11], -1);
 	TextDrawUseBox(groupsInfo[playerid][11], 1);
@@ -641,7 +641,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][12] = TextDrawCreate(443.221099, 170.916641 + 22.0, "Online");
 	TextDrawLetterSize(groupsInfo[playerid][12], 0.293982, 1.290832);
-	TextDrawTextSize(groupsInfo[playerid][12], 25.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][12], 20.000000, 10.000000);
 	TextDrawAlignment(groupsInfo[playerid][12], 2);
 	TextDrawColor(groupsInfo[playerid][12], -1);
 	TextDrawUseBox(groupsInfo[playerid][12], 1);
@@ -655,7 +655,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][13] = TextDrawCreate(503.660430, 171.499923 + 22.0, "Zadania");
 	TextDrawLetterSize(groupsInfo[playerid][13], 0.292576, 1.238333);
-	TextDrawTextSize(groupsInfo[playerid][13], 30.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][13], 20.000000, 10.000000);
 	TextDrawAlignment(groupsInfo[playerid][13], 2);
 	TextDrawColor(groupsInfo[playerid][13], -1);
 	TextDrawUseBox(groupsInfo[playerid][13], 1);
@@ -669,7 +669,7 @@ stock createPlayerTextDraws(playerid) {
 
 	groupsInfo[playerid][14] = TextDrawCreate(563.162658, 171.499954 + 22.0, "Pojazdy");
 	TextDrawLetterSize(groupsInfo[playerid][14], 0.299135, 1.238332);
-	TextDrawTextSize(groupsInfo[playerid][14], 30.000000, 10.000000);
+	TextDrawTextSize(groupsInfo[playerid][14], 20.000000, 10.000000);
 	TextDrawAlignment(groupsInfo[playerid][14], 2);
 	TextDrawColor(groupsInfo[playerid][14], -1);
 	TextDrawUseBox(groupsInfo[playerid][14], 1);
@@ -982,27 +982,27 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawFont(groupsInfo[playerid][36], 1);
 	TextDrawSetProportional(groupsInfo[playerid][36], 1);
 
-	usedRollersInfo[playerid][0] = TextDrawCreate(490.541625, 285.249969, "~w~Zacznij sprintowac, aby jezdzic~n~na rolkach.~n~~n~Uzyj przedmiotu ponownie (/p~n~rolki), aby je zdjac.");
-	TextDrawLetterSize(usedRollersInfo[playerid][0], 0.306632, 1.378332);
-	TextDrawAlignment(usedRollersInfo[playerid][0], 2);
-	TextDrawColor(usedRollersInfo[playerid][0], -1);
+	usedRollersInfo[playerid][0] = TextDrawCreate(585.777465, 285.000000, "_");
+	TextDrawLetterSize(usedRollersInfo[playerid][0], 0.000000, 6.942590);
+	TextDrawTextSize(usedRollersInfo[playerid][0], 400.459747, 0.000000);
+	TextDrawAlignment(usedRollersInfo[playerid][0], 1);
+	TextDrawColor(usedRollersInfo[playerid][0], 0);
+	TextDrawUseBox(usedRollersInfo[playerid][0], 1);
+	TextDrawBoxColor(usedRollersInfo[playerid][0], 102);
 	TextDrawSetShadow(usedRollersInfo[playerid][0], 0);
-	TextDrawSetOutline(usedRollersInfo[playerid][0], 1);
-	TextDrawBackgroundColor(usedRollersInfo[playerid][0], 255);
-	TextDrawFont(usedRollersInfo[playerid][0], 1);
-	TextDrawSetProportional(usedRollersInfo[playerid][0], 1);
+	TextDrawSetOutline(usedRollersInfo[playerid][0], 0);
+	TextDrawFont(usedRollersInfo[playerid][0], 0);
 
-	usedRollersInfo[playerid][1] = TextDrawCreate(585.777465, 285.000000, "_");
-	TextDrawLetterSize(usedRollersInfo[playerid][1], 0.000000, 6.942590);
-	TextDrawTextSize(usedRollersInfo[playerid][1], 400.459747, 0.000000);
-	TextDrawAlignment(usedRollersInfo[playerid][1], 1);
-	TextDrawColor(usedRollersInfo[playerid][1], 0);
-	TextDrawUseBox(usedRollersInfo[playerid][1], 1);
-	TextDrawBoxColor(usedRollersInfo[playerid][1], 102);
+	usedRollersInfo[playerid][1] = TextDrawCreate(490.541625, 285.249969, "~w~Zacznij sprintowac, aby jezdzic~n~na rolkach.~n~~n~Uzyj przedmiotu ponownie (/p~n~rolki), aby je zdjac.");
+	TextDrawLetterSize(usedRollersInfo[playerid][1], 0.306632, 1.378332);
+	TextDrawAlignment(usedRollersInfo[playerid][1], 2);
+	TextDrawColor(usedRollersInfo[playerid][1], -1);
 	TextDrawSetShadow(usedRollersInfo[playerid][1], 0);
-	TextDrawSetOutline(usedRollersInfo[playerid][1], 0);
-	TextDrawFont(usedRollersInfo[playerid][1], 0);
-	
+	TextDrawSetOutline(usedRollersInfo[playerid][1], 1);
+	TextDrawBackgroundColor(usedRollersInfo[playerid][1], 255);
+	TextDrawFont(usedRollersInfo[playerid][1], 1);
+	TextDrawSetProportional(usedRollersInfo[playerid][1], 1);
+
 	hotelInfo[playerid][0] = TextDrawCreate(584.371948, 284.416687, "_");
 	TextDrawLetterSize(hotelInfo[playerid][0], 0.000000, 11.165732);
 	TextDrawTextSize(hotelInfo[playerid][0], 398.585662, 0.000000);

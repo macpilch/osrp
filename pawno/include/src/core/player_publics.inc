@@ -4889,166 +4889,306 @@ sampCallback:OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Fl
 }
 
 sampCallback:OnPlayerClickTextDraw(playerid, Text:clickedid) {
-	if(showGroupsInfo[playerid][0]) {
-		if(clickedid == groupsInfo[playerid][2]) {
+	if(clickedid == groupsInfo[playerid][2]) {
+		if(showGroupsInfo[playerid][0]) {
 			pc_cmd_duty(playerid, "1");
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][3]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][0];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][0];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][3]) {
+		if(showGroupsInfo[playerid][0]) {
 			showPlayerGroupInfo(playerid, 1);
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][4]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][0];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][0];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][4]) {
+		if(showGroupsInfo[playerid][0]) {
 			showPlayerGroupMagazineThings(playerid, 1);
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][5]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][0];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][0];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][5]) {
+		if(showGroupsInfo[playerid][0]) {
 			showPlayerGroupOnlineMembers(playerid, 1);
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][6]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][0];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][0];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][6]) {
+		if(showGroupsInfo[playerid][0]) {
 			showPlayerGroupTasks(playerid, 1);
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][7]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][0];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][0];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][7]) {
+		if(showGroupsInfo[playerid][0]) {
 			showPlayerGroupVehicles(playerid, 1);
+			hidePlayerGroupTextDraws(playerid);
+
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][0];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][0];
 		}
-
-		tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][0];
-		tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][0];
-
-		hidePlayerGroupTextDraws(playerid);
-		return 1;
 	}
 
-	if(showGroupsInfo[playerid][1]) {
-		if(clickedid == groupsInfo[playerid][9]) {
+	if(clickedid == groupsInfo[playerid][9]) {
+		if(showGroupsInfo[playerid][1]) {
 			pc_cmd_duty(playerid, "2");
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][10]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][1];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][1];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][10]) {
+		if(showGroupsInfo[playerid][1]) {
 			showPlayerGroupInfo(playerid, 2);
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][11]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][1];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][1];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][11]) {
+		if(showGroupsInfo[playerid][1]) {
 			showPlayerGroupMagazineThings(playerid, 2);
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][12]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][1];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][1];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][12]) {
+		if(showGroupsInfo[playerid][1]) {
 			showPlayerGroupOnlineMembers(playerid, 2);
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][13]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][1];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][1];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][13]) {
+		if(showGroupsInfo[playerid][1]) {
 			showPlayerGroupTasks(playerid, 2);
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][14]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][1];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][1];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][14]) {
+		if(showGroupsInfo[playerid][1]) {
 			showPlayerGroupVehicles(playerid, 2);
+			hidePlayerGroupTextDraws(playerid);
+
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][1];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][1];
 		}
-
-		tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][1];
-		tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][1];
-
-		hidePlayerGroupTextDraws(playerid);
-		return 1;
 	}
 
-	if(showGroupsInfo[playerid][2]) {
-		if(clickedid == groupsInfo[playerid][16]) {
+	if(clickedid == groupsInfo[playerid][16]) {
+		if(showGroupsInfo[playerid][2]) {
 			pc_cmd_duty(playerid, "3");
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][17]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][2];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][2];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][17]) {
+		if(showGroupsInfo[playerid][2]) {
 			showPlayerGroupInfo(playerid, 3);
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][18]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][2];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][2];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][18]) {
+		if(showGroupsInfo[playerid][2]) {
 			showPlayerGroupMagazineThings(playerid, 3);
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][19]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][2];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][2];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][19]) {
+		if(showGroupsInfo[playerid][2]) {
 			showPlayerGroupOnlineMembers(playerid, 3);
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][20]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][2];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][2];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][20]) {
+		if(showGroupsInfo[playerid][2]) {
 			showPlayerGroupTasks(playerid, 3);
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][21]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][2];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][2];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][21]) {
+		if(showGroupsInfo[playerid][2]) {
 			showPlayerGroupVehicles(playerid, 3);
+			hidePlayerGroupTextDraws(playerid);
+
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][2];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][2];
 		}
-
-		tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][2];
-		tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][2];
-
-		hidePlayerGroupTextDraws(playerid);
-		return 1;
 	}
 
-	if(showGroupsInfo[playerid][3]) {
-		if(clickedid == groupsInfo[playerid][23]) {
+	if(clickedid == groupsInfo[playerid][23]) {
+		if(showGroupsInfo[playerid][3]) {
 			pc_cmd_duty(playerid, "4");
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][24]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][3];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][3];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][24]) {
+		if(showGroupsInfo[playerid][3]) {
 			showPlayerGroupInfo(playerid, 4);
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][25]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][3];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][3];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][25]) {
+		if(showGroupsInfo[playerid][3]) {
 			showPlayerGroupMagazineThings(playerid, 4);
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][26]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][3];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][3];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][26]) {
+		if(showGroupsInfo[playerid][3]) {
 			showPlayerGroupOnlineMembers(playerid, 4);
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][27]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][3];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][3];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][27]) {
+		if(showGroupsInfo[playerid][3]) {
 			showPlayerGroupTasks(playerid, 4);
-		}
+			hidePlayerGroupTextDraws(playerid);
 
-		if(clickedid == groupsInfo[playerid][28]) {
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][3];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][3];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][28]) {
+		if(showGroupsInfo[playerid][3]) {
 			showPlayerGroupVehicles(playerid, 4);
+			hidePlayerGroupTextDraws(playerid);
+
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][3];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][3];
 		}
-
-		tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][3];
-		tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][3];
-
-		hidePlayerGroupTextDraws(playerid);
-		return 1;
 	}
 
-	if(showGroupsInfo[playerid][4]) {
-		if(clickedid == groupsInfo[playerid][30]) {
+	if(clickedid == groupsInfo[playerid][30]) {
+		if(showGroupsInfo[playerid][4]) {
 			pc_cmd_duty(playerid, "5");
+			hidePlayerGroupTextDraws(playerid);
+
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][4];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][4];
 		}
-
-		if(clickedid == groupsInfo[playerid][31]) {
-			showPlayerGroupInfo(playerid, 5);
-		}
-
-		if(clickedid == groupsInfo[playerid][32]) {
-			showPlayerGroupMagazineThings(playerid, 5);
-		}
-
-		if(clickedid == groupsInfo[playerid][33]) {
-			showPlayerGroupOnlineMembers(playerid, 5);
-		}
-
-		if(clickedid == groupsInfo[playerid][34]) {
-			showPlayerGroupTasks(playerid, 5);
-		}
-
-		if(clickedid == groupsInfo[playerid][35]) {
-			showPlayerGroupVehicles(playerid, 5);
-		}
-
-		tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][4];
-		tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][4];
-
-		hidePlayerGroupTextDraws(playerid);
-		return 1;
 	}
-	return 0;
+
+	if(clickedid == groupsInfo[playerid][31]) {
+		if(showGroupsInfo[playerid][4]) {
+			showPlayerGroupInfo(playerid, 5);
+			hidePlayerGroupTextDraws(playerid);
+
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][4];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][4];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][32]) {
+		if(showGroupsInfo[playerid][4]) {
+			showPlayerGroupMagazineThings(playerid, 5);
+			hidePlayerGroupTextDraws(playerid);
+
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][4];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][4];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][33]) {
+		if(showGroupsInfo[playerid][4]) {
+			showPlayerGroupOnlineMembers(playerid, 5);
+			hidePlayerGroupTextDraws(playerid);
+
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][4];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][4];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][34]) {
+		if(showGroupsInfo[playerid][4]) {
+			showPlayerGroupTasks(playerid, 5);
+			hidePlayerGroupTextDraws(playerid);
+
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][4];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][4];
+		}
+	}
+
+	if(clickedid == groupsInfo[playerid][35]) {
+		if(showGroupsInfo[playerid][4]) {
+			showPlayerGroupVehicles(playerid, 5);
+			hidePlayerGroupTextDraws(playerid);
+
+			tPlayer[playerid][pLastGroup] = tPlayer[playerid][pGroup][4];
+			tPlayer[playerid][pLastPerm] = tPlayer[playerid][pPerm][4];
+		}
+	}
+	return 1;
 }
 
 sampCallback:OnEnterExitModShop(playerid, enterexit, interiorid) {

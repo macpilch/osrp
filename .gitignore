@@ -1,4 +1,3 @@
-*.exe
 *.amx
 *.txt
 *.cfg
@@ -6,3 +5,4 @@
 *.ini
 *.sql1
 *.dll
+*.gitignore

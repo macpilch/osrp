@@ -176,7 +176,7 @@ stock getServerDoorIdFromUid(uid) {
 }
 
 stock getServerDimenId(playerid) {
-	new id = -1;
+	new id = INVALID_DOOR_ID;
 
 	foreach(new i : dimItter) {
 		if(tPlayer[playerid][pDoor] == tDimension[i][dimOUid]) {

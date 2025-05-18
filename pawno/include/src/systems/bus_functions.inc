@@ -64,6 +64,18 @@ stock getServerBusStopId(playerid) {
 	return id;
 }
 
+stock getServerBusStopIdFromUid(uid) {
+	new id = INVALID_BUS_ID;
+
+	foreach(new i : busStopItter) {
+		if(uid == tBusStop[i][bsUid]) {
+			id = i;
+			break;
+		}
+	}
+	return id;
+}
+
 stock getNearestServerBusStopId(playerid) {
 	new id = INVALID_BUS_ID;
 	new Float:minDist = 300.0;

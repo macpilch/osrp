@@ -194,11 +194,11 @@ new Bar:fuelProgressBar[MAX_PLAYERS];
 
 // type - Iterator
 new Iterator:vehItter<MAX_VEHICLES>;
-new Iterator:objectItter<MAX_VEHICLES>;
-new Iterator:text3DItter<MAX_3DTEXTS>;
+new Iterator:objectItter<MAX_OBJECTS>;
+new Iterator:text3dItter<MAX_3DTEXTS>;
 new Iterator:thingItter<MAX_THINGS>;
 new Iterator:doorItter<MAX_DOORS>;
-new Iterator:dimItter<MAX_DIMENSIONS>;
+new Iterator:dimItter<MAX_DOORS>;
 new Iterator:boothItter<MAX_BOOTHS>;
 new Iterator:busStopItter<MAX_BUS_STOPS>;
 new Iterator:cashPointItter<MAX_CASHPOINTS>;

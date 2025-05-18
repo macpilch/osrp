@@ -437,29 +437,63 @@ stock showPlayerGroupInfo(playerid, slot) {
 }
 
 stock kickPlayerFromGroup(playerid, id, slot) {
-	if(slot > 5 || slot < 1) {
+	if(slot > 4 || slot < 0) {
 		return 1;
 	}
 
 	if(isPlayerOnDuty(id)) {
-		pc_cmd_duty(id, tPlayer[id][pLastGroup]);
+		new str[4];
+
+		format(str, sizeof(str), "%d", slot + 1);
+		pc_cmd_duty(id, str);
 	}
 
-	tPlayer[id][pGroup][slot - 1] = 0;
-	tPlayer[id][pPerm][slot - 1] = 0;
-	tPlayer[id][pPayDay][slot - 1] = 0;
-	tPlayer[id][pDuty][slot - 1] = 0;
-	tPlayer[id][pLastGroup] = 0;
-
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "%s wyprosi³(a) Ciê z grupy %s.", tPlayer[playerid][pCharName], tGroup[getServerGroupId(playerid, slot)][gName]);
+	format(mainStr, sizeof(mainStr), "%s wyprosi³(a) Ciê z grupy %s.", tPlayer[playerid][pCharName], tGroup[getServerGroupId(playerid, slot + 1)][gName]);
 	SendClientMessage(id, COLOR_DARKRED, mainStr);
 
 	GameTextForPlayer(playerid, "~y~Wyprosiles gracza z grupy.", 5000, 3);
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Group%d` = '0', `Perm%d` = '0', `PayDay%d` = '0', `Duty%d` = '0' WHERE `UID` = '%d'", slot - 1, slot - 1, slot - 1, slot - 1, tPlayer[id][pUid]);
-	mysql_query(queryStr);
+	if(slot < 5 && !tPlayer[id][pGroup][slot + 1]) {
+		queryStr[0] = EOS;
+		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Group%d` = '0', `Perm%d` = '0', `PayDay%d` = '0', `Duty%d` = '0' WHERE `UID` = '%d'", slot, slot, slot, slot, tPlayer[id][pUid]);
+		mysql_query(queryStr);
+
+		tPlayer[id][pGroup][slot] = 0;
+		tPlayer[id][pPerm][slot] = 0;
+		tPlayer[id][pPayDay][slot] = 0;
+		tPlayer[id][pDuty][slot] = 0;
+		tPlayer[id][pLastGroup] = 0;
+	} else {
+		queryStr[0] = EOS;
+		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Group%d` = '%d', `Perm%d` = '%d', `PayDay%d` = '%d', `Duty%d` = '%d' WHERE `UID` = '%d'",
+			slot,
+			tPlayer[id][pGroup][slot + 1],
+			slot,
+			tPlayer[id][pPerm][slot + 1],
+			slot,
+			tPlayer[id][pPayDay][slot + 1],
+			slot,
+			tPlayer[id][pDuty][slot + 1],
+			tPlayer[id][pUid]
+		);
+		mysql_query(queryStr);
+
+		tPlayer[id][pGroup][slot] = tPlayer[id][pGroup][slot + 1];
+		tPlayer[id][pPerm][slot] = tPlayer[id][pPerm][slot + 1];
+		tPlayer[id][pPayDay][slot] = tPlayer[id][pPayDay][slot + 1];
+		tPlayer[id][pDuty][slot] = tPlayer[id][pDuty][slot + 1];
+
+		queryStr[0] = EOS;
+		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Group%d` = '0', `Perm%d` = '0', `PayDay%d` = '0', `Duty%d` = '0' WHERE `UID` = '%d'", slot + 1, slot + 1, slot + 1, slot + 1, tPlayer[id][pUid]);
+		mysql_query(queryStr);
+
+		tPlayer[id][pGroup][slot + 1] = 0;
+		tPlayer[id][pPerm][slot + 1] = 0;
+		tPlayer[id][pPayDay][slot + 1] = 0;
+		tPlayer[id][pDuty][slot + 1] = 0;
+		tPlayer[id][pLastGroup] = 0;
+	}
 	return 1;
 }
 
@@ -666,7 +700,7 @@ stock getServerGroupId(playerid, slot) {
 	new id = INVALID_GROUP_ID;
 
 	foreach(new i : groupItter) {
-		if(tGroup[i][gUid] == tPlayer[playerid][pGroup][slot - 1]) {
+		if(slot && tGroup[i][gUid] == tPlayer[playerid][pGroup][slot - 1]) {
 			id = i;
 			break;
 		}

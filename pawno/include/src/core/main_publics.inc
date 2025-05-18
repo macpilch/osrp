@@ -16,8 +16,6 @@ sampCallback:OnGameModeInit() {
 	new callSecs = gettime();
 
 	EnableStuntBonusForAll(0);
-	EnableTirePopping(1);
-	EnableZoneNames(1);
 	DisableInteriorEnterExits();
 	AllowInteriorWeapons(0);
 	EnableVehicleFriendlyFire();
@@ -51,7 +49,7 @@ sampCallback:OnGameModeInit() {
 
 	initServerValues();
 	initObjectValues();
-	init3DTextValues();
+	init3dTextValues();
 	initVehicleValues();
 	initAnimValues();
 	initAreaValues();

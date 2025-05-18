@@ -55,6 +55,30 @@ stock initCashPointValues() {
 	return 1;
 }
 
+stock getServerCashPointId(playerid) {
+	new id = INVALID_CASHPOINT_ID;
+
+	foreach(new i : cashPointItter) {
+		if(tPlayer[playerid][pCashPoint] == tCashPoint[i][cpUid]) {
+			id = i;
+			break;
+		}
+	}
+	return id;
+}
+
+stock getServerCashPointIdFromUid(uid) {
+	new id = INVALID_CASHPOINT_ID;
+
+	foreach(new i : cashPointItter) {
+		if(uid == tCashPoint[i][cpUid]) {
+			id = i;
+			break;
+		}
+	}
+	return id;
+}
+
 stock searchPlayerCashPoint(playerid) {
 	foreach(new i : cashPointItter) {
 		if(playerToPoint(playerid, tCashPoint[i][cpDistance], tCashPoint[i][cpPosX], tCashPoint[i][cpPosY], tCashPoint[i][cpPosZ])) {

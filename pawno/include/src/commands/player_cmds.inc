@@ -1959,7 +1959,7 @@ CMD:g(playerid, params[]) {
 
 		sendOffer(playerid, pId, 0, 0, OFFER_NORMAL, O_GROUPINV);
 	} else if(!strcmp(opt, "wypros", true)) {
-		new pId;
+		new pId, slot2;
 
 		if(sscanf(values, "i", pId)) {
 			format(str, sizeof(str), "Tip: /g %d wypros [Gracz]", slot);
@@ -1970,7 +1970,14 @@ CMD:g(playerid, params[]) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Niepoprawny gracz.");
 		}
 
-		kickPlayerFromGroup(playerid, pId, slot);
+		for(new i = 0; i < MAX_PLAYER_GROUPS; i++) {
+			if(tPlayer[playerid][pGroup][slot - 1] == tPlayer[pId][pGroup][i]) {
+				slot2 = i;
+				break;
+			}
+		}
+
+		kickPlayerFromGroup(playerid, pId, slot2);
 	} else if(!strcmp(opt, "wplac", true)) {
 		new srvGrpId = getServerGroupId(playerid, slot);
 		if(srvGrpId == INVALID_GROUP_ID) {

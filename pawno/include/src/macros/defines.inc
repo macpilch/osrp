@@ -29,7 +29,6 @@
 #define MAX_PLAYER_VEHICLES 		10
 #define MAX_THINGS 					50
 #define MAX_DOORS 					50
-#define MAX_DIMENSIONS 				50
 #define MAX_BOOTHS 					50
 #define MAX_BUS_STOPS 				50
 #define MAX_CASHPOINTS 				50
@@ -368,6 +367,7 @@
 
 #define OSRP_VEHICLE_INVALID_ID -1
 #define OSRP_OBJECT_INVALID_ID -1
+#define OSRP_3DTEXT_INVALID_ID -1
 #define INVALID_AREA_ID -1
 #define INVALID_THING_ID -1
 #define INVALID_GROUP_ID -1

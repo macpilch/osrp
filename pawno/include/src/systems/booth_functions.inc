@@ -49,6 +49,30 @@ stock initBoothValues() {
 	return 1;
 }
 
+stock getServerBoothId(playerid) {
+	new id = INVALID_BOOTH_ID;
+
+	foreach(new i : boothItter) {
+		if(tPlayer[playerid][pBooth] == tBooth[i][boUid]) {
+			id = i;
+			break;
+		}
+	}
+	return id;
+}
+
+stock getServerBoothIdFromUid(uid) {
+	new id = INVALID_BOOTH_ID;
+
+	foreach(new i : boothItter) {
+		if(uid == tBooth[i][boUid]) {
+			id = i;
+			break;
+		}
+	}
+	return id;
+}
+
 stock searchPlayerBooth(playerid) {
 	foreach(new i : boothItter) {
 		if(playerToPoint(playerid, tBooth[i][boRange], tBooth[i][boPosX], tBooth[i][boPosY], tBooth[i][boPosZ])) {

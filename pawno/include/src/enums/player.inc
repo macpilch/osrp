@@ -97,6 +97,7 @@ enum PlayerData {
 	pVehicle,
 	pCashPoint,
 	pObject,
+	p3dText,
 	pDrugs,
 	pDrugsTime, // 15 min dzialania
 	bool:pGloves,

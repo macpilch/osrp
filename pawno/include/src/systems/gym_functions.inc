@@ -17,6 +17,10 @@ stock searchPlayerGym(playerid) {
 		return 1;
 	}
 
+	if(isGym[playerid]) {
+		return 1;
+	}
+
 	if(!isPlayerFacingObject(playerid, gymObject[0])) {
 		return GameTextForPlayer(playerid, "~r~Nie stoisz przy maszynie", 5000, 3);
 	}
@@ -45,9 +49,9 @@ Callback:givePlayerGymBarBell(playerid) {
 		return 1;
 	}
 
-	isGym[playerid] = true;
-
 	SetPlayerAttachedObject(playerid, SLOT_BARBELL, 2913, 6, 0, -0.04, -0.01, 0, 0, 0, 1, 1, 1);
+
+	isGym[playerid] = true;
 	return 1;
 }
 

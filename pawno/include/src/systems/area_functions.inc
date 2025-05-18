@@ -80,3 +80,15 @@ stock getServerAreaId(playerid) {
 	}
 	return id;
 }
+
+stock getServerAreaIdFromUid(uid) {
+	new id = INVALID_AREA_ID;
+
+	foreach(new i : areaItter) {
+		if(uid == tArea[i][aUid]) {
+			id = i;
+			break;
+		}
+	}
+	return id;
+}
