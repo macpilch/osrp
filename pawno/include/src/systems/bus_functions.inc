@@ -35,8 +35,8 @@ stock initBusStopValues() {
 			tBusStop[i][bsRotZ]
 		);
 
-		Iter_Add(busStopItter, i);
 		tBusStop[i][bsObject] = CreateDynamicObject(1257, tBusStop[i][bsPosX], tBusStop[i][bsPosY], tBusStop[i][bsPosZ], tBusStop[i][bsRotX], tBusStop[i][bsRotY], tBusStop[i][bsRotZ], 0, 0, -1, 100.0);
+		Iter_Add(busStopItter, i);
 
 		printf("[DEBUG] Uid: %d,  Name: %s", tBusStop[i][bsUid], tBusStop[i][bsName]);
 		i++;
@@ -78,12 +78,12 @@ stock getServerBusStopIdFromUid(uid) {
 
 stock getNearestServerBusStopId(playerid) {
 	new id = INVALID_BUS_ID;
-	new Float:minDist = 300.0;
+	new Float:pX, Float:pY, Float:pZ, Float:minDist = 300.0;
 
-	GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
+	GetPlayerPos(playerid, pX, pY, pZ);
 
 	foreach(new i : busStopItter) {
-		if(getDistance(tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ], tBusStop[i][bsPosX], tBusStop[i][bsPosY], tBusStop[i][bsPosZ]) < minDist) {
+		if(Distance(pX, pY, pZ, tBusStop[i][bsPosX], tBusStop[i][bsPosY], tBusStop[i][bsPosZ]) < minDist) {
 			id = i;
 			break;
 		}
@@ -91,18 +91,91 @@ stock getNearestServerBusStopId(playerid) {
 	return id;
 }
 
-stock createNewBusStop(playerid, busstopname[]) {
-	new price = 1;
-
-	GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
+stock addBusStop(playerid, name[]) {
+	new freeId = INVALID_BUS_ID;
+	new Float:pX, Float:pY, Float:pZ, Float:pA;
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_BusStops`(`Name`, `Price`, `PosX`, `PosY`, `PosZ`) VALUES ('%s', '%d', '%f', '%f', '%f')",
-		busstopname,
-		price,
-		tPlayer[playerid][pPosX],
-		tPlayer[playerid][pPosY],
-		tPlayer[playerid][pPosZ]
+	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_BusStops`");
+	mysql_query(queryStr);
+
+	mysql_store_result();
+
+	freeId = mysql_fetch_int();
+	mysql_free_result();
+
+	GetPlayerPos(playerid, pX, pY, pZ);
+	GetPlayerFacingAngle(playerid, pA);
+
+	tBusStop[freeId][bsUid] = freeId + 1;
+	format(tBusStop[freeId][bsName], 32, name);
+	tBusStop[freeId][bsPosX] = pX;
+	tBusStop[freeId][bsPosY] = pY;
+	tBusStop[freeId][bsPosZ] = pZ;
+	tBusStop[freeId][bsRotX] = 0.0;
+	tBusStop[freeId][bsRotY] = 0.0;
+	tBusStop[freeId][bsRotZ] = pA;
+	tBusStop[freeId][bsUsed] = false;
+	tBusStop[freeId][bsObject] = CreateDynamicObject(1257, tBusStop[freeId][bsPosX], tBusStop[freeId][bsPosY], tBusStop[freeId][bsPosZ], tBusStop[freeId][bsRotX], tBusStop[freeId][bsRotY], tBusStop[freeId][bsRotZ], 0, 0, -1, 100.0);
+
+	Iter_Add(busStopItter, freeId);
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_BusStops` (`Name`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`) VALUES ('%s', '%f', '%f', '%f', '%f', '%f', '%f')",
+		tBusStop[freeId][bsName],
+		tBusStop[freeId][bsPosX],
+		tBusStop[freeId][bsPosY],
+		tBusStop[freeId][bsPosZ],
+		tBusStop[freeId][bsRotX],
+		tBusStop[freeId][bsRotY],
+		tBusStop[freeId][bsRotZ]
+	);
+	mysql_query(queryStr);
+}
+
+stock removeBusStop(srvbusid) {
+	if(srvbusid == INVALID_BUS_ID) {
+		return 1;
+	}
+
+	if(!Iter_Count(busStopItter)) {
+		return 1;
+	}
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_BusStops` WHERE `UID` = '%d'", tBusStop[srvbusid][bsUid]);
+	mysql_query(queryStr);
+
+	Iter_Remove(busStopItter, srvbusid);
+
+	tBusStop[srvbusid][bsUid] = 0;
+	format(tBusStop[srvbusid][bsName], 32, NULL);
+	tBusStop[srvbusid][bsObject] = INVALID_OBJECT_ID;
+	tBusStop[srvbusid][bsPosX] = 0.0;
+	tBusStop[srvbusid][bsPosY] = 0.0;
+	tBusStop[srvbusid][bsPosZ] = 0.0;
+	tBusStop[srvbusid][bsRotX] = 0.0;
+	tBusStop[srvbusid][bsRotY] = 0.0;
+	tBusStop[srvbusid][bsRotZ] = 0.0;
+	tBusStop[srvbusid][bsUsed] = false;
+	return 1;
+}
+
+stock saveBusStopValues(srvbusid) {
+	if(srvbusid == INVALID_BUS_ID) {
+		return 1;
+	}
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_BusStops` SET `Name` = '%s', `PosX` = '%f', `PosY` = '%f', `PosZ` = '%f', `RotX` = '%f', `RotY` = '%f', `RotZ` = '%f' WHERE `UID` = '%d'",
+		tBusStop[srvbusid][bsName],
+		tBusStop[srvbusid][bsPosX],
+		tBusStop[srvbusid][bsPosY],
+		tBusStop[srvbusid][bsPosZ],
+		tBusStop[srvbusid][bsRotX],
+		tBusStop[srvbusid][bsRotY],
+		tBusStop[srvbusid][bsRotZ],
+		tBusStop[srvbusid][bsUid]
 	);
 	mysql_query(queryStr);
 	return 1;
@@ -113,11 +186,12 @@ stock searchPlayerBusStop(playerid) {
 		if(playerToPoint(playerid, 5.0, tBusStop[i][bsPosX], tBusStop[i][bsPosY], tBusStop[i][bsPosZ]) && !tBusStop[i][bsUsed]) {
 			if(!GetPlayerVirtualWorld(playerid) && !GetPlayerInterior(playerid)) {
 				if(!busCameraChoose[playerid] && !busCameraSelect[playerid] && !isInBus[playerid]) {
-					GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
+					new Float:pX, Float:pY, Float:pZ;
+					GetPlayerPos(playerid, pX, pY, pZ);
 
-					tPlayer[playerid][pBusX] = tPlayer[playerid][pPosX];
-					tPlayer[playerid][pBusY] = tPlayer[playerid][pPosY];
-					tPlayer[playerid][pBusZ] = tPlayer[playerid][pPosZ];
+					tPlayer[playerid][pBusX] = pX;
+					tPlayer[playerid][pBusY] = pY;
+					tPlayer[playerid][pBusZ] = pZ;
 
 					resetPlayerBoxTextDraws(playerid);
 

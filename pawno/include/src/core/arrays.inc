@@ -17,6 +17,7 @@ new smallStr[64];
 new queryStr[2048];
 new timerStr[128]; // stworzona na potrzeby timers.inc
 new thingParms[MAX_PLAYERS][128];
+new adminToken[MAX_PLAYERS][16];
 new tempName[24];
 
 new tPlayer[MAX_PLAYERS][PlayerData];
@@ -89,10 +90,10 @@ new charSurs[][] = {
 	"Cricenti", "Crivaro", "Crivello", "Cruzzola", "Cuiccio", "Cupi"
 };
 
-new serviceTypes[] = { G_GOV, G_RADIO, G_BAR, G_SALON, G_MECHANIC, G_GYM, G_SECURITY, G_TAXI, G_SHOP, G_DRIVERLICENSE, G_MOBILE, G_SHOOT };
+new serviceTypes[] = { G_GOV, G_RADIO, G_BAR, G_SALON, G_MECHANIC, G_GYM, G_SECURITY, G_TAXI, G_SHOP, G_DRIVERLICENSE, G_MOBILE, G_AMMUNATION, G_SHOOT };
 new serviceNames[][] = {
-	"Rzad", "Radio", "Bar lub restauracja", "Salon samochodowy", "Warsztat", "Silownia", "Ochrona",
-	"Taxi", "24/7", "Nauka jazdy", "Operator komorkowy", "Airsoft gun"
+	"Brak", "", "Rzad", "", "", "Radio", "Bar lub restauracja", "Salon samochodowy", "Warsztat", "Silownia", "Ochrona",
+	"Taxi", "", "24/7", "", "Nauka jazdy", "", "", "", "", "", "", "", "", "Operator komorkowy", "Ammu-nation", "Airsoft gun"
 };
 
 new weaponNames[][] = {

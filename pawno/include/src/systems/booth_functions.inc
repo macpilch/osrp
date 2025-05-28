@@ -23,19 +23,22 @@ stock initBoothValues() {
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
-		sscanf(queryStr, "p<|>is[32]ffffi",
+		sscanf(queryStr, "p<|>is[32]fffffffi",
 			tBooth[i][boUid],
 			tBooth[i][boName],
 			tBooth[i][boPosX],
 			tBooth[i][boPosY],
 			tBooth[i][boPosZ],
+			tBooth[i][boRotX],
+			tBooth[i][boRotY],
+			tBooth[i][boRotZ],
 			tBooth[i][boRange],
 			tBooth[i][boWorking]
 		);
 
-		Iter_Add(boothItter, i);
-		tBooth[i][boObject] = CreateDynamicObject(1216, tBooth[i][boPosX], tBooth[i][boPosY], tBooth[i][boPosZ], 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
+		tBooth[i][boObject] = CreateDynamicObject(1216, tBooth[i][boPosX], tBooth[i][boPosY], tBooth[i][boPosZ], tBooth[i][boRotX], tBooth[i][boRotY], tBooth[i][boRotZ], 0, 0, -1, 100.0);
 
+		Iter_Add(boothItter, i);
 		i++;
 	}
 
@@ -71,6 +74,103 @@ stock getServerBoothIdFromUid(uid) {
 		}
 	}
 	return id;
+}
+
+stock addBooth(playerid, name[]) {
+	new freeId = INVALID_BOOTH_ID;
+	new Float:pX, Float:pY, Float:pZ, Float:pA;
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Booths`");
+	mysql_query(queryStr);
+
+	mysql_store_result();
+	freeId = mysql_fetch_int();
+
+	mysql_free_result();
+
+	GetPlayerPos(playerid, pX, pY, pZ);
+	GetPlayerFacingAngle(playerid, pA);
+
+	tBooth[freeId][boUid] = freeId + 1;
+	format(tBooth[freeId][boName], 32, name);
+	tBooth[freeId][boPosX] = pX;
+	tBooth[freeId][boPosY] = pY;
+	tBooth[freeId][boPosZ] = pZ;
+	tBooth[freeId][boRotX] = 0.0;
+	tBooth[freeId][boRotY] = 0.0;
+	tBooth[freeId][boRotZ] = pA;
+	tBooth[freeId][boRange] = 5.0;
+	tBooth[freeId][boWorking] = true;
+	tBooth[freeId][boObject] = CreateDynamicObject(1216, tBooth[freeId][boPosX], tBooth[freeId][boPosY], tBooth[freeId][boPosZ], tBooth[freeId][boRotX], tBooth[freeId][boRotY], tBooth[freeId][boRotZ], 0, 0, -1, 100.0);
+
+	Iter_Add(boothItter, freeId);
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Booths` (`UID`, `Name`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`, `Range`, `Working`) VALUES ('%d', '%s', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%d')",
+		tBooth[freeId][boUid],
+		tBooth[freeId][boName],
+		tBooth[freeId][boPosX],
+		tBooth[freeId][boPosY],
+		tBooth[freeId][boPosZ],
+		tBooth[freeId][boRotX],
+		tBooth[freeId][boRotY],
+		tBooth[freeId][boRotZ],
+		tBooth[freeId][boRange],
+		tBooth[freeId][boWorking]
+	);
+	mysql_query(queryStr);
+}
+
+stock removeBooth(srvboothid) {
+	if(srvboothid == INVALID_BOOTH_ID) {
+		return 1;
+	}
+
+	if(!Iter_Count(boothItter)) {
+		return 1;
+	}
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Booths` WHERE `UID` = '%d'", tBooth[srvboothid][boUid]);
+	mysql_query(queryStr);
+
+	Iter_Remove(boothItter, srvboothid);
+
+	tBooth[srvboothid][boUid] = 0;
+	format(tBooth[srvboothid][boName], 32, NULL);
+	tBooth[srvboothid][boObject] = INVALID_OBJECT_ID;
+	tBooth[srvboothid][boPosX] = 0.0;
+	tBooth[srvboothid][boPosY] = 0.0;
+	tBooth[srvboothid][boPosZ] = 0.0;
+	tBooth[srvboothid][boRotX] = 0.0;
+	tBooth[srvboothid][boRotY] = 0.0;
+	tBooth[srvboothid][boRotZ] = 0.0;
+	tBooth[srvboothid][boRange] = 0.0;
+	tBooth[srvboothid][boWorking] = false;
+	return 1;
+}
+
+stock saveBoothValues(srvboothid) {
+	if(srvboothid == INVALID_BOOTH_ID) {
+		return 1;
+	}
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Booths` SET `Name` = '%s', `PosX` = '%f', `PosY` = '%f', `PosZ` = '%f', `RotX` = '%f', `RotY` = '%f', `RotZ` = '%f', `Range` = '%f', `Working` = '%d' WHERE `UID` = '%d'",
+		tBooth[srvboothid][boName],
+		tBooth[srvboothid][boPosX],
+		tBooth[srvboothid][boPosY],
+		tBooth[srvboothid][boPosZ],
+		tBooth[srvboothid][boRotX],
+		tBooth[srvboothid][boRotY],
+		tBooth[srvboothid][boRotZ],
+		tBooth[srvboothid][boRange],
+		tBooth[srvboothid][boWorking],
+		tBooth[srvboothid][boUid]
+	);
+	mysql_query(queryStr);
+	return 1;
 }
 
 stock searchPlayerBooth(playerid) {

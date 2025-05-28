@@ -42,8 +42,6 @@ stock initThingValues() {
 			tThing[i][tInt]
 		);
 
-		Iter_Add(thingItter, i);
-
 		printf("[DEBUG] SrvId: %d, Uid: %d, OUid: %d, Kind: %d, Name: %s, Value1: %d, Value2: %d, Value3: %d, Value4: %d, PosX: %0.1f, PosY: %0.1f, PosZ: %0.1f, Used: %d, Term: %d, Place: %d, VW: %d, INT: %d",
 			i,
 			tThing[i][tUid],
@@ -64,6 +62,7 @@ stock initThingValues() {
 			tThing[i][tInt]
 		);
 
+		Iter_Add(thingItter, i);
 		i++;
 	}
 
@@ -98,8 +97,6 @@ stock initWholesaleValues() {
 			tWholesale[i][wsValue2]
 		);
 
-		Iter_Add(wholesaleItter, i);
-
 		printf("[DEBUG] SrvId: %d, Uid: %d, Kind: %d, ThingKind: %d, Name: %d, Price: %s, Value1: %d, Value2: %d",
 			i,
 			tWholesale[i][wsUid],
@@ -111,6 +108,7 @@ stock initWholesaleValues() {
 			tWholesale[i][wsValue2]
 		);
 
+		Iter_Add(wholesaleItter, i);
 		i++;
 	}
 
@@ -282,6 +280,14 @@ stock addPlayerThing(uid, kind, name[], value1, value2, place) {
 }
 
 stock removePlayerThing(srvthingid) {
+	if(srvthingid == INVALID_THING_ID) {
+		return 1;
+	}
+
+	if(!Iter_Count(thingItter)) {
+		return 1;
+	}
+
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Things` WHERE `UID` = '%d'", tThing[srvthingid][tUid]);
 	mysql_query(queryStr);
@@ -304,6 +310,7 @@ stock removePlayerThing(srvthingid) {
 	tThing[srvthingid][tPlace] = 0;
 	tThing[srvthingid][tVw] = 0;
 	tThing[srvthingid][tInt] = 0;
+	return 1;
 }
 
 stock sellPlayerThingFromPlayer(playerid, id, price) {
@@ -321,19 +328,20 @@ stock sellPlayerThingFromPlayer(playerid, id, price) {
 	sendOffer(playerid, id, price, 0, OFFER_NORMAL, O_PURCHTHING);
 }
 
-stock resetThingValues(playerid, kind) {
+stock resetThingValues(playerid) {
 	foreach(new i : thingItter) {
-		if(tThing[i][tOUid] == tPlayer[playerid][pUid] && tThing[i][tKind] != kind && tThing[i][tPlace] == THING_PLACE_PLAYER && tThing[i][tUsed]) {
+		if(tThing[i][tOUid] == tPlayer[playerid][pUid] && tThing[i][tKind] != TKIND_CLOTHES && tThing[i][tKind] != TKIND_TELEPHONE && tThing[i][tPlace] == THING_PLACE_PLAYER && tThing[i][tUsed]) {
 			tThing[i][tUsed] = false;
-
-			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "UPDATE `osrp_Things` SET `Used` = '%d' WHERE `UID` = '%d'", tThing[i][tUsed], tThing[i][tUid]);
-			mysql_query(queryStr);
+			saveThingValues(i);
 		}
 	}
 }
 
 stock enableThingProperties(playerid, srvthingid, kind) {
+	if(srvthingid == INVALID_THING_ID) {
+		return 1;
+	}
+
 	if((usedLastThingTime[playerid] + 5) > gettime()) {
 		return GameTextForPlayer(playerid, "~r~Odczekaj chwile przed ponownym~n~uzyciem tej funkcji.", 5000, 3);
 	}
@@ -343,7 +351,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 	}
 
 	if(getPlayerSpeed(playerid)) {
-		//return GameTextForPlayer(playerid, "~y~Odczekaj 1 minute od ostatniego~n~biegania", 5000, 3);
+		return GameTextForPlayer(playerid, "~y~Odczekaj 1 minute od ostatniego~n~biegania", 5000, 3);
 	}
 
 	mainStr[0] = EOS;
@@ -362,7 +370,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			format(mainStr, sizeof(mainStr), "* %s spogl¹da na swój zegarek %s", tPlayer[playerid][pCharName], tThing[srvthingid][tName]);
 			sendMeMessage(playerid, mainStr);
 		}
-
 		case TKIND_WEAPON: {
 			if(IsPlayerInAnyVehicle(playerid)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Nie mo¿esz znajdowaæ siê w pojeŸdzie.");
@@ -390,7 +397,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				}
 			}
 		}
-
 		case TKIND_DRUG: {
 			switch(tThing[srvthingid][tValue1]) {
 				case DRUG_HEROINE: {
@@ -406,7 +412,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 						format(mainStr, sizeof(mainStr), "* %s po³yka %s.", tPlayer[playerid][pCharName], tThing[srvthingid][tName]);
 					}
 				}
-
 				case DRUG_METHA: {
 					if(tPlayer[playerid][pDrugs] == DRUG_NONE) {
 						tPlayer[playerid][pDrugs] = DRUG_METHA;
@@ -418,7 +423,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 						SetPlayerDrunkLevel(playerid, 5000);
 					}
 				}
-
 				case DRUG_ANADRALL: {
 					if(tPlayer[playerid][pDrugs] == DRUG_NONE) {
 						tPlayer[playerid][pDrugs] = DRUG_ANADRALL;
@@ -432,7 +436,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 						format(mainStr, sizeof(mainStr), "* %s wstrzykuje sobie %s.", tPlayer[playerid][pCharName], tThing[srvthingid][tName]);
 					}
 				}
-
 				case DRUG_MARIJUANA: {
 					if(tPlayer[playerid][pDrugs] == DRUG_NONE) {
 						tPlayer[playerid][pDrugs] = DRUG_MARIJUANA;
@@ -467,22 +470,21 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 
 			SetTimerEx("hideUsedDrugsInfo", 5000, false, "i", playerid);
 		}
-
 		case TKIND_MEAL: {
 			if(tThing[srvthingid][tTerm] < timestamp()) {
 				mainStr[0] = EOS;
 				format(mainStr, sizeof(mainStr), "** %s uleg³ przeterminowaniu. **", tThing[srvthingid][tName]);
-				sendDoMessage(playerid, mainStr);
+				SendClientMessage(playerid, COLOR_DO1, mainStr);
 
 				removePlayerThing(srvthingid);
 				return 1;
 			}
 
 			if(tThing[srvthingid][tCraft]) {
-				return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Tego przedmiotu mo¿na u¿ywaæ tylko w celu craftingu.", "OK", "");
+				return ShowPlayerDialogInfo(playerid, "Tego przedmiotu mo¿na u¿ywaæ tylko w celu craftingu.");
 			}
 
-			if(tPlayer[playerid][pHp] + tThing[srvthingid][tValue1] > 100) {
+			if(tPlayer[playerid][pHp] + tThing[srvthingid][tValue1] > 100.0) {
 				OSRP_SetPlayerHealth(playerid, 100.0);
 			} else {
 				OSRP_SetPlayerHealth(playerid, tPlayer[playerid][pHp] + tThing[srvthingid][tValue1]);
@@ -496,7 +498,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			tPlayer[playerid][pThing] = 0;
 			removePlayerThing(srvthingid);
 		}
-
 		case TKIND_DRINK: {
 			GameTextForPlayer(playerid, "~y~Odczekaj 3 minuty od ostatniej~n~utraty energii", 5000, 3);
 			SetPlayerSpecialAction(playerid, SPECIAL_ACTION_DRINK_SPRUNK);
@@ -504,9 +505,8 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			isDizzines[playerid] = false;
 			tPlayer[playerid][pThing] = 0;
 
-			saveThingValues(srvthingid);
+			removePlayerThing(srvthingid);
 		}
-
 		case TKIND_ALCOHOL: {
 			if(tPlayer[playerid][pDrugs] == DRUG_NONE) {
 				tPlayer[playerid][pDrugs] = DRUG_ALCOHOL;
@@ -522,7 +522,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 
 			removePlayerThing(srvthingid);
 		}
-
 		case TKIND_MASK: {
 			if(!tThing[srvthingid][tUsed]) {
 				new strNick[36], strChat[36];
@@ -537,7 +536,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				strcat(mainStr, "Zak³adasz maskê.\nPamiêtaj, ¿e maj¹c maskê, nad postaci¹ widaæ Twój zaszyfrowany identyfikator.\n");
 				strcat(mainStr, "Oznacza to, ¿e ka¿dy gracz mo¿e wys³aæ na Ciebie raport, ka¿dy mo¿e napisaæ skargê.\n");
 				strcat(mainStr, "Nie jesteœ wiêc anonimowy(a), administracja zawsze mo¿e Ciê zidentyfikowaæ.");
-				ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+				ShowPlayerDialogInfo(playerid, mainStr);
 
 				tThing[srvthingid][tUsed] = true;
 			} else {
@@ -548,7 +547,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				tThing[srvthingid][tUsed] = false;
 			}
 		}
-
 		case TKIND_BAG: {
 			new count;
 
@@ -565,19 +563,23 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 
 			ShowPlayerDialog(playerid, DIALOG_THINGS_MORE_PUT_BAG_USE_THING, DIALOG_STYLE_LIST, "Przedmioty", mainStr, "Wyjmij", "Zamknij");
 		}
-
 		case TKIND_CANISTER: {
-			new srvVehId, vehicleid = getClosestCar(playerid);
+			new vehicleid = getClosestCar(playerid);
 			if(vehicleid == INVALID_VEHICLE_ID) {
 				return 1;
 			}
 
-			srvVehId = getClosestServerVehicleId(vehicleid);
+			new srvVehId = getClosestServerVehicleId(vehicleid);
+			if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
+				return 1;
+			}
+
 			if(isBicycle(tVehicle[srvVehId][vModelId])) {
 				return 1;
 			}
 
 			tVehicle[srvVehId][vFuel] += 15;
+			saveVehicleValues(srvVehId);
 
 			ApplyAnimation(playerid, "INT_HOUSE", "wash_up", 4.1, 0, 0, 0, 0, 0);
 
@@ -587,7 +589,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			ApplyAnimation(playerid, "BAR", "Barserve_give", 4.1, 0, 0, 0, 0, 0);
 			removePlayerThing(srvthingid);
 		}
-
 		case TKIND_MEDICINE: {
 			//new srvDoorId = getServerDoorId(playerid);
 			SendClientMessage(playerid, COLOR_GRAY, "Musisz byæ w aptece, która wyda³a ten lek, lub karetce, aby go u¿yæ.");
@@ -597,7 +598,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			format(mainStr, sizeof(mainStr), "* %s spo¿ywa lek.", tPlayer[playerid][pCharName]);
 			sendMeMessage(playerid, mainStr);
 		}
-
 		case TKIND_ROPE: {
 			if(!tThing[srvthingid][tUsed]) {
 				tThing[srvthingid][tUsed] = true;
@@ -613,7 +613,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				tThing[srvthingid][tUsed] = false;
 			}
 		}
-
 		case TKIND_DICE: {
 			static count;
 
@@ -630,7 +629,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			tPlayer[playerid][pThing] = 0;
 			cubeUseTime[playerid] = gettime();
 		}
-
 		case TKIND_CIGARETTE: {
 			SetPlayerSpecialAction(playerid, SPECIAL_ACTION_SMOKE_CIGGY);
 			tThing[srvthingid][tValue1]--;
@@ -641,14 +639,13 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				saveThingValues(srvthingid);
 			}
 		}
-
 		case TKIND_CLOTHES: {
 			if(!doesPlayerHaveCorrectOrigin(playerid, tThing[srvthingid][tValue1])) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Ten skin nie jest zgodny z ras¹ Twojej postaci.");
 			}
 
-			//ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_LIST, "Informacja", "Aby u¿yæ tego przedmiotu, musisz byæ w grupie %d.", "OK", "");
-			resetThingValues(playerid, TKIND_NONE);
+			//ShowPlayerDialogInfo(playerid, "Aby u¿yæ tego przedmiotu, musisz byæ w grupie %d.");
+			resetThingValues(playerid);
 
 			if(!tThing[srvthingid][tUsed]) {
 				tPlayer[playerid][pLastSkin] = tPlayer[playerid][pSkin];
@@ -669,7 +666,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				tThing[srvthingid][tUsed] = false;
 			}
 		}
-
 		case TKIND_NOTEBOOK: {
 			//ShowPlayerDialog("Notatka", "AAAA\n\nDanny Walker.\n01.01.1970, 00:00", "OK", "Zamknij");
 
@@ -681,7 +677,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				showPlayerNotes(playerid);
 			}
 		}
-
 		case TKIND_POISON: {
 			SendClientMessage(playerid, COLOR_GRAY, "Argumenty: [Gracz, który ma BW] [Powód OOC nadania CK, dla administracji]");
 
@@ -689,7 +684,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			strcat(mainStr, "Wpisz je proszê oddzielone spacjami (jak przy zwyk³ej komendzie).");
 			ShowPlayerDialog(playerid, DIALOG_THINGS_PARAMETERS, DIALOG_STYLE_INPUT, "Ten przedmiot wymaga parametrów.", mainStr, "U¿yj", "Anuluj");
 		}
-
 		case TKIND_TELEPHONE: {
 			new pId = getPhoneOwnerIdFromNumber(telEnterNumber[playerid]);
 
@@ -732,11 +726,9 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				ShowPlayerDialog(playerid, DIALOG_TELEPHONE_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
 			}
 		}
-
 		case TKIND_FOLDER: {
 			
 		}
-
 		case TKIND_ROLLER: {
 			if(!tThing[srvthingid][tUsed]) {
 				if(GetPlayerVirtualWorld(playerid) != 0) {
@@ -773,22 +765,19 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			updatePlayerGameStatus(playerid);
 			saveThingValues(srvthingid);
 		}
-
 		case TKIND_TOPUP: {
 			
 		}
-
 		case TKIND_GYMMEMSHIP: {
 			acceptTraining[playerid] = true;
 			isGym[playerid] = false;
 
 			strcat(mainStr, "Zaakceptowano trening.\n\nU¿yj sprzêtu w silowni (/silownia), aby zwiekszyc swoja sile.\n\n");
 			strcat(mainStr, "Niektore narkotyki zwiekszaja szybkosc zdobywania sily, a inne czestotliwosc treningow!");
-			ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+			ShowPlayerDialogInfo(playerid, mainStr);
 
 			removePlayerThing(srvthingid);
 		}
-
 		case TKIND_GLOVES: {
 			if(!tThing[srvthingid][tUsed]) {
 				format(mainStr, sizeof(mainStr), "* %s zak³ada rêkawiczki jednorazowe.", tPlayer[playerid][pCharName]);
@@ -814,7 +803,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				tThing[srvthingid][tUsed] = false;
 			}
 		}
-
 		case TKIND_ARMOR: {
 			if(!tThing[srvthingid][tUsed]) {
 				OSRP_SetPlayerArmour(playerid, tThing[srvthingid][tValue1]);
@@ -833,20 +821,17 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				OSRP_SetPlayerArmour(playerid, 0);
 			}
 		}
-
 		case TKIND_AMMO: {
 			//format(mainStr, sizeof(mainStr), "* %s uzupe³nia amunicjê swojej broni.", tPlayer[playerid][pCharName]);
 			//format(mainStr, sizeof(mainStr), "* %s umieszcza cia³o w pojeŸdzie.", tPlayer[playerid][pCharName]);
 			//format(mainStr, sizeof(mainStr), "* %s wsadza p³ytê do odtwarzacza.", tPlayer[playerid][pCharName]);
 		}
-
-		case TKIND_COMPONENT, TKIND_PART, TKIND_ACCESSORY: {
+		case TKIND_COMPONENT, TKIND_CARITEM, TKIND_ACCESSORY: {
 			strcat(mainStr, "Podaj nastêpuj¹ce parametry oddzielone spacjami:\n[ID/Czêœæ nazwy gracza] [Cena]\n");
 			strcat(mainStr, "\tPrzyk³ad: John_Smith 50 (zamiast nicku wszêdzie mo¿na podaæ ID gracza)\n\n");
 			strcat(mainStr, "Mo¿esz pomin¹æ ten dialog i szybciej u¿ywaæ przedmiotów (/pomoc -> Przedmioty).");
 			ShowPlayerDialog(playerid, DIALOG_THINGS_PARAMETERS, DIALOG_STYLE_INPUT, "Parametry", mainStr, "U¿yj", "Anuluj");
 		}
-
 		case 0: {
 			SendClientMessage(playerid, COLOR_GRAY, "Parametry: [Gracz] [Cena]");
 
@@ -854,32 +839,28 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			strcat(mainStr, "Wpisz je proszê oddzielone spacjami (jak przy zwyk³ej komendzie).");
 			ShowPlayerDialog(playerid, DIALOG_THINGS_PARAMETERS, DIALOG_STYLE_INPUT, "Ten przedmiot wymaga parametrów.", mainStr, "U¿yj", "Anuluj");
 		}
-
 		case TKIND_PICKLOCK: {
-			return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Aby u¿yæ tego przedmiotu, musisz byæ w grupie Tuska.", "OK", "");
+			return ShowPlayerDialogInfo(playerid, "Aby u¿yæ tego przedmiotu, musisz byæ w grupie Tuska.");
 		}
-
 		case TKIND_VEHICLE: {
-			if(!tThing[srvthingid][tUsed]) {
-				tThing[srvthingid][tUsed] = true;
+			addVehicle(tPlayer[playerid][pUid], VEHICLE_OWNER_PLAYER, tThing[srvthingid][tValue1], random(255), random(255), DEFAULT_VEH_POS_X, DEFAULT_VEH_POS_Y, DEFAULT_VEH_POS_Z, DEFAULT_VEH_POS_A);
+			removePlayerThing(srvthingid);
 
-				addVehicle(tPlayer[playerid][pUid], VEHICLE_OWNER_PLAYER, tThing[srvthingid][tValue1], random(255), random(255));
-				removePlayerThing(srvthingid);
-
-				strcat(mainStr, "Pojazd zosta³ odebrany i znajduje siê teraz\nna Twojej liœcie pojazdów - /v.");
-				ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
-
-				tThing[srvthingid][tUsed] = false;
-			}
+			strcat(mainStr, "Pojazd zosta³ odebrany i znajduje siê teraz\nna Twojej liœcie pojazdów - /v.");
+			ShowPlayerDialogInfo(playerid, mainStr);
 		}
 	}
-	// GameTextForPlayer(playerid, "~g~Tego przedmiotu nie mozna uzyc.", 5000, 3);
+	//GameTextForPlayer(playerid, "~g~Tego przedmiotu nie mozna uzyc.", 5000, 3);
 
 	usedLastThingTime[playerid] = gettime();
 	return 1;
 }
 
 stock addPlayerWeapon(playerid, srvthingid, from[]) {
+	if(srvthingid == INVALID_THING_ID) {
+		return 1;
+	}
+
 	if(!tThing[srvthingid][tValue2]) {
 		return GameTextForPlayer(playerid, "~r~Brak amunicji", 5000, 3);
 	}
@@ -898,7 +879,11 @@ stock addPlayerWeapon(playerid, srvthingid, from[]) {
 	return 1;
 }
 
-stock resetPlayerWeapon(playerid, srvthingid, to[]) {
+stock resetPlayerWeapon(playerid, srvthingid, const to[]) {
+	if(srvthingid == INVALID_THING_ID) {
+		return 1;
+	}
+
 	tThing[srvthingid][tValue2] = tPlayer[playerid][pWeapAmmo];
 	OSRP_ResetPlayerWeapons(playerid);
 
@@ -906,9 +891,8 @@ stock resetPlayerWeapon(playerid, srvthingid, to[]) {
 	format(mainStr, sizeof(mainStr), "* %s chowa %s %s.", tPlayer[playerid][pCharName], tThing[srvthingid][tName], to);
 	sendMeMessage(playerid, mainStr);
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Things` SET `Value2` = '%d' WHERE `UID` = '%d'", tThing[srvthingid][tValue2], tThing[srvthingid][tUid]);
-	mysql_query(queryStr);
+	saveThingValues(srvthingid);
+	return 1;
 }
 
 stock dropOutAllPlayerThings(playerid) {
@@ -916,7 +900,8 @@ stock dropOutAllPlayerThings(playerid) {
 		return 1;
 	}
 
-	GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
+	new Float:pX, Float:pY, Float:pZ;
+	GetPlayerPos(playerid, pX, pY, pZ);
 
 	foreach(new i : thingItter) {
 		if(tThing[i][tOUid] == tPlayer[playerid][pUid] && tThing[i][tPlace] == THING_PLACE_PLAYER) {
@@ -924,16 +909,16 @@ stock dropOutAllPlayerThings(playerid) {
 			tThing[i][tPlace] = THING_PLACE_FLOOR;
 			tThing[i][tVw] = GetPlayerVirtualWorld(playerid);
 			tThing[i][tInt] = GetPlayerInterior(playerid);
-			tThing[i][tPosX] = tPlayer[playerid][pPosX];
-			tThing[i][tPosY] = tPlayer[playerid][pPosY];
-			tThing[i][tPosZ] = tPlayer[playerid][pPosZ];
+			tThing[i][tPosX] = pX;
+			tThing[i][tPosY] = pY;
+			tThing[i][tPosZ] = pZ;
 			tThing[i][tUsed] = false;
 		}
 	}
 	return 1;
 }
 
-stock putDownThing(playerid, where) {
+stock putDownThing(playerid, place) {
 	new srvThingId = getServerThingId(playerid);
 	if(srvThingId == INVALID_THING_ID) {
 		return 1;
@@ -941,25 +926,24 @@ stock putDownThing(playerid, where) {
 
 	mainStr[0] = EOS;
 
-	if(where == THING_PLACE_FLOOR) {
-		GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
+	if(place == THING_PLACE_FLOOR) {
+		new Float:pX, Float:pY, Float:pZ;
+		GetPlayerPos(playerid, pX, pY, pZ);
 
 		tThing[srvThingId][tOUid] = INVALID_PLAYER_ID;
 		tThing[srvThingId][tPlace] = THING_PLACE_FLOOR;
-		tThing[srvThingId][tPosX] = tPlayer[playerid][pPosX];
-		tThing[srvThingId][tPosY] = tPlayer[playerid][pPosY];
-		tThing[srvThingId][tPosZ] = tPlayer[playerid][pPosZ];
+		tThing[srvThingId][tPosX] = pX;
+		tThing[srvThingId][tPosY] = pY;
+		tThing[srvThingId][tPosZ] = pZ;
 		tThing[srvThingId][tVw] = GetPlayerVirtualWorld(playerid);
 		tThing[srvThingId][tInt] = GetPlayerInterior(playerid);
 
-		ApplyAnimation(playerid, "BOMBER", "BOM_Plant", 4.1, 0, 0, 0, 0, 0, 0);
-
-		if(tThing[srvThingId][tKind] == TKIND_WEAPON) {
+		if(tThing[srvThingId][tKind] == TKIND_WEAPON || tThing[srvThingId][tKind] == TKIND_CARITEM) {
 			format(mainStr, sizeof(mainStr), "* %s coœ odk³ada.", tPlayer[playerid][pCharName]);
 		} else {
 			format(mainStr, sizeof(mainStr), "* %s upuszcza jakiœ przedmiot.", tPlayer[playerid][pCharName]);
 		}
-	} else if(where == THING_PLACE_VEHICLE) {
+	} else if(place == THING_PLACE_VEHICLE) {
 		new srvVehId = getServerVehicleId(playerid);
 		if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 			return 1;
@@ -974,7 +958,7 @@ stock putDownThing(playerid, where) {
 		tThing[srvThingId][tInt] = GetPlayerInterior(playerid);
 
 		format(mainStr, sizeof(mainStr), "* %s odk³ada coœ w aucie.", tPlayer[playerid][pCharName]);
-	} else if(where == THING_PLACE_DOOR) {
+	} else if(place == THING_PLACE_DOOR) {
 		new srvDoorId = getServerDoorId(playerid);
 		if(srvDoorId != INVALID_DOOR_ID) {
 			return 1;
@@ -991,6 +975,8 @@ stock putDownThing(playerid, where) {
 		}
 	}
 
+	ApplyAnimation(playerid, "BOMBER", "BOM_Plant", 4.1, 0, 0, 0, 0, 0, 0);
+
 	tThing[srvThingId][tUsed] = false;
 	tPlayer[playerid][pThing] = 0;
 
@@ -999,22 +985,22 @@ stock putDownThing(playerid, where) {
 	return 1;
 }
 
-stock pickUpNearblyThings(playerid, where) {
-	new count;
+stock pickUpNearblyThings(playerid, place) {
+	new countThings;
 
 	mainStr[0] = EOS;
 
-	if(where == THING_PLACE_FLOOR) {
+	if(place == THING_PLACE_FLOOR) {
 		foreach(new i : thingItter) {
 			if(playerToPoint(playerid, 5.0, tThing[i][tPosX], tThing[i][tPosY], tThing[i][tPosZ])) {
 				if(tThing[i][tPlace] == THING_PLACE_FLOOR && tThing[i][tOUid] == INVALID_PLAYER_ID && tThing[i][tVw] == GetPlayerVirtualWorld(playerid) &&
 				   tThing[i][tInt] == GetPlayerInterior(playerid)) {
 					format(mainStr, sizeof(mainStr), "%s{FFFFFF}%d\t%s\n", mainStr, tThing[i][tUid], tThing[i][tName]);
-					count++;
+					countThings++;
 				}
 			}
 		}
-	} else if(where == THING_PLACE_VEHICLE) {
+	} else if(place == THING_PLACE_VEHICLE) {
 		new srvVehId = getServerVehicleId(playerid);
 		if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 			return 1;
@@ -1027,14 +1013,14 @@ stock pickUpNearblyThings(playerid, where) {
 		foreach(new i : thingItter) {
 			if(tThing[i][tPlace] == THING_PLACE_VEHICLE && tThing[i][tOUid] == tVehicle[srvVehId][vUid]) {
 				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, tThing[i][tUid], tThing[i][tName]);
-				count++;
+				countThings++;
 			}
 		}
-	} else if(where == THING_PLACE_DOOR) {
+	} else if(place == THING_PLACE_DOOR) {
 		
 	}
 
-	if(!count) {
+	if(!countThings) {
 		resetPlayerBoxTextDraws(playerid);
 
 		for(new i = 0; i < 2; i++) {
@@ -1051,16 +1037,16 @@ stock pickUpNearblyThings(playerid, where) {
 
 stock showPlayerOtherThings(playerid, sender, dialogid) {
 	new str[1024];
-	new count;
+	new countThings;
 
 	foreach(new i : thingItter) {
 		if(tThing[i][tOUid] == tPlayer[sender][pUid] && tThing[i][tPlace] == THING_PLACE_PLAYER) {
 			format(str, sizeof(str), "%s\n{FFFFFF}%d\t%d\t%d\t%s", str, tThing[i][tUid], tThing[i][tValue1], tThing[i][tValue2], tThing[i][tName]);
-			count++;
+			countThings++;
 		}
 	}
 
-	if(!count) {
+	if(!countThings) {
 		return GameTextForPlayer(playerid, "~r~Ten gracz nie posiada przedmiotow.", 5000, 3);
 	}
 
@@ -1070,7 +1056,7 @@ stock showPlayerOtherThings(playerid, sender, dialogid) {
 
 stock showPlayerThings(playerid) {
 	new str[4096];
-	new count;
+	new countThings;
 
 	foreach(new i : thingItter) {
 		if(tThing[i][tOUid] == tPlayer[playerid][pUid] && tThing[i][tPlace] == THING_PLACE_PLAYER) {
@@ -1082,11 +1068,11 @@ stock showPlayerThings(playerid) {
 				format(str, sizeof(str), "%s\n {FFFFFF}%s{000000}\t%d\t%d\t(%d, %d)", str, tThing[i][tName], tThing[i][tUid], tThing[i][tKind], tThing[i][tValue1], tThing[i][tValue2]);
 			}
 
-			count++;
+			countThings++;
 		}
 	}
 
-	if(!count) {
+	if(!countThings) {
 		strcat(str, "{FFFFFF}Nie posiadasz jeszcze przedmiotów.\nMo¿na je zdobyæ od innych graczy, kupiæ\n");
 		strcat(str, "w ró¿nych firmach lub znaleŸæ na ziemi.\nZdobyte przedmioty mo¿esz u¿yæ lub handlowaæ.");
 	}

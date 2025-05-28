@@ -52,8 +52,8 @@ stock initDoorValues() {
 			tDoor[i][dInt]
 		);
 
-		Iter_Add(doorItter, i);
 		tDoor[i][dPickup] = CreateDynamicPickup(1239, 2, tDoor[i][dEnterX], tDoor[i][dEnterY], tDoor[i][dEnterZ], 0, 0, -1, 50.0, -1, 0);
+		Iter_Add(doorItter, i);
 
 		i++;
 	}
@@ -90,11 +90,10 @@ stock initDimensionValues() {
 			tDimension[i][dimMaxZ]
 		);
 
-		Iter_Add(dimItter, i);
-
 		d = getServerDoorIdFromUid(tDimension[i][dimOUid]);
 		tDoor[d][dDimension] = floatToInt(floatabs((tDimension[i][dimMaxX] - tDimension[i][dimMinX]) * (tDimension[i][dimMaxY] - tDimension[i][dimMinY]))) / 10;
 
+		Iter_Add(dimItter, i);
 		i++;
 	}
 
@@ -194,6 +193,10 @@ stock doesDoorIsType(srvdoorid, type) {
 	return 0;
 }
 
+stock showDoorInfo(playerid, srvdoorid) {
+	return 1;
+}
+
 stock showDoorMenu(playerid, srvdoorid) {
 	new str[64];
 	mainStr[0] = EOS;
@@ -216,7 +219,7 @@ stock showDoorMenu(playerid, srvdoorid) {
 	} else {
 		strcat(mainStr, "Nie uda³o siê wykryæ budynku.\nNa pewno stoisz pod budynkiem, twarz¹ do œciany?\n");
 		strcat(mainStr, "Nie mo¿esz staæ dalej ni¿ 5m od œciany.");
-		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+		ShowPlayerDialogInfo(playerid, mainStr);
 	}
 }
 

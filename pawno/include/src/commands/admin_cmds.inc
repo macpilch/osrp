@@ -696,7 +696,6 @@ CMD:freeze(playerid, params[]) {
 				mainStr[0] = EOS;
 				format(mainStr, sizeof(mainStr), "Odmrozi³eœ gracza %s.", tPlayer[toPlayerid][pCharName]);
 			}
-
 			case 1: {
 				OSRP_TogglePlayerControllable(toPlayerid, 0);
 				SendClientMessage(toPlayerid, COLOR_GREEN, "Administracja zamrozi³a Ciê.");
@@ -767,7 +766,7 @@ CMD:res(playerid, params[]) {
 
 		if(tPlayer[pId][pWeapon] && tPlayer[pId][pWeapSlot] != 0) {
 			OSRP_ResetPlayerWeapons(pId);
-			resetThingValues(pId, TKIND_NONE);
+			resetThingValues(pId);
 		}
 	}
 	return 1;
@@ -1331,7 +1330,7 @@ CMD:av(playerid, params[]) {
 		}
 
 		if(!strcmp(type, "stworz", true)) {
-			new vehicleId, modelId, ownerUid, ownerType, freeId = OSRP_VEHICLE_INVALID_ID, color1, color2;
+			new modelId, ownerUid, ownerType, color1, color2;
 
 			if(sscanf(opt, "iiiii", modelId, ownerUid, ownerType, color1, color2)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /av stworz [Model ID] [UID] [Rodzaj w³aœciciela] [Kolor 1] [Kolor 2]");
@@ -1341,86 +1340,13 @@ CMD:av(playerid, params[]) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Podany pojazd nie istnieje.");
 			}
 
-			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Vehicles`");
-			mysql_query(queryStr);
+			new Float:pX, Float:pY, Float:pZ, Float:pA;
+			new pId = getPlayerIdFromUid(ownerUid);
 
-			mysql_store_result();
+			GetPlayerPos(pId, pX, pY, pZ);
+			GetPlayerFacingAngle(pId, pA);
 
-			freeId = mysql_fetch_int();
-#if defined DEBUG
-			printf("freeId: %d", freeId);
-#endif
-			mysql_free_result();
-
-			GetPlayerPos(playerid, tVehicle[freeId][vPosX], tVehicle[freeId][vPosY], tVehicle[freeId][vPosZ]);
-			GetPlayerFacingAngle(playerid, tVehicle[freeId][vAngle]);
-			Iter_Add(vehItter, freeId);
-
-			vehicleId = CreateVehicle(modelId, tVehicle[freeId][vPosX] + 2.0, tVehicle[freeId][vPosY] + 2.0, tVehicle[freeId][vPosZ], tVehicle[freeId][vAngle], color1, color2, 0);
-
-			tVehicle[freeId][vUid] = freeId + 1;
-			tVehicle[freeId][vId] = vehicleId;
-			tVehicle[freeId][vOUid] = ownerUid;
-			tVehicle[freeId][vType] = ownerType;
-			tVehicle[freeId][vModelId] = modelId;
-			tVehicle[freeId][vColor1] = color1;
-			tVehicle[freeId][vColor2] = color2;
-			tVehicle[freeId][vLock] = true;
-			tVehicle[freeId][vEngineHp] = 1000.0;
-			tVehicle[freeId][vSpawned] = true;
-			tVehicle[freeId][vMileage] = 0.0;
-			tVehicle[freeId][vBlock] = 0;
-
-			if(!isBicycle(tVehicle[freeId][vModelId])) {
-				tVehicle[freeId][vFuel] = VEHICLE_FUEL_TANK_MEDIUM;
-				tVehicle[freeId][vEngine] = false;
-				tVehicle[freeId][vLightsOn] = false;
-				tVehicle[freeId][vWindow] = false;
-				tVehicle[freeId][vAccessories] = VEH_ACCESSORIES_NONE;
-				tVehicle[freeId][vPanels] = 0;
-				tVehicle[freeId][vDoors] = 0;
-				tVehicle[freeId][vLights] = 0;
-				tVehicle[freeId][vTires] = 0;
-				tVehicle[freeId][vVw] = 0;
-				tVehicle[freeId][vInt] = 0;
-				tVehicle[freeId][vPaintjob] = -1;
-				tVehicle[freeId][vNitro] = 0;
-				tVehicle[freeId][vRepair] = 0.0;
-
-				format(tVehicle[freeId][vPlate], 32, VEHICLE_DEFAULT_PLATE);
-				SetVehicleNumberPlate(tVehicle[freeId][vId], tVehicle[freeId][vPlate]);
-
-				UpdateVehicleDamageStatus(tVehicle[freeId][vId], tVehicle[freeId][vPanels], tVehicle[freeId][vDoors], tVehicle[freeId][vLights], tVehicle[freeId][vTires]);
-				SetVehicleVirtualWorld(tVehicle[freeId][vId], tVehicle[freeId][vVw]);
-				LinkVehicleToInterior(tVehicle[freeId][vId], tVehicle[freeId][vInt]);
-				SetVehicleToRespawn(tVehicle[freeId][vId]);
-			} else {
-				SetVehicleParamsEx(vehicleId, 1, 0, 0, 0, 0, 0, 0);
-			}
-
-			SetVehicleHealth(tVehicle[freeId][vId], tVehicle[freeId][vEngineHp]);
-
-			format(tVehicle[freeId][vDescInfo], 64, NULL);
-			UpdateDynamic3DTextLabelText(tVehicle[freeId][vDesc], COLOR_WHITE, tVehicle[freeId][vDescInfo]);
-
-			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`UID`, `OUID`, `Type`, `ModelId`, `Color1`, `Color2`, `PosX`, `PosY`, `PosZ`, `Angle`, `Fuel`, `EngineHealth`, `Spawned`) VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%f', '%f', '%f', '%f', '%f', '%f', '%d')",
-				tVehicle[freeId][vUid],
-				tVehicle[freeId][vOUid],
-				tVehicle[freeId][vType],
-				tVehicle[freeId][vModelId],
-				tVehicle[freeId][vColor1],
-				tVehicle[freeId][vColor2],
-				tVehicle[freeId][vPosX],
-				tVehicle[freeId][vPosY],
-				tVehicle[freeId][vPosZ],
-				tVehicle[freeId][vAngle],
-				tVehicle[freeId][vFuel],
-				tVehicle[freeId][vEngineHp],
-				tVehicle[freeId][vSpawned]
-			);
-			mysql_query(queryStr);
+			addVehicle(ownerUid, ownerType, modelId, color1, color2, pX, pY, pZ, pA);
 		} else if(!strcmp(type, "usun", true)) {
 			new uid, srvVehId = OSRP_VEHICLE_INVALID_ID;
 
@@ -1440,52 +1366,11 @@ CMD:av(playerid, params[]) {
 			mysql_store_result();
 
 			if(!mysql_num_rows()) {
-				return GameTextForPlayer(playerid, "~r~Podany pojazd nie istnieje.", 5000, 3);
+				return SendClientMessage(playerid, COLOR_GRAY, "Podany pojazd nie istnieje.");
 			}
 
 			mysql_free_result();
-
-			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Vehicles` WHERE `UID` = '%d'", uid);
-			mysql_query(queryStr);
-
-			DestroyVehicle(tVehicle[srvVehId][vId]);
-			DestroyDynamic3DTextLabel(tVehicle[srvVehId][vDesc]);
-
-			Iter_Remove(vehItter, srvVehId);
-
-			tVehicle[srvVehId][vUid] = 0;
-			tVehicle[srvVehId][vId] = INVALID_VEHICLE_ID;
-			tVehicle[srvVehId][vOUid] = 0;
-			tVehicle[srvVehId][vType] = 0;
-			format(tVehicle[srvVehId][vDescInfo], 64, NULL);
-			format(tVehicle[srvVehId][vPlate], 32, NULL);
-			tVehicle[srvVehId][vModelId] = 0;
-			tVehicle[srvVehId][vColor1] = 0;
-			tVehicle[srvVehId][vColor2] = 0;
-			tVehicle[srvVehId][vPosX] = 0.0;
-			tVehicle[srvVehId][vPosY] = 0.0;
-			tVehicle[srvVehId][vPosZ] = 0.0;
-			tVehicle[srvVehId][vAngle] = 0.0;
-			tVehicle[srvVehId][vFuel] = 0.0;
-			tVehicle[srvVehId][vLock] = false;
-			tVehicle[srvVehId][vEngine] = false;
-			tVehicle[srvVehId][vEngineHp] = 0.0;
-			tVehicle[srvVehId][vSpawned] = false;
-			tVehicle[srvVehId][vLightsOn] = false;
-			tVehicle[srvVehId][vWindow] = false;
-			tVehicle[srvVehId][vAccessories] = VEH_ACCESSORIES_NONE;
-			tVehicle[srvVehId][vPanels] = 0;
-			tVehicle[srvVehId][vDoors] = 0;
-			tVehicle[srvVehId][vLights] = 0;
-			tVehicle[srvVehId][vTires] = 0;
-			tVehicle[srvVehId][vVw] = 0;
-			tVehicle[srvVehId][vInt] = 0;
-			tVehicle[srvVehId][vPaintjob] = -1;
-			tVehicle[srvVehId][vNitro] = 0;
-			tVehicle[srvVehId][vRepair] = 0.0;
-			tVehicle[srvVehId][vMileage] = 0.0;
-			tVehicle[srvVehId][vBlock] = 0;
+			removeVehicle(srvVehId);
 		} else if(!strcmp(type, "goto", true)) {
 			new uid, srvVehId = OSRP_VEHICLE_INVALID_ID;
 
@@ -1498,56 +1383,29 @@ CMD:av(playerid, params[]) {
 				return 1;
 			}
 
-			GetVehiclePos(tVehicle[srvVehId][vId], tVehicle[srvVehId][vPosX], tVehicle[srvVehId][vPosY], tVehicle[srvVehId][vPosZ]);
+			new Float:vX, Float:vY, Float:vZ;
+			GetVehiclePos(tVehicle[srvVehId][vId], vX, vY, vZ);
 
-			SetPlayerPos(playerid, tVehicle[srvVehId][vPosX], tVehicle[srvVehId][vPosY], tVehicle[srvVehId][vPosZ] + 1.5);
+			SetPlayerPos(playerid, vX, vY, vZ + 1.5);
 			SetPlayerVirtualWorld(playerid, tVehicle[srvVehId][vVw]);
 			SetPlayerInterior(playerid, tVehicle[srvVehId][vInt]);
 		} else if(!strcmp(type, "info", true)) {
-			new srvVehId, vehicleid = getClosestCar(playerid);
+			new srvVehId = OSRP_VEHICLE_INVALID_ID, vehicleid = getClosestCar(playerid);
 
 			if(vehicleid != INVALID_VEHICLE_ID) {
-				new str[64], str2[128];
-
 				srvVehId = getClosestServerVehicleId(vehicleid);
-				GetVehicleHealth(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngineHp]);
-
-				if(tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && tVehicle[srvVehId][vType] == VEHICLE_OWNER_PLAYER) {
-					format(mainStr, sizeof(mainStr), "~p~Model~w~: %d~n~~p~SAMP ID~w~: %d   ~p~Kolor~w~: %d:%d  ~p~HP~w~: %0.1f",
-					tVehicle[srvVehId][vModelId], tVehicle[srvVehId][vId], tVehicle[srvVehId][vColor1], tVehicle[srvVehId][vColor2], tVehicle[srvVehId][vEngineHp]);
-				} else if(tVehicle[srvVehId][vType] == VEHICLE_OWNER_GROUP) {
-					format(mainStr, sizeof(mainStr), "~p~UID~w~: %d   ~p~Owner: ~w~11:%d  (0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d   ~p~Kolor~w~: %d:%d  ~p~HP~w~: %0.1f",
-					tVehicle[srvVehId][vUid], tVehicle[srvVehId][vOUid], tVehicle[srvVehId][vModelId], tVehicle[srvVehId][vId], tVehicle[srvVehId][vColor1], tVehicle[srvVehId][vColor2], tVehicle[srvVehId][vEngineHp]);
-				} else {
-					format(mainStr, sizeof(mainStr), "~p~UID~w~: %d   ~p~Owner: ~w~9:%d  (0) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d   ~p~Kolor~w~: %d:%d  ~p~HP~w~: %0.1f",
-					tVehicle[srvVehId][vUid], tVehicle[srvVehId][vOUid], tVehicle[srvVehId][vModelId], tVehicle[srvVehId][vId], tVehicle[srvVehId][vColor1], tVehicle[srvVehId][vColor2], tVehicle[srvVehId][vEngineHp]);
-				}
-
-				TextDrawSetString(vehicleStats[playerid][0], mainStr);
-
-				format(str, sizeof(str), "~b~Przebieg~w~: %dkm ~b~Paliwo~w~: %0.1f", floatToInt(tVehicle[srvVehId][vMileage]), tVehicle[srvVehId][vFuel]);
-				TextDrawSetString(vehicleStats[playerid][1], str);
-
-				format(str2, sizeof(str2), "Alarm: %s   Immobiliser: %s   CB Radio: %s~n~Audio: %s   Limiter: %s   Napraw: %0.1fhp", (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_ALARM) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_IMMOBILISER) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_CBRADIO) ? ("T") : ("N"), (tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_AUDIO) ? ("T") : ("N"),
-				(tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_LIMITER) ? ("T") : ("N"), tVehicle[srvVehId][vRepair]);
-				TextDrawSetString(vehicleStats[playerid][2], str2);
-
-				resetPlayerTextTextDraws(playerid);
-
-				for(new i = 0; i < 3; i++) {
-					TextDrawShowForPlayer(playerid, vehicleStats[playerid][i]);
-				}
-
-				SetTimerEx("hideVehicleStats", 15000, false, "i", playerid);
+				showVehicleInfo(playerid, srvVehId);
 			}
 		} else if(!strcmp(type, "fix", true)) {
-			new srvVehId, vehicleid = getClosestCar(playerid);
+			new srvVehId = OSRP_VEHICLE_INVALID_ID, vehicleid = getClosestCar(playerid);
 
 			if(vehicleid != INVALID_VEHICLE_ID) {
 				srvVehId = getClosestServerVehicleId(vehicleid);
 
 				tVehicle[srvVehId][vEngineHp] = 1000.0;
+
 				RepairVehicle(tVehicle[srvVehId][vId]);
+				saveVehicleValues(srvVehId);
 			}
 		}
 	}
@@ -1619,7 +1477,7 @@ CMD:ad(playerid, params[]) {
 			SetPlayerInterior(playerid, 0);
 		} else if(!strcmp(type, "gethere", true)) {
 			new uid, srvDoorId = INVALID_DOOR_ID;
-			new Float:pX, Float:pY, Float:pZ, Float:pAng;
+			new Float:pX, Float:pY, Float:pZ, Float:pA;
 
 			if(sscanf(opt, "i", uid)) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ad gethere [UID]");
@@ -1631,18 +1489,18 @@ CMD:ad(playerid, params[]) {
 			}
 
 			GetPlayerPos(playerid, pX, pY, pZ);
-			GetPlayerFacingAngle(playerid, pAng);
+			GetPlayerFacingAngle(playerid, pA);
 
 			tDoor[srvDoorId][dEnterX] = pX;
 			tDoor[srvDoorId][dEnterY] = pY;
 			tDoor[srvDoorId][dEnterZ] = pZ;
-			tDoor[srvDoorId][dEnterAng] = pAng;
+			tDoor[srvDoorId][dEnterAng] = pA;
 
 			saveDoorValues(srvDoorId);
 
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "Nowa pozycja zewnêtrzna ustawiona:\n%0.1f, %0.1f, %0.1f", tDoor[srvDoorId][dEnterX], tDoor[srvDoorId][dEnterY], tDoor[srvDoorId][dEnterZ]);
-			ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+			ShowPlayerDialogInfo(playerid, mainStr);
 		} else if(!strcmp(type, "edit", true)) {
 			new uid, srvDoorId = INVALID_DOOR_ID;
 
@@ -1739,7 +1597,11 @@ CMD:ab(playerid, params[]) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ab [Nazwa przystanku]");
 		}
 
-		createNewBusStop(playerid, name);
+		if(GetPlayerVirtualWorld(playerid)) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Nieprawid³owy Virtual World.");
+		}
+
+		addBusStop(playerid, name);
 	}
 	return 1;
 }
@@ -1752,7 +1614,7 @@ CMD:acash(playerid, params[]) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /ac [Nazwa bankomatu]");
 		}
 
-		createNewCashpoint(playerid, name);
+		addCashpoint(playerid, name);
 	}
 	return 1;
 }
@@ -1776,7 +1638,7 @@ CMD:ag(playerid, params[]) {
 
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "Grupa o nazwie '%s' (UID: %d) zosta³a pomyœlnie utworzona.", uid, name);
-			ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+			ShowPlayerDialogInfo(playerid, mainStr);
 		}
 	}
 	return 1;
@@ -1804,7 +1666,7 @@ CMD:nazwa(playerid, params[]) {
 		new name[32];
 
 		if(sscanf(params, "s[32]", name)) {
-			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /nazwa [Nowa nazwa servera]");
+			return SendClientMessage(playerid, COLOR_GRAY, "Tip: /nazwa [Nazwa servera]");
 		}
 
 		smallStr[0] = EOS;

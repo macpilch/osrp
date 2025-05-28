@@ -19,6 +19,9 @@ enum BoothData {
 	Float:boPosX,
 	Float:boPosY,
 	Float:boPosZ,
+	Float:boRotX,
+	Float:boRotY,
+	Float:boRotZ,
 	Float:boRange,
 	boWorking
 };

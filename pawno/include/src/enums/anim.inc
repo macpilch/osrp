@@ -2,8 +2,8 @@
 	Project: OSRP
 	Author: steeZ (macpilch)
 	File: anim.inc
-	Date:
-	Modified:
+	Date: 24.07.2022
+	Modified: 24.07.2022
 */
 
 #if defined __ANIM_INC__
@@ -13,15 +13,15 @@
 #pragma library osrp
 
 enum AnimData {
-	Uid,
-	Name[32],
-	AnimLib[32],
-	AnimName[32],
-	Float:Delta,
-	Loop,
-	LockX,
-	LockY,
-	Freeze,
-	Time,
-	Foresync
+	aUid,
+	aName[32],
+	aAnimLib[32],
+	aAnimName[32],
+	Float:aDelta,
+	aLoop,
+	aLockX,
+	aLockY,
+	aFreeze,
+	aTime,
+	aForesync
 };

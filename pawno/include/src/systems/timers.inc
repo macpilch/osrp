@@ -61,7 +61,7 @@ Timer:globalTimer[1000]() {
 				}
 
 				if(insidedHotel[i] && tPlayer[i][pHotel] && playerToPoint(i, 5.0, 2216.12, -1076.30, 1050.48)) {
-					GameTextForPlayer(i, "~n~~n~~n~~n~~w~''~k~~SNEAK_ABOUT~+~k~~PED_SPRINT~'' ~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
+					GameTextForPlayer(i, "~n~~n~~n~~n~~w~_[~k~~SNEAK_ABOUT~+~k~~PED_SPRINT~]_~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
 				}
 
 				if(tPlayer[i][pDrugsTime] > 0 && tPlayer[i][pDrugs] != DRUG_NONE) {
@@ -144,7 +144,7 @@ Timer:globalTimer[1000]() {
 						}
 					}
 
-					if(IsPlayerInAnyVehicle(i)) {
+					if(IsPlayerInAnyVehicle(i) && GetPlayerVehicleID(i) == tVehicle[j][vId]) {
 						SetProgressBarValue(fuelProgressBar[i], tVehicle[j][vFuel]);
 						ShowProgressBarForPlayer(i, fuelProgressBar[i]);
 					}

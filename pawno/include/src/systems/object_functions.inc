@@ -108,8 +108,9 @@ stock getServerObjectIdFromUid(uid) {
 	return id;
 }
 
-stock createNewObject(playerid, modelid, owner, type) {
+stock addObject(playerid, modelid, owner, type) {
 	new freeId = OSRP_OBJECT_INVALID_ID;
+	new Float:pX, Float:pY, Float:pZ;
 
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Objects`");
@@ -119,7 +120,7 @@ stock createNewObject(playerid, modelid, owner, type) {
 	freeId = mysql_fetch_int();
 
 	mysql_free_result();
-	GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
+	GetPlayerPos(playerid, pX, pY, pZ);
 
 	tObject[freeId][oUid] = freeId + 1;
 	tObject[freeId][oOUid] = owner;
@@ -128,9 +129,9 @@ stock createNewObject(playerid, modelid, owner, type) {
 	tObject[freeId][oGate] = 0;
 	tObject[freeId][oModelId] = modelid;
 	tObject[freeId][oSpared] = 0;
-	tObject[freeId][oPosX] = tPlayer[playerid][pPosX] + 0.5;
-	tObject[freeId][oPosY] = tPlayer[playerid][pPosY] + 0.5;
-	tObject[freeId][oPosZ] = tPlayer[playerid][pPosZ];
+	tObject[freeId][oPosX] = pX + 0.5;
+	tObject[freeId][oPosY] = pY + 0.5;
+	tObject[freeId][oPosZ] = pZ;
 	tObject[freeId][oRotX] = 0.0;
 	tObject[freeId][oRotY] = 0.0;
 	tObject[freeId][oRotZ] = 0.0;
@@ -163,7 +164,7 @@ stock createNewObject(playerid, modelid, owner, type) {
 	mysql_query(queryStr);
 }
 
-stock destroyObject(srvobjid) {
+stock removeObject(srvobjid) {
 	if(srvobjid == OSRP_OBJECT_INVALID_ID) {
 		return 1;
 	}
@@ -264,7 +265,7 @@ stock addTexture(srvobjid, index, type, matcolor, model, txdname[], texname[], m
 	return 1;
 }
 
-stock destroyTexture(srvobjid) {
+stock removeTexture(srvobjid) {
 	if(srvobjid == OSRP_OBJECT_INVALID_ID) {
 		return 1;
 	}

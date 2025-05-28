@@ -41,7 +41,7 @@ new playerContacts[MAX_PLAYERS][MAX_CONTACTS];
 new playerContactsName[MAX_PLAYERS][MAX_CONTACTS][24];
 
 new cuffedBy[MAX_PLAYERS];
-new taken[MAX_PLAYERS];
+new takenThing[MAX_PLAYERS];
 
 new telEnterNumber[MAX_PLAYERS];
 new telEnterGroup[MAX_PLAYERS];
@@ -126,9 +126,7 @@ new bool:isRace[MAX_PLAYERS];
 new bool:isCollision[MAX_PLAYERS];
 new bool:isGym[MAX_PLAYERS];
 new bool:acceptTraining[MAX_PLAYERS];
-new bool:usedAdminToken[MAX_PLAYERS];
 new bool:pressedBarbell[MAX_PLAYERS];
-new bool:chatEnabled[MAX_PLAYERS];
 new bool:isPlayerFight[MAX_PLAYERS];
 new bool:haveTaxiCourse[MAX_PLAYERS];
 new bool:selectChatStyle[MAX_PLAYERS];

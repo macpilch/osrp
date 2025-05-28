@@ -26,11 +26,11 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 	if(isVehicleInUse(vehicleid) && !(tPlayer[playerid][pDocuments] & DOC_L_DRIVING) && !drivingCourse[playerid] && !ispassenger) {
 		ClearAnimations(playerid);
 
-		SendClientMessage(playerid, COLOR_WHITE, "(!) Pamiêtaj, to RolePlay. Swój pojazd musisz kupiæ lub wypo¿yczyæ.");
-		SendClientMessage(playerid, COLOR_WHITE, "(!) Warto znaleŸæ pracê, aby zdobyæ pieni¹dze na zakup w³asnego pojazdu.");
+		SendClientMessage(playerid, COLOR_INFO, "(!) Pamiêtaj, to RolePlay. Swój pojazd musisz kupiæ lub wypo¿yczyæ.");
+		SendClientMessage(playerid, COLOR_INFO, "(!) Warto znaleŸæ pracê, aby zdobyæ pieni¹dze na zakup w³asnego pojazdu.");
 
 		if(tPlayer[playerid][pHours] < 3) {
-			SendClientMessage(playerid, COLOR_WHITE, "(!) Zanim bêdzie Ciê staæ, u¿yj /budka, by dzwoniæ po taxi, lub /bus. Prowadziæ mo¿na po przegraniu 3h.");
+			SendClientMessage(playerid, COLOR_INFO, "(!) Zanim bêdzie Ciê staæ, u¿yj /budka, by dzwoniæ po taxi, lub /bus. Prowadziæ mo¿na po przegraniu 3h.");
 		} else {
 			SendClientMessage(playerid, COLOR_DARKRED, "(!) Jako nowy gracz, mo¿esz byæ pasa¿erem tylko, gdy w pojeŸdzie jest kierowca.");
 		}
@@ -47,7 +47,7 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		mainStr[0] = EOS;
 		strcat(mainStr, "Musisz najpierw wyrobiæ prawo jazdy.\nDo tego czasu u¿yj budek, by dzwoniæ po taksówki, lub /bus.\n\n");
 		strcat(mainStr, "By wyrobiæ prawko, kup telefon i zadzwoñ do nauki jazdy pod numerem 333.");
-		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", mainStr, "OK", "");
+		ShowPlayerDialogInfo(playerid, mainStr);
 	}
 
 	if(tVehicle[srvVehId][vLock]) {
@@ -55,18 +55,17 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		GameTextForPlayer(playerid, "~n~~n~~r~Pojazd jest zamkniety.~n~~w~/v zamknij", 6000, 3);
 	}
 
-	if((tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && tVehicle[srvVehId][vType] == VEHICLE_OWNER_PLAYER) && (tPlayer[playerid][pDocuments] & DOC_L_DRIVING) &&
-	    !ispassenger) {
+	if((tVehicle[srvVehId][vOUid] != tPlayer[playerid][pUid] && tVehicle[srvVehId][vType] == VEHICLE_OWNER_PLAYER) && (tPlayer[playerid][pDocuments] & DOC_L_DRIVING) && !ispassenger) {
 		ClearAnimations(playerid);
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Nie mozesz prowadzic tego~n~pojazdu.", 6000, 3);
 	}
 
 	if(srvThingId != INVALID_THING_ID && tThing[srvThingId][tUsed] && tThing[srvThingId][tKind] == TKIND_ROLLER) {
 		ClearAnimations(playerid);
-		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Nie mo¿esz wsiadaæ do pojazdu z za³o¿onymi rolkami.", "OK", "");
+		ShowPlayerDialogInfo(playerid, "Nie mo¿esz wsiadaæ do pojazdu z za³o¿onymi rolkami.");
 	}
 
-	//ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Ten pojazd jest tylko dla graczy z kontem premium.", "OK", "");
+	//ShowPlayerDialogInfo(playerid, "Ten pojazd jest tylko dla graczy z kontem premium.");
 	return 1;
 }
 
@@ -75,7 +74,7 @@ sampCallback:OnPlayerExitVehicle(playerid, vehicleid) {
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnPlayerExitVehicle");
 #endif
 
-	new srvVehId = getServerVehicleId(playerid);
+	new srvVehId = getClosestServerVehicleId(vehicleid);
 
 	if(tVehicle[srvVehId][vEngineHp] <= 300.0) {
 		mainStr[0] = EOS;
@@ -95,7 +94,7 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 	SendClientMessage(killerid, COLOR_WHITE, "Witma ! OnVehicleDeath");
 #endif
 
-	new srvVehId = getServerVehicleId(killerid);
+	new srvVehId = getClosestServerVehicleId(vehicleid);
 
 	tVehicle[srvVehId][vSpawned] = false;
 	tVehicle[srvVehId][vEngine] = false;
@@ -103,13 +102,14 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 
 	GetVehiclePos(tVehicle[srvVehId][vId], tVehicle[srvVehId][vPosX], tVehicle[srvVehId][vPosY], tVehicle[srvVehId][vPosZ]);
 	GetVehicleZAngle(tVehicle[srvVehId][vId], tVehicle[srvVehId][vAngle]);
+	GetVehicleDamageStatus(tVehicle[srvVehId][vId], tVehicle[srvVehId][vPanels], tVehicle[srvVehId][vDoors], tVehicle[srvVehId][vLights], tVehicle[srvVehId][vTires]);
 
+	DestroyVehicle(tVehicle[srvVehId][vId]);
+
+	tVehicle[srvVehId][vId] = INVALID_VEHICLE_ID;
 	tVehicle[srvVehId][vEngineHp] = 300.0;
-	DestroyVehicle(vehicleid);
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Vehicles` SET `Spawned` = '%d', `X` = '%f', `Y` = '%f', `Z` = '%f', `Angle` = '%f', `Engine` = '%d', `EngineHealth` = '%f' WHERE `UID` = '%d'", tVehicle[srvVehId][vSpawned], tVehicle[srvVehId][vPosX], tVehicle[srvVehId][vPosY], tVehicle[srvVehId][vPosZ], tVehicle[srvVehId][vAngle], tVehicle[srvVehId][vEngine], tVehicle[srvVehId][vEngineHp], tVehicle[srvVehId][vUid]);
-	mysql_query(queryStr);
+	saveVehicleValues(srvVehId);
 
 	resetPlayerBoxTextDraws(killerid);
 	TextDrawHideForPlayer(killerid, vehicleTips[killerid]);
@@ -192,9 +192,13 @@ sampCallback:OnVehicleStreamIn(vehicleid, forplayerid) {
 	new engine, lights, alarm, doors, bonnet, boot, objective;
 
 	GetVehicleParamsEx(tVehicle[srvVehId][vId], engine, lights, alarm, doors, bonnet, boot, objective);
-	SetVehicleParamsEx(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngine], tVehicle[srvVehId][vLightsOn], alarm, 0, bonnet, boot, objective);
+	SetVehicleParamsEx(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngine], tVehicle[srvVehId][vLightsOn], alarm, doors, bonnet, boot, objective);
 
 	SetVehicleHealth(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngineHp]);
+
+	if(tVehicle[srvVehId][vPaintjob] != -1) {
+		ChangeVehiclePaintjob(tVehicle[srvVehId][vId], tVehicle[srvVehId][vPaintjob]);
+	}
 	return 1;
 }
 

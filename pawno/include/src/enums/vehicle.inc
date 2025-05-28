@@ -24,9 +24,6 @@ enum VehicleData {
 	Float:vPosY,
 	Float:vPosZ,
 	Float:vAngle,
-	Float:vOldX,
-	Float:vOldY,
-	Float:vOldZ,
 	Float:vFuel,
 	bool:vLock,
 	bool:vEngine,
@@ -46,7 +43,7 @@ enum VehicleData {
 	Float:vRepair,
 	Float:vMileage, // Przebieg
 	vBlock,
-	Text3D:vDesc,
-	vDescInfo[64],
+	Text3D:v3dDesc,
+	vDesc[64],
 	vPlate[32]
 };

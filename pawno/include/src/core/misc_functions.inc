@@ -170,6 +170,10 @@ stock sendClientMessageToAllOOC(const mess[]) {
 	}
 }
 
+stock ShowPlayerDialogInfo(playerid, info[]) {
+	return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", info, "OK", "");
+}
+
 stock OSRP_Tip(playerid, const tip[]) {
 	new str[128];
 	format(str, sizeof(str), "Tip: %s", tip);
@@ -183,61 +187,50 @@ stock getPenaltyName(type) {
 		case PEN_BAN: {
 			strcat(name, "Ban");
 		}
-
 		case PEN_KICK: {
 			strcat(name, "Kick");
 		}
-
 		case PEN_WARN: {
 			strcat(name, "Warn");
 		}
-
 		case PEN_ADMJAIL: {
 			strcat(name, "AdminJail");
 		}
-
 		case PEN_BLCKACC: {
 			strcat(name, "Blokada konta");
 		}
-
 		case PEN_RUNNBLW: {
 			strcat(name, "Blokada biegania i bicia");
 		}
-
 		case PEN_BLCKVEH: {
 			strcat(name, "Blokada prowadzenia pojazdow");
 		}
-
 		case PEN_BLCKWEAP: {
 			strcat(name, "Blokada broni");
 		}
-
 		case PEN_BLCKOOC: {
 			strcat(name, "Blokada czatu OOC");
 		}
-
 		case PEN_WRITING: {
 			strcat(name, "Blokada niechlujnego pisania");
 		}
-
 		case PEN_NOHP: {
 			strcat(name, "Blokada zabierania HP");
 		}
-
 		case PEN_RPACTN: {
 			strcat(name, "Wymuszenie odgrywania akcji RolePlay");
 		}
-
 		case PEN_CURSE: {
 			strcat(name, "Klatwa");
 		}
-
 		case PEN_BANCURSE: {
 			strcat(name, "Ban w wyniku klatwy");
 		}
-
 		case PEN_SCORE: {
 			strcat(name, "GamerScore");
+		}
+		default: {
+			strcat(name, "Brak");
 		}
 	}
 	return name;
@@ -425,17 +418,12 @@ stock distanceBetweenPlayers(playerid, playerid2, Float:range) {
 }
 
 stock getPlayerSpeed(playerid) {
-	new Float:pPos[3];
-	new pVel;
+	new Float:pX, Float:pY, Float:pZ, Float:pVel;
 
-	GetPlayerVelocity(playerid, pPos[0], pPos[1], pPos[2]);
+	GetPlayerVelocity(playerid, pX, pY, pZ);
 
-	pVel = floatround(floatsqroot(pPos[0] * pPos[0] + pPos[1] * pPos[1] + pPos[2] * pPos[2]) * 180);
-	return pVel;
-}
-
-stock getDistance(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2) {
-    return floatround(floatsqroot(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)) + ((z1 - z2) * (z1 - z2))));
+	pVel = floatsqroot(floatpower(floatabs(pX), 2.0) + floatpower(floatabs(pY), 2.0) + floatpower(floatabs(pZ), 2.0)) * 180.0;
+	return floatround(pVel);
 }
 
 stock getXYInFrontOfPlayer(playerid, &Float:x, &Float:y, Float:distance) {

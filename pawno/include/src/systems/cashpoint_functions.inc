@@ -56,7 +56,7 @@ stock initCashPointValues() {
 }
 
 stock getServerCashPointId(playerid) {
-	new id = INVALID_CASHPOINT_ID;
+	new id = INVALID_CASH_ID;
 
 	foreach(new i : cashPointItter) {
 		if(tPlayer[playerid][pCashPoint] == tCashPoint[i][cpUid]) {
@@ -68,7 +68,7 @@ stock getServerCashPointId(playerid) {
 }
 
 stock getServerCashPointIdFromUid(uid) {
-	new id = INVALID_CASHPOINT_ID;
+	new id = INVALID_CASH_ID;
 
 	foreach(new i : cashPointItter) {
 		if(uid == tCashPoint[i][cpUid]) {
@@ -90,56 +90,115 @@ stock searchPlayerCashPoint(playerid) {
 			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tStan konta (%d)\n2\tWyp³aæ pieni¹dze\n3\tWp³aæ pieni¹dze\n4\tDokonaj przelewu\n5\tSp³aæ d³ug ($%d)", tPlayer[playerid][pBank], tPlayer[playerid][pDebt]);
 			ShowPlayerDialog(playerid, DIALOG_CASHPOINT, DIALOG_STYLE_LIST, "Bankomat", mainStr, "OK", "Anuluj");
 
-			ApplyAnimation(playerid, "HEIST9", "Use_SwipeCard", 4.1, 0, 0, 0, 0, 0, 0);
 			tPlayer[playerid][pCashPoint] = tCashPoint[i][cpUid];
-		} else if(playerToPoint(playerid, tCashPoint[i][cpDistance] * 1.2, tCashPoint[i][cpPosX], tCashPoint[i][cpPosY], tCashPoint[i][cpPosZ])) {
+		} else if(playerToPoint(playerid, tCashPoint[i][cpDistance] * 0.5, tCashPoint[i][cpPosX], tCashPoint[i][cpPosY], tCashPoint[i][cpPosZ])) {
 			GameTextForPlayer(playerid, "~n~~r~Podejdz blizej.", 5000, 3);
 		}
 	}
 	return 1;
 }
 
-stock createNewCashpoint(playerid, cashpointname[]) {
-	new freeId;
-	new Float:x, Float:y, Float:z;
+stock addCashpoint(playerid, name[]) {
+	new freeId = INVALID_CASH_ID;
+	new Float:pX, Float:pY, Float:pZ, Float:pA;
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Cashpoints`");
+	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_CashPoints`");
 	mysql_query(queryStr);
-	
+
 	mysql_store_result();
-	
+
 	freeId = mysql_fetch_int();
 	mysql_free_result();
-	
-	GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
-	Iter_Add(cashPointItter, freeId);
 
-	x = tPlayer[playerid][pPosX];
-	y = tPlayer[playerid][pPosY];
-	z = tPlayer[playerid][pPosZ];
-
-	getXYInFrontOfPlayer(playerid, x, y, 2.0);
+	GetPlayerPos(playerid, pX, pY, pZ);
+	GetPlayerFacingAngle(playerid, pA);
 
 	tCashPoint[freeId][cpUid] = freeId + 1;
-	format(tCashPoint[freeId][cpName], 32, cashpointname);
+	format(tCashPoint[freeId][cpName], 32, name);
 	tCashPoint[freeId][cpIsOpen] = true;
-	tCashPoint[freeId][cpPosX] = x;
-	tCashPoint[freeId][cpPosY] = y;
-	tCashPoint[freeId][cpPosZ] = z;
+	tCashPoint[freeId][cpPosX] = pX;
+	tCashPoint[freeId][cpPosY] = pY;
+	tCashPoint[freeId][cpPosZ] = pZ;
+	tCashPoint[freeId][cpRotX] = 0.0;
+	tCashPoint[freeId][cpRotY] = 0.0;
+	tCashPoint[freeId][cpRotZ] = pA;
 	tCashPoint[freeId][cpDistance] = 2.0;
-	tCashPoint[freeId][cpObject] = CreateDynamicObject(2942, x, y, z - 0.35, 0.0, 0.0, 180.0, 0, 0, -1, 100.0);
-	
+	tCashPoint[freeId][cpVw] = GetPlayerVirtualWorld(playerid);
+	tCashPoint[freeId][cpInt] = GetPlayerInterior(playerid);
+	tCashPoint[freeId][cpObject] = CreateDynamicObject(2942, tCashPoint[freeId][cpPosX], tCashPoint[freeId][cpPosY], tCashPoint[freeId][cpPosZ] - 0.35, tCashPoint[freeId][cpRotX], tCashPoint[freeId][cpRotY], tCashPoint[freeId][cpRotZ], tCashPoint[freeId][cpVw], tCashPoint[freeId][cpInt], -1, 100.0);
+
+	Iter_Add(cashPointItter, freeId);
+
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_CashPoints`(`UID`, `Name`, `Object`, `IsOpen`, `PosX`, `PosY`, `PosZ`, `Distance`) VALUES ('%d', '%s', '%d', '%d', '%f', '%f', '%f', '%f')",
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_CashPoints`(`UID`, `Name`, `IsOpen`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`, `Distance`, `VW`, `INT`) VALUES ('%d', '%s', '%d', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%d', '%d')",
 		tCashPoint[freeId][cpUid],
 		tCashPoint[freeId][cpName],
-		tCashPoint[freeId][cpObject],
 		tCashPoint[freeId][cpIsOpen],
 		tCashPoint[freeId][cpPosX],
 		tCashPoint[freeId][cpPosY],
 		tCashPoint[freeId][cpPosZ],
-		tCashPoint[freeId][cpDistance]
+		tCashPoint[freeId][cpRotX],
+		tCashPoint[freeId][cpRotY],
+		tCashPoint[freeId][cpRotZ],
+		tCashPoint[freeId][cpDistance],
+		tCashPoint[freeId][cpVw],
+		tCashPoint[freeId][cpInt]
+	);
+	mysql_query(queryStr);
+	return 1;
+}
+
+stock removeCashpoint(srvcashid) {
+	if(srvcashid == INVALID_CASH_ID) {
+		return 1;
+	}
+
+	if(!Iter_Count(cashPointItter)) {
+		return 1;
+	}
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_CashPoints` WHERE `UID` = '%d'", tCashPoint[srvcashid][cpUid]);
+	mysql_query(queryStr);
+
+	Iter_Remove(cashPointItter, srvcashid);
+
+	tCashPoint[srvcashid][cpUid] = 0;
+	format(tCashPoint[srvcashid][cpName], 32, NULL);
+	tCashPoint[srvcashid][cpObject] = INVALID_OBJECT_ID;
+	tCashPoint[srvcashid][cpIsOpen] = false;
+	tCashPoint[srvcashid][cpPosX] = 0.0;
+	tCashPoint[srvcashid][cpPosY] = 0.0;
+	tCashPoint[srvcashid][cpPosZ] = 0.0;
+	tCashPoint[srvcashid][cpRotX] = 0.0;
+	tCashPoint[srvcashid][cpRotY] = 0.0;
+	tCashPoint[srvcashid][cpRotZ] = 0.0;
+	tCashPoint[srvcashid][cpDistance] = 0.0;
+	tCashPoint[srvcashid][cpVw] = 0;
+	tCashPoint[srvcashid][cpInt] = 0;
+	return 1;
+}
+
+stock saveCashpointValues(srvcashid) {
+	if(srvcashid == INVALID_CASH_ID) {
+		return 1;
+	}
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_CashPoints` SET `Name` = '%s', `IsOpen` = '%d', `PosX` = '%f', `PosY` = '%f', `PosZ` = '%f', `RotX` = '%f', `RotY` = '%f', `RotZ` = '%f', `Distance` = '%f', `VW` = '%d', `INT` = '%d' WHERE `UID` = '%d'",
+		tCashPoint[srvcashid][cpName],
+		tCashPoint[srvcashid][cpIsOpen],
+		tCashPoint[srvcashid][cpPosX],
+		tCashPoint[srvcashid][cpPosY],
+		tCashPoint[srvcashid][cpPosZ],
+		tCashPoint[srvcashid][cpRotX],
+		tCashPoint[srvcashid][cpRotY],
+		tCashPoint[srvcashid][cpRotZ],
+		tCashPoint[srvcashid][cpDistance],
+		tCashPoint[srvcashid][cpVw],
+		tCashPoint[srvcashid][cpInt],
+		tCashPoint[srvcashid][cpUid]
 	);
 	mysql_query(queryStr);
 	return 1;

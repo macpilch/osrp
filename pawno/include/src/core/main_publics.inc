@@ -17,7 +17,7 @@ sampCallback:OnGameModeInit() {
 
 	EnableStuntBonusForAll(0);
 	DisableInteriorEnterExits();
-	AllowInteriorWeapons(0);
+	AllowInteriorWeapons(1);
 	EnableVehicleFriendlyFire();
 	ManualVehicleEngineAndLights();
 	ShowNameTags(0);
@@ -74,7 +74,7 @@ sampCallback:OnGameModeInit() {
 	}
 
 	for(new i = 0; i < MAX_VEHICLES; i++) {
-		tVehicle[i][vDesc] = CreateDynamic3DTextLabel(" ", COLOR_DESC, 0.0, 0.0, 0.1, 20.0, INVALID_PLAYER_ID, i, 0, 0, 0, -1, 20.0, -1, 0);
+		tVehicle[i][v3dDesc] = CreateDynamic3DTextLabel(" ", COLOR_DESC, 0.0, 0.0, 0.1, 20.0, INVALID_PLAYER_ID, i, 0, 0, 0, -1, 20.0, -1, 0);
 	}
 
 	gymObject[0] = CreateDynamicObject(2629, 758.8672, -76.0945, 1000.6500 - 1, 0.0, 0.0, 90.0, 2, 7, -1, 50.0);

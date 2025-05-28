@@ -2,8 +2,8 @@
 	Project: OSRP
 	Author: steeZ (macpilch)
 	File: anim_functions.inc
-	Date:
-	Modified:
+	Date: 24.07.2022
+	Modified: 24.07.2022
 */
 
 #if defined __ANIM_FUNCTIONS_INC__
@@ -24,17 +24,17 @@ stock initAnimValues() {
 
 	while(mysql_fetch_row(queryStr, "|")) {
 		sscanf(queryStr, "p<|>is[32]s[32]s[32]fiiiiii",
-			tAnim[i][Uid],
-			tAnim[i][Name],
-			tAnim[i][AnimLib],
-			tAnim[i][AnimName],
-			tAnim[i][Delta],
-			tAnim[i][Loop],
-			tAnim[i][LockX],
-			tAnim[i][LockY],
-			tAnim[i][Freeze],
-			tAnim[i][Time],
-			tAnim[i][Foresync]
+			tAnim[i][aUid],
+			tAnim[i][aName],
+			tAnim[i][aAnimLib],
+			tAnim[i][aAnimName],
+			tAnim[i][aDelta],
+			tAnim[i][aLoop],
+			tAnim[i][aLockX],
+			tAnim[i][aLockY],
+			tAnim[i][aFreeze],
+			tAnim[i][aTime],
+			tAnim[i][aForesync]
 		);
 
 		i++;
@@ -54,10 +54,24 @@ stock getServerAnimIdFromName(name[]) {
 	new id = INVALID_ANIM_ID;
 
 	for(new i = 0; i < MAX_ANIMATIONS; i++) {
-		if(!isnull(name) && !strcmp(name, tAnim[i][Name], true)) {
+		if(!isnull(name) && !strcmp(name, tAnim[i][aName], true)) {
 			id = i;
 			break;
 		}
 	}
 	return id;
+}
+
+stock enablePlayerAnimation(playerid, anim[]) {
+	new id = getServerAnimIdFromName(anim);
+
+	if(id != INVALID_ANIM_ID && id != 4) {
+		ClearAnimations(playerid);
+		ApplyAnimation(playerid, tAnim[id][aAnimLib], tAnim[id][aAnimName], tAnim[id][aDelta], tAnim[id][aLoop], tAnim[id][aLockX], tAnim[id][aLockY], tAnim[id][aFreeze], tAnim[id][aTime], tAnim[id][aForesync]);
+
+		hasAnim[playerid] = true;
+	} else if(id == 4) {
+		ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0, 0);
+		hasAnim[playerid] = false;
+	}
 }

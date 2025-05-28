@@ -1,3 +1,11 @@
+/*
+	Project: OSRP
+	Author: steeZ (macpilch)
+	File: 3dtext.inc
+	Date: 24.07.2022
+	Modified: 24.07.2022
+*/
+
 #if defined __3DTEXT_INC__
 	#endinput
 #endif

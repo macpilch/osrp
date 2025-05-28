@@ -12,8 +12,8 @@
 #define __DEFINES_INC__
 #pragma library osrp
 
-#pragma tabsize 0
 #pragma dynamic 8192 //rozmiar stosu
+#pragma tabsize 0
 
 #undef MAX_PLAYERS
 #undef MAX_VEHICLES
@@ -194,24 +194,25 @@
 
 #define G_NONE 0
 #define G_LSPD 1
-#define G_LSFD 2
-#define G_GOV 3
+#define G_GOV 2
+#define G_LSFD 3
 #define G_FBI 4
-#define G_MEDIC 5
-#define G_MAFIA 6
-#define G_GANG 7
-#define G_RADIO 8
-#define G_BAR 9
-#define G_SALON 10
-#define	G_MECHANIC 11
-#define G_GYM 12
-#define G_SECURITY 13
-#define G_TAXI 14
-#define G_SHOP 15
-#define G_DRIVERLICENSE 16
-#define G_MOBILE 17
-#define G_SHOOT 18
-#define G_SANNEWS 19
+#define G_MEDIC 12
+#define G_MAFIA 14
+#define G_GANG 16
+#define G_RADIO 5
+#define G_BAR 6
+#define G_SALON 7
+#define	G_MECHANIC 8
+#define G_GYM 9
+#define G_SECURITY 10
+#define G_TAXI 11
+#define G_SHOP 13
+#define G_DRIVERLICENSE 15
+#define G_MOBILE 24
+#define G_AMMUNATION 25
+#define G_SHOOT 26
+#define G_SANNEWS 17
 
 #define D_NONE 0
 #define D_SHOP 1
@@ -319,7 +320,7 @@
 #define	TKIND_NOTEBOOK 28
 #define TKIND_POISON 33
 #define	TKIND_CD 37
-#define TKIND_PART 38
+#define TKIND_CARITEM 38
 #define	TKIND_DISCMAN 39
 #define	TKIND_TELEPHONE 40
 #define	TKIND_FOLDER 41
@@ -336,11 +337,6 @@
 #define TKIND_TUNING 69699
 #define TKIND_BEACON 696910
 #define TKIND_CORPSE 696911
-#define	TKIND_PDOOR 696913
-#define	TKIND_LFWHEEL 696915
-#define	TKIND_RFWHEEL 696916
-#define	TKIND_RRWHEEL 42
-#define	TKIND_LRWHEEL 43
 #define TKIND_PICKLOCK 696918
 #define TKIND_VEHICLE 35
 #define TKIND_KNIFE 41
@@ -374,6 +370,8 @@
 #define INVALID_SET_ID -1
 #define INVALID_ANIM_ID -1
 #define INVALID_BUS_ID -1
+#define INVALID_BOOTH_ID -1
+#define INVALID_CASH_ID -1
 #define INVALID_DOOR_ID -1
 #define INVALID_ORDER_ID -1
 #define INVALID_TASK_ID -1

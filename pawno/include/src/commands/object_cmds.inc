@@ -14,17 +14,16 @@
 
 CMD:mc(playerid, params[]) {
 	new srvDoorId = getServerDoorId(playerid);
-	new srvGroupId = getServerGroupId(playerid, tPlayer[playerid][pLastGroup]);
+	new srvGroupId = getServerGroupId(playerid, tPlayer[playerid][pSlot]);
 
 	if(srvDoorId != INVALID_DOOR_ID && (tDoor[srvDoorId][dOUid] != tPlayer[playerid][pUid] && tDoor[srvDoorId][dOType] == DOOR_OWNER_PLAYER) ||
 	   (srvGroupId != INVALID_GROUP_ID && tDoor[srvDoorId][dOUid] != tGroup[srvGroupId][gUid] && tDoor[srvDoorId][dOType] == DOOR_OWNER_GROUP ||
-	   ((tPlayer[playerid][pPerm][0] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_LEADER) ||
-	   (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_LEADER)))) {
+	   ((tPlayer[playerid][pPerm][tPlayer[playerid][pSlot] - 1] & P_GROUP_PERM_LEADER)))) {
 		return 1;
 	}
 
 	if(tDoor[srvDoorId][dMaxObjects] <= 0) {
-		return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", "Ten budynek nie ma przypisanych ¿adnych obiektów do stworzenia.\n\nU¿yj komendy /drzwi, by przypisaæ mu wybran¹ iloœæ obiektów.", "OK", "");
+		return ShowPlayerDialogInfo(playerid, "Ten budynek nie ma przypisanych ¿adnych obiektów do stworzenia.\n\nU¿yj komendy /drzwi, by przypisaæ mu wybran¹ iloœæ obiektów.");
 	}
 
 	if(!GetPlayerVirtualWorld(playerid)) {
@@ -37,7 +36,7 @@ CMD:mc(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /mc [ID modelu] - tworzy obiekt");
 	}
 
-	createNewObject(playerid, modelId, tDoor[srvDoorId][dUid], OBJECT_OWNER_DOOR);
+	addObject(playerid, modelId, tDoor[srvDoorId][dUid], OBJECT_OWNER_DOOR);
 
 	tDoor[srvDoorId][dObjects]++;
 	saveDoorValues(srvDoorId);
@@ -51,8 +50,7 @@ CMD:amc(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Tip: /mc [ID modelu] - tworzy obiekt");
 	}
 
-	ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja",
-	"Ten budynek nie ma przypisanych ¿adnych obiektów do stworzenia.\n\nU¿yj komendy /drzwi, by przypisaæ mu wybran¹ iloœæ obiektów.", "OK", "");
+	ShowPlayerDialogInfo(playerid, "Ten budynek nie ma przypisanych ¿adnych obiektów do stworzenia.\n\nU¿yj komendy /drzwi, by przypisaæ mu wybran¹ iloœæ obiektów.");
 	return 1;
 }
 
@@ -65,7 +63,7 @@ CMD:md(playerid, params[]) {
 	TextDrawHideForPlayer(playerid, objectInfo[playerid][0]);
 	TextDrawHideForPlayer(playerid, objectInfo[playerid][1]);
 
-	destroyObject(srvObjId);
+	removeObject(srvObjId);
 	Streamer_Update(playerid);
 
 	tPlayer[playerid][pObject] = 0;
@@ -103,7 +101,6 @@ CMD:mgate(playerid, params[]) {
 			tObject[srvObjId][oGateY] = tObject[srvObjId][oPosY] + y;
 			tObject[srvObjId][oGateZ] = tObject[srvObjId][oPosZ] + z;
 		}
-
 		case 2: {
 			tObject[srvObjId][oGateX] = tObject[srvObjId][oRotX] + x;
 			tObject[srvObjId][oGateY] = tObject[srvObjId][oRotY] + y;
@@ -118,12 +115,11 @@ CMD:mgate(playerid, params[]) {
 
 CMD:mpick(playerid, params[]) {
 	new srvDoorId = getServerDoorId(playerid);
-	new srvGroupId = getServerGroupId(playerid, tPlayer[playerid][pLastGroup]);
+	new srvGroupId = getServerGroupId(playerid, tPlayer[playerid][pSlot]);
 
 	if(srvDoorId != INVALID_DOOR_ID && (tDoor[srvDoorId][dOUid] != tPlayer[playerid][pUid] && tDoor[srvDoorId][dOType] == DOOR_OWNER_PLAYER) ||
 	   (srvGroupId != INVALID_GROUP_ID && tDoor[srvDoorId][dOUid] != tGroup[srvGroupId][gUid] && tDoor[srvDoorId][dOType] == DOOR_OWNER_GROUP ||
-	   ((tPlayer[playerid][pPerm][0] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_LEADER) ||
-	   (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_LEADER)))) {
+	   ((tPlayer[playerid][pPerm][tPlayer[playerid][pSlot] - 1] & P_GROUP_PERM_LEADER)))) {
 		return 1;
 	}
 
@@ -169,12 +165,11 @@ CMD:mmat(playerid, params[]) {
 
 CMD:msel(playerid, params[]) {
 	new srvDoorId = getServerDoorId(playerid);
-	new srvGroupId = getServerGroupId(playerid, tPlayer[playerid][pLastGroup]);
+	new srvGroupId = getServerGroupId(playerid, tPlayer[playerid][pSlot]);
 
 	if(srvDoorId != INVALID_DOOR_ID && (tDoor[srvDoorId][dOUid] != tPlayer[playerid][pUid] && tDoor[srvDoorId][dOType] == DOOR_OWNER_PLAYER) ||
 	   (srvGroupId != INVALID_GROUP_ID && tDoor[srvDoorId][dOUid] != tGroup[srvGroupId][gUid] && tDoor[srvDoorId][dOType] == DOOR_OWNER_GROUP ||
-	   ((tPlayer[playerid][pPerm][0] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_LEADER) ||
-	   (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_LEADER) || (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_LEADER)))) {
+	   ((tPlayer[playerid][pPerm][tPlayer[playerid][pSlot] - 1] & P_GROUP_PERM_LEADER)))) {
 		return 1;
 	}
 
@@ -356,8 +351,7 @@ CMD:rz(playerid, params[]) {
 }
 
 CMD:ac(playerid, params[]) {
-	ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja",
-	"Abonament obiektów w tej strefie nie pozwala na stworzenie kolejnego obiektu.\nMo¿esz dokupiæ iloœæ obiektów w /area.", "OK", "");
+	ShowPlayerDialogInfo(playerid, "Abonament obiektów w tej strefie nie pozwala na stworzenie kolejnego obiektu.\nMo¿esz dokupiæ iloœæ obiektów w /area.");
 
 	GameTextForPlayer(playerid, "~r~Poza limitem strefy.", 5000, 3);
 	return 1;
