@@ -119,7 +119,7 @@ stock onEnterRaceCheckpoint(playerid) {
 	return 1;
 }
 
-Callback:enablePlayerRaceCD() {
+Callback enablePlayerRaceCD() {
 	static secs = 3;
 	
 	mainStr[0] = EOS;

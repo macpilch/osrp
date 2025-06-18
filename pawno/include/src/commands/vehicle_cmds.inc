@@ -19,12 +19,12 @@ CMD:v(playerid, params[]) {
 	if(!tPlayer[playerid][pHotel]) {
 		strcat(mainStr, "Ta komenda s³u¿y do zarz¹dzania pojazdami.\n");
 		strcat(mainStr, "Zamelduj siê w hotelu b¹dŸ wynajmij lub kup mieszkanie, aby jej u¿yæ.");
-		return ShowPlayerDialogInfo(playerid, mainStr);
+		return DialogInfo(playerid, mainStr);
 	} else {
 		if(tPlayer[playerid][pHours] > 70) {
 			strcat(mainStr, "Przekroczy³eœ(aœ) 70h gry, wiêc wynajmij lub kup mieszkanie, aby jej u¿yæ.\n\n");
 			strcat(mainStr, "Hotel nie wystarczy. Poszukaj ofert wynajmu\nb¹dŸ og³oœ w radiu chêæ najêcia mieszkania.");
-			return ShowPlayerDialogInfo(playerid, mainStr);
+			return DialogInfo(playerid, mainStr);
 		}
 	}
 
@@ -35,7 +35,7 @@ CMD:v(playerid, params[]) {
 			new countVehs;
 
 			foreach(new i : vehItter) {
-				if(isVehicleOwner(playerid, i)) {
+				if(tVehicle[i][vOUid] == tPlayer[playerid][pUid] && tVehicle[i][vType] == VEHICLE_OWNER_PLAYER) {
 					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d  %s", mainStr, tVehicle[i][vUid], vehicleNames[tVehicle[i][vModelId] - 400]); // 2 spacje
 					countVehs++;
 				}
@@ -45,7 +45,7 @@ CMD:v(playerid, params[]) {
 				strcat(mainStr, "W tym miejscu pojawi sie lista posiadanych przez Ciebie pojazdów.\n\n");
 				strcat(mainStr, "Kup nowy pojazd w salonie samochodowym lub u¿ywany od innego gracza.\n\n");
 				strcat(mainStr, "Pojazdom mo¿na dodawaæ komponenty i zabezpieczenia w warsztatach.");
-				ShowPlayerDialogInfo(playerid, mainStr);
+				DialogInfo(playerid, mainStr);
 			} else {
 				ShowPlayerDialog(playerid, DIALOG_VEHICLES, DIALOG_STYLE_LIST, "Wybór pojazdu", mainStr, "(Un)spawn", "Anuluj");
 			}
@@ -78,7 +78,7 @@ CMD:v(playerid, params[]) {
 
 			strcat(mainStr, "Pojazd zosta³ pomyœlnie zaparkowany w nowym miejscu.\n");
 			strcat(mainStr, "Zaleca siê jego respawn, aby zachowaæ zmiany.");
-			ShowPlayerDialogInfo(playerid, mainStr);
+			DialogInfo(playerid, mainStr);
 		} else if(!strcmp(opt, "z", true) || !strcmp(opt, "zamknij", true)) {
 			new srvVehId = OSRP_VEHICLE_INVALID_ID;
 
@@ -142,11 +142,11 @@ CMD:v(playerid, params[]) {
 			new slot, srvVehId = OSRP_VEHICLE_INVALID_ID;
 
 			if(sscanf(values, "i", slot)) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v namierz [slot]");
+				return OSRP_Tip(playerid, "/v namierz [slot]");
 			}
 
 			if(slot > 10 || slot < 1) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v namierz [slot]");
+				return OSRP_Tip(playerid, "/v namierz [slot]");
 			}
 
 			srvVehId = playerVehicles[playerid][slot - 1];
@@ -174,11 +174,11 @@ CMD:v(playerid, params[]) {
 			new slot, srvVehId = OSRP_VEHICLE_INVALID_ID;
 
 			if(sscanf(values, "i", slot)) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v reset [slot]");
+				return OSRP_Tip(playerid, "/v reset [slot]");
 			}
 
 			if(slot > 10 || slot < 1) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v reset [slot]");
+				return OSRP_Tip(playerid, "/v reset [slot]");
 			}
 
 			srvVehId = playerVehicles[playerid][slot - 1];
@@ -190,7 +190,7 @@ CMD:v(playerid, params[]) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Aby zresetowaæ pojazd musi on byæ zespawnowany.");
 			}
 
-			if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER || GetPlayerVirtualWorld(playerid)) {
+			if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER || tPlayer[playerid][pVw]) {
 				return SendClientMessage(playerid, COLOR_GRAY, "Musisz znajdowaæ siê na zewn¹trz, by zresetowaæ pojazd.");
 			}
 
@@ -213,7 +213,7 @@ CMD:v(playerid, params[]) {
 			mainStr[0] = EOS;
 			strcat(mainStr, "Pojazd zosta³ przeniesiony na najbli¿szy spawnpoint.\nKa¿demu resetowanemu pojazdowi jest nak³adana blokada na $20,\n");
 			strcat(mainStr, "by funkcja resetowania nie by³a nadu¿ywana.\n\nLokalizacja zosta³a zaznaczona na radarze.");
-			ShowPlayerDialogInfo(playerid, mainStr);
+			DialogInfo(playerid, mainStr);
 		} else if(!strcmp(opt, "opis", true)) {
 			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 				return GameTextForPlayer(playerid, "~r~Musisz byc w pojezdzie.", 5000, 3);
@@ -228,7 +228,7 @@ CMD:v(playerid, params[]) {
 
 			if(sscanf(values, "s[64]", vehStr)) {
 				UpdateDynamic3DTextLabelText(tVehicle[srvVehId][v3dDesc], COLOR_DESC, " ");
-				return SendClientMessage(playerid, COLOR_GRAY, "Tip: /v opis [Treœæ]");
+				return OSRP_Tip(playerid, "/v opis [Treœæ]");
 			}
 
 			if(!isVehicleOwner(playerid, srvVehId)) {
@@ -245,7 +245,7 @@ CMD:v(playerid, params[]) {
 			SendClientMessage(playerid, COLOR_GRAY, "Opis pojazdu ustawiony (aby go usun¹æ, wpisz /opis usun):");
 			SendClientMessage(playerid, COLOR_DO1, tVehicle[srvVehId][vDesc]);
 		} else {
-			SendClientMessage(playerid, COLOR_GRAY, "Tip: /v [zaparkuj/z(amknij)/info/namierz/reset]");
+			OSRP_Tip(playerid, "/v [zaparkuj/z(amknij)/info/namierz/reset]");
 		}
 	}
 	return 1;
@@ -267,18 +267,18 @@ CMD:pasy(playerid, params[]) {
 
 	ApplyAnimation(playerid, "PED", "CAR_tune_radio", 4.1, 0, 0, 0, 0, 0);
 
-	if(!hasBelts[playerid]) {
-		hasBelts[playerid] = true;
-
+	if(!(tPlayer[playerid][pStatus] & STATUS_BELTS)) {
+		tPlayer[playerid][pStatus] += STATUS_BELTS;
 		updatePlayerGameStatus(playerid);
+
 		if(tPlayer[playerid][pLang] == LANG_PL)
 			GameTextForPlayer(playerid, "~w~Pasy ~g~zapiete", 5000, 6);
 		else
 			GameTextForPlayer(playerid, "~w~Seatbelt ~g~fastened", 5000, 6);
 	} else {
-		hasBelts[playerid] = false;
-
+		tPlayer[playerid][pStatus] -= STATUS_BELTS;
 		updatePlayerGameStatus(playerid);
+
 		if(tPlayer[playerid][pLang] == LANG_PL)
 			GameTextForPlayer(playerid, "~w~Pasy ~r~odpiete", 5000, 6);
 		else

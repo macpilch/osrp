@@ -22,6 +22,7 @@ Timer:globalTimer[1000]() {
 
 		if(playerAFKTime[i] != 0) {
 			if(playerAFKTime[i] == 3) {
+				tPlayer[i][pStatus] += STATUS_AFK;
 				updatePlayerGameStatus(i);
 				return 1;
 			}
@@ -62,6 +63,11 @@ Timer:globalTimer[1000]() {
 
 				if(insidedHotel[i] && tPlayer[i][pHotel] && playerToPoint(i, 5.0, 2216.12, -1076.30, 1050.48)) {
 					GameTextForPlayer(i, "~n~~n~~n~~n~~w~_[~k~~SNEAK_ABOUT~+~k~~PED_SPRINT~]_~p~by wyjsc z pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
+				}
+
+				if(tPlayer[i][pStatus] & STATUS_AFK) {
+					tPlayer[i][pStatus] -= STATUS_AFK;
+					updatePlayerGameStatus(i);
 				}
 
 				if(tPlayer[i][pDrugsTime] > 0 && tPlayer[i][pDrugs] != DRUG_NONE) {
@@ -110,6 +116,15 @@ Timer:globalTimer[1000]() {
 							SetPlayerDrunkLevel(i, 0);
 						}
 					}
+				}
+
+				if(GetPlayerDrunkLevel(i) >= 2000 && !isDizzines[i] && tPlayer[i][pDrugs] == DRUG_ALCOHOL && gettime() > (endBWTime[i] + 30)) {
+					tPlayer[i][pStatus] += STATUS_DRUNK;
+					updatePlayerGameStatus(i);
+				} else if(GetPlayerDrunkLevel(i) >= 2000 && !isDizzines[i] && tPlayer[i][pDrugs] == DRUG_HEROINE || tPlayer[i][pDrugs] == DRUG_ANADRALL ||
+				          tPlayer[i][pDrugs] == DRUG_MARIJUANA || tPlayer[i][pDrugs] == DRUG_METHA) {
+					tPlayer[i][pStatus] += STATUS_DRUGS;
+					updatePlayerGameStatus(i);
 				}
 
 				//AC

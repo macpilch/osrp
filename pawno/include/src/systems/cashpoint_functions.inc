@@ -113,6 +113,7 @@ stock addCashpoint(playerid, name[]) {
 
 	GetPlayerPos(playerid, pX, pY, pZ);
 	GetPlayerFacingAngle(playerid, pA);
+	getXYInFrontOfPlayer(playerid, pX, pY, 3.0);
 
 	tCashPoint[freeId][cpUid] = freeId + 1;
 	format(tCashPoint[freeId][cpName], 32, name);
@@ -124,8 +125,8 @@ stock addCashpoint(playerid, name[]) {
 	tCashPoint[freeId][cpRotY] = 0.0;
 	tCashPoint[freeId][cpRotZ] = pA;
 	tCashPoint[freeId][cpDistance] = 2.0;
-	tCashPoint[freeId][cpVw] = GetPlayerVirtualWorld(playerid);
-	tCashPoint[freeId][cpInt] = GetPlayerInterior(playerid);
+	tCashPoint[freeId][cpVw] = tPlayer[playerid][pVw];
+	tCashPoint[freeId][cpInt] = tPlayer[playerid][pInt];
 	tCashPoint[freeId][cpObject] = CreateDynamicObject(2942, tCashPoint[freeId][cpPosX], tCashPoint[freeId][cpPosY], tCashPoint[freeId][cpPosZ] - 0.35, tCashPoint[freeId][cpRotX], tCashPoint[freeId][cpRotY], tCashPoint[freeId][cpRotZ], tCashPoint[freeId][cpVw], tCashPoint[freeId][cpInt], -1, 100.0);
 
 	Iter_Add(cashPointItter, freeId);

@@ -176,11 +176,11 @@ stock saveVehicleValues(srvvehid) {
 		tVehicle[srvvehid][vSpawned],
 		tVehicle[srvvehid][vLightsOn],
 		tVehicle[srvvehid][vWindow],
-		tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_ALARM ? 1 : 0,
-		tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_IMMOBILISER ? 1 : 0,
-		tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_CBRADIO ? 1 : 0,
-		tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_AUDIO ? 1 : 0,
-		tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_LIMITER ? 1 : 0,
+		(tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_ALARM) ? 1 : 0,
+		(tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_IMMOBILISER) ? 1 : 0,
+		(tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_CBRADIO) ? 1 : 0,
+		(tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_AUDIO) ? 1 : 0,
+		(tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_LIMITER) ? 1 : 0,
 		tVehicle[srvvehid][vPanels],
 		tVehicle[srvvehid][vDoors],
 		tVehicle[srvvehid][vLights],
@@ -295,7 +295,7 @@ stock addVehicle(uid, type, modelid, color1, color2, Float:parkingX, Float:parki
 	tVehicle[freeId][vPaintjob] = -1;
 	tVehicle[freeId][vNitro] = 0;
 	tVehicle[freeId][vRepair] = 0.0;
-	tVehicle[freeId][vMileage] = 0;
+	tVehicle[freeId][vMileage] = 0.0;
 	tVehicle[freeId][vBlock] = 0;
 	format(tVehicle[freeId][vPlate], 32, VEHICLE_DEFAULT_PLATE);
 	format(tVehicle[freeId][vDesc], 64, VEHICLE_DEFAULT_PLATE);
@@ -514,7 +514,7 @@ stock showVehicleInfo(playerid, srvvehid) {
 	return 1;
 }
 
-Callback:vehicleLightsOn(playerid) {
+Callback vehicleLightsOn(playerid) {
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 		return 1;
 	}
@@ -532,7 +532,7 @@ Callback:vehicleLightsOn(playerid) {
 	return 1;
 }
 
-Callback:vehicleLightsOff(playerid) {
+Callback vehicleLightsOff(playerid) {
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 		return 1;
 	}
@@ -562,10 +562,18 @@ stock vehicleEngineStatus(playerid) {
 		ApplyAnimation(playerid, "PED", "CAR_tune_radio", 4.1, 0, 0, 0, 0, 0);
 	}
 
+	if(tVehicle[srvVehId][vBlock] > 0) {
+		mainStr[0] = EOS;
+		format(mainStr, sizeof(mainStr), "Na ten pojazd na³o¿ono blokadê ko³a.\nKoszt zdjêcia: $%d.\n\nUdaj siê na komisariat, by siê jej pozbyæ.", tVehicle[srvVehId][vBlock]);
+		return DialogInfo(playerid, mainStr);
+	}
+
 	if(!tVehicle[srvVehId][vEngine]) {
 		if(tVehicle[srvVehId][vFuel] <= 0) {
 			return GameTextForPlayer(playerid, "~r~Brak paliwa w pojezdzie.", 5000, 3);
 		}
+
+		TextDrawHideForPlayer(playerid, vehicleTips[playerid]);
 
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~n~~n~~n~~g~Trwa odpalanie silnika...", 3000, 3);
 		SetTimerEx("vehicleEngineOn", 3000, false, "i", playerid);
@@ -583,7 +591,7 @@ stock vehicleEngineStatus(playerid) {
 	return 1;
 }
 
-Callback:vehicleEngineOn(playerid) {
+Callback vehicleEngineOn(playerid) {
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 		return 1;
 	}
@@ -627,22 +635,22 @@ stock setPlayerVehicleDamage(playerid) {
 		return 1;
 	}
 
-	new speed = getVehicleSpeed(GetPlayerVehicleID(playerid)), chancePlayerDizzines;
+	new speed = getVehicleSpeed(tVehicle[srvVehId][vId]), chancePlayerDizzines;
 	tVehicle[srvVehId][vEngineHp] -= speed / 1.5;
 
 	switch(speed) {
 		case 0 .. 50: {
-			if(!hasBelts[playerid]) {
+			if(!(tPlayer[playerid][pStatus] & STATUS_BELTS)) {
 				return 1;
 			}
 		}
 		case 51 .. 79: {
-			if(!hasBelts[playerid]) {
+			if(!(tPlayer[playerid][pStatus] & STATUS_BELTS)) {
 				return 2;
 			}
 		}
 		case 80 .. 99: {
-			if(hasBelts[playerid]) {
+			if(tPlayer[playerid][pStatus] & STATUS_BELTS) {
 				return 2;
 			} else {
 				if(chancePlayerDizzines >= 80) {
@@ -655,7 +663,7 @@ stock setPlayerVehicleDamage(playerid) {
 		case 100 .. 139: {
 			chancePlayerDizzines = random(100);
 
-			if(hasBelts[playerid]) {
+			if(tPlayer[playerid][pStatus] & STATUS_BELTS) {
 				if(chancePlayerDizzines >= 90) {
 					isDizzines[playerid] = true;
 					SetPlayerDrunkLevel(playerid, 1000);
@@ -672,7 +680,7 @@ stock setPlayerVehicleDamage(playerid) {
 		case 140 .. 169: {
 			chancePlayerDizzines = random(100);
 
-			if(hasBelts[playerid]) {
+			if(tPlayer[playerid][pStatus] & STATUS_BELTS) {
 				if(chancePlayerDizzines >= 80) {
 					isDizzines[playerid] = true;
 					SetPlayerDrunkLevel(playerid, 1000);
@@ -689,7 +697,7 @@ stock setPlayerVehicleDamage(playerid) {
 		case 170 .. 220: {
 			chancePlayerDizzines = random(100);
 
-			if(hasBelts[playerid]) {
+			if(tPlayer[playerid][pStatus] & STATUS_BELTS) {
 				if(chancePlayerDizzines >= 60) {
 					isDizzines[playerid] = true;
 					SetPlayerDrunkLevel(playerid, 10000);
@@ -724,7 +732,7 @@ stock encode_panels(flp, frp, rlp, rrp, windshield, front_bumper, rear_bumper) {
     return flp | (frp << 4) | (rlp << 8) | (rrp << 12) | (windshield << 16) | (front_bumper << 20) | (rear_bumper << 24);
 }
 
-stock encode_doors(bonnet, boot, driver_door, passenger_door, behind_driver_door, behind_passenger_door) {
+stock encode_doors(bonnet, boot, driver_door, passenger_door, behind_driver_door=0, behind_passenger_door=0) {
     #pragma unused behind_driver_door
     #pragma unused behind_passenger_door
     return bonnet | (boot << 8) | (driver_door << 16) | (passenger_door << 24);
@@ -760,30 +768,21 @@ stock decode_tires(tires, &tire1, &tire2, &tire3, &tire4) {
 	tire4 = tires >> 3 & 1;
 }
 
+// by Magik
 stock calcsVehicleDistance(playerid, srvvehid) {
 	if(srvvehid == OSRP_VEHICLE_INVALID_ID) {
 		return 1;
 	}
 
-	static Float:vX, Float:vY, Float:vZ;
-	static Float:vOldX, Float:vOldY, Float:vOldZ;
+	new Float:vehDist;
 
-	GetVehiclePos(tVehicle[srvvehid][vId], vX, vY, vZ);
-
-	if(vOldX != 0.0) {
-		new Float:dist = Distance(vOldX, vOldY, vOldZ, vX, vY, vZ);
-
-		vOldX = vX;
-		vOldY = vY;
-		vOldZ = vZ;
-
-		tVehicle[srvvehid][vMileage] += (dist / 7160.0);
-		tPlayer[playerid][pTraveled] += tVehicle[srvvehid][vMileage];
-	} else {
-		vOldX = vX;
-		vOldY = vY;
-		vOldZ = vZ;
+	if(getVehicleSpeed(tVehicle[srvvehid][vId])) {
+		vehDist = getVehicleSpeed(tVehicle[srvvehid][vId]) * 1000 / 3600 / 1;
+		vehDist = vehDist / 350;
 	}
+
+	tVehicle[srvvehid][vMileage] += vehDist;
+	tPlayer[playerid][pTraveled] += tVehicle[srvvehid][vMileage];
 	return 1;
 }
 
@@ -1147,7 +1146,7 @@ stock isFreeParkingPlaceForVehicle(srvvehid) {
 	return 1;
 }
 
-Callback:addFuelToVehicle(playerid) {
+Callback addFuelToVehicle(playerid) {
 	new srvVehId = getServerVehicleId(playerid);
 	if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 		return 1;
@@ -1162,11 +1161,11 @@ Callback:addFuelToVehicle(playerid) {
 	format(mainStr, sizeof(mainStr), "** Pojazd %s zosta³ zatankowany. **", vehicleNames[tVehicle[srvVehId][vModelId] - 400]);
 	sendDistanceMessage(playerid, 30.0, 0, mainStr, "", "", COLOR_DO1, COLOR_DO1, COLOR_DO1, COLOR_DO1, COLOR_DO1);
 
-	resetPlayerOfferData(playerid);
+	resetOfferData(playerid);
 	return 1;
 }
 
-Callback:vehRepairEngineTimer(playerid, receiver, what, seconds) {
+Callback vehicleModificationTimer(playerid, receiver, what, seconds) {
 	if(GetPlayerState(receiver) == PLAYER_STATE_DRIVER) {
 		GameTextForPlayer(receiver, "Pojazd jest modyfikowany.", 5000, 3);
 	}
@@ -1186,7 +1185,7 @@ Callback:vehRepairEngineTimer(playerid, receiver, what, seconds) {
 	if(!playerToPoint(playerid, 5.0, x, y, z)) {
 		GameTextForPlayer(playerid, "~r~Zbyt daleko od pojazdu!~n~~w~Jezeli odejdziesz dalej,~n~anulujesz swoja prace.", 5000, 3);
 	} else if(!playerToPoint(playerid, 10.0, x, y, z)) {
-		resetPlayerOfferData(playerid);
+		resetOfferData(playerid);
 		return 1;
 	}
 
@@ -1196,15 +1195,15 @@ Callback:vehRepairEngineTimer(playerid, receiver, what, seconds) {
 		format(str, sizeof(str), "~w~Odliczanie: ~r~%d", seconds);
 		GameTextForPlayer(playerid, str, 1000, 6);
 
-		SetTimerEx("vehRepairEngineTimer", 3000, false, "iiii", playerid, receiver, what, seconds -= 3);
+		SetTimerEx("vehicleModificationTimer", 3000, false, "iiii", playerid, receiver, what, seconds -= 3);
 	} else {
-		sendOffer(playerid, receiver, 0, what, OFFER_NORMAL, O_VEHMOD);
+		sendOffer(playerid, receiver, 0, what, 0, OFFER_NORMAL, OFFER_VEHMODIFICATION);
 	}
 	return 1;
 }
 
-Callback:updatePlayerTaxiCourse(playerid, srvvehid) {
-	if(!haveTaxiCourse[playerid] && !haveTaxiCourse[offerFrom[playerid]] && taxiDriver[playerid] == INVALID_PLAYER_ID) {
+Callback updatePlayerTaxiCourse(playerid, srvvehid) {
+	if(!haveTaxiCourse[playerid] && !haveTaxiCourse[tOffer[playerid][OFFER_SENDER]] && taxiDriver[playerid] == INVALID_PLAYER_ID) {
 		return 1;
 	}
 

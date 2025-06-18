@@ -55,7 +55,6 @@ stock initServerPenalties() {
 			tPenalty[i][penReason]
 		);
 
-		Iter_Add(penItter, i);
 		printf("UID: %d, SUID: %d, OUID: %d, IP: %s, Type: %d, Days: %d, Date: %s, Reason: %s\n",
 			tPenalty[i][penUid],
 			tPenalty[i][penSUid],
@@ -67,6 +66,7 @@ stock initServerPenalties() {
 			tPenalty[i][penReason]
 		);
 
+		Iter_Add(penItter, i);
 		i++;
 	}
 
@@ -80,7 +80,7 @@ stock initServerPenalties() {
 	return 1;
 }
 
-stock addPenalty(playerid, victim, type, date[], days, reason[]) {
+stock addPenalty(senderid, victimid, type, date[], days, reason[]) {
 	new freeId = -1;
 
 	queryStr[0] = EOS;
@@ -92,16 +92,16 @@ stock addPenalty(playerid, victim, type, date[], days, reason[]) {
 	freeId = mysql_fetch_int();
 	mysql_free_result();
 
-	Iter_Add(penItter, freeId);
-
 	tPenalty[freeId][penUid] = freeId + 1;
-	tPenalty[freeId][penSUid] = playerid == INVALID_PLAYER_ID ? INVALID_PLAYER_ID : tPlayer[playerid][pUid];
-	tPenalty[freeId][penOUid] = tPlayer[victim][pUid];
-	tPenalty[freeId][penIp] = tPlayer[victim][pIp];
+	tPenalty[freeId][penSUid] = senderid == INVALID_PLAYER_ID ? INVALID_PLAYER_ID : tPlayer[senderid][pUid];
+	tPenalty[freeId][penOUid] = tPlayer[victimid][pUid];
+	tPenalty[freeId][penIp] = tPlayer[victimid][pIp];
 	tPenalty[freeId][penType] = type;
 	tPenalty[freeId][penDays] = days;
 	format(tPenalty[freeId][penDate], 64, date);
 	format(tPenalty[freeId][penReason], 64, reason);
+
+	Iter_Add(penItter, freeId);
 
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Penalties` (`SUID`, `OUID`, `IP`, `Type`, `Days`, `Date`, `Reason`) VALUES ('%d', '%d', '%s', '%d', '%d', '%s', '%s')",

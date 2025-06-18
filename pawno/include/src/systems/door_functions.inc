@@ -107,6 +107,14 @@ stock initDimensionValues() {
 	return 1;
 }
 
+stock addDoor() {
+	
+}
+
+stock removeDoor() {
+	
+}
+
 stock saveDoorValues(srvdoorid) {
 	if(srvdoorid == INVALID_DOOR_ID) {
 		return 1;
@@ -138,7 +146,8 @@ stock saveDoorValues(srvdoorid) {
 		tDoor[srvdoorid][dMaxTexts],
 		tDoor[srvdoorid][dSecurity],
 		tDoor[srvdoorid][dVw],
-		tDoor[srvdoorid][dInt]
+		tDoor[srvdoorid][dInt],
+		tDoor[srvdoorid][dUid]
 	);
 	mysql_query(queryStr);
 	return 1;
@@ -194,6 +203,7 @@ stock doesDoorIsType(srvdoorid, type) {
 }
 
 stock showDoorInfo(playerid, srvdoorid) {
+	
 	return 1;
 }
 
@@ -219,7 +229,7 @@ stock showDoorMenu(playerid, srvdoorid) {
 	} else {
 		strcat(mainStr, "Nie uda³o siê wykryæ budynku.\nNa pewno stoisz pod budynkiem, twarz¹ do œciany?\n");
 		strcat(mainStr, "Nie mo¿esz staæ dalej ni¿ 5m od œciany.");
-		ShowPlayerDialogInfo(playerid, mainStr);
+		DialogInfo(playerid, mainStr);
 	}
 }
 

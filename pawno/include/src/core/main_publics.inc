@@ -12,7 +12,7 @@
 #define __MAIN_PUBLICS_INC__
 #pragma library osrp
 
-sampCallback:OnGameModeInit() {
+sampCallback OnGameModeInit() {
 	new callSecs = gettime();
 
 	EnableStuntBonusForAll(0);
@@ -51,7 +51,7 @@ sampCallback:OnGameModeInit() {
 	initObjectValues();
 	init3dTextValues();
 	initVehicleValues();
-	initAnimValues();
+	initAnimationValues();
 	initAreaValues();
 	initThingValues();
 	initDoorValues();
@@ -77,7 +77,9 @@ sampCallback:OnGameModeInit() {
 		tVehicle[i][v3dDesc] = CreateDynamic3DTextLabel(" ", COLOR_DESC, 0.0, 0.0, 0.1, 20.0, INVALID_PLAYER_ID, i, 0, 0, 0, -1, 20.0, -1, 0);
 	}
 
-	gymObject[0] = CreateDynamicObject(2629, 758.8672, -76.0945, 1000.6500 - 1, 0.0, 0.0, 90.0, 2, 7, -1, 50.0);
+	for(new i = 0; i < MAX_OBJECTS; i++) {
+		gymObjectsInUse[i] = false;
+	}
 
 	website = TextDrawCreate(4.685180, 424.083587, "_");
 	TextDrawLetterSize(website, 0.304758, 1.034166);
@@ -116,7 +118,7 @@ sampCallback:OnGameModeInit() {
 	return 1;
 }
 
-sampCallback:OnGameModeExit() {
+sampCallback OnGameModeExit() {
 	new callSecs = gettime();
 
 	mysql_close(hMySQL);

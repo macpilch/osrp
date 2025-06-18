@@ -139,14 +139,13 @@ stock addObject(playerid, modelid, owner, type) {
 	tObject[freeId][oGateY] = 0.0;
 	tObject[freeId][oGateZ] = 0.0;
 	tObject[freeId][oDist] = (type == OBJECT_OWNER_DOOR) ? 100.0 : 400.0;
-	tObject[freeId][oVw] = GetPlayerVirtualWorld(playerid);
-	tObject[freeId][oInt] = GetPlayerInterior(playerid);
+	tObject[freeId][oVw] = tPlayer[playerid][pVw];
+	tObject[freeId][oInt] = tPlayer[playerid][pInt];
 
 	tObject[freeId][oObject] = CreateDynamicObject(tObject[freeId][oModelId], tObject[freeId][oPosX], tObject[freeId][oPosY], tObject[freeId][oPosZ], tObject[freeId][oRotX], tObject[freeId][oRotY], tObject[freeId][oRotZ], tObject[freeId][oVw], tObject[freeId][oInt], -1, tObject[freeId][oDist]);
 	Streamer_Update(playerid);
 
 	Iter_Add(objectItter, freeId);
-	tPlayer[playerid][pObject] = tObject[freeId][oUid];
 
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Objects` (`OUID`, `Type`, `Creator`, `ModelId`, `PosX`, `PosY`, `PosZ`, `Distance`, `VW`, `INT`) VALUES ('%d', '%d', '%d', '%d', '%f', '%f', '%f', '%f', '%d', '%d')",
@@ -161,7 +160,9 @@ stock addObject(playerid, modelid, owner, type) {
 		tObject[freeId][oVw],
 		tObject[freeId][oInt]
 	);
+
 	mysql_query(queryStr);
+	return tObject[freeId][oUid];
 }
 
 stock removeObject(srvobjid) {
@@ -232,6 +233,25 @@ stock saveObjectValues(srvobjid) {
 	);
 	mysql_query(queryStr);
 	return 1;
+}
+
+stock isObjectNextToPlayer(playerid, modelid) {
+	new Float:radius = 1.0;
+
+	foreach(new i : objectItter) {
+		if(tObject[i][oObject] == modelid && tObject[i][oOUid] != 0 && tObject[i][oType] == OBJECT_OWNER_DOOR) {
+			if(playerToPoint(playerid, radius, tObject[i][oPosX], tObject[i][oPosY], tObject[i][oPosZ])) {
+				return tObject[i][oObject];
+			} else {
+				if(radius > 4.0) {
+					radius = 0.5;
+				}
+
+				radius += 0.5;
+			}
+		}
+	}
+	return INVALID_OBJECT_ID;
 }
 
 stock addTexture(srvobjid, index, type, matcolor, model, txdname[], texname[], matsize, fontsize, bold, fcolor, bcolor, align, font[], text[]) {

@@ -21,6 +21,7 @@ new adminToken[MAX_PLAYERS][16];
 new tempName[24];
 
 new tPlayer[MAX_PLAYERS][PlayerData];
+new tOffer[MAX_PLAYERS][6];
 new tVehicle[MAX_VEHICLES][VehicleData];
 new tThing[MAX_THINGS][ThingData];
 new tBusStop[MAX_BUS_STOPS][BusStopData];
@@ -90,7 +91,11 @@ new charSurs[][] = {
 	"Cricenti", "Crivaro", "Crivello", "Cruzzola", "Cuiccio", "Cupi"
 };
 
-new serviceTypes[] = { G_GOV, G_RADIO, G_BAR, G_SALON, G_MECHANIC, G_GYM, G_SECURITY, G_TAXI, G_SHOP, G_DRIVERLICENSE, G_MOBILE, G_AMMUNATION, G_SHOOT };
+new serviceTypes[] = {
+	GROUP_GOV, GROUP_RADIO, GROUP_BAR, GROUP_SALON, GROUP_MECHANIC, GROUP_GYM, GROUP_SECURITY,
+	GROUP_TAXI, GROUP_SHOP, GROUP_DRIVERLICENSE, GROUP_MOBILE, GROUP_AMMUNATION, GROUP_SHOOT
+};
+
 new serviceNames[][] = {
 	"Brak", "", "Rzad", "", "", "Radio", "Bar lub restauracja", "Salon samochodowy", "Warsztat", "Silownia", "Ochrona",
 	"Taxi", "", "24/7", "", "Nauka jazdy", "", "", "", "", "", "", "", "", "Operator komorkowy", "Ammu-nation", "Airsoft gun"
@@ -98,7 +103,7 @@ new serviceNames[][] = {
 
 new weaponNames[][] = {
 	"", "Kastet", "Kij golfowy", "Pa³ka", "Nó¿", "Baseball Bat", "£opata", "Pool Cue", "Katana", "Chainsaw", "Dildo",
-	"Dildo 2", "Wibrator", "Wibrator 2", "Kwiaty", "Laska", "Granat", "Gaz ³zawi¹cy", "Mo³otow", "Pistolet", "Pistolet z t³umikiem",
+	"Dildo 2", "Wibrator", "Wibrator 2", "Kwiaty", "Laska", "Granat", "Gaz ³zawi¹cy", "Mo³otow", "Colt 45", "Pistolet z t³umikiem",
 	"Desert Eagle", "Shotgun", "Sawn OFF", "Combat", "UZI", "MP5", "AK-47", "M4", "TEC9", "Karabin", "Snajperka", "RPG", "Wyrzutnia rakiet",
 	"Flamethrower", "Minigun", "Satchel charge", "Detonator", "Spray Can", "Gaœnica", "Aparat", "Gogle", "Gogle", "Spadochron"
 };

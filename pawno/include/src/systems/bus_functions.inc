@@ -91,6 +91,10 @@ stock getNearestServerBusStopId(playerid) {
 	return id;
 }
 
+stock getBusStopDistance(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2) {
+	return floatround(floatsqroot(Distance(x1, y1, z1, x2, y2, z2)));
+}
+
 stock addBusStop(playerid, name[]) {
 	new freeId = INVALID_BUS_ID;
 	new Float:pX, Float:pY, Float:pZ, Float:pA;
@@ -106,6 +110,7 @@ stock addBusStop(playerid, name[]) {
 
 	GetPlayerPos(playerid, pX, pY, pZ);
 	GetPlayerFacingAngle(playerid, pA);
+	getXYInFrontOfPlayer(playerid, pX, pY, 3.0);
 
 	tBusStop[freeId][bsUid] = freeId + 1;
 	format(tBusStop[freeId][bsName], 32, name);
@@ -184,7 +189,7 @@ stock saveBusStopValues(srvbusid) {
 stock searchPlayerBusStop(playerid) {
 	foreach(new i : busStopItter) {
 		if(playerToPoint(playerid, 5.0, tBusStop[i][bsPosX], tBusStop[i][bsPosY], tBusStop[i][bsPosZ]) && !tBusStop[i][bsUsed]) {
-			if(!GetPlayerVirtualWorld(playerid) && !GetPlayerInterior(playerid)) {
+			if(!tPlayer[playerid][pVw] && !tPlayer[playerid][pInt]) {
 				if(!busCameraChoose[playerid] && !busCameraSelect[playerid] && !isInBus[playerid]) {
 					new Float:pX, Float:pY, Float:pZ;
 					GetPlayerPos(playerid, pX, pY, pZ);
@@ -292,7 +297,7 @@ stock updatePlayerSelectBusStopCamera(playerid) {
 	return 1;
 }
 
-Callback:delayBusCamera(playerid, Float:x, Float:y, Float:z) {
+Callback delayBusCamera(playerid, Float:x, Float:y, Float:z) {
 	new Float:CamX, Float:CamY, Float:CamZ;
 	GetPlayerCameraPos(playerid, CamX, CamY, CamZ);
 
@@ -305,7 +310,7 @@ Callback:delayBusCamera(playerid, Float:x, Float:y, Float:z) {
 	return 1;
 }
 
-Callback:downPlayerPos(playerid, Float:x, Float:y, Float:z) {
+Callback downPlayerPos(playerid, Float:x, Float:y, Float:z) {
 	if(busCameraChoose[playerid]) {
 		return 1;
 	}
@@ -318,7 +323,7 @@ Callback:downPlayerPos(playerid, Float:x, Float:y, Float:z) {
 	return 1;
 }
 
-Callback:teleportToBusStop(playerid, busstopid) {
+Callback teleportToBusStop(playerid, busstopid) {
 	if(!busCameraSelect[playerid]) {
 		return 1;
 	}
@@ -346,7 +351,7 @@ Callback:teleportToBusStop(playerid, busstopid) {
 	return 1;
 }
 
-Callback:unFreezeBusStop(playerid, busstopid) {
+Callback unFreezeBusStop(playerid, busstopid) {
 	SetCameraBehindPlayer(playerid);
 	SetPlayerPos(playerid, tPlayer[playerid][pBusX], tPlayer[playerid][pBusY], tPlayer[playerid][pBusZ]);
 	OSRP_TogglePlayerControllable(playerid, 1);

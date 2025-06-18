@@ -91,6 +91,7 @@ stock addBooth(playerid, name[]) {
 
 	GetPlayerPos(playerid, pX, pY, pZ);
 	GetPlayerFacingAngle(playerid, pA);
+	getXYInFrontOfPlayer(playerid, pX, pY, 3.0);
 
 	tBooth[freeId][boUid] = freeId + 1;
 	format(tBooth[freeId][boName], 32, name);
@@ -188,7 +189,7 @@ stock searchPlayerBooth(playerid) {
 
 				foreach(new j : groupItter) {
 					foreach(new k : Player) {
-						if(isGroupType(j, G_TAXI)) {
+						if(isGroupType(j, GROUP_TAXI)) {
 							if(tPlayer[k][pGroup][0] == tGroup[j][gUid] && isPlayerOnDuty(k)) {
 								count++;
 							}

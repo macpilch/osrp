@@ -48,51 +48,51 @@
 
 // Kolory
 #define COLOR_WHITE 				0xFFFFFFFF
-#define COLOR_BLACK					0x00000000
-#define COLOR_RED 					0xFF0000AA
-#define COLOR_DARKRED 				0xA52A2AAA
+#define COLOR_BLACK					0x000000FF
+#define COLOR_RED 					0xFF0000FF
+#define COLOR_DARKRED 				0xCF4028FF
 #define COLOR_CLARET 				0xFF4444AA
 #define COLOR_YELLOW 				0xFFFF00AA
 #define COLOR_GREEN 				0x33AA33AA
 #define COLOR_BLUE					0x688CCEAA
-#define COLOR_ORANGE 				0xFF9900AA
-#define COLOR_LIGHTORANGE 			0xFFCC66AA
+#define COLOR_ORANGE 				0xFFC973FF
+#define COLOR_DARKORANGE 			0xFDAE33FF
 #define COLOR_GRAY 					0xAFAFAFAA
 #define COLOR_TURQUOISE				0xF5DEB3AA
+#define COLOR_PINK 					0xFFBFFFAA
 #define COLOR_CHAT1 				0xE6E6E6E6
 #define COLOR_CHAT2 				0xC8C8C8C8
 #define COLOR_CHAT3 				0xAAAAAAAA
 #define COLOR_CHAT4 				0x8C8C8C8C
 #define COLOR_CHAT5 				0x6E6E6E6E
-#define COLOR_ME1 					0xFFBFFFAA
-#define COLOR_ME2 					0xa482bdFF
-#define COLOR_ME3 					0x8f74a5FF
-#define COLOR_ME4 					0x836b94FF
-#define COLOR_ME5 					0x70607cFF
-#define COLOR_DO1 					0x9797FFFF
-#define COLOR_DO2 					0x9797FFFF
-#define COLOR_DO3 					0x9797FFFF
-#define COLOR_DO4 					0x9797FFFF
-#define COLOR_DO5 					0x9797FFFF
-#define COLOR_OOC 					0xFFC3FFFF
+#define COLOR_ME1 					0xC2A2DAAA
+#define COLOR_ME2 					0xBB98D6FF
+#define COLOR_ME3 					0xAD83CDFF
+#define COLOR_ME4 					0xA778C9FF
+#define COLOR_ME5 					0x9963C0FF
+#define COLOR_DO1 					0x88A2ECFF
+#define COLOR_DO2 					0x88A2ECFF
+#define COLOR_DO3 					0x6283E6FF
+#define COLOR_DO4 					0x486FE1FF
+#define COLOR_DO5 					0x3C65DFFF
 #define COLOR_QUIT					0xDEDEDECC
 #define COLOR_GOLD					0xe8d97fFF
-#define COLOR_SPAWN					0xb2b2b2FF
+#define COLOR_SPAWN					0xFFFF00AA
 #define COLOR_INFO					0xA9C4E4FF
 #define COLOR_DESC 					0xC2A2DAFF
 #define COLOR_GM					0x20B2AAFF
-#define COLOR_DEPT 					0x66CC00FF
+#define COLOR_DEPT 					0x42B542FF
 #define COLOR_WEBSITE				0xFFFF0010
 #define COLOR_NEWS					0xFFFFFF22
 #define COLOR_REDSCREEN				0xFF0000AA
 #define COLOR_PHOTORADAR			0xFFFFFFAA
 
 // Callbacki
-#define sampCallback:%0(%1) \
-		public %0(%1)
+#define sampCallback%0(%1) \
+		public%0(%1)
 
-#define Callback:%0(%1) \
-		forward %0(%1); public %0(%1)
+#define Callback%0(%1) \
+		forward%0(%1); public%0(%1)
 
 // Klawisze
 #define HOLDING(%0) \
@@ -143,6 +143,21 @@
 #define BLOCK_RPACTN 256
 #define BLOCK_CURSE 512
 
+// Statusy (Flagi)
+#define STATUS_NONE 0
+#define STATUS_AFK 1
+#define STATUS_BW 2
+#define STATUS_ROLLERS 4
+#define STATUS_DRUNK 8
+#define STATUS_DRUGS 16
+#define STATUS_STRENGTH 32
+#define STATUS_BELTS 64
+#define STATUS_DETENTION 128
+#define STATUS_GLOVES 256
+#define STATUS_MUSIC 512
+#define STATUS_DRIVING 1024
+#define STATUS_DAMAGE 2048
+
 // Sloty przedmiotów
 #define SLOT_CUFFED 0
 #define SLOT_WEAPON 1
@@ -187,40 +202,43 @@
 #define P_GROUP_PERM_WITHDRAW 4
 #define P_GROUP_PERM_CHAT 8
 #define P_GROUP_PERM_SUBCHAT 16
-#define P_GROUP_PERM_PRODUCTS 32
-#define P_GROUP_PERM_OBJECTS 64
-#define P_GROUP_PERM_DOOR 128
-#define P_GROUP_PERM_GIVE 256
+#define P_GROUP_PERM_PRODUCT 32
+#define P_GROUP_PERM_OBJECT 64
+#define P_GROUP_PERM_3DTEXT 128
+#define P_GROUP_PERM_DOOR 256
+#define P_GROUP_PERM_GIVE 512
 
-#define G_NONE 0
-#define G_LSPD 1
-#define G_GOV 2
-#define G_LSFD 3
-#define G_FBI 4
-#define G_MEDIC 12
-#define G_MAFIA 14
-#define G_GANG 16
-#define G_RADIO 5
-#define G_BAR 6
-#define G_SALON 7
-#define	G_MECHANIC 8
-#define G_GYM 9
-#define G_SECURITY 10
-#define G_TAXI 11
-#define G_SHOP 13
-#define G_DRIVERLICENSE 15
-#define G_MOBILE 24
-#define G_AMMUNATION 25
-#define G_SHOOT 26
-#define G_SANNEWS 17
+// Grupy
+#define GROUP_NONE 0
+#define GROUP_LSPD 1
+#define GROUP_GOV 2
+#define GROUP_LSFD 3
+#define GROUP_FBI 4
+#define GROUP_MEDIC 12
+#define GROUP_MAFIA 14
+#define GROUP_GANG 16
+#define GROUP_RADIO 5
+#define GROUP_BAR 6
+#define GROUP_SALON 7
+#define	GROUP_MECHANIC 8
+#define GROUP_GYM 9
+#define GROUP_SECURITY 10
+#define GROUP_TAXI 11
+#define GROUP_SHOP 13
+#define GROUP_DRIVERLICENSE 15
+#define GROUP_MOBILE 24
+#define GROUP_AMMUNATION 25
+#define GROUP_SHOOT 26
+#define GROUP_SANNEWS 17
 
-#define D_NONE 0
-#define D_SHOP 1
-#define D_HOTEL 2
-#define D_GYM 3
-#define D_CLOTHES 4
-#define D_PHARMACY 5
-#define D_MECHANIC 6
+// Drzwi
+#define DOOR_NONE 0
+#define DOOR_SHOP 1
+#define DOOR_HOTEL 2
+#define DOOR_GYM 3
+#define DOOR_CLOTHES 4
+#define DOOR_PHARMACY 5
+#define DOOR_MECHANIC 6
 
 // Flagi zapisu danych
 #define SAVE_NONE 0
@@ -236,6 +254,8 @@
 #define SAVE_SKILL 512
 #define SAVE_ONLINE 1024
 #define SAVE_LANG 2048
+#define SAVE_PENALTIES 3072
+#define SAVE_STATS 4096
 
 // Kary
 #define PEN_NONE 0
@@ -256,46 +276,50 @@
 #define PEN_SCORE 15
 
 // Oferty
-#define OFFER_PARM_PRICE 0
-#define OFFER_PARM_ETC 1
-#define OFFER_PARM_TYPE 2
+#define OFFER_SENDER 0
+#define OFFER_PRICE 1
+#define OFFER_VALUE1 2
+#define OFFER_VALUE2 3
+#define OFFER_KIND 4
+#define OFFER_TYPE 5
 
 #define OFFER_NORMAL 0
 #define OFFER_SPECIAL 1
 
-#define O_NONE 0
-#define O_WELCOME 1
-#define O_KISS 2
-#define O_SEX 3
-#define O_GROUPINV 4
-#define O_RCINV 5
-#define O_DRIVINGLESS 6
-#define O_IDCARD 7
-#define O_DRIVINGLIC 8
-#define O_RP 9
-#define O_TAX 10
-#define O_PURCHTHING 11
-#define O_PURCHWEAP 12
-#define O_COMPSREP 13
-#define O_COMPINSTALL 14
-#define O_COMPMOD 15
-#define O_VEHMOD 16
-#define O_IMPROVEMENT 17
-#define O_VEHBUYING 18
-#define O_VEHCHANGING 19
-#define O_CARRENTAL 20
-#define O_REGISTER 21
-#define O_REFUELING 22
-#define O_ROPE 23
-#define O_VCARD 24
-#define O_DETENTION 25
-#define O_SALE 26
-#define O_REPAIR 27
-#define O_VARNISHING 28
-#define O_AREA 29
-#define O_TAXI 30
-#define O_AD 31
-#define O_INTERVIEW 32
+#define OFFER_NONE 0
+#define OFFER_WELCOME 1
+#define OFFER_KISS 2
+#define OFFER_SEX 3
+#define OFFER_INVITEGRP 4
+#define OFFER_INVITERC 5
+#define OFFER_DRIVINGLESS 6
+#define OFFER_DRIVINGLIC 7
+#define OFFER_IDCARD 8
+#define OFFER_RP 9
+#define OFFER_TAX 10
+#define OFFER_PURCHASETHG 11
+#define OFFER_PURCHASEWEAP 12
+#define OFFER_VEHREPAIR 13
+#define OFFER_PARTREPAIR 14
+#define OFFER_COMPINSTALL 15
+#define OFFER_COMPMONTAGE 16
+#define OFFER_VEHMODIFICATION 17
+#define OFFER_IMPROVEMENT 18
+#define OFFER_VARNISHING 19
+#define OFFER_PAINTJOB 20
+#define OFFER_VEHBUYING 21
+#define OFFER_VEHCHANGING 22
+#define OFFER_VEHRENTAL 23
+#define OFFER_VEHREGISTER 24
+#define OFFER_REFUELING 25
+#define OFFER_ROPE 26
+#define OFFER_VCARD 27
+#define OFFER_DETENTION 28
+#define OFFER_PRODUCT 29
+#define OFFER_AREA 30
+#define OFFER_TAXI 31
+#define OFFER_AD 32
+#define OFFER_INTERVIEW 33
 
 // Rodzaje rzeczy, przedmiotów
 #define TKIND_NONE 0
@@ -313,6 +337,7 @@
 #define TKIND_RING 12
 #define TKIND_ROPE 13
 #define TKIND_COMPONENT 15
+#define TKIND_AMMO 17
 #define	TKIND_DICE 21
 #define TKIND_LOTTERY 21 // te¿ 21 jak kostka
 #define	TKIND_CIGARETTE 23
@@ -330,7 +355,6 @@
 #define TKIND_BANDANA 69690
 #define	TKIND_GLOVES 69691
 #define	TKIND_ARMOR 69692
-#define TKIND_AMMO 69693
 #define TKIND_BOOMBOX 69694
 #define TKIND_SWITCH 69695
 #define TKIND_COUNTER 69696
@@ -345,21 +369,41 @@
 #define TKIND_KARNETNAWALKE 53
 #define TKIND_ACCESSORY 74
 
+// Narkotyki
 #define DRUG_NONE 0
 #define DRUG_HEROINE 1
 #define DRUG_METHA 2
 #define DRUG_ANADRALL 3
-#define DRUG_MARIJUANA 4
-#define DRUG_ALCOHOL 5
+#define DRUG_OPIUM 4
+#define DRUG_STREAK 5
+#define DRUG_MARIJUANA 6
+#define DRUG_ALCOHOL 7
 
-#define REPAIR_ENGINE 0
-#define REPAIR_DRIVER_DOOR 1
-#define REPAIR_PASS_DOOR 2
-#define REPAIR_BONNET 3
-#define REPAIR_BOOT 4
-#define REPAIR_LIGHT 5
-#define REPAIR_BUMPER 6
-#define ADD_ALARM 7
+// Modyfikacje pojazdu
+#define VEHMOD_ENGINE 0
+#define VEHMOD_DRIVER_DOOR 1
+#define VEHMOD_PASS_DOOR 2
+#define VEHMOD_BONNET 3
+#define VEHMOD_BOOT 4
+#define VEHMOD_LIGHT_LF 5
+#define VEHMOD_LIGHT_RF 6
+#define VEHMOD_LIGHT_RR 7
+#define VEHMOD_LIGHT_LR 8
+#define VEHMOD_TIRE_LF 9
+#define VEHMOD_TIRE_RF 10
+#define VEHMOD_TIRE_RR 11
+#define VEHMOD_TIRE_LR 12
+#define VEHMOD_TIRE_LF_B 13
+#define VEHMOD_TIRE_RF_B 14
+#define VEHMOD_TIRE_RR_B 15
+#define VEHMOD_TIRE_LR_B 16
+#define VEHMOD_BUMPER_FRONT 17
+#define VEHMOD_BUMPER_REAR 18
+#define VEHMOD_ALARM 19
+#define VEHMOD_AUDIO 20
+#define VEHMOD_CBRADIO 21
+#define VEHMOD_IMMOBILISER 22
+#define VEHMOD_LIMITER 23
 
 #define OSRP_VEHICLE_INVALID_ID -1
 #define OSRP_OBJECT_INVALID_ID -1

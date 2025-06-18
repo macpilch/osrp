@@ -632,7 +632,7 @@ stock createNewGroup(name[], color[], balance, perms, orderPerms) {
 
 	tGroup[freeId][gUid] = freeId + 1;
 	format(tGroup[freeId][gName], 32, name);
-	tGroup[freeId][gType] = G_NONE;
+	tGroup[freeId][gType] = GROUP_NONE;
 	tGroup[freeId][gMembers] = 0;
 	tGroup[freeId][gVehLimit] = 5;
 	tGroup[freeId][gMoney] = balance;

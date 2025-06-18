@@ -28,6 +28,7 @@ enum ThingData {
 	bool:tCraft,
 	tTerm,
 	tPlace,
+	tObj,
 	tVw,
 	tInt
 };

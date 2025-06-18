@@ -12,9 +12,8 @@
 #define __VEHICLE_PUBLICS_INC__
 #pragma library osrp
 
-sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
+sampCallback OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 	new srvVehId = getClosestServerVehicleId(vehicleid);
-	new srvThingId = getServerThingId(playerid);
 
 	tPlayer[playerid][pVehicle] = tVehicle[srvVehId][vUid];
 
@@ -23,7 +22,7 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Administracja zablokowa³a Ci mo¿liwoœæ prowadzenia pojazdów.");
 	}
 
-	if(isVehicleInUse(vehicleid) && !(tPlayer[playerid][pDocuments] & DOC_L_DRIVING) && !drivingCourse[playerid] && !ispassenger) {
+	if(isVehicleInUse(vehicleid) && !(tPlayer[playerid][pDocuments] & DOC_L_DRIVING) && !(tPlayer[playerid][pStatus] & STATUS_DRIVING) && !ispassenger) {
 		ClearAnimations(playerid);
 
 		SendClientMessage(playerid, COLOR_INFO, "(!) Pamiêtaj, to RolePlay. Swój pojazd musisz kupiæ lub wypo¿yczyæ.");
@@ -41,13 +40,13 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		SendClientMessage(playerid, COLOR_GRAY, "Grasz na tej postaci ponad 70h. Aby prowadziæ pojazdy, wynajmij lub kup mieszkanie.");
 	}
 
-	if(!isBicycle(GetVehicleModel(vehicleid)) && !(tPlayer[playerid][pDocuments] & DOC_L_DRIVING) && !drivingCourse[playerid] && !ispassenger) {
+	if(!isBicycle(tVehicle[srvVehId][vModelId]) && !(tPlayer[playerid][pDocuments] & DOC_L_DRIVING) && !(tPlayer[playerid][pStatus] & STATUS_DRIVING) && !ispassenger) {
 		ClearAnimations(playerid);
 
 		mainStr[0] = EOS;
 		strcat(mainStr, "Musisz najpierw wyrobiæ prawo jazdy.\nDo tego czasu u¿yj budek, by dzwoniæ po taksówki, lub /bus.\n\n");
 		strcat(mainStr, "By wyrobiæ prawko, kup telefon i zadzwoñ do nauki jazdy pod numerem 333.");
-		ShowPlayerDialogInfo(playerid, mainStr);
+		DialogInfo(playerid, mainStr);
 	}
 
 	if(tVehicle[srvVehId][vLock]) {
@@ -60,36 +59,36 @@ sampCallback:OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~r~Nie mozesz prowadzic tego~n~pojazdu.", 6000, 3);
 	}
 
-	if(srvThingId != INVALID_THING_ID && tThing[srvThingId][tUsed] && tThing[srvThingId][tKind] == TKIND_ROLLER) {
-		ClearAnimations(playerid);
-		ShowPlayerDialogInfo(playerid, "Nie mo¿esz wsiadaæ do pojazdu z za³o¿onymi rolkami.");
-	}
-
-	//ShowPlayerDialogInfo(playerid, "Ten pojazd jest tylko dla graczy z kontem premium.");
-	return 1;
-}
-
-sampCallback:OnPlayerExitVehicle(playerid, vehicleid) {
-#if defined DEBUG
-	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnPlayerExitVehicle");
-#endif
-
-	new srvVehId = getClosestServerVehicleId(vehicleid);
-
 	if(tVehicle[srvVehId][vEngineHp] <= 300.0) {
+		ClearAnimations(playerid);
+
 		mainStr[0] = EOS;
-		strcat(mainStr, "Ten pojazd jest ca³kowicie zniszczony po wybuchu, dachowaniu lub zwodowaniu.\nAby przywróciæ go do stanu u¿ywalnoœc, musisz poprosiæ kogoœ o zaholowanie\n");
+		strcat(mainStr, "Ten pojazd jest ca³kowicie zniszczony po wybuchu, dachowaniu lub zwodowaniu.\nAby przywróciæ go do stanu u¿ywalnoœci, musisz poprosiæ kogoœ o zaholowanie\n");
 		strcat(mainStr, "do warsztatu lub na stacjê, gdzie zajm¹ siê nim mechanicy.\n\nAby zaakceptowaæ ofertê naprawy, najlepiej usi¹dŸ w œrodku, jako pasa¿er.");
 		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Zniszczony pojazd.", mainStr, "OK", "Zamknij");
 	}
+
+	if(tPlayer[playerid][pStatus] & STATUS_ROLLERS) {
+		ClearAnimations(playerid);
+		DialogInfo(playerid, "Nie mo¿esz wsiadaæ do pojazdu z za³o¿onymi rolkami.");
+	}
+
+	//DialogInfo(playerid, "Ten pojazd jest tylko dla graczy z kontem premium.");
 	return 1;
 }
 
-sampCallback:OnVehicleSpawn(vehicleid) {
+sampCallback OnPlayerExitVehicle(playerid, vehicleid) {
+#if defined DEBUG
+	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnPlayerExitVehicle");
+#endif
 	return 1;
 }
 
-sampCallback:OnVehicleDeath(vehicleid, killerid) {
+sampCallback OnVehicleSpawn(vehicleid) {
+	return 1;
+}
+
+sampCallback OnVehicleDeath(vehicleid, killerid) {
 #if defined DEBUG
 	SendClientMessage(killerid, COLOR_WHITE, "Witma ! OnVehicleDeath");
 #endif
@@ -122,28 +121,28 @@ sampCallback:OnVehicleDeath(vehicleid, killerid) {
 	return 1;
 }
 
-sampCallback:OnVehicleMod(playerid, vehicleid, componentid) {
+sampCallback OnVehicleMod(playerid, vehicleid, componentid) {
 #if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehicleMod");
 #endif
 	return 1;
 }
 
-sampCallback:OnVehiclePaintjob(playerid, vehicleid, paintjobid) {
+sampCallback OnVehiclePaintjob(playerid, vehicleid, paintjobid) {
 #if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehiclePaintjob");
 #endif
 	return 1;
 }
 
-sampCallback:OnVehicleRespray(playerid, vehicleid, color1, color2) {
+sampCallback OnVehicleRespray(playerid, vehicleid, color1, color2) {
 #if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehicleRespray");
 #endif
 	return 1;
 }
 
-sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
+sampCallback OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 #if defined DEBUG
 	SendClientMessage(playerid, COLOR_WHITE, "Witma ! OnVehicleDamageStatusUpdate");
 #endif
@@ -154,7 +153,7 @@ sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 
 	GetVehicleDamageStatus(vehicleid, tVehicle[srvVehId][vPanels], tVehicle[srvVehId][vDoors], tVehicle[srvVehId][vLights], tVehicle[srvVehId][vTires]);
 
-	if(!hasBelts[playerid]) {
+	if(!(tPlayer[playerid][pStatus] & STATUS_BELTS)) {
 		SetPlayerHealth(playerid, tPlayer[playerid][pHp] - damage);
 	} else {
 		SetPlayerHealth(playerid, tPlayer[playerid][pHp] - (damage + 3));
@@ -175,15 +174,15 @@ sampCallback:OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 		SetTimerEx("hideCollisionInfo", 10000, false, "i", playerid);
 	}
 
-	if(drivingCourse[playerid] && drivingCourse[offerFrom[playerid]]) {
-		if(GetPlayerMoney(playerid) <= 0) {
+	if((tPlayer[playerid][pStatus] & STATUS_DRIVING) && (tPlayer[tOffer[playerid][OFFER_SENDER]][pStatus] & STATUS_DRIVING)) {
+		if(tPlayer[playerid][pMoney] <= 0) {
 			GameTextForPlayer(playerid, "~r~Brak pieniedzy na pokrycie~n~zniszczen.", 5000, 3);
 		}
 	}
 	return 1;
 }
 
-sampCallback:OnVehicleStreamIn(vehicleid, forplayerid) {
+sampCallback OnVehicleStreamIn(vehicleid, forplayerid) {
 #if defined DEBUG
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamIn");
 #endif
@@ -202,7 +201,7 @@ sampCallback:OnVehicleStreamIn(vehicleid, forplayerid) {
 	return 1;
 }
 
-sampCallback:OnVehicleStreamOut(vehicleid, forplayerid) {
+sampCallback OnVehicleStreamOut(vehicleid, forplayerid) {
 #if defined DEBUG
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamOut");
 #endif

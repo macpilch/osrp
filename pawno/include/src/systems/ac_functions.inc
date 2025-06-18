@@ -86,7 +86,7 @@ stock antyWeapon(playerid) {
 
 stock antyAdmJail(playerid) {
 	if(isLogged[playerid] && isSpawned[playerid] && !spawnFreeze[playerid]) {
-		if(tPlayer[playerid][pAj] > 0 && GetPlayerVirtualWorld(playerid) != 0 && !GetPlayerInterior(playerid)) {
+		if(tPlayer[playerid][pAj] > 0 && tPlayer[playerid][pVw] != 0 && !tPlayer[playerid][pInt]) {
 			if(!playerToPoint(playerid, 10.0, 1174.3706, -1180.3267, 87.0350)) {
 				givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_KICK, 0, 0, "Admin-jail break");
 			}

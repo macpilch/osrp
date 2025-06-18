@@ -57,7 +57,7 @@ stock getServer3dTextId(playerid) {
 	new id = OSRP_3DTEXT_INVALID_ID;
 
 	foreach(new i : text3dItter) {
-		if(t3DText[i][t3dUid] == tPlayer[playerid][p3dText]) {
+		if(t3dText[i][t3dUid] == tPlayer[playerid][p3dText]) {
 			id = i;
 			break;
 		}
@@ -69,7 +69,7 @@ stock getServer3dTextIdFromUid(uid) {
 	new id = OSRP_3DTEXT_INVALID_ID;
 
 	foreach(new i : text3dItter) {
-		if(uid == t3DText[i][t3dUid]) {
+		if(uid == t3dText[i][t3dUid]) {
 			id = i;
 			break;
 		}
@@ -77,7 +77,7 @@ stock getServer3dTextIdFromUid(uid) {
 	return id;
 }
 
-stock add3dText(playerid, desc[], color[], owner, type) {
+stock add3dText(playerid, Float:dist, desc[], owner, type) {
 	new freeId = OSRP_3DTEXT_INVALID_ID;
 	new Float:pX, Float:pY, Float:pZ;
 
@@ -95,19 +95,18 @@ stock add3dText(playerid, desc[], color[], owner, type) {
 	t3dText[freeId][t3dOUid] = owner;
 	t3dText[freeId][t3dType] = type;
 	format(t3dText[freeId][t3dDesc], 64, desc);
-	format(t3dText[freeId][t3dColor], 10, color);
+	format(t3dText[freeId][t3dColor], 10, "FFFFFFFF");
 	t3dText[freeId][t3dPosX] = pX + 0.5;
 	t3dText[freeId][t3dPosY] = pY + 0.5;
 	t3dText[freeId][t3dPosZ] = pZ;
-	t3dText[freeId][t3dDist] = 30.0;
-	t3dText[freeId][t3dVw] = GetPlayerVirtualWorld(playerid);
-	t3dText[freeId][t3dInt] = GetPlayerInterior(playerid);
+	t3dText[freeId][t3dDist] = dist;
+	t3dText[freeId][t3dVw] = tPlayer[playerid][pVw];
+	t3dText[freeId][t3dInt] = tPlayer[playerid][pInt];
 
 	t3dText[freeId][t3dId] = CreateDynamic3DTextLabel(t3dText[freeId][t3dDesc], hexstr(t3dText[freeId][t3dColor]), t3dText[freeId][t3dPosX], t3dText[freeId][t3dPosY], t3dText[freeId][t3dPosZ], t3dText[freeId][t3dDist], INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, t3dText[freeId][t3dVw], t3dText[freeId][t3dInt], -1);
 	Streamer_Update(playerid);
 
 	Iter_Add(text3dItter, freeId);
-	tPlayer[playerid][p3dText] = t3dText[freeId][t3dUid];
 
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_3DTexts` (`UID`, `OUID`, `Type`, `Desc`, `Color`, `PosX`, `PosY`, `PosZ`, `Distance`, `VW`, `INT`) VALUES ('%d', '%d', '%d', '%s', '%s', '%f', '%f', '%f', '%f', '%d', '%d')",
@@ -123,7 +122,9 @@ stock add3dText(playerid, desc[], color[], owner, type) {
 		t3dText[freeId][t3dVw],
 		t3dText[freeId][t3dInt]
 	);
+
 	mysql_query(queryStr);
+	return t3dText[freeId][t3dUid];
 }
 
 stock remove3dText(srvtextid) {

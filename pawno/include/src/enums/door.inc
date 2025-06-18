@@ -40,6 +40,7 @@ enum DoorData {
 	dMaxTexts,
 	bool:dSecurity,
 	dSecurityName[32],
+	dAudio,
 	dVw,
 	dInt
 };

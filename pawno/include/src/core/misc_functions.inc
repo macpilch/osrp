@@ -19,7 +19,8 @@
 	Narazie najprostrza wersja do testow.
 */
 stock sendDistanceMessage(playerid, Float:range, skipPlayer, const wholeStr[], const strHalf1[], const strHalf2[], color1, color2, color3, color4, color5) {
-	GetPlayerPos(playerid, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ]);
+	new Float:pX, Float:pY, Float:pZ;
+	GetPlayerPos(playerid, pX, pY, pZ);
 
 	foreach(new i : Player) {
 		if(skipPlayer) {
@@ -28,41 +29,52 @@ stock sendDistanceMessage(playerid, Float:range, skipPlayer, const wholeStr[], c
 			}
 		}
 
-		if(GetPlayerInterior(playerid) == GetPlayerInterior(i) && GetPlayerVirtualWorld(playerid) == GetPlayerVirtualWorld(i)) {
-			if(playerToPoint(i, range / 5, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ])) {
+		if(GetPlayerVirtualWorld(playerid) == GetPlayerVirtualWorld(i) && GetPlayerInterior(playerid) == GetPlayerInterior(i)) {
+			if(!IsPlayerInAnyVehicle(playerid) || (IsPlayerInAnyVehicle(playerid) && getServerVehicleId(playerid) != OSRP_VEHICLE_INVALID_ID &&
+				tVehicle[getServerVehicleId(playerid)][vWindow])) {
+				if(playerToPoint(i, range / 5, pX, pY, pZ)) {
+					if(strlen(strHalf1) && strlen(strHalf2)) {
+						SendClientMessage(i, color1, strHalf1);
+						SendClientMessage(i, color1, strHalf2);
+					} else {
+						SendClientMessage(i, color1, wholeStr);
+					}
+				} else if(playerToPoint(i, range / 4, pX, pY, pZ)) {
+					if(strlen(strHalf1) && strlen(strHalf2)) {
+						SendClientMessage(i, color2, strHalf1);
+						SendClientMessage(i, color2, strHalf2);
+					} else {
+						SendClientMessage(i, color2, wholeStr);
+					}
+				} else if(playerToPoint(i, range / 3, pX, pY, pZ)) {
+					if(strlen(strHalf1) && strlen(strHalf2)) {
+						SendClientMessage(i, color3, strHalf1);
+						SendClientMessage(i, color3, strHalf2);
+					} else {
+						SendClientMessage(i, color3, wholeStr);
+					}
+				} else if(playerToPoint(i, range / 2, pX, pY, pZ)) {
+					if(strlen(strHalf1) && strlen(strHalf2)) {
+						SendClientMessage(i, color4, strHalf1);
+						SendClientMessage(i, color4, strHalf2);
+					} else {
+						SendClientMessage(i, color4, wholeStr);
+					}
+				} else if(playerToPoint(i, range, pX, pY, pZ)) {
+					if(strlen(strHalf1) && strlen(strHalf2)) {
+						SendClientMessage(i, color5, strHalf1);
+						SendClientMessage(i, color5, strHalf2);
+					} else {
+						SendClientMessage(i, color5, wholeStr);
+					}
+				}
+			} else if(IsPlayerInAnyVehicle(playerid) && IsPlayerInAnyVehicle(i) && GetPlayerVehicleID(playerid) == GetPlayerVehicleID(i) &&
+			          getServerVehicleId(playerid) != OSRP_VEHICLE_INVALID_ID && !tVehicle[getServerVehicleId(playerid)][vWindow]) {
 				if(strlen(strHalf1) && strlen(strHalf2)) {
 					SendClientMessage(i, color1, strHalf1);
 					SendClientMessage(i, color1, strHalf2);
 				} else {
 					SendClientMessage(i, color1, wholeStr);
-				}
-			} else if(playerToPoint(i, range / 4, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ])) {
-				if(strlen(strHalf1) && strlen(strHalf2)) {
-					SendClientMessage(i, color2, strHalf1);
-					SendClientMessage(i, color2, strHalf2);
-				} else {
-					SendClientMessage(i, color2, wholeStr);
-				}
-			} else if(playerToPoint(i, range / 3, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ])) {
-				if(strlen(strHalf1) && strlen(strHalf2)) {
-					SendClientMessage(i, color3, strHalf1);
-					SendClientMessage(i, color3, strHalf2);
-				} else {
-					SendClientMessage(i, color3, wholeStr);
-				}
-			} else if(playerToPoint(i, range / 2, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ])) {
-				if(strlen(strHalf1) && strlen(strHalf2)) {
-					SendClientMessage(i, color4, strHalf1);
-					SendClientMessage(i, color4, strHalf2);
-				} else {
-					SendClientMessage(i, color4, wholeStr);
-				}
-			} else if(playerToPoint(i, range, tPlayer[playerid][pPosX], tPlayer[playerid][pPosY], tPlayer[playerid][pPosZ])) {
-				if(strlen(strHalf1) && strlen(strHalf2)) {
-					SendClientMessage(i, color5, strHalf1);
-					SendClientMessage(i, color5, strHalf2);
-				} else {
-					SendClientMessage(i, color5, wholeStr);
 				}
 			}
 		}
@@ -163,21 +175,21 @@ stock sendClientMessageToAllOOC(const mess[]) {
 		format(str1, sizeof(str1), "%s...", tmpStr);
 		format(str2, sizeof(str2), "... %s", tmpStr2);
 
-		SendClientMessageToAll(COLOR_OOC, str1);
-		SendClientMessageToAll(COLOR_OOC, str2);
+		SendClientMessageToAll(COLOR_PINK, str1);
+		SendClientMessageToAll(COLOR_PINK, str2);
 	} else {
-		SendClientMessageToAll(COLOR_OOC, mess);
+		SendClientMessageToAll(COLOR_PINK, mess);
 	}
 }
 
-stock ShowPlayerDialogInfo(playerid, info[]) {
-	return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", info, "OK", "");
+stock DialogInfo(playerid, desc[]) {
+	return ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Informacja", desc, "OK", "");
 }
 
 stock OSRP_Tip(playerid, const tip[]) {
 	new str[128];
 	format(str, sizeof(str), "Tip: %s", tip);
-	return SendClientMessage(playerid, COLOR_GRAY, tip);
+	return SendClientMessage(playerid, COLOR_GRAY, str);
 }
 
 stock getPenaltyName(type) {

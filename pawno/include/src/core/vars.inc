@@ -30,13 +30,6 @@ new loginAttempts[MAX_PLAYERS];
 
 new playerFuelPrice[MAX_PLAYERS]; // Do tablicy trafia cena paliwa dla danego gracza podczas uzywania funkcji tankuj
 
-new offerFrom[MAX_PLAYERS]; // Przechowuje id osoby ktora wyslala oferte
-new offerFor[MAX_PLAYERS]; // Przechowuje id osoby ktora otrzymala oferte
-new offerParams[MAX_PLAYERS][3]; // 0 - pieni¹dze, 1 - dodatkowe opcje, 2 - specjalna
-new offerType[MAX_PLAYERS];
-
-new groupOffer[MAX_PLAYERS];
-
 new playerContacts[MAX_PLAYERS][MAX_CONTACTS];
 new playerContactsName[MAX_PLAYERS][MAX_CONTACTS][24];
 
@@ -49,7 +42,6 @@ new telEnterGroup[MAX_PLAYERS];
 new lastPmId[MAX_PLAYERS];
 new adminPmStr[MAX_PLAYERS][128];
 
-new gymObject[2];
 new endBWTime[MAX_PLAYERS];
 new lastPressesTime[MAX_PLAYERS];
 new called[MAX_PLAYERS];
@@ -113,12 +105,10 @@ new bool:busCameraChoose[MAX_PLAYERS];
 new bool:busCameraSelect[MAX_PLAYERS];
 new bool:usedCmdLogin[MAX_PLAYERS];
 new bool:usedCmdReport[MAX_PLAYERS];
-new bool:hasBelts[MAX_PLAYERS];
 stock bool:hasBank[MAX_PLAYERS];
 new bool:isDizzines[MAX_PLAYERS];
 new bool:usesTelephone[MAX_PLAYERS];
 new bool:chatMessages[MAX_PLAYERS][2]; // 0 - PM, 1 - Grupowe
-new bool:drivingCourse[MAX_PLAYERS];
 new bool:showGroupsInfo[MAX_PLAYERS][MAX_PLAYER_GROUPS];
 new bool:insidedHotel[MAX_PLAYERS];
 new bool:deliveringPackage[MAX_PLAYERS];
@@ -134,6 +124,7 @@ new bool:gpsEnabled[MAX_PLAYERS];
 new bool:spawnFreeze[MAX_PLAYERS];
 new bool:hasAnim[MAX_PLAYERS];
 new bool:createdChar[MAX_PLAYERS];
+new bool:gymObjectsInUse[MAX_OBJECTS];
 
 // type - MySQL
 new MySQL:hMySQL;
@@ -171,6 +162,7 @@ new Text:photoRadarScreen[MAX_PLAYERS];
 new Text:doorInfo[MAX_PLAYERS][3];
 new Text:doorExtraInfo[MAX_PLAYERS];
 new Text:telephoneCall[MAX_PLAYERS][2];
+new Text:telephoneEnabled[MAX_PLAYERS][2];
 new Text:groupsInfo[MAX_PLAYERS][37];
 new Text:usedRollersInfo[MAX_PLAYERS][2];
 new Text:hotelInfo[MAX_PLAYERS][3];
@@ -187,6 +179,7 @@ new Text:skinInfo[MAX_PLAYERS][2];
 new Text:objectInfo[MAX_PLAYERS][2];
 new Text:gateInfo[MAX_PLAYERS][2];
 new Text:usedDrugsInfo[MAX_PLAYERS][3];
+new Text:groupTips[MAX_PLAYERS][2];
 
 // type - Bar
 new Bar:fuelProgressBar[MAX_PLAYERS];

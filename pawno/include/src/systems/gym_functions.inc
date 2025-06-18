@@ -21,19 +21,30 @@ stock searchPlayerGym(playerid) {
 		return 1;
 	}
 
-	if(!isPlayerFacingObject(playerid, gymObject[0])) {
-		return GameTextForPlayer(playerid, "~r~Nie stoisz przy maszynie", 5000, 3);
+	new objectid = isObjectNextToPlayer(playerid, 2629);
+
+	if(objectid == INVALID_OBJECT_ID) {
+		return GameTextForPlayer(playerid, "~r~Nie stoisz przy maszynie.", 5000, 3);
+	}
+
+	if(gymObjectsInUse[objectid]) {
+		return GameTextForPlayer(playerid, "~r~Ta maszyna jest juz zajeta.", 5000, 3);
 	}
 
 	if(tPlayer[playerid][pHp] < 100) {
 		return SendClientMessage(playerid, COLOR_GRAY, "Odczekaj 3 minuty przed ostatni¹ utrat¹ HP.");
 	}
 
+	new Float:oX, Float:oY, Float:oZ;
+
+	GetDynamicObjectPos(objectid, oX, oY, oZ);
 	SetPlayerFacingAngle(playerid, 90);
-	SetPlayerPos(playerid, 758.8672 + 1, -76.0945, 1000.6500);
+	SetPlayerPos(playerid, oX + 1, oY, oZ);
 
 	ApplyAnimation(playerid, "BENCHPRESS", "gym_bp_geton", 1, 0, 0, 0, 1, 0, 1);
 	SetTimerEx("givePlayerGymBarBell", 4000, false, "i", playerid);
+
+	gymObjectsInUse[objectid] = true;
 
 	acceptTraining[playerid] = false;
 	resetPlayerBoxTextDraws(playerid);
@@ -44,8 +55,8 @@ stock searchPlayerGym(playerid) {
 	return 1;
 }
 
-Callback:givePlayerGymBarBell(playerid) {
-	if(!IsValidDynamicObject(gymObject[0])) {
+Callback givePlayerGymBarBell(playerid) {
+	if(IsPlayerAttachedObjectSlotUsed(playerid, SLOT_BARBELL)) {
 		return 1;
 	}
 
@@ -55,7 +66,7 @@ Callback:givePlayerGymBarBell(playerid) {
 	return 1;
 }
 
-Callback:updatePressedBarbell(playerid) {
+Callback updatePressedBarbell(playerid) {
 	if(!pressedBarbell[playerid]) {
 		pressedBarbell[playerid] = true;
 	} else {
