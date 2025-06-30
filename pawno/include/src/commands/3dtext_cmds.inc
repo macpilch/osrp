@@ -2,8 +2,8 @@
 	Project: OSRP
 	Author: steeZ (macpilch)
 	File: 3dtext_cmds.inc
-	Date: 24.07.2022
-	Modified: 24.07.2022
+	Date: 02.06.2025
+	Modified: 02.06.2025
 */
 
 #if defined __3DTEXT_CMDS_INC__
@@ -40,7 +40,11 @@ CMD:tc(playerid, params[]) {
 			return OSRP_Tip(playerid, "/tc [Dystans] [Treœæ] - tworzy napis");
 		}
 
-		tPlayer[playerid][p3dText] = add3dText(playerid, dist, desc, tDoor[srvDoorId][dUid], TEXT3D_OWNER_DOOR);
+		new Float:pX, Float:pY, Float:pZ;
+		GetPlayerPos(playerid, pX, pY, pZ);
+
+		tPlayer[playerid][p3dText] = add3dText(tDoor[srvDoorId][dUid], TEXT3D_OWNER_DOOR, desc, "FF0000FF", pX, pY, pZ, dist, tPlayer[playerid][pVw], tPlayer[playerid][pInt]);
+		Streamer_Update(playerid);
 
 		tDoor[srvDoorId][dTexts]++;
 		saveDoorValues(srvDoorId);
@@ -56,7 +60,11 @@ CMD:atc(playerid, params[]) {
 		return OSRP_Tip(playerid, "/atc [Dystans] [Treœæ] - tworzy napis");
 	}
 
-	tPlayer[playerid][p3dText] = add3dText(playerid, dist, desc, 0, TEXT3D_OWNER_AREA);
+	new Float:pX, Float:pY, Float:pZ;
+	GetPlayerPos(playerid, pX, pY, pZ);
+
+	tPlayer[playerid][p3dText] = add3dText(0, TEXT3D_OWNER_AREA, desc, "FF0000FF", pX, pY, pZ, dist, tPlayer[playerid][pVw], tPlayer[playerid][pInt]);
+	Streamer_Update(playerid);
 	return 1;
 }
 

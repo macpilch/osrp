@@ -6,9 +6,9 @@
 	Modified: 24.07.2022
 */
 
-//#if !defined DEBUG
+#if !defined DEBUG
 //#define DEBUG
-//#endif
+#endif
 
 #include <a_samp>
 #include <foreach>
@@ -19,11 +19,14 @@
 #include <sscanf2>
 #include <streamer>
 #include <YSI\y_timers>
+#include <mapandreas>
+#include <crashdetect>
 
 #include "src\macros\defines"
 #include "src\macros\dialogs"
 #include "src\enums\player"
 #include "src\enums\vehicle"
+#include "src\enums\achievement"
 #include "src\enums\anim"
 #include "src\enums\area"
 #include "src\enums\group"
@@ -50,6 +53,7 @@
 #include "src\core\global_functions"
 #include "src\core\player_functions"
 #include "src\systems\vehicle_functions"
+#include "src\systems\achievement_functions"
 #include "src\systems\anim_functions"
 #include "src\systems\area_functions"
 #include "src\systems\thing_functions"

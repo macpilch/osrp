@@ -1252,7 +1252,7 @@ CMD:set(playerid, params[]) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
-		tPlayer[pId][pPerm][0] = perm;
+		tPlayer[pId][pPerm][0] += perm;
 		savePlayerValues(pId, SAVE_GROUPS);
 
 		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ uprawnienia grupy na slocie 1 graczowi.");
@@ -1268,7 +1268,7 @@ CMD:set(playerid, params[]) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
-		tPlayer[pId][pPerm][1] = perm;
+		tPlayer[pId][pPerm][1] += perm;
 		savePlayerValues(pId, SAVE_GROUPS);
 
 		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ uprawnienia grupy na slocie 2 graczowi.");
@@ -1284,7 +1284,7 @@ CMD:set(playerid, params[]) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
-		tPlayer[pId][pPerm][2] = perm;
+		tPlayer[pId][pPerm][2] += perm;
 		savePlayerValues(pId, SAVE_GROUPS);
 
 		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ uprawnienia grupy na slocie 3 graczowi.");
@@ -1300,7 +1300,7 @@ CMD:set(playerid, params[]) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
-		tPlayer[pId][pPerm][3] = perm;
+		tPlayer[pId][pPerm][3] += perm;
 		savePlayerValues(pId, SAVE_GROUPS);
 
 		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ uprawnienia grupy na slocie 4 graczowi.");
@@ -1316,7 +1316,7 @@ CMD:set(playerid, params[]) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nie ma takiego gracza.");
 		}
 
-		tPlayer[pId][pPerm][4] = perm;
+		tPlayer[pId][pPerm][4] += perm;
 		savePlayerValues(pId, SAVE_GROUPS);
 
 		SendClientMessage(playerid, COLOR_GREEN, "Zmieni³eœ uprawnienia grupy na slocie 5 graczowi.");
@@ -1434,7 +1434,7 @@ CMD:ap(playerid, params[]) {
 				return OSRP_Tip(playerid, "/ap stworz [Owner] [Place] [Kind] [Name] [Value 1] [Value 2]");
 			}
 
-			addPlayerThing(owner, kind, name, value1, value2, 0.0, 0.0, 0.0, place);
+			addThing(owner, kind, name, value1, value2, 0.0, 0.0, 0.0, place);
 			SendClientMessage(getPlayerIdFromUid(owner), COLOR_GREEN, "Dosta³eœ przedmiot od administracji.");
 		}
 	}
@@ -1498,7 +1498,7 @@ CMD:ad(playerid, params[]) {
 			tDoor[srvDoorId][dEnterX] = pX;
 			tDoor[srvDoorId][dEnterY] = pY;
 			tDoor[srvDoorId][dEnterZ] = pZ;
-			tDoor[srvDoorId][dEnterAng] = pA;
+			tDoor[srvDoorId][dEnterA] = pA;
 
 			saveDoorValues(srvDoorId);
 
@@ -1605,7 +1605,17 @@ CMD:ab(playerid, params[]) {
 			return SendClientMessage(playerid, COLOR_GRAY, "Nieprawid³owy Virtual World.");
 		}
 
-		addBusStop(playerid, name);
+		new srvAreaId = getServerAreaId(playerid);
+		if(srvAreaId == INVALID_AREA_ID) {
+			return SendClientMessage(playerid, COLOR_GRAY, "Musisz znajdowaæ siê w jednej z dzielnic Los Santos.");
+		}
+
+		new Float:pX, Float:pY, Float:pZ, Float:pA;
+
+		GetPlayerPos(playerid, pX, pY, pZ);
+		GetPlayerFacingAngle(playerid, pA);
+
+		tPlayer[playerid][pBusStop] = addBusStop(tArea[srvAreaId][aUid], name, pX, pY, pZ, pA);
 	}
 	return 1;
 }
@@ -1618,7 +1628,12 @@ CMD:acash(playerid, params[]) {
 			return OSRP_Tip(playerid, "/ac [Nazwa bankomatu]");
 		}
 
-		addCashpoint(playerid, name);
+		new Float:pX, Float:pY, Float:pZ, Float:pA;
+
+		GetPlayerPos(playerid, pX, pY, pZ);
+		GetPlayerFacingAngle(playerid, pA);
+
+		tPlayer[playerid][pCashPoint] = addCashPoint(name, pX, pY, pZ, pA, tPlayer[playerid][pVw], tPlayer[playerid][pInt]);
 	}
 	return 1;
 }
@@ -1632,13 +1647,13 @@ CMD:ag(playerid, params[]) {
 		}
 
 		if(!strcmp(type, "stworz", true)) {
-			new uid, name[32], color[8], balance, perms, orderPerms;
+			new uid, name[32], color[8], type2, balance, perms;
 
-			if(sscanf(opt, "s[32]s[8]iii", name, color, balance, perms, orderPerms)) {
-				return OSRP_Tip(playerid, "/ag stworz [Nazwa] [Kolor HEX] [Saldo] [Flagi] [Flagi zamawiania]");
+			if(sscanf(opt, "s[32]s[8]iii", name, color, type2, balance, perms)) {
+				return OSRP_Tip(playerid, "/ag stworz [Nazwa] [Kolor HEX] [Typ] [Saldo] [Flagi]");
 			}
 
-			uid = createNewGroup(name, color, balance, perms, orderPerms);
+			uid = addGroup(name, type2, balance, perms, color);
 
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "Grupa o nazwie '%s' (UID: %d) zosta³a pomyœlnie utworzona.", uid, name);

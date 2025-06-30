@@ -26,5 +26,6 @@ enum AreaData {
 	Float:aMaxY,
 	Float:aMaxZ,
 	aMaxSpeed,
+	aDimension,
 	aCost
 };

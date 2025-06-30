@@ -24,8 +24,9 @@ stock initBusStopValues() {
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
-		sscanf(queryStr, "p<|>is[32]ffffff",
+		sscanf(queryStr, "p<|>iis[32]ffffff",
 			tBusStop[i][bsUid],
+			tBusStop[i][bsOUid],
 			tBusStop[i][bsName],
 			tBusStop[i][bsPosX],
 			tBusStop[i][bsPosY],
@@ -56,7 +57,7 @@ stock getServerBusStopId(playerid) {
 	new id = INVALID_BUS_ID;
 
 	foreach(new i : busStopItter) {
-		if(tPlayer[playerid][pBus] == tBusStop[i][bsUid]) {
+		if(tPlayer[playerid][pBusStop] == tBusStop[i][bsUid]) {
 			id = i;
 			break;
 		}
@@ -95,9 +96,8 @@ stock getBusStopDistance(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float
 	return floatround(floatsqroot(Distance(x1, y1, z1, x2, y2, z2)));
 }
 
-stock addBusStop(playerid, name[]) {
+stock addBusStop(owner, const name[], Float:x, Float:y, Float:z, Float:a) {
 	new freeId = INVALID_BUS_ID;
-	new Float:pX, Float:pY, Float:pZ, Float:pA;
 
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_BusStops`");
@@ -108,25 +108,23 @@ stock addBusStop(playerid, name[]) {
 	freeId = mysql_fetch_int();
 	mysql_free_result();
 
-	GetPlayerPos(playerid, pX, pY, pZ);
-	GetPlayerFacingAngle(playerid, pA);
-	getXYInFrontOfPlayer(playerid, pX, pY, 3.0);
-
 	tBusStop[freeId][bsUid] = freeId + 1;
+	tBusStop[freeId][bsOUid] = owner;
 	format(tBusStop[freeId][bsName], 32, name);
-	tBusStop[freeId][bsPosX] = pX;
-	tBusStop[freeId][bsPosY] = pY;
-	tBusStop[freeId][bsPosZ] = pZ;
+	tBusStop[freeId][bsPosX] = x;
+	tBusStop[freeId][bsPosY] = y;
+	tBusStop[freeId][bsPosZ] = z;
 	tBusStop[freeId][bsRotX] = 0.0;
 	tBusStop[freeId][bsRotY] = 0.0;
-	tBusStop[freeId][bsRotZ] = pA;
+	tBusStop[freeId][bsRotZ] = a;
 	tBusStop[freeId][bsUsed] = false;
 	tBusStop[freeId][bsObject] = CreateDynamicObject(1257, tBusStop[freeId][bsPosX], tBusStop[freeId][bsPosY], tBusStop[freeId][bsPosZ], tBusStop[freeId][bsRotX], tBusStop[freeId][bsRotY], tBusStop[freeId][bsRotZ], 0, 0, -1, 100.0);
 
 	Iter_Add(busStopItter, freeId);
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_BusStops` (`Name`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`) VALUES ('%s', '%f', '%f', '%f', '%f', '%f', '%f')",
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_BusStops` (`OUID`, `Name`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`) VALUES ('%d', '%s', '%f', '%f', '%f', '%f', '%f', '%f')",
+		tBusStop[freeId][bsOUid],
 		tBusStop[freeId][bsName],
 		tBusStop[freeId][bsPosX],
 		tBusStop[freeId][bsPosY],
@@ -135,7 +133,9 @@ stock addBusStop(playerid, name[]) {
 		tBusStop[freeId][bsRotY],
 		tBusStop[freeId][bsRotZ]
 	);
+
 	mysql_query(queryStr);
+	return tBusStop[freeId][bsUid];
 }
 
 stock removeBusStop(srvbusid) {
@@ -154,6 +154,7 @@ stock removeBusStop(srvbusid) {
 	Iter_Remove(busStopItter, srvbusid);
 
 	tBusStop[srvbusid][bsUid] = 0;
+	tBusStop[srvbusid][bsOUid] = 0;
 	format(tBusStop[srvbusid][bsName], 32, NULL);
 	tBusStop[srvbusid][bsObject] = INVALID_OBJECT_ID;
 	tBusStop[srvbusid][bsPosX] = 0.0;
@@ -172,7 +173,8 @@ stock saveBusStopValues(srvbusid) {
 	}
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `osrp_BusStops` SET `Name` = '%s', `PosX` = '%f', `PosY` = '%f', `PosZ` = '%f', `RotX` = '%f', `RotY` = '%f', `RotZ` = '%f' WHERE `UID` = '%d'",
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_BusStops` SET `OUID` = '%d', `Name` = '%s', `PosX` = '%f', `PosY` = '%f', `PosZ` = '%f', `RotX` = '%f', `RotY` = '%f', `RotZ` = '%f' WHERE `UID` = '%d'",
+		tBusStop[srvbusid][bsOUid],
 		tBusStop[srvbusid][bsName],
 		tBusStop[srvbusid][bsPosX],
 		tBusStop[srvbusid][bsPosY],
@@ -194,9 +196,9 @@ stock searchPlayerBusStop(playerid) {
 					new Float:pX, Float:pY, Float:pZ;
 					GetPlayerPos(playerid, pX, pY, pZ);
 
-					tPlayer[playerid][pBusX] = pX;
-					tPlayer[playerid][pBusY] = pY;
-					tPlayer[playerid][pBusZ] = pZ;
+					tPlayer[playerid][pBusStopX] = pX;
+					tPlayer[playerid][pBusStopY] = pY;
+					tPlayer[playerid][pBusStopZ] = pZ;
 
 					resetPlayerBoxTextDraws(playerid);
 
@@ -204,8 +206,8 @@ stock searchPlayerBusStop(playerid) {
 						TextDrawShowForPlayer(playerid, busStopInfo[playerid][j]);
 					}
 
-					SetTimerEx("delayBusCamera", 500, false, "ifff", playerid, tPlayer[playerid][pBusX], tPlayer[playerid][pBusY], tPlayer[playerid][pBusZ]);
-					tPlayer[playerid][pBus] = tBusStop[i][bsUid];
+					SetTimerEx("delayBusCamera", 500, false, "ifff", playerid, tPlayer[playerid][pBusStopX], tPlayer[playerid][pBusStopY], tPlayer[playerid][pBusStopZ]);
+					tPlayer[playerid][pBusStop] = tBusStop[i][bsUid];
 				}
 				return 1;
 			}
@@ -229,16 +231,16 @@ stock updatePlayerSelectBusStopCamera(playerid) {
 		}
 
 		new Float:CamX, Float:CamY, Float:CamZ, Float:CamOldX, Float:CamOldY, Float:CamOldZ;
-		new Keys, ud, lr;
+		new Keys, Ud, Lr;
 
-		GetPlayerKeys(playerid, Keys, ud, lr);
+		GetPlayerKeys(playerid, Keys, Ud, Lr);
 
 		if(Keys & KEY_SPRINT) {
 			SetCameraBehindPlayer(playerid);
-			SetPlayerPos(playerid, tPlayer[playerid][pBusX], tPlayer[playerid][pBusY], tPlayer[playerid][pBusZ]);
+			SetPlayerPos(playerid, tPlayer[playerid][pBusStopX], tPlayer[playerid][pBusStopY], tPlayer[playerid][pBusStopZ]);
 			OSRP_TogglePlayerControllable(playerid, 1);
 
-			tPlayer[playerid][pBus] = INVALID_BUS_ID;
+			tPlayer[playerid][pBusStop] = 0;
 			busCameraChoose[playerid] = false;
 			busCameraSelect[playerid] = false;
 			isInBus[playerid] = false;
@@ -258,7 +260,7 @@ stock updatePlayerSelectBusStopCamera(playerid) {
 
 		CamY += 10;
 
-		if(lr > 0) {
+		if(Lr > 0) {
 			CamX -= 70.0;
 			CamOldX -= 70.0;
 			CamOldZ -= 150.0;
@@ -267,7 +269,7 @@ stock updatePlayerSelectBusStopCamera(playerid) {
 			SetPlayerCameraLookAt(playerid, CamOldX, CamOldY, CamOldZ);
 		}
 
-		if(lr < 0) {
+		if(Lr < 0) {
 			CamX += 70.0;
 			CamOldX += 70.0;
 			CamOldZ -= 150.0;
@@ -276,7 +278,7 @@ stock updatePlayerSelectBusStopCamera(playerid) {
 			SetPlayerCameraLookAt(playerid, CamOldX, CamOldY, CamOldZ);
 		}
 
-		if(ud > 0) {
+		if(Ud > 0) {
 			CamY += 70.0;
 			CamOldY += 70.0;
 			CamOldZ -= 150.0;
@@ -285,7 +287,7 @@ stock updatePlayerSelectBusStopCamera(playerid) {
 			SetPlayerCameraLookAt(playerid, CamOldX, CamOldY, CamOldZ);
 		}
 
-		if(ud < 0) {
+		if(Ud < 0) {
 			CamY -= 70.0;
 			CamOldY -= 70.0;
 			CamOldZ -= 150.0;
@@ -323,7 +325,11 @@ Callback downPlayerPos(playerid, Float:x, Float:y, Float:z) {
 	return 1;
 }
 
-Callback teleportToBusStop(playerid, busstopid) {
+Callback teleportToBusStop(playerid, srvbusid) {
+	if(srvbusid == INVALID_BUS_ID) {
+		return 1;
+	}
+
 	if(!busCameraSelect[playerid]) {
 		return 1;
 	}
@@ -331,39 +337,43 @@ Callback teleportToBusStop(playerid, busstopid) {
 	new Float:CamX, Float:CamY, Float:CamZ;
 
 	GetPlayerCameraPos(playerid, CamX, CamY, CamZ);
-	SetPlayerPos(playerid, tPlayer[playerid][pBusX], tPlayer[playerid][pBusY], tPlayer[playerid][pBusZ] - 20.0);
+	SetPlayerPos(playerid, tPlayer[playerid][pBusStopX], tPlayer[playerid][pBusStopY], tPlayer[playerid][pBusStopZ] - 20.0);
 
-	InterpolateCameraPos(playerid, CamX - 25.0, CamY, CamZ + 5, tBusStop[busstopid][bsPosX], tBusStop[busstopid][bsPosY] + 10.0, tBusStop[busstopid][bsPosZ] + 100.0, tPlayer[playerid][pBusTime], CAMERA_MOVE);
-	InterpolateCameraLookAt(playerid, CamX, CamY, CamZ, tBusStop[busstopid][bsPosX], tBusStop[busstopid][bsPosY], tBusStop[busstopid][bsPosZ], tPlayer[playerid][pBusTime], CAMERA_MOVE);
+	InterpolateCameraPos(playerid, CamX - 25.0, CamY, CamZ + 5, tBusStop[srvbusid][bsPosX], tBusStop[srvbusid][bsPosY] + 10.0, tBusStop[srvbusid][bsPosZ] + 100.0, tPlayer[playerid][pBusStopTime], CAMERA_MOVE);
+	InterpolateCameraLookAt(playerid, CamX, CamY, CamZ, tBusStop[srvbusid][bsPosX], tBusStop[srvbusid][bsPosY], tBusStop[srvbusid][bsPosZ], tPlayer[playerid][pBusStopTime], CAMERA_MOVE);
 
-	tPlayer[playerid][pBusX] = tBusStop[busstopid][bsPosX];
-	tPlayer[playerid][pBusY] = tBusStop[busstopid][bsPosY];
-	tPlayer[playerid][pBusZ] = tBusStop[busstopid][bsPosZ];
+	tPlayer[playerid][pBusStopX] = tBusStop[srvbusid][bsPosX];
+	tPlayer[playerid][pBusStopY] = tBusStop[srvbusid][bsPosY];
+	tPlayer[playerid][pBusStopZ] = tBusStop[srvbusid][bsPosZ];
 
 	busCameraSelect[playerid] = false;
 	isInBus[playerid] = true;
 
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "* %s wsiad³ do autobusu jad¹cego w kierunku przystanku nr %d", tPlayer[playerid][pCharName], tBusStop[busstopid][bsUid]);
+	format(mainStr, sizeof(mainStr), "* %s wsiad³ do autobusu jad¹cego w kierunku przystanku nr %d", tPlayer[playerid][pCharName], tBusStop[srvbusid][bsUid]);
 	sendMeMessage(playerid, mainStr);
 
-	SetTimerEx("unFreezeBusStop", tPlayer[playerid][pBusTime], false, "ii", playerid, busstopid);
+	SetTimerEx("unFreezeBusStop", tPlayer[playerid][pBusStopTime], false, "ii", playerid, srvbusid);
 	return 1;
 }
 
-Callback unFreezeBusStop(playerid, busstopid) {
+Callback unFreezeBusStop(playerid, srvbusid) {
+	if(srvbusid == INVALID_BUS_ID) {
+		return 1;
+	}
+
 	SetCameraBehindPlayer(playerid);
-	SetPlayerPos(playerid, tPlayer[playerid][pBusX], tPlayer[playerid][pBusY], tPlayer[playerid][pBusZ]);
+	SetPlayerPos(playerid, tPlayer[playerid][pBusStopX], tPlayer[playerid][pBusStopY], tPlayer[playerid][pBusStopZ]);
 	OSRP_TogglePlayerControllable(playerid, 1);
 
-	tPlayer[playerid][pBusX] = 0.0;
-	tPlayer[playerid][pBusY] = 0.0;
-	tPlayer[playerid][pBusZ] = 0.0;
-	tPlayer[playerid][pBusTime] = 0;
-	tPlayer[playerid][pBusNext] = INVALID_BUS_ID;
+	tPlayer[playerid][pBusStopX] = 0.0;
+	tPlayer[playerid][pBusStopY] = 0.0;
+	tPlayer[playerid][pBusStopZ] = 0.0;
+	tPlayer[playerid][pBusStopTime] = 0;
+	tPlayer[playerid][pBusStopNext] = INVALID_BUS_ID;
 
-	tBusStop[busstopid][bsUsed] = false;
+	tBusStop[srvbusid][bsUsed] = false;
 	isInBus[playerid] = false;
-	tPlayer[playerid][pBus] = INVALID_BUS_ID;
+	tPlayer[playerid][pBusStop] = 0;
 	return 1;
 }

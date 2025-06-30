@@ -128,8 +128,7 @@ stock addArea(owner, type, ownertype, color[], Float:x1, Float:y1, Float:z1, Flo
 	Iter_Add(areaItter, freeId);
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Areas` (`UID`, `OUID`, `Type`, `OType`, `Color`, `MinX`, `MinY`, `MinZ`, `MaxX`, `MaxY`, `MaxZ`, `MaxSpeed`, `Cost`) VALUES ('%d', '%d', '%d', '%d', '%s', '%f', '%f', '%f', '%f', '%f', '%f', '%d', '%d')",
-		tArea[freeId][aUid],
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Areas` (`OUID`, `Type`, `OType`, `Color`, `MinX`, `MinY`, `MinZ`, `MaxX`, `MaxY`, `MaxZ`, `MaxSpeed`, `Cost`) VALUES ('%d', '%d', '%d', '%s', '%f', '%f', '%f', '%f', '%f', '%f', '%d', '%d')",
 		tArea[freeId][aOUid],
 		tArea[freeId][aType],
 		tArea[freeId][aOType],
@@ -143,7 +142,9 @@ stock addArea(owner, type, ownertype, color[], Float:x1, Float:y1, Float:z1, Flo
 		tArea[freeId][aMaxSpeed],
 		tArea[freeId][aCost]
 	);
+
 	mysql_query(queryStr);
+	return tArea[freeId][aUid];
 }
 
 stock removeArea(srvareaid) {

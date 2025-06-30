@@ -21,11 +21,15 @@ enum DoorData {
 	Float:dEnterX,
 	Float:dEnterY,
 	Float:dEnterZ,
-	Float:dEnterAng,
+	Float:dEnterA,
 	Float:dExitX,
 	Float:dExitY,
 	Float:dExitZ,
-	Float:dExitAng,
+	Float:dExitA,
+	Float:dMinX,
+	Float:dMinY,
+	Float:dMaxX,
+	Float:dMaxY,
 	dPickup,
 	dCost,
 	bool:dPassing,
@@ -38,20 +42,8 @@ enum DoorData {
 	dMaxObjects,
 	dTexts,
 	dMaxTexts,
-	bool:dSecurity,
-	dSecurityName[32],
+	dSecurity,
 	dAudio,
 	dVw,
 	dInt
-};
-
-enum DimensionData {
-	dimUid,
-	dimOUid,
-	Float:dimMinX,
-	Float:dimMinY,
-	Float:dimMinZ,
-	Float:dimMaxX,
-	Float:dimMaxY,
-	Float:dimMaxZ
 };

@@ -2,8 +2,8 @@
 	Project: OSRP
 	Author: steeZ (macpilch)
 	File: ac_functions.inc
-	Date: 24.07.2022
-	Modified: 24.07.2022
+	Date: 28.03.2025
+	Modified: 28.03.2025
 */
 
 #if defined __AC_FUNCTIONS_INC__

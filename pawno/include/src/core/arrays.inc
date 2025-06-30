@@ -27,12 +27,11 @@ new tThing[MAX_THINGS][ThingData];
 new tBusStop[MAX_BUS_STOPS][BusStopData];
 new tBooth[MAX_BOOTHS][BoothData];
 new tGroup[MAX_GROUPS][GroupData];
-new tGroupThing[MAX_GROUP_THINGS][GroupThingData];
+new tGroupSet[MAX_GROUP_SETS][GroupSetData];
 new tGroupTask[MAX_GROUP_TASKS][GroupTaskData];
 new tGroupOrder[MAX_GROUP_ORDERS][GroupOrderData];
 new tGroupVehicle[MAX_GROUP_VEHICLES][GroupVehicleData];
 new tDoor[MAX_DOORS][DoorData];
-new tDimension[MAX_DOORS][DimensionData];
 new tCashPoint[MAX_CASHPOINTS][CashPointData];
 new tObject[MAX_OBJECTS][ObjectData];
 new t3dText[MAX_3DTEXTS][Text3dData];
@@ -40,6 +39,7 @@ new tRace[MAX_RACES][RaceData];
 new tArea[MAX_AREAS][AreaData];
 new tPenalty[MAX_PENALTIES][PenaltyData];
 new tAnim[MAX_ANIMATIONS][AnimData];
+new tAchievement[MAX_ACHIEVEMENTS][AchievementData];
 
 new charManNames[][] = {
 	"Abdiel", "Abram", "Adolfo", "Adriel", "Alberto", "Alden", "Alejandro", "Alessandro", 

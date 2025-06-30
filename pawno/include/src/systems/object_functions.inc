@@ -108,30 +108,28 @@ stock getServerObjectIdFromUid(uid) {
 	return id;
 }
 
-stock addObject(playerid, modelid, owner, type) {
+stock addObject(owner, type, creator, modelid, Float:x, Float:y, Float:z, vw, int) {
 	new freeId = OSRP_OBJECT_INVALID_ID;
-	new Float:pX, Float:pY, Float:pZ;
 
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Objects`");
 	mysql_query(queryStr);
 
 	mysql_store_result();
-	freeId = mysql_fetch_int();
 
+	freeId = mysql_fetch_int();
 	mysql_free_result();
-	GetPlayerPos(playerid, pX, pY, pZ);
 
 	tObject[freeId][oUid] = freeId + 1;
 	tObject[freeId][oOUid] = owner;
 	tObject[freeId][oType] = type;
-	tObject[freeId][oCreator] = tPlayer[playerid][pUid];
+	tObject[freeId][oCreator] = creator;
 	tObject[freeId][oGate] = 0;
 	tObject[freeId][oModelId] = modelid;
 	tObject[freeId][oSpared] = 0;
-	tObject[freeId][oPosX] = pX + 0.5;
-	tObject[freeId][oPosY] = pY + 0.5;
-	tObject[freeId][oPosZ] = pZ;
+	tObject[freeId][oPosX] = x + 0.5;
+	tObject[freeId][oPosY] = y + 0.5;
+	tObject[freeId][oPosZ] = z;
 	tObject[freeId][oRotX] = 0.0;
 	tObject[freeId][oRotY] = 0.0;
 	tObject[freeId][oRotZ] = 0.0;
@@ -139,11 +137,9 @@ stock addObject(playerid, modelid, owner, type) {
 	tObject[freeId][oGateY] = 0.0;
 	tObject[freeId][oGateZ] = 0.0;
 	tObject[freeId][oDist] = (type == OBJECT_OWNER_DOOR) ? 100.0 : 400.0;
-	tObject[freeId][oVw] = tPlayer[playerid][pVw];
-	tObject[freeId][oInt] = tPlayer[playerid][pInt];
-
+	tObject[freeId][oVw] = vw;
+	tObject[freeId][oInt] = int;
 	tObject[freeId][oObject] = CreateDynamicObject(tObject[freeId][oModelId], tObject[freeId][oPosX], tObject[freeId][oPosY], tObject[freeId][oPosZ], tObject[freeId][oRotX], tObject[freeId][oRotY], tObject[freeId][oRotZ], tObject[freeId][oVw], tObject[freeId][oInt], -1, tObject[freeId][oDist]);
-	Streamer_Update(playerid);
 
 	Iter_Add(objectItter, freeId);
 
@@ -183,7 +179,7 @@ stock removeObject(srvobjid) {
 
 	tObject[srvobjid][oUid] = 0;
 	tObject[srvobjid][oOUid] = 0;
-	tObject[srvobjid][oType] = 0;
+	tObject[srvobjid][oType] = OBJECT_OWNER_NONE;
 	tObject[srvobjid][oCreator] = 0;
 	tObject[srvobjid][oObject] = INVALID_OBJECT_ID;
 	tObject[srvobjid][oGate] = 0;
@@ -254,7 +250,7 @@ stock isObjectNextToPlayer(playerid, modelid) {
 	return INVALID_OBJECT_ID;
 }
 
-stock addTexture(srvobjid, index, type, matcolor, model, txdname[], texname[], matsize, fontsize, bold, fcolor, bcolor, align, font[], text[]) {
+stock addTexture(srvobjid, index, type, matcolor, model, const txdname[], const texname[], matsize, fontsize, bold, fcolor, bcolor, align, const font[], const text[]) {
 	if(srvobjid == OSRP_OBJECT_INVALID_ID) {
 		return 1;
 	}

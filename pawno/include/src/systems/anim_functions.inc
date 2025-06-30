@@ -2,8 +2,8 @@
 	Project: OSRP
 	Author: steeZ (macpilch)
 	File: anim_functions.inc
-	Date: 24.07.2022
-	Modified: 24.07.2022
+	Date: 24.11.2024
+	Modified: 24.11.2024
 */
 
 #if defined __ANIM_FUNCTIONS_INC__

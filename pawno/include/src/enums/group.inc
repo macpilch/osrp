@@ -16,7 +16,7 @@
 enum GroupData {
 	gUid,
 	gName[32],
-	gDate[32],
+	gDate[16],
 	gType,
 	gMembers,
 	gVehLimit,
@@ -24,26 +24,26 @@ enum GroupData {
 	gMoney,
 	gPerms,
 	gColor[10],
-	gRegister
+	bool:gRegister
 };
 
-enum GroupThingData {
-	gtUid,
-	gtOUid,
-	gtKind,
-	gtName[32],
-	gtValue1,
-	gtValue2,
-	gtPrice,
-	gtAmount
+enum GroupSetData {
+	gsUid,
+	gsOUid,
+	gsKind,
+	gsName[32],
+	gsValue1,
+	gsValue2,
+	gsPrice,
+	gsAmount
 };
 
 enum GroupTaskData {
-	gtaUid,
-	gtaOUid,
-	gtaDesc[128],
-	gtaDate[64],
-	gtaCaller[24]
+	gtUid,
+	gtOUid,
+	gtDesc[128],
+	gtDate[64],
+	gtCaller[24]
 };
 
 enum GroupOrderData {

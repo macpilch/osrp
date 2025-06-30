@@ -85,6 +85,17 @@ sampCallback OnPlayerExitVehicle(playerid, vehicleid) {
 }
 
 sampCallback OnVehicleSpawn(vehicleid) {
+	new srvVehId = getClosestServerVehicleId(vehicleid);
+	new engine, lights, alarm, doors, bonnet, boot, objective;
+
+	GetVehicleParamsEx(tVehicle[srvVehId][vId], engine, lights, alarm, doors, bonnet, boot, objective);
+	SetVehicleParamsEx(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngine], tVehicle[srvVehId][vLightsOn], alarm, doors, bonnet, boot, objective);
+
+	SetVehicleHealth(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngineHp]);
+
+	if(tVehicle[srvVehId][vPaintjob] != -1) {
+		ChangeVehiclePaintjob(tVehicle[srvVehId][vId], tVehicle[srvVehId][vPaintjob]);
+	}
 	return 1;
 }
 
@@ -152,6 +163,7 @@ sampCallback OnVehicleDamageStatusUpdate(vehicleid, playerid) {
 	new srvVehId = getClosestServerVehicleId(vehicleid);
 
 	GetVehicleDamageStatus(vehicleid, tVehicle[srvVehId][vPanels], tVehicle[srvVehId][vDoors], tVehicle[srvVehId][vLights], tVehicle[srvVehId][vTires]);
+	SetVehicleHealth(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngineHp]);
 
 	if(!(tPlayer[playerid][pStatus] & STATUS_BELTS)) {
 		SetPlayerHealth(playerid, tPlayer[playerid][pHp] - damage);
@@ -186,18 +198,6 @@ sampCallback OnVehicleStreamIn(vehicleid, forplayerid) {
 #if defined DEBUG
 	SendClientMessage(forplayerid, COLOR_WHITE, "Witma ! OnVehicleStreamIn");
 #endif
-
-	new srvVehId = getClosestServerVehicleId(vehicleid);
-	new engine, lights, alarm, doors, bonnet, boot, objective;
-
-	GetVehicleParamsEx(tVehicle[srvVehId][vId], engine, lights, alarm, doors, bonnet, boot, objective);
-	SetVehicleParamsEx(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngine], tVehicle[srvVehId][vLightsOn], alarm, doors, bonnet, boot, objective);
-
-	SetVehicleHealth(tVehicle[srvVehId][vId], tVehicle[srvVehId][vEngineHp]);
-
-	if(tVehicle[srvVehId][vPaintjob] != -1) {
-		ChangeVehiclePaintjob(tVehicle[srvVehId][vId], tVehicle[srvVehId][vPaintjob]);
-	}
 	return 1;
 }
 

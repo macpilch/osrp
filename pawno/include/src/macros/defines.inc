@@ -33,7 +33,7 @@
 #define MAX_BUS_STOPS 				50
 #define MAX_CASHPOINTS 				50
 #define MAX_GROUPS 					50
-#define MAX_GROUP_THINGS 			50
+#define MAX_GROUP_SETS 				50
 #define MAX_GROUP_TASKS 			50
 #define MAX_GROUP_ORDERS 			50
 #define MAX_GROUP_VEHICLES 			50
@@ -45,6 +45,24 @@
 #define MAX_BLOCKADES 				5
 #define MAX_PENALTIES 				50
 #define MAX_ANIMATIONS 				135
+#define MAX_ACHIEVEMENTS			22
+
+#define OSRP_VEHICLE_INVALID_ID -1
+#define OSRP_OBJECT_INVALID_ID -1
+#define OSRP_3DTEXT_INVALID_ID -1
+#define INVALID_AREA_ID -1
+#define INVALID_THING_ID -1
+#define INVALID_GROUP_ID -1
+#define INVALID_SET_ID -1
+#define INVALID_ANIM_ID -1
+#define INVALID_BUS_ID -1
+#define INVALID_BOOTH_ID -1
+#define INVALID_CASH_ID -1
+#define INVALID_DOOR_ID -1
+#define INVALID_ORDER_ID -1
+#define INVALID_TASK_ID -1
+#define INVALID_RACE_ID -1
+#define INVALID_PEN_ID -1
 
 // Kolory
 #define COLOR_WHITE 				0xFFFFFFFF
@@ -170,12 +188,8 @@
 #define BONE_LHAND 5
 
 #define DOC_NONE 0
-#define DOC_ID 1
-#define DOC_L_DRIVING 2
-#define DOC_L_HEALTH 4
-#define DOC_L_PRISON 8
-#define DOC_L_PSYCHO 16
-#define DOC_L_WEAPON 32
+#define DOC_ID 2
+#define DOC_L_DRIVING 4
 
 // Uprawnienia grupy globalne (Flagi)
 #define G_GROUP_PERM_NONE 0
@@ -294,7 +308,7 @@
 #define OFFER_INVITERC 5
 #define OFFER_DRIVINGLESS 6
 #define OFFER_DRIVINGLIC 7
-#define OFFER_IDCARD 8
+#define OFFER_GOV 8
 #define OFFER_RP 9
 #define OFFER_TAX 10
 #define OFFER_PURCHASETHG 11
@@ -405,22 +419,6 @@
 #define VEHMOD_IMMOBILISER 22
 #define VEHMOD_LIMITER 23
 
-#define OSRP_VEHICLE_INVALID_ID -1
-#define OSRP_OBJECT_INVALID_ID -1
-#define OSRP_3DTEXT_INVALID_ID -1
-#define INVALID_AREA_ID -1
-#define INVALID_THING_ID -1
-#define INVALID_GROUP_ID -1
-#define INVALID_SET_ID -1
-#define INVALID_ANIM_ID -1
-#define INVALID_BUS_ID -1
-#define INVALID_BOOTH_ID -1
-#define INVALID_CASH_ID -1
-#define INVALID_DOOR_ID -1
-#define INVALID_ORDER_ID -1
-#define INVALID_TASK_ID -1
-#define INVALID_RACE_ID -1
-
 // veh accessories flags
 #define VEH_ACCESSORIES_NONE 0
 #define VEH_ACCESSORIES_ALARM 1
@@ -457,16 +455,24 @@
 #define PART_TIME_JOB_MECHANIC 0
 #define PART_TIME_JOB_COURIER 1
 
+#define AREA_OWNER_NONE 0
+#define AREA_OWNER_PLAYER 9
+#define AREA_OWNER_GROUP 16
+
+#define DOOR_OWNER_NONE 0
 #define DOOR_OWNER_PLAYER 9
 #define DOOR_OWNER_GROUP 16
 
+#define VEHICLE_OWNER_NONE 0
 #define VEHICLE_OWNER_PLAYER 9
 #define VEHICLE_OWNER_GROUP 16
 #define VEHICLE_OWNER_SUB_GROUP 21
 
+#define OBJECT_OWNER_NONE 0
 #define OBJECT_OWNER_AREA 9
 #define OBJECT_OWNER_DOOR 16
 
+#define TEXT3D_OWNER_NONE 0
 #define TEXT3D_OWNER_AREA 9
 #define TEXT3D_OWNER_DOOR 16
 

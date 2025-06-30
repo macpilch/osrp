@@ -2,8 +2,8 @@
 	Project: OSRP
 	Author: steeZ (macpilch)
 	File: 3dtext.inc
-	Date: 24.07.2022
-	Modified: 24.07.2022
+	Date: 14.03.2025
+	Modified: 14.03.2025
 */
 
 #if defined __3DTEXT_INC__

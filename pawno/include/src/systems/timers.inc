@@ -37,18 +37,24 @@ Timer:globalTimer[1000]() {
 
 					OSRP_SetPlayerScore(i, 1);
 
-					for(new j = 0; j < MAX_PLAYER_GROUPS; j++) {
-						if(isPlayerDuty[i][j]) {
-							tPlayer[i][pDuty][j]++;
-							savePlayerValues(i, SAVE_GROUPS);
+					if(isPlayerOnDuty(i)) {
+						new srvGrpId = getServerGroupId(i, tPlayer[i][pSlot]);
+						new srvDoorId = getServerDoorId(i);
 
-							if((tPlayer[i][pDuty][j] % 30) == 0) {
-								giveGroupMoney(getServerGroupId(i, j + 1), -tPlayer[i][pPayDay][j]);
-								tPlayer[i][pBank] += tPlayer[i][pPayDay][j];
+						if(srvGrpId != INVALID_GROUP_ID && srvDoorId != INVALID_DOOR_ID && tDoor[srvDoorId][dOUid] == tGroup[srvGrpId][gUid] &&
+						   tDoor[srvDoorId][dOType] == DOOR_OWNER_GROUP && tPlayer[i][pVw] && !tPlayer[i][pInt]) {
+							tPlayer[i][pDuty][tPlayer[i][pSlot] - 1]++;
+							savePlayerValues(i, SAVE_GROUPS);
+						}
+
+						if(tPlayer[i][pDuty][tPlayer[i][pSlot] - 1] >= 15) {
+							if((tPlayer[i][pDuty][tPlayer[i][pSlot] - 1] % 30) == 0) {
+								giveGroupMoney(getServerGroupId(i, tPlayer[i][pSlot]), -tPlayer[i][pPayDay][tPlayer[i][pSlot] - 1]);
+								tPlayer[i][pBank] += tPlayer[i][pPayDay][tPlayer[i][pSlot] - 1];
 								savePlayerValues(i, SAVE_MONEY);
 
-								format(timerStr, sizeof(timerStr), "** Otrzymujesz $%d wyp³aty. **", tPlayer[i][pPayDay][j]);
-								SendClientMessage(i, COLOR_WHITE, timerStr);
+								format(timerStr, sizeof(timerStr), "** Otrzymujesz $%d wyp³aty. **", tPlayer[i][pPayDay][tPlayer[i][pSlot] - 1]);
+								SendClientMessage(i, COLOR_DO1, timerStr);
 
 								PlayerPlaySound(i, 4201, 0.0, 0.0, 0.0);
 							}
@@ -119,12 +125,16 @@ Timer:globalTimer[1000]() {
 				}
 
 				if(GetPlayerDrunkLevel(i) >= 2000 && !isDizzines[i] && tPlayer[i][pDrugs] == DRUG_ALCOHOL && gettime() > (endBWTime[i] + 30)) {
-					tPlayer[i][pStatus] += STATUS_DRUNK;
-					updatePlayerGameStatus(i);
+					if(!(tPlayer[i][pStatus] & STATUS_DRUNK)) {
+						tPlayer[i][pStatus] += STATUS_DRUNK;
+						updatePlayerGameStatus(i);
+					}
 				} else if(GetPlayerDrunkLevel(i) >= 2000 && !isDizzines[i] && tPlayer[i][pDrugs] == DRUG_HEROINE || tPlayer[i][pDrugs] == DRUG_ANADRALL ||
 				          tPlayer[i][pDrugs] == DRUG_MARIJUANA || tPlayer[i][pDrugs] == DRUG_METHA) {
-					tPlayer[i][pStatus] += STATUS_DRUGS;
-					updatePlayerGameStatus(i);
+					if(!(tPlayer[i][pStatus] & STATUS_DRUGS)) {
+						tPlayer[i][pStatus] += STATUS_DRUGS;
+						updatePlayerGameStatus(i);
+					}
 				}
 
 				//AC

@@ -21,7 +21,7 @@ sampCallback OnGameModeInit() {
 	EnableVehicleFriendlyFire();
 	ManualVehicleEngineAndLights();
 	ShowNameTags(0);
-	ShowPlayerMarkers(0);
+	ShowPlayerMarkers(PLAYER_MARKERS_MODE_OFF);
 	AddPlayerClassEx(0, 0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0);
 	SetGravity(0.008);
 	SetGameModeText("macpilch: osrp.com");
@@ -33,6 +33,7 @@ sampCallback OnGameModeInit() {
 	Streamer_MaxItems(STREAMER_TYPE_MAP_ICON, 100);
 	Streamer_MaxItems(STREAMER_TYPE_3D_TEXT_LABEL, 100);
 	Streamer_TickRate(30);
+	MapAndreas_Init(MAP_ANDREAS_MODE_FULL);
 
 	readIni();
 
@@ -55,13 +56,12 @@ sampCallback OnGameModeInit() {
 	initAreaValues();
 	initThingValues();
 	initDoorValues();
-	initDimensionValues();
 	initBoothValues();
 	initBusStopValues();
 	initCashPointValues();
 	initGroupValues();
 	initGroupPermValues();
-	initGroupThingValues();
+	initGroupSetValues();
 	initGroupTaskValues();
 	initGroupOrderValues();
 	initGroupVehicleValues();

@@ -14,6 +14,7 @@
 
 enum BusStopData {
 	bsUid,
+	bsOUid,
 	bsName[32],
 	bsObject,
 	Float:bsPosX,

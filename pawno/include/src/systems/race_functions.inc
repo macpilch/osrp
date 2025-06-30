@@ -110,7 +110,7 @@ stock onEnterRaceCheckpoint(playerid) {
 
 		mainStr[0] = EOS;
 		format(mainStr, sizeof(mainStr), "%s koñczy wyœcig z czasem %0.2fs.", tPlayer[playerid][pCharName], playerRcActualTime[playerid]);
-		sendDistanceMessage(playerid, 30.0, 0, mainStr, "", "", COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN);
+		sendMessage(playerid, 30.0, mainStr, 0, 0, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN, COLOR_GREEN);
 	}
 
 	mainStr[0] = EOS;

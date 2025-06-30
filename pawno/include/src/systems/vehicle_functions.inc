@@ -150,6 +150,172 @@ stock initVehicleValues() {
 	return 1;
 }
 
+stock getServerVehicleId(playerid) {
+	new id = OSRP_VEHICLE_INVALID_ID;
+
+	foreach(new i : vehItter) {
+		if(tVehicle[i][vUid] == tPlayer[playerid][pVehicle]) {
+			id = i;
+			break;
+		}
+	}
+	return id;
+}
+
+stock getClosestServerVehicleId(vehicleid) {
+	new id = OSRP_VEHICLE_INVALID_ID;
+
+	foreach(new i : vehItter) {
+		if(vehicleid == tVehicle[i][vId]) {
+			id = i;
+			break;
+		}
+	}
+	return id;
+}
+
+stock getServerVehicleIdFromUid(uid) {
+	new id = OSRP_VEHICLE_INVALID_ID;
+
+	foreach(new i : vehItter) {
+		if(uid == tVehicle[i][vUid]) {
+			id = i;
+			break;
+		}
+	}
+	return id;
+}
+
+stock addVehicle(owner, type, modelid, color1, color2, Float:parkingX, Float:parkingY, Float:parkingZ, Float:parkingA) {
+	new freeId = OSRP_VEHICLE_INVALID_ID;
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Vehicles`");
+	mysql_query(queryStr);
+
+	mysql_store_result();
+
+	freeId = mysql_fetch_int();
+#if defined DEBUG
+	printf("freeId: %d", freeId);
+#endif
+
+	mysql_free_result();
+
+	tVehicle[freeId][vUid] = freeId + 1;
+	tVehicle[freeId][vId] = INVALID_VEHICLE_ID;
+	tVehicle[freeId][vOUid] = owner;
+	tVehicle[freeId][vType] = type;
+	tVehicle[freeId][vModelId] = modelid;
+	tVehicle[freeId][vColor1] = color1;
+	tVehicle[freeId][vColor2] = color2;
+	tVehicle[freeId][vPosX] = parkingX;
+	tVehicle[freeId][vPosY] = parkingY;
+	tVehicle[freeId][vPosZ] = parkingZ;
+	tVehicle[freeId][vAngle] = parkingA;
+	tVehicle[freeId][vFuel] = VEHICLE_FUEL_TANK_MEDIUM;
+	tVehicle[freeId][vLock] = true;
+	tVehicle[freeId][vEngine] = false;
+	tVehicle[freeId][vEngineHp] = 1000.0;
+	tVehicle[freeId][vSpawned] = false;
+	tVehicle[freeId][vLightsOn] = false;
+	tVehicle[freeId][vWindow] = false;
+	tVehicle[freeId][vAccessories] = VEH_ACCESSORIES_NONE;
+	tVehicle[freeId][vPanels] = 0;
+	tVehicle[freeId][vDoors] = 0;
+	tVehicle[freeId][vLights] = 0;
+	tVehicle[freeId][vTires] = 0;
+	tVehicle[freeId][vVw] = 0;
+	tVehicle[freeId][vInt] = 0;
+	tVehicle[freeId][vPaintjob] = -1;
+	tVehicle[freeId][vNitro] = 0;
+	tVehicle[freeId][vRepair] = 0.0;
+	tVehicle[freeId][vMileage] = 0.0;
+	tVehicle[freeId][vBlock] = 0;
+	format(tVehicle[freeId][vPlate], 32, VEHICLE_DEFAULT_PLATE);
+	format(tVehicle[freeId][vDesc], 64, VEHICLE_DEFAULT_PLATE);
+
+	vehCP[freeId] = -1;
+	vehMapIcon[freeId] = -1;
+
+	enteredVehicleSec[freeId] = 0;
+	exitedVehicleSec[freeId] = 0;
+	spawnedVehicleSec[freeId] = 0;
+
+	Iter_Add(vehItter, freeId);
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`OUID`, `Type`, `ModelId`, `Color1`, `Color2`, `PosX`, `PosY`, `PosZ`, `Angle`, `Fuel`, `EngineHealth`) VALUES ('%d', '%d', '%d', '%d', '%d', '%f', '%f', '%f', '%f', '%f', '%f')",
+		tVehicle[freeId][vOUid],
+		tVehicle[freeId][vType],
+		tVehicle[freeId][vModelId],
+		tVehicle[freeId][vColor1],
+		tVehicle[freeId][vColor2],
+		tVehicle[freeId][vPosX],
+		tVehicle[freeId][vPosY],
+		tVehicle[freeId][vPosZ],
+		tVehicle[freeId][vAngle],
+		tVehicle[freeId][vFuel],
+		tVehicle[freeId][vEngineHp]
+	);
+	mysql_query(queryStr);
+}
+
+stock removeVehicle(srvvehid) {
+	if(srvvehid == OSRP_VEHICLE_INVALID_ID) {
+		return 1;
+	}
+
+	if(!Iter_Count(vehItter)) {
+		return 1;
+	}
+
+	queryStr[0] = EOS;
+	format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Vehicles` WHERE `UID` = '%d'", tVehicle[srvvehid][vUid]);
+	mysql_query(queryStr);
+
+	if(tVehicle[srvvehid][vId] != INVALID_VEHICLE_ID) {
+		DestroyVehicle(tVehicle[srvvehid][vId]);
+		DestroyDynamic3DTextLabel(tVehicle[srvvehid][v3dDesc]);
+	}
+
+	Iter_Remove(vehItter, srvvehid);
+
+	tVehicle[srvvehid][vUid] = 0;
+	tVehicle[srvvehid][vId] = INVALID_VEHICLE_ID;
+	tVehicle[srvvehid][vOUid] = 0;
+	tVehicle[srvvehid][vType] = VEHICLE_OWNER_NONE;
+	format(tVehicle[srvvehid][vDesc], 64, VEHICLE_DEFAULT_PLATE);
+	format(tVehicle[srvvehid][vPlate], 32, VEHICLE_DEFAULT_PLATE);
+	tVehicle[srvvehid][vModelId] = 0;
+	tVehicle[srvvehid][vColor1] = 0;
+	tVehicle[srvvehid][vColor2] = 0;
+	tVehicle[srvvehid][vPosX] = 0.0;
+	tVehicle[srvvehid][vPosY] = 0.0;
+	tVehicle[srvvehid][vPosZ] = 0.0;
+	tVehicle[srvvehid][vAngle] = 0.0;
+	tVehicle[srvvehid][vFuel] = 0.0;
+	tVehicle[srvvehid][vLock] = false;
+	tVehicle[srvvehid][vEngine] = false;
+	tVehicle[srvvehid][vEngineHp] = 0.0;
+	tVehicle[srvvehid][vSpawned] = false;
+	tVehicle[srvvehid][vLightsOn] = false;
+	tVehicle[srvvehid][vWindow] = false;
+	tVehicle[srvvehid][vAccessories] = VEH_ACCESSORIES_NONE;
+	tVehicle[srvvehid][vPanels] = 0;
+	tVehicle[srvvehid][vDoors] = 0;
+	tVehicle[srvvehid][vLights] = 0;
+	tVehicle[srvvehid][vTires] = 0;
+	tVehicle[srvvehid][vVw] = 0;
+	tVehicle[srvvehid][vInt] = 0;
+	tVehicle[srvvehid][vPaintjob] = -1;
+	tVehicle[srvvehid][vNitro] = 0;
+	tVehicle[srvvehid][vRepair] = 0.0;
+	tVehicle[srvvehid][vMileage] = 0.0;
+	tVehicle[srvvehid][vBlock] = 0;
+	return 1;
+}
+
 stock saveVehicleValues(srvvehid) {
 	if(srvvehid == OSRP_VEHICLE_INVALID_ID) {
 		return 1;
@@ -215,172 +381,6 @@ stock saveVehiclesValues() {
 	return 1;
 }
 
-stock getServerVehicleId(playerid) {
-	new id = OSRP_VEHICLE_INVALID_ID;
-
-	foreach(new i : vehItter) {
-		if(tVehicle[i][vUid] == tPlayer[playerid][pVehicle]) {
-			id = i;
-			break;
-		}
-	}
-	return id;
-}
-
-stock getClosestServerVehicleId(vehicleid) {
-	new id = OSRP_VEHICLE_INVALID_ID;
-
-	foreach(new i : vehItter) {
-		if(vehicleid == tVehicle[i][vId]) {
-			id = i;
-			break;
-		}
-	}
-	return id;
-}
-
-stock getServerVehicleIdFromUid(uid) {
-	new id = OSRP_VEHICLE_INVALID_ID;
-
-	foreach(new i : vehItter) {
-		if(uid == tVehicle[i][vUid]) {
-			id = i;
-			break;
-		}
-	}
-	return id;
-}
-
-stock addVehicle(uid, type, modelid, color1, color2, Float:parkingX, Float:parkingY, Float:parkingZ, Float:parkingA) {
-	new freeId = OSRP_VEHICLE_INVALID_ID;
-
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Vehicles`");
-	mysql_query(queryStr);
-
-	mysql_store_result();
-
-	freeId = mysql_fetch_int();
-#if defined DEBUG
-	printf("freeId: %d", freeId);
-#endif
-
-	mysql_free_result();
-
-	tVehicle[freeId][vUid] = freeId + 1;
-	tVehicle[freeId][vId] = INVALID_VEHICLE_ID;
-	tVehicle[freeId][vOUid] = uid;
-	tVehicle[freeId][vType] = type;
-	tVehicle[freeId][vModelId] = modelid;
-	tVehicle[freeId][vColor1] = color1;
-	tVehicle[freeId][vColor2] = color2;
-	tVehicle[freeId][vPosX] = parkingX;
-	tVehicle[freeId][vPosY] = parkingY;
-	tVehicle[freeId][vPosZ] = parkingZ;
-	tVehicle[freeId][vAngle] = parkingA;
-	tVehicle[freeId][vFuel] = VEHICLE_FUEL_TANK_MEDIUM;
-	tVehicle[freeId][vLock] = true;
-	tVehicle[freeId][vEngine] = false;
-	tVehicle[freeId][vEngineHp] = 1000.0;
-	tVehicle[freeId][vSpawned] = false;
-	tVehicle[freeId][vLightsOn] = false;
-	tVehicle[freeId][vWindow] = false;
-	tVehicle[freeId][vAccessories] = VEH_ACCESSORIES_NONE;
-	tVehicle[freeId][vPanels] = 0;
-	tVehicle[freeId][vDoors] = 0;
-	tVehicle[freeId][vLights] = 0;
-	tVehicle[freeId][vTires] = 0;
-	tVehicle[freeId][vVw] = 0;
-	tVehicle[freeId][vInt] = 0;
-	tVehicle[freeId][vPaintjob] = -1;
-	tVehicle[freeId][vNitro] = 0;
-	tVehicle[freeId][vRepair] = 0.0;
-	tVehicle[freeId][vMileage] = 0.0;
-	tVehicle[freeId][vBlock] = 0;
-	format(tVehicle[freeId][vPlate], 32, VEHICLE_DEFAULT_PLATE);
-	format(tVehicle[freeId][vDesc], 64, VEHICLE_DEFAULT_PLATE);
-
-	vehCP[freeId] = -1;
-	vehMapIcon[freeId] = -1;
-
-	enteredVehicleSec[freeId] = 0;
-	exitedVehicleSec[freeId] = 0;
-	spawnedVehicleSec[freeId] = 0;
-
-	Iter_Add(vehItter, freeId);
-
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Vehicles` (`UID`, `OUID`, `Type`, `ModelId`, `Color1`, `Color2`, `PosX`, `PosY`, `PosZ`, `Fuel`, `EngineHealth`) VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%f', '%f', '%f', '%f', '%f')",
-		tVehicle[freeId][vUid],
-		tVehicle[freeId][vOUid],
-		tVehicle[freeId][vType],
-		tVehicle[freeId][vModelId],
-		tVehicle[freeId][vColor1],
-		tVehicle[freeId][vColor2],
-		tVehicle[freeId][vPosX],
-		tVehicle[freeId][vPosY],
-		tVehicle[freeId][vPosZ],
-		tVehicle[freeId][vFuel],
-		tVehicle[freeId][vEngineHp]
-	);
-	mysql_query(queryStr);
-}
-
-stock removeVehicle(srvvehid) {
-	if(srvvehid == OSRP_VEHICLE_INVALID_ID) {
-		return 1;
-	}
-
-	if(!Iter_Count(vehItter)) {
-		return 1;
-	}
-
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Vehicles` WHERE `UID` = '%d'", tVehicle[srvvehid][vUid]);
-	mysql_query(queryStr);
-
-	if(tVehicle[srvvehid][vId] != INVALID_VEHICLE_ID) {
-		DestroyVehicle(tVehicle[srvvehid][vId]);
-		DestroyDynamic3DTextLabel(tVehicle[srvvehid][v3dDesc]);
-	}
-
-	Iter_Remove(vehItter, srvvehid);
-
-	tVehicle[srvvehid][vUid] = 0;
-	tVehicle[srvvehid][vId] = INVALID_VEHICLE_ID;
-	tVehicle[srvvehid][vOUid] = 0;
-	tVehicle[srvvehid][vType] = 0;
-	format(tVehicle[srvvehid][vDesc], 64, VEHICLE_DEFAULT_PLATE);
-	format(tVehicle[srvvehid][vPlate], 32, VEHICLE_DEFAULT_PLATE);
-	tVehicle[srvvehid][vModelId] = 0;
-	tVehicle[srvvehid][vColor1] = 0;
-	tVehicle[srvvehid][vColor2] = 0;
-	tVehicle[srvvehid][vPosX] = 0.0;
-	tVehicle[srvvehid][vPosY] = 0.0;
-	tVehicle[srvvehid][vPosZ] = 0.0;
-	tVehicle[srvvehid][vAngle] = 0.0;
-	tVehicle[srvvehid][vFuel] = 0.0;
-	tVehicle[srvvehid][vLock] = false;
-	tVehicle[srvvehid][vEngine] = false;
-	tVehicle[srvvehid][vEngineHp] = 0.0;
-	tVehicle[srvvehid][vSpawned] = false;
-	tVehicle[srvvehid][vLightsOn] = false;
-	tVehicle[srvvehid][vWindow] = false;
-	tVehicle[srvvehid][vAccessories] = VEH_ACCESSORIES_NONE;
-	tVehicle[srvvehid][vPanels] = 0;
-	tVehicle[srvvehid][vDoors] = 0;
-	tVehicle[srvvehid][vLights] = 0;
-	tVehicle[srvvehid][vTires] = 0;
-	tVehicle[srvvehid][vVw] = 0;
-	tVehicle[srvvehid][vInt] = 0;
-	tVehicle[srvvehid][vPaintjob] = -1;
-	tVehicle[srvvehid][vNitro] = 0;
-	tVehicle[srvvehid][vRepair] = 0.0;
-	tVehicle[srvvehid][vMileage] = 0.0;
-	tVehicle[srvvehid][vBlock] = 0;
-	return 1;
-}
-
 stock spawnVehicle(playerid, uid, bool:groupVeh) {
 	new srvVehId = getServerVehicleIdFromUid(uid);
 	if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
@@ -438,7 +438,9 @@ stock spawnVehicle(playerid, uid, bool:groupVeh) {
 		}
 
 		if(groupVeh) {
-			TextDrawSetString(vehicleSpawn[playerid][1], "~w~Pojazd zostal zespawnowany.~n~Jezeli nie mozesz go znalezc w~n~miejscu zaznaczonym na radarze,~n~uzyj /g v, by go zresetowac.");
+			TextDrawSetString(vehicleSpawn[playerid][1], "Pojazd zostal zespawnowany.~n~Jezeli nie mozesz go znalezc w~n~miejscu zaznaczonym na radarze,~n~uzyj /g v, by go zresetowac.");
+		} else {
+			TextDrawSetString(vehicleSpawn[playerid][1], "Pojazd zostal zespawnowany.~n~Jezeli nie mozesz go znalezc w~n~miejscu zaznaczonym na radarze,~n~ uzyj /v reset.");
 		}
 
 		resetPlayerBoxTextDraws(playerid);
@@ -782,7 +784,7 @@ stock calcsVehicleDistance(playerid, srvvehid) {
 	}
 
 	tVehicle[srvvehid][vMileage] += vehDist;
-	tPlayer[playerid][pTraveled] += tVehicle[srvvehid][vMileage];
+	tPlayer[playerid][pTraveled] = tPlayer[playerid][pTraveled] + tVehicle[srvvehid][vMileage];
 	return 1;
 }
 
@@ -1159,7 +1161,7 @@ Callback addFuelToVehicle(playerid) {
 
 	mainStr[0] = EOS;
 	format(mainStr, sizeof(mainStr), "** Pojazd %s zosta³ zatankowany. **", vehicleNames[tVehicle[srvVehId][vModelId] - 400]);
-	sendDistanceMessage(playerid, 30.0, 0, mainStr, "", "", COLOR_DO1, COLOR_DO1, COLOR_DO1, COLOR_DO1, COLOR_DO1);
+	sendMessage(playerid, 30.0, mainStr, 0, 0, COLOR_DO1, COLOR_DO1, COLOR_DO1, COLOR_DO1, COLOR_DO1);
 
 	resetOfferData(playerid);
 	return 1;

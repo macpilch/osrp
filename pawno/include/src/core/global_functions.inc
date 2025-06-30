@@ -80,8 +80,8 @@ stock initServerPenalties() {
 	return 1;
 }
 
-stock addPenalty(senderid, victimid, type, date[], days, reason[]) {
-	new freeId = -1;
+stock addPenalty(senderid, victimid, type, const date[], days, const reason[]) {
+	new freeId = INVALID_PEN_ID;
 
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Penalties`");
@@ -118,7 +118,7 @@ stock addPenalty(senderid, victimid, type, date[], days, reason[]) {
 }
 
 stock removePenalty(srvpenid) {
-	if(srvpenid == -1) {
+	if(srvpenid == INVALID_PEN_ID) {
 		return 1;
 	}
 

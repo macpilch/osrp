@@ -43,7 +43,11 @@ CMD:mc(playerid, params[]) {
 			return 1;
 		}
 
-		tPlayer[playerid][pObject] = addObject(playerid, modelId, tDoor[srvDoorId][dUid], OBJECT_OWNER_DOOR);
+		new Float:pX, Float:pY, Float:pZ;
+		GetPlayerPos(playerid, pX, pY, pZ);
+
+		tPlayer[playerid][pObject] = addObject(tDoor[srvDoorId][dUid], OBJECT_OWNER_DOOR, tPlayer[playerid][pUid], modelId, pX, pY, pZ, tPlayer[playerid][pVw], tPlayer[playerid][pInt]);
+		Streamer_Update(playerid);
 
 		tDoor[srvDoorId][dObjects]++;
 		saveDoorValues(srvDoorId);
@@ -58,7 +62,11 @@ CMD:amc(playerid, params[]) {
 		return OSRP_Tip(playerid, "/amc [ID modelu] - tworzy obiekt");
 	}
 
-	addObject(playerid, modelId, 0, OBJECT_OWNER_AREA);
+	new Float:pX, Float:pY, Float:pZ;
+	GetPlayerPos(playerid, pX, pY, pZ);
+
+	tPlayer[playerid][pObject] = addObject(1, OBJECT_OWNER_AREA, tPlayer[playerid][pUid], modelId, pX, pY, pZ, tPlayer[playerid][pVw], tPlayer[playerid][pInt]);
+	Streamer_Update(playerid);
 	return 1;
 }
 
@@ -163,7 +171,7 @@ CMD:mmat(playerid, params[]) {
 	} else {
 		new matsize, fontsize, bold, fcolor, bcolor, align, font[32], text[32];
 
-		if(sscanf(values, "iiiiiis[32]s[32]", matsize, fontsize, bold, fcolor, bcolor, align, font, text)) {
+		if(sscanf(values, "iiihiis[32]s[32]", matsize, fontsize, bold, fcolor, bcolor, align, font, text)) {
 			return OSRP_Tip(playerid, "/mmat [index] [typ] [matsize] [fontsize] [bold] [fcolor] [bcolor] [align] [font] [text]");
 		}
 
@@ -200,49 +208,45 @@ CMD:msel(playerid, params[]) {
 			tPlayer[playerid][pObjectEdit] = false;
 		}
 
-		new modelId;
-		new Float:radius = 0.5;
+		new modelId, countObjects;
+		static Float:radius = 1.5;
 
 		if(sscanf(params, "i", modelId)) {
-			new count;
-
 			foreach(new i : objectItter) {
 				if(playerToPoint(playerid, radius, tObject[i][oPosX], tObject[i][oPosY], tObject[i][oPosZ])) {
 					if(tObject[i][oOUid] == tPlayer[playerid][pDoor] && tObject[i][oType] == OBJECT_OWNER_DOOR) {
 						tPlayer[playerid][pObject] = tObject[i][oUid];
-						count = 1;
+						countObjects = 1;
 					}
 				} else {
 					if(radius > 4.0) {
-						radius = 0.5;
+						radius = 1.5;
 					}
 
-					radius += 0.25;
+					radius += 0.75;
 				}
 			}
 
-			if(!count) {
+			if(!countObjects) {
 				return GameTextForPlayer(playerid, "~r~Nie ma obiektow w otoczeniu.", 5000, 3);
 			}
 		} else {
-			new count;
-
 			foreach(new i : objectItter) {
 				if(tObject[i][oObject] == modelId && tObject[i][oOUid] == tPlayer[playerid][pDoor] && tObject[i][oType] == OBJECT_OWNER_DOOR) {
 					if(playerToPoint(playerid, radius, tObject[i][oPosX], tObject[i][oPosY], tObject[i][oPosZ])) {
 						tPlayer[playerid][pObject] = tObject[i][oUid];
-						count = 1;
+						countObjects = 1;
 					} else {
 						if(radius > 4.0) {
-							radius = 0.5;
+							radius = 1.5;
 						}
 
-						radius += 0.25;
+						radius += 1.25;
 					}
 				}
 			}
 
-			if(!count) {
+			if(!countObjects) {
 				return GameTextForPlayer(playerid, "~r~Nie ma obiektow w otoczeniu.", 5000, 3);
 			}
 		}

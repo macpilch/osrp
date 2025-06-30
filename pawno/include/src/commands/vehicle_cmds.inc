@@ -36,7 +36,7 @@ CMD:v(playerid, params[]) {
 
 			foreach(new i : vehItter) {
 				if(tVehicle[i][vOUid] == tPlayer[playerid][pUid] && tVehicle[i][vType] == VEHICLE_OWNER_PLAYER) {
-					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d  %s", mainStr, tVehicle[i][vUid], vehicleNames[tVehicle[i][vModelId] - 400]); // 2 spacje
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d   %s", mainStr, tVehicle[i][vUid], vehicleNames[tVehicle[i][vModelId] - 400]); // 2 spacje
 					countVehs++;
 				}
 			}
@@ -47,7 +47,7 @@ CMD:v(playerid, params[]) {
 				strcat(mainStr, "Pojazdom mo¿na dodawaæ komponenty i zabezpieczenia w warsztatach.");
 				DialogInfo(playerid, mainStr);
 			} else {
-				ShowPlayerDialog(playerid, DIALOG_VEHICLES, DIALOG_STYLE_LIST, "Wybór pojazdu", mainStr, "(Un)spawn", "Anuluj");
+				ShowPlayerDialog(playerid, DIALOG_VEHICLE, DIALOG_STYLE_LIST, "Wybór pojazdu", mainStr, "(Un)spawn", "Anuluj");
 			}
 		} else {
 			strcat(mainStr, "{FFFFFF}1\tW³¹cz/wy³¹cz œwiat³a\n2\tOtwórz/zamknij maskê\n3\tOtwórz/zamknij baga¿nik\n");

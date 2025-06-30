@@ -76,31 +76,26 @@ stock getServerBoothIdFromUid(uid) {
 	return id;
 }
 
-stock addBooth(playerid, name[]) {
+stock addBooth(name[], Float:x, Float:y, Float:z, Float:a) {
 	new freeId = INVALID_BOOTH_ID;
-	new Float:pX, Float:pY, Float:pZ, Float:pA;
 
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Booths`");
 	mysql_query(queryStr);
 
 	mysql_store_result();
+
 	freeId = mysql_fetch_int();
-
 	mysql_free_result();
-
-	GetPlayerPos(playerid, pX, pY, pZ);
-	GetPlayerFacingAngle(playerid, pA);
-	getXYInFrontOfPlayer(playerid, pX, pY, 3.0);
 
 	tBooth[freeId][boUid] = freeId + 1;
 	format(tBooth[freeId][boName], 32, name);
-	tBooth[freeId][boPosX] = pX;
-	tBooth[freeId][boPosY] = pY;
-	tBooth[freeId][boPosZ] = pZ;
+	tBooth[freeId][boPosX] = x;
+	tBooth[freeId][boPosY] = y;
+	tBooth[freeId][boPosZ] = z;
 	tBooth[freeId][boRotX] = 0.0;
 	tBooth[freeId][boRotY] = 0.0;
-	tBooth[freeId][boRotZ] = pA;
+	tBooth[freeId][boRotZ] = a;
 	tBooth[freeId][boRange] = 5.0;
 	tBooth[freeId][boWorking] = true;
 	tBooth[freeId][boObject] = CreateDynamicObject(1216, tBooth[freeId][boPosX], tBooth[freeId][boPosY], tBooth[freeId][boPosZ], tBooth[freeId][boRotX], tBooth[freeId][boRotY], tBooth[freeId][boRotZ], 0, 0, -1, 100.0);
@@ -108,8 +103,7 @@ stock addBooth(playerid, name[]) {
 	Iter_Add(boothItter, freeId);
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Booths` (`UID`, `Name`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`, `Range`, `Working`) VALUES ('%d', '%s', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%d')",
-		tBooth[freeId][boUid],
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Booths` (`Name`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`, `Range`, `Working`) VALUES ('%s', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%d')",
 		tBooth[freeId][boName],
 		tBooth[freeId][boPosX],
 		tBooth[freeId][boPosY],
@@ -120,7 +114,9 @@ stock addBooth(playerid, name[]) {
 		tBooth[freeId][boRange],
 		tBooth[freeId][boWorking]
 	);
+
 	mysql_query(queryStr);
+	return tBooth[freeId][boUid];
 }
 
 stock removeBooth(srvboothid) {

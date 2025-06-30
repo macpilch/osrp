@@ -2,8 +2,8 @@
 	Project: OSRP
 	Author: steeZ (macpilch)
 	File: misc_functions.inc
-	Date: 24.07.2022
-	Modified: 24.07.2022
+	Date: 14.11.2024
+	Modified: 14.11.2024
 */
 
 #if defined __MISC_FUNCTIONS_INC__
@@ -16,9 +16,8 @@
 	Wysylanie wiadomosci na dystans.
 	Im dalej inni s¹ od gracza, który wys³a³ wiadomoœæ 
 	tym jest bardziej ciemniejsza.
-	Narazie najprostrza wersja do testow.
 */
-stock sendDistanceMessage(playerid, Float:range, skipPlayer, const wholeStr[], const strHalf1[], const strHalf2[], color1, color2, color3, color4, color5) {
+stock sendDistanceMessage(playerid, Float:range, const wholeStr[], const strHalf1[], const strHalf2[], skipPlayer, color1, color2, color3, color4, color5) {
 	new Float:pX, Float:pY, Float:pZ;
 	GetPlayerPos(playerid, pX, pY, pZ);
 
@@ -29,31 +28,31 @@ stock sendDistanceMessage(playerid, Float:range, skipPlayer, const wholeStr[], c
 			}
 		}
 
-		if(GetPlayerVirtualWorld(playerid) == GetPlayerVirtualWorld(i) && GetPlayerInterior(playerid) == GetPlayerInterior(i)) {
+		if(tPlayer[playerid][pVw] == tPlayer[i][pVw] && tPlayer[playerid][pInt] == tPlayer[i][pInt]) {
 			if(!IsPlayerInAnyVehicle(playerid) || (IsPlayerInAnyVehicle(playerid) && getServerVehicleId(playerid) != OSRP_VEHICLE_INVALID_ID &&
 				tVehicle[getServerVehicleId(playerid)][vWindow])) {
-				if(playerToPoint(i, range / 5, pX, pY, pZ)) {
+				if(playerToPoint(i, (range / 16), pX, pY, pZ)) {
 					if(strlen(strHalf1) && strlen(strHalf2)) {
 						SendClientMessage(i, color1, strHalf1);
 						SendClientMessage(i, color1, strHalf2);
 					} else {
 						SendClientMessage(i, color1, wholeStr);
 					}
-				} else if(playerToPoint(i, range / 4, pX, pY, pZ)) {
+				} else if(playerToPoint(i, (range / 8), pX, pY, pZ)) {
 					if(strlen(strHalf1) && strlen(strHalf2)) {
 						SendClientMessage(i, color2, strHalf1);
 						SendClientMessage(i, color2, strHalf2);
 					} else {
 						SendClientMessage(i, color2, wholeStr);
 					}
-				} else if(playerToPoint(i, range / 3, pX, pY, pZ)) {
+				} else if(playerToPoint(i, (range / 4), pX, pY, pZ)) {
 					if(strlen(strHalf1) && strlen(strHalf2)) {
 						SendClientMessage(i, color3, strHalf1);
 						SendClientMessage(i, color3, strHalf2);
 					} else {
 						SendClientMessage(i, color3, wholeStr);
 					}
-				} else if(playerToPoint(i, range / 2, pX, pY, pZ)) {
+				} else if(playerToPoint(i, (range / 2), pX, pY, pZ)) {
 					if(strlen(strHalf1) && strlen(strHalf2)) {
 						SendClientMessage(i, color4, strHalf1);
 						SendClientMessage(i, color4, strHalf2);
@@ -81,98 +80,54 @@ stock sendDistanceMessage(playerid, Float:range, skipPlayer, const wholeStr[], c
 	}
 }
 
-stock sendChatMessage(playerid, const mess[]) {
-	new str1[128], str2[128], tmpStr[95], tmpStr2[64];
+stock sendMessage(playerid, Float:dist, const mess[], length, skipPlayer, color1, color2, color3, color4, color5) {
+	new str1[128], str2[128], tmpStr1[95], tmpStr2[64];
 
-	if(strlen(mess) > 96) {
-		strmid(tmpStr, mess, 0, 95);
-		strmid(tmpStr2, mess, 96, strlen(mess));
+	if(length && strlen(mess)) {
+		if(strlen(mess) > length) {
+			strmid(tmpStr1, mess, 0, length - 1);
+			strmid(tmpStr2, mess, length, strlen(mess));
 
-		format(str1, sizeof(str1), "%s...", tmpStr);
-		format(str2, sizeof(str2), "... %s", tmpStr2);
+			format(str1, sizeof(str1), "%s...", tmpStr1);
+			format(str2, sizeof(str2), "... %s", tmpStr2);
+		}
 	}
 
-	sendDistanceMessage(playerid, 30.0, 0, mess, str1, str2, COLOR_CHAT1, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
+	sendDistanceMessage(playerid, dist, mess, str1, str2, skipPlayer, color1, color2, color3, color4, color5);
+}
+
+stock sendChatMessage(playerid, mess[]) {
+	sendMessage(playerid, 30.0, mess, 96, 0, COLOR_CHAT1, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
 }
 
 stock sendShoutMessage(playerid, const mess[]) {
-	new str1[128], str2[128], tmpStr[95], tmpStr2[64];
-
-	if(strlen(mess) > 96) {
-		strmid(tmpStr, mess, 0, 95);
-		strmid(tmpStr2, mess, 96, strlen(mess));
-
-		format(str1, sizeof(str1), "%s...", tmpStr);
-		format(str2, sizeof(str2), "... %s", tmpStr2);
-	}
-
-	sendDistanceMessage(playerid, 70.0, 0, mess, str1, str2, COLOR_CHAT1, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
+	sendMessage(playerid, 70.0, mess, 96, 0, COLOR_CHAT1, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
 }
 
 stock sendWhisperMessage(playerid, const mess[]) {
-	new str1[128], str2[128], tmpStr[95], tmpStr2[64];
-
-	if(strlen(mess) > 94) {
-		strmid(tmpStr, mess, 0, 94);
-		strmid(tmpStr2, mess, 95, strlen(mess));
-
-		format(str1, sizeof(str1), "%s...", tmpStr);
-		format(str2, sizeof(str2), "... %s", tmpStr2);
-	}
-
-	sendDistanceMessage(playerid, 10.0, 0, mess, str1, str2, COLOR_CHAT1, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
+	sendMessage(playerid, 10.0, mess, 96, 0, COLOR_CHAT1, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
 }
 
 stock sendMeMessage(playerid, const mess[]) {
-	new str1[128], str2[128], tmpStr[95], tmpStr2[64];
-
-	if(strlen(mess) > 94) {
-		strmid(tmpStr, mess, 0, 94);
-		strmid(tmpStr2, mess, 95, strlen(mess));
-
-		format(str1, sizeof(str1), "%s...", tmpStr);
-		format(str2, sizeof(str2), "** ... %s", tmpStr2);
-	}
-
-	sendDistanceMessage(playerid, 30.0, 0, mess, str1, str2, COLOR_ME1, COLOR_ME2, COLOR_ME3, COLOR_ME4, COLOR_ME5);
+	sendMessage(playerid, 30.0, mess, 96, 0, COLOR_ME1, COLOR_ME2, COLOR_ME3, COLOR_ME4, COLOR_ME5);
 }
 
 stock sendDoMessage(playerid, const mess[]) {
-	new str1[128], str2[128], tmpStr[95], tmpStr2[64];
-
-	if(strlen(mess) > 94) {
-		strmid(tmpStr, mess, 0, 94);
-		strmid(tmpStr2, mess, 95, strlen(mess));
-
-		format(str1, sizeof(str1), "%s...", tmpStr);
-		format(str2, sizeof(str2), "** ... %s", tmpStr2);
-	}
-
-	sendDistanceMessage(playerid, 30.0, 0, mess, str1, str2, COLOR_DO1, COLOR_DO2, COLOR_DO3, COLOR_DO4, COLOR_DO5);
+	sendMessage(playerid, 30.0, mess, 96, 0, COLOR_DO1, COLOR_DO2, COLOR_DO3, COLOR_DO4, COLOR_DO5);
 }
 
 stock sendRadioMessage(playerid, const mess[]) {
-	new str1[128], str2[128], tmpStr[95], tmpStr2[64];
-
-	if(strlen(mess) > 94) {
-		strmid(tmpStr, mess, 0, 94);
-		strmid(tmpStr2, mess, 95, strlen(mess));
-
-		format(str1, sizeof(str1), "%s...", tmpStr);
-		format(str2, sizeof(str2), "... %s", tmpStr2);
-	}
-
-	sendDistanceMessage(playerid, 30.0, 1, mess, "", "", COLOR_CHAT1, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
+	sendMessage(playerid, 30.0, mess, 96, 1, COLOR_CHAT1, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
 }
 
 stock sendClientMessageToAllOOC(const mess[]) {
-	new str1[128], str2[128], tmpStr[95], tmpStr2[128];
+	new str1[128], str2[128], tmpStr1[95], tmpStr2[128];
 
 	if(strlen(mess) > 84) {
-		strmid(tmpStr, mess, 0, 84);
+		strmid(tmpStr1, mess, 0, 84);
 		strmid(tmpStr2, mess, 85, strlen(mess));
 
-		format(str1, sizeof(str1), "%s...", tmpStr);
+		format(str1, sizeof(str1), "%s...", tmpStr1);
 		format(str2, sizeof(str2), "... %s", tmpStr2);
 
 		SendClientMessageToAll(COLOR_PINK, str1);
@@ -303,11 +258,11 @@ stock isPlayerInStationAreas(playerid) {
 }
 
 stock isPlayerInArea(playerid, Float:minx, Float:maxx, Float:miny, Float:maxy) {
-    new Float:x, Float:y, Float:z;
+    new Float:pX, Float:pY, Float:pZ;
 
-    GetPlayerPos(playerid, x, y, z);
+    GetPlayerPos(playerid, pX, pY, pZ);
 
-	if(x > minx && x < maxx && y > miny && y < maxy) {
+	if(pX > minx && pX < maxx && pY > miny && pY < maxy) {
 		return 1;
 	}
     return 0;
@@ -420,10 +375,10 @@ stock playerToPoint(playerid, Float:radius, Float:x, Float:y, Float:z) {
 }
 
 stock distanceBetweenPlayers(playerid, playerid2, Float:range) {
-	new Float:x, Float:y, Float:z;
-	GetPlayerPos(playerid2, x, y, z);
+	new Float:pX, Float:pY, Float:pZ;
+	GetPlayerPos(playerid2, pX, pY, pZ);
 
-	if(IsPlayerInRangeOfPoint(playerid, range, x, y, z)) {
+	if(IsPlayerInRangeOfPoint(playerid, range, pX, pY, pZ)) {
 	    return 1;
 	}
 	return 0;
