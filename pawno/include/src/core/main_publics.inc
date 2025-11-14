@@ -87,7 +87,7 @@ sampCallback OnGameModeInit() {
 	TextDrawFont(tdWebsite, 3);
 	TextDrawSetProportional(tdWebsite, 1);
 
-	tdNews = TextDrawCreate(1.405545, 438.083312, "_");
+	/*tdNews = TextDrawCreate(1.405545, 438.083312, "_");
 	TextDrawLetterSize(tdNews, 0.199340, 0.853331);
 	TextDrawTextSize(tdNews, 638.125854, -30.333337);
 	TextDrawAlignment(tdNews, 1);
@@ -98,7 +98,20 @@ sampCallback OnGameModeInit() {
 	TextDrawSetOutline(tdNews, 1);
 	TextDrawBackgroundColor(tdNews, 255);
 	TextDrawFont(tdNews, 1);
-	TextDrawSetProportional(tdNews, 1);
+	TextDrawSetProportional(tdNews, 1);*/
+
+	tdRadio = TextDrawCreate(1.405575, 437.500091, "Radio ~>~ (( Wpisz /radio, by wybrac stacje radiowa ))");
+	TextDrawLetterSize(tdRadio, 0.191844, 0.975831);
+	TextDrawTextSize(tdRadio, 639.062988, 94.500022);
+	TextDrawAlignment(tdRadio, 1);
+	TextDrawColor(tdRadio, -1);
+	TextDrawUseBox(tdRadio, 1);
+	TextDrawBoxColor(tdRadio, 102);
+	TextDrawSetShadow(tdRadio, 0);
+	TextDrawSetOutline(tdRadio, 1);
+	TextDrawBackgroundColor(tdRadio, 102);
+	TextDrawFont(tdRadio, 1);
+	TextDrawSetProportional(tdRadio, 1);
 
 	tdPenalty = TextDrawCreate(8.941175, 281.166564, "_");
 	TextDrawLetterSize(tdPenalty, 0.300352, 1.191665);

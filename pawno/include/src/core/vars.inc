@@ -155,7 +155,7 @@ new Text3D:kick3dInfo[MAX_PLAYERS];
 
 // type - Text
 new Text:tdWebsite;
-new Text:tdNews;
+new Text:tdRadio;
 new Text:tdPenalty;
 new Text:helpInfo[MAX_PLAYERS][2];
 new Text:animsInfo[MAX_PLAYERS][3];
@@ -202,6 +202,7 @@ new Text:objectInfo[MAX_PLAYERS][2];
 new Text:gateInfo[MAX_PLAYERS][2];
 new Text:usedDrugsInfo[MAX_PLAYERS][3];
 new Text:groupTips[MAX_PLAYERS][3];
+new Text:euroInfo[MAX_PLAYERS];
 
 // type - Bar
 new Bar:fuelProgressBar[MAX_PLAYERS];

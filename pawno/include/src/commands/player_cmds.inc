@@ -1417,7 +1417,7 @@ CMD:desc(playerid, params[]) {
 }
 
 CMD:p(playerid, params[]) {
-	if(tPlayer[playerid][pBw] > 0 || IsPlayerInAnyVehicle(playerid)) {
+	if(tPlayer[playerid][pBw] > 0) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
 			return GameTextForPlayer(playerid, "~r~Nie mozesz tego teraz zrobic.", 5000, 3);
 		} else {
@@ -3964,8 +3964,8 @@ CMD:news(playerid, params[]) {
 		mainStr[0] = EOS;
 		format(mainStr, sizeof(mainStr), "~p~%s (News)~w~: %s", tPlayer[playerid][pCharName], newsStr);
 
-		TextDrawSetString(tdNews, mainStr);
-		TextDrawShowForAll(tdNews);
+		TextDrawSetString(tdRadio, mainStr);
+		TextDrawShowForAll(tdRadio);
 	}
 	return 1;
 }
@@ -3996,8 +3996,8 @@ CMD:live(playerid, params[]) {
 			format(mainStr, sizeof(mainStr), "~p~%s (Live)~w~: %s", tPlayer[playerid][pCharName], liveStr);
 		}
 
-		TextDrawSetString(tdNews, mainStr);
-		TextDrawShowForAll(tdNews);
+		TextDrawSetString(tdRadio, mainStr);
+		TextDrawShowForAll(tdRadio);
 	}
 	return 1;
 }
@@ -4027,8 +4027,8 @@ CMD:reklama(playerid, params[]) {
 			format(mainStr, sizeof(mainStr), "~p~%s (Advertisement)~w~: %s", tPlayer[playerid][pCharName], adStr);
 		}
 
-		TextDrawSetString(tdNews, mainStr);
-		TextDrawShowForAll(tdNews);
+		TextDrawSetString(tdRadio, mainStr);
+		TextDrawShowForAll(tdRadio);
 	}
 	return 1;
 }
@@ -4060,7 +4060,7 @@ CMD:wywiad(playerid, params[]) {
 		tPlayer[tPlayer[playerid][pInterView]][pInterView] = INVALID_PLAYER_ID;
 		tPlayer[playerid][pInterView] = INVALID_PLAYER_ID;
 
-		TextDrawHideForAll(tdNews);
+		TextDrawHideForAll(tdRadio);
 		return 1;
 	}
 
@@ -4072,8 +4072,8 @@ CMD:wywiad(playerid, params[]) {
 		format(mainStr, sizeof(mainStr), "~p~Interview with %s~w~: %s", tPlayer[playerid][pCharName], str);
 	}
 
-	TextDrawSetString(tdNews, mainStr);
-	TextDrawShowForAll(tdNews);
+	TextDrawSetString(tdRadio, mainStr);
+	TextDrawShowForAll(tdRadio);
 	return 1;
 }
 

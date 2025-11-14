@@ -215,6 +215,8 @@ sampCallback OnPlayerSpawn(playerid) {
 	SetPlayerSkillLevel(playerid, WEAPONSKILL_SNIPERRIFLE, tPlayer[playerid][pWeapSkill][4]);
 
 	TextDrawShowForPlayer(playerid, tdWebsite);
+	TextDrawShowForPlayer(playerid, tdRadio);
+	TextDrawShowForPlayer(playerid, euroInfo[playerid]);
 
 	PlayerPlaySound(playerid, 1186, 0.0, 0.0, 0.0);
 	SetPlayerWorldBounds(playerid, 20000.0, -20000.0, 20000.0, -20000.0);

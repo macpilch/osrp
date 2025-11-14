@@ -1624,6 +1624,16 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawBackgroundColor(courierTips[playerid][2], 255);
 	TextDrawFont(courierTips[playerid][2], 1);
 	TextDrawSetProportional(courierTips[playerid][2], 1);
+
+	euroInfo[playerid] = TextDrawCreate(576.281250, 23.916635, "EUR~g~~h~000000");
+	TextDrawLetterSize(euroInfo[playerid], 0.332400, 1.290831);
+	TextDrawAlignment(euroInfo[playerid], 2);
+	TextDrawColor(euroInfo[playerid], -1);
+	TextDrawSetShadow(euroInfo[playerid], 0);
+	TextDrawSetOutline(euroInfo[playerid], 1);
+	TextDrawBackgroundColor(euroInfo[playerid], 255);
+	TextDrawFont(euroInfo[playerid], 3);
+	TextDrawSetProportional(euroInfo[playerid], 1);
 /*
 Textdraw26 = TextDrawCreate(602.175781, 284.999969, "_");
 TextDrawLetterSize(Textdraw26, 0.000000, 5.501846);
