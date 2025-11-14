@@ -16,7 +16,10 @@ enum VehicleData {
 	vUid, //id from database
 	vId,   // id in game
 	vOUid,  // vehicle owner
-	vType, // group uid
+	vOType, // type owner id
+	vHostUid,
+	vSubOUid, // subowner uid
+	vRentUid,
 	vModelId, // vehicle modelid
 	vColor1,
 	vColor2,
@@ -43,7 +46,9 @@ enum VehicleData {
 	Float:vRepair,
 	Float:vMileage, // Przebieg
 	vBlock,
+	vExitTime,
+	bool:vPremium,
 	Text3D:v3dDesc,
-	vDesc[64],
+	vDesc[128],
 	vPlate[32]
 };

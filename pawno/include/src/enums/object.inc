@@ -15,8 +15,7 @@
 enum ObjectData {
 	oUid,
 	oOUid,
-	oType,
-	oCreator,
+	oOType,
 	oObject,
 	oGate,
 	oModelId,

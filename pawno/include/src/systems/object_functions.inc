@@ -13,90 +13,114 @@
 #pragma library osrp
 
 stock initObjectValues() {
-	printf("[LOG]: Zaczynam ladowac obiekty...");
-	new i;
+	printf("[LOG]: [OBJECT] Zaczynam ladowac obiekty...");
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Objects`");
-	mysql_query(queryStr);
+	new id;
 
+	mysql_query("SELECT * FROM `osrp_Objects`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
-		sscanf(queryStr, "p<|>iiiiiiifffffffffiiiiis[32]s[32]iiiiiis[32]s[32]fii",
-			tObject[i][oUid],
-			tObject[i][oOUid],
-			tObject[i][oType],
-			tObject[i][oCreator],
-			tObject[i][oGate],
-			tObject[i][oModelId],
-			tObject[i][oSpared],
-			tObject[i][oPosX],
-			tObject[i][oPosY],
-			tObject[i][oPosZ],
-			tObject[i][oRotX],
-			tObject[i][oRotY],
-			tObject[i][oRotZ],
-			tObject[i][oGateX],
-			tObject[i][oGateY],
-			tObject[i][oGateZ],
-			tObject[i][oTexture],
-			tObject[i][oMatIndex],
-			tObject[i][oMatType],
-			tObject[i][oMatColor],
-			tObject[i][oMatModel],
-			tObject[i][oMatTxdName],
-			tObject[i][oMatTexName],
-			tObject[i][oMatSize],
-			tObject[i][oMatFontSize],
-			tObject[i][oMatBold],
-			tObject[i][oMatFColor],
-			tObject[i][oMatBColor],
-			tObject[i][oMatAlign],
-			tObject[i][oMatFont],
-			tObject[i][oMatText],
-			tObject[i][oDist],
-			tObject[i][oVw],
-			tObject[i][oInt]
+		sscanf(queryStr, "p<|>iiiiiifffffffffiiiiis[32]s[32]iiiiiis[32]s[32]fii",
+			tObject[id][oUid],
+			tObject[id][oOUid],
+			tObject[id][oOType],
+			tObject[id][oGate],
+			tObject[id][oModelId],
+			tObject[id][oSpared],
+			tObject[id][oPosX],
+			tObject[id][oPosY],
+			tObject[id][oPosZ],
+			tObject[id][oRotX],
+			tObject[id][oRotY],
+			tObject[id][oRotZ],
+			tObject[id][oGateX],
+			tObject[id][oGateY],
+			tObject[id][oGateZ],
+			tObject[id][oTexture],
+			tObject[id][oMatIndex],
+			tObject[id][oMatType],
+			tObject[id][oMatColor],
+			tObject[id][oMatModel],
+			tObject[id][oMatTxdName],
+			tObject[id][oMatTexName],
+			tObject[id][oMatSize],
+			tObject[id][oMatFontSize],
+			tObject[id][oMatBold],
+			tObject[id][oMatFColor],
+			tObject[id][oMatBColor],
+			tObject[id][oMatAlign],
+			tObject[id][oMatFont],
+			tObject[id][oMatText],
+			tObject[id][oDist],
+			tObject[id][oVw],
+			tObject[id][oInt]
 		);
 
-		tObject[i][oObject] = CreateDynamicObject(tObject[i][oModelId], tObject[i][oPosX], tObject[i][oPosY], tObject[i][oPosZ], tObject[i][oRotX], tObject[i][oRotY], tObject[i][oRotZ], tObject[i][oVw], tObject[i][oInt], -1, tObject[i][oDist]);
+		tObject[id][oObject] = CreateDynamicObject(tObject[id][oModelId], tObject[id][oPosX], tObject[id][oPosY], tObject[id][oPosZ], tObject[id][oRotX], tObject[id][oRotY], tObject[id][oRotZ], tObject[id][oVw], tObject[id][oInt], -1, tObject[id][oDist]);
 
-		if(tObject[i][oTexture]) {
-			if(!tObject[i][oMatType]) {
-				SetDynamicObjectMaterial(tObject[i][oObject], tObject[i][oMatIndex], tObject[i][oMatModel], tObject[i][oMatTxdName], tObject[i][oMatTexName], tObject[i][oMatColor]);
-			} else {
-				SetDynamicObjectMaterialText(tObject[i][oObject], tObject[i][oMatIndex], tObject[i][oMatText], tObject[i][oMatSize], tObject[i][oMatFont], tObject[i][oMatFontSize], tObject[i][oMatBold], tObject[i][oMatFColor], tObject[i][oMatBColor], tObject[i][oMatAlign]);
+		if(tObject[id][oTexture]) {
+			if(IsValidDynamicObject(tObject[id][oObject])) {
+				if(!tObject[id][oMatType]) {
+					SetDynamicObjectMaterial(tObject[id][oObject], tObject[id][oMatIndex], tObject[id][oMatModel], tObject[id][oMatTxdName], tObject[id][oMatTexName], tObject[id][oMatColor]);
+				} else {
+					SetDynamicObjectMaterialText(tObject[id][oObject], tObject[id][oMatIndex], tObject[id][oMatText], tObject[id][oMatSize], tObject[id][oMatFont], tObject[id][oMatFontSize], tObject[id][oMatBold], tObject[id][oMatFColor], tObject[id][oMatBColor], tObject[id][oMatAlign]);
+				}
 			}
 		}
 
-		Iter_Add(objectItter, i);
-		i++;
+		Iter_Add(objectItter, id);
+
+		printf("[LOG]: [OBJECT] Uid: %d, OUid: %d, OType: %d, Gate: %d, ModelId: %d, Spared: %d, PosX: %0.1f, PosY: %0.1f, PosZ: %0.1f, RotX: %0.1f, RotY: %0.1f, RotZ: %0.1f, GateX: %0.1f, GateY: %0.1f, GateZ: %0.1f, Texture: %d, MatIndex: %d, MatType: %d, MatColor: %d, MatModel: %d, MatTxdName: %s, MatTexName: %s, MatSize: %d, MatFontSize: %d, MatBold: %d, MatFColor: %d, MatBColor: %d, MatAlign: %d, MatFont: %s, MatText: %s, Dist: %0.1f, VW: %d, INT: %d",
+			tObject[id][oUid],
+			tObject[id][oOUid],
+			tObject[id][oOType],
+			tObject[id][oGate],
+			tObject[id][oModelId],
+			tObject[id][oSpared],
+			tObject[id][oPosX],
+			tObject[id][oPosY],
+			tObject[id][oPosZ],
+			tObject[id][oRotX],
+			tObject[id][oRotY],
+			tObject[id][oRotZ],
+			tObject[id][oGateX],
+			tObject[id][oGateY],
+			tObject[id][oGateZ],
+			tObject[id][oTexture],
+			tObject[id][oMatIndex],
+			tObject[id][oMatType],
+			tObject[id][oMatColor],
+			tObject[id][oMatModel],
+			tObject[id][oMatTxdName],
+			tObject[id][oMatTexName],
+			tObject[id][oMatSize],
+			tObject[id][oMatFontSize],
+			tObject[id][oMatBold],
+			tObject[id][oMatFColor],
+			tObject[id][oMatBColor],
+			tObject[id][oMatAlign],
+			tObject[id][oMatFont],
+			tObject[id][oMatText],
+			tObject[id][oDist],
+			tObject[id][oVw],
+			tObject[id][oInt]
+		);
+
+		id++;
 	}
 
 	if(Iter_Count(objectItter)) {
-		printf("[LOG]: Wczytano %d obiektów.\n", Iter_Count(objectItter));
+		printf("[LOG]: [OBJECT] Wczytano %d obiektów.\n", Iter_Count(objectItter));
 	} else {
-		printf("[LOG]: Brak obiektów.\n");
+		printf("[LOG]: [OBJECT] Brak obiektów.\n");
 	}
 
 	mysql_free_result();
 	return 1;
 }
 
-stock getServerObjectId(playerid) {
-	new id = OSRP_OBJECT_INVALID_ID;
-
-	foreach(new i : objectItter) {
-		if(tPlayer[playerid][pObject] == tObject[i][oUid]) {
-			id = i;
-			break;
-		}
-	}
-	return id;
-}
-
-stock getServerObjectIdFromUid(uid) {
+stock getServerObjectId(uid) {
 	new id = OSRP_OBJECT_INVALID_ID;
 
 	foreach(new i : objectItter) {
@@ -108,13 +132,29 @@ stock getServerObjectIdFromUid(uid) {
 	return id;
 }
 
-stock addObject(owner, type, creator, modelid, Float:x, Float:y, Float:z, vw, int) {
+stock getObjectMapIdNextToPlayer(playerid, modelid) {
+	new Float:radius = 1.5;
+
+	foreach(new o : objectItter) {
+		if(tObject[o][oModelId] == modelid && tObject[o][oOUid] != 0 && tObject[o][oOType] == OWNER_DOOR) {
+			if(playerToPoint(playerid, radius, tObject[o][oPosX], tObject[o][oPosY], tObject[o][oPosZ])) {
+				return tObject[o][oObject];
+			} else {
+				if(radius > 4.0) {
+					radius = 1.5;
+				}
+
+				radius += 0.75;
+			}
+		}
+	}
+	return INVALID_OBJECT_ID;
+}
+
+stock addObject(owner, type, modelid, Float:posx, Float:posy, Float:posz, vw, int) {
 	new freeId = OSRP_OBJECT_INVALID_ID;
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Objects`");
-	mysql_query(queryStr);
-
+	mysql_query("SELECT COUNT(`UID`) FROM `osrp_Objects`");
 	mysql_store_result();
 
 	freeId = mysql_fetch_int();
@@ -122,21 +162,20 @@ stock addObject(owner, type, creator, modelid, Float:x, Float:y, Float:z, vw, in
 
 	tObject[freeId][oUid] = freeId + 1;
 	tObject[freeId][oOUid] = owner;
-	tObject[freeId][oType] = type;
-	tObject[freeId][oCreator] = creator;
+	tObject[freeId][oOType] = type;
 	tObject[freeId][oGate] = 0;
 	tObject[freeId][oModelId] = modelid;
 	tObject[freeId][oSpared] = 0;
-	tObject[freeId][oPosX] = x + 0.5;
-	tObject[freeId][oPosY] = y + 0.5;
-	tObject[freeId][oPosZ] = z;
+	tObject[freeId][oPosX] = posx + 0.5;
+	tObject[freeId][oPosY] = posy + 0.5;
+	tObject[freeId][oPosZ] = posz;
 	tObject[freeId][oRotX] = 0.0;
 	tObject[freeId][oRotY] = 0.0;
 	tObject[freeId][oRotZ] = 0.0;
 	tObject[freeId][oGateX] = 0.0;
 	tObject[freeId][oGateY] = 0.0;
 	tObject[freeId][oGateZ] = 0.0;
-	tObject[freeId][oDist] = (type == OBJECT_OWNER_DOOR) ? 100.0 : 400.0;
+	tObject[freeId][oDist] = (type == OWNER_DOOR) ? 100.0 : 400.0;
 	tObject[freeId][oVw] = vw;
 	tObject[freeId][oInt] = int;
 	tObject[freeId][oObject] = CreateDynamicObject(tObject[freeId][oModelId], tObject[freeId][oPosX], tObject[freeId][oPosY], tObject[freeId][oPosZ], tObject[freeId][oRotX], tObject[freeId][oRotY], tObject[freeId][oRotZ], tObject[freeId][oVw], tObject[freeId][oInt], -1, tObject[freeId][oDist]);
@@ -144,10 +183,9 @@ stock addObject(owner, type, creator, modelid, Float:x, Float:y, Float:z, vw, in
 	Iter_Add(objectItter, freeId);
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Objects` (`OUID`, `Type`, `Creator`, `ModelId`, `PosX`, `PosY`, `PosZ`, `Distance`, `VW`, `INT`) VALUES ('%d', '%d', '%d', '%d', '%f', '%f', '%f', '%f', '%d', '%d')",
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Objects` (`OUID`, `OType`, `ModelId`, `PosX`, `PosY`, `PosZ`, `Distance`, `VW`, `INT`) VALUES ('%d', '%d', '%d', '%f', '%f', '%f', '%f', '%d', '%d')",
 		tObject[freeId][oOUid],
-		tObject[freeId][oType],
-		tObject[freeId][oCreator],
+		tObject[freeId][oOType],
 		tObject[freeId][oModelId],
 		tObject[freeId][oPosX],
 		tObject[freeId][oPosY],
@@ -158,6 +196,8 @@ stock addObject(owner, type, creator, modelid, Float:x, Float:y, Float:z, vw, in
 	);
 
 	mysql_query(queryStr);
+
+	printf("[LOG]: [OBJECT] Dodano nowy obiekt o Uid: %d.", tObject[freeId][oUid]);
 	return tObject[freeId][oUid];
 }
 
@@ -177,10 +217,9 @@ stock removeObject(srvobjid) {
 	DestroyDynamicObject(tObject[srvobjid][oObject]);
 	Iter_Remove(objectItter, srvobjid);
 
-	tObject[srvobjid][oUid] = 0;
-	tObject[srvobjid][oOUid] = 0;
-	tObject[srvobjid][oType] = OBJECT_OWNER_NONE;
-	tObject[srvobjid][oCreator] = 0;
+	tObject[srvobjid][oUid] = UID_NONE;
+	tObject[srvobjid][oOUid] = UID_NONE;
+	tObject[srvobjid][oOType] = OWNER_NONE;
 	tObject[srvobjid][oObject] = INVALID_OBJECT_ID;
 	tObject[srvobjid][oGate] = 0;
 	tObject[srvobjid][oModelId] = 0;
@@ -206,10 +245,9 @@ stock saveObjectValues(srvobjid) {
 	}
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Objects` SET `OUID` = '%d', `Type` = '%d', `Creator` = '%d', `Gate` = '%d', `ModelId` = '%d', `Spared` = '%d', `PosX` = '%f', `PosY` = '%f', `PosZ` = '%f', `RotX` = '%f', `RotY` = '%f', `RotZ` = '%f', `GateX` = '%f', `GateY` = '%f', `GateZ` = '%f', `Distance` = '%f', `VW` = '%d', `INT` = '%d' WHERE `UID` = '%d'",
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Objects` SET `OUID` = '%d', `OType` = '%d', `Gate` = '%d', `ModelId` = '%d', `Spared` = '%d', `PosX` = '%f', `PosY` = '%f', `PosZ` = '%f', `RotX` = '%f', `RotY` = '%f', `RotZ` = '%f', `GateX` = '%f', `GateY` = '%f', `GateZ` = '%f', `Distance` = '%f', `VW` = '%d', `INT` = '%d' WHERE `UID` = '%d'",
 		tObject[srvobjid][oOUid],
-		tObject[srvobjid][oType],
-		tObject[srvobjid][oCreator],
+		tObject[srvobjid][oOType],
 		tObject[srvobjid][oGate],
 		tObject[srvobjid][oModelId],
 		tObject[srvobjid][oSpared],
@@ -231,23 +269,11 @@ stock saveObjectValues(srvobjid) {
 	return 1;
 }
 
-stock isObjectNextToPlayer(playerid, modelid) {
-	new Float:radius = 1.0;
-
+stock saveObjectsValues() {
 	foreach(new i : objectItter) {
-		if(tObject[i][oObject] == modelid && tObject[i][oOUid] != 0 && tObject[i][oType] == OBJECT_OWNER_DOOR) {
-			if(playerToPoint(playerid, radius, tObject[i][oPosX], tObject[i][oPosY], tObject[i][oPosZ])) {
-				return tObject[i][oObject];
-			} else {
-				if(radius > 4.0) {
-					radius = 0.5;
-				}
-
-				radius += 0.5;
-			}
-		}
+		saveObjectValues(i);
+		saveTextureValues(i);
 	}
-	return INVALID_OBJECT_ID;
 }
 
 stock addTexture(srvobjid, index, type, matcolor, model, const txdname[], const texname[], matsize, fontsize, bold, fcolor, bcolor, align, const font[], const text[]) {

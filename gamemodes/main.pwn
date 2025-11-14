@@ -6,13 +6,8 @@
 	Modified: 24.07.2022
 */
 
-#if !defined DEBUG
-//#define DEBUG
-#endif
-
 #include <a_samp>
 #include <foreach>
-#include <MD5>
 #include <mysql>
 #include <Pawn.CMD>
 #include <progress>
@@ -40,7 +35,7 @@
 #include "src\enums\race"
 #include "src\core\vars"
 #include "src\core\arrays"
-#include "ini_reader"
+#include "src\core\ini_reader"
 #include "src\core\main_publics"
 #include "src\core\misc_functions"
 #include "src\core\player_publics"

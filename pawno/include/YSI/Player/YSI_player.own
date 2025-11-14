@@ -1048,7 +1048,7 @@ Notes:
 	-
 -*----------------------------------------------------------------------------*/
 
-public Language:Player_GetPlayerLanguage(playerid)
+Language:Player_GetPlayerLanguage(playerid)
 {
 	return YSI_g_sPlayerData[playerid][E_PLAYER_GD_LANGUAGE];
 }

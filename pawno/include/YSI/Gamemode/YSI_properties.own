@@ -2064,22 +2064,18 @@ Notes:
 	Params:
 		playerid - Player who picked up a pickup.
 		pickupid - Pickup they picked up.
-		Float:x - Pickup x position.
-		Float:y - Pickup y position.
-		Float:z - Pickup z position.
 	Return:
 		-
 	Notes:
-		Internal callback from YSI_pickups.  Has none-standard
-		parameters because it was the easiest way to do it.
+		Internal callback from YSI_pickups.
 	-*----------------------------------------------------------------------------*/
 
 	#if defined _YSI_SETUP_MASTER
-		public Property_OnPlayerPickUpPickup(playerid, pickupid, Float:x, Float:y, Float:z)
+		public Property_OnPlayerPickUpPickup(playerid, pickupid)
 		if (!YSI_g_sIsMaster) return 0;
 		else
 	#else
-		Property_OnPlayerPickUpPickup(playerid, pickupid, Float:x, Float:y, Float:z)
+		Property_OnPlayerPickUpPickup(playerid, pickupid)
 	#endif
 		{
 			DBGP2("Property_OnPlayerPickUpPickup() start");
@@ -3134,18 +3130,18 @@ public ycmd_buy(playerid, params[], help)
 			}
 		}
 		#if defined _YSI_VISUAL_PICKUPS
-			#pragma tabsize 0
-			else if (YSI_g_sPickupTimer[playerid] != -1)
-			{
+		#pragma tabsize 4
+		else if (YSI_g_sPickupTimer[playerid] != -1)
+		{
 				cpid = YSI_g_sPlayerPickup[playerid];
 				if (cpid != NO_PICKUP)
 				{
 					prop = YSI_g_sPickupPointers[cpid];
 				}
 				DBGP4("ycmd_buy() Pickup %d", cpid);
-			}
-		#endif
+		}
 		#pragma tabsize 4
+		#endif
 		else
 		{
 			DBGP4("ycmd_buy() Not in a checkpoint");

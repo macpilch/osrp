@@ -18,6 +18,7 @@ enum AreaData {
 	aType,
 	aOType,
 	aArea,
+	aArea2,
 	aColor[10],
 	Float:aMinX,
 	Float:aMinY,

@@ -13,80 +13,67 @@
 #pragma library osrp
 
 stock initAreaValues() {
-	printf("[LOG]: Zaczynam ladowac strefy...");
-	new i;
+	printf("[LOG]: [AREA] Zaczynam ladowac strefy...");
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Areas`");
-	mysql_query(queryStr);
+	new id;
 
+	mysql_query("SELECT * FROM `osrp_Areas`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
-		sscanf(queryStr, "p<|>iiiis[10]ffffffii",
-			tArea[i][aUid],
-			tArea[i][aOUid],
-			tArea[i][aType],
-			tArea[i][aOType],
-			tArea[i][aColor],
-			tArea[i][aMinX],
-			tArea[i][aMinY],
-			tArea[i][aMinZ],
-			tArea[i][aMaxX],
-			tArea[i][aMaxY],
-			tArea[i][aMaxZ],
-			tArea[i][aMaxSpeed],
-			tArea[i][aCost]
+		sscanf(queryStr, "p<|>iiiis[10]ffffffiii",
+			tArea[id][aUid],
+			tArea[id][aOUid],
+			tArea[id][aType],
+			tArea[id][aOType],
+			tArea[id][aColor],
+			tArea[id][aMinX],
+			tArea[id][aMinY],
+			tArea[id][aMinZ],
+			tArea[id][aMaxX],
+			tArea[id][aMaxY],
+			tArea[id][aMaxZ],
+			tArea[id][aMaxSpeed],
+			tArea[id][aDimension],
+			tArea[id][aCost]
 		);
 
-		tArea[i][aArea] = CreateDynamicRectangle(tArea[i][aMinX], tArea[i][aMinY], tArea[i][aMaxX], tArea[i][aMaxY], 0, 0, -1);
+		tArea[id][aArea] = CreateDynamicRectangle(tArea[id][aMinX], tArea[id][aMinY], tArea[id][aMaxX], tArea[id][aMaxY], 0, 0, -1);
+		tArea[id][aArea2] = GangZoneCreate(tArea[id][aMinX], tArea[id][aMinY], tArea[id][aMaxX], tArea[id][aMaxY]);
 
-#if defined DEBUG
-		printf("UID: %d, OUID: %d, Type: %d, OType: %d, Color: %s, MinX: %f, MinY: %f, MinZ: %f, MaxX: %f, MaxY: %f, MaxZ: %f, MaxSpeed: %d, Cost: %d, Area: %d\n",
-			tArea[i][aUid],
-			tArea[i][aOUid],
-			tArea[i][aType],
-			tArea[i][aOType],
-			tArea[i][aColor],
-			tArea[i][aMinX],
-			tArea[i][aMinY],
-			tArea[i][aMinZ],
-			tArea[i][aMaxX],
-			tArea[i][aMaxY],
-			tArea[i][aMaxZ],
-			tArea[i][aMaxSpeed],
-			tArea[i][aCost],
-			tArea[i][aArea]
+		Iter_Add(areaItter, id);
+
+		printf("[LOG]: [AREA] Uid: %d, OUid: %d, Type: %d, OType: %d, Color: %s, MinX: %0.1f, MinY: %0.1f, MinZ: %0.1f, MaxX: %0.1f, MaxY: %0.1f, MaxZ: %0.1f, MaxSpeed: %d, Dimension: %d, Cost: %d",
+			tArea[id][aUid],
+			tArea[id][aOUid],
+			tArea[id][aType],
+			tArea[id][aOType],
+			tArea[id][aColor],
+			tArea[id][aMinX],
+			tArea[id][aMinY],
+			tArea[id][aMinZ],
+			tArea[id][aMaxX],
+			tArea[id][aMaxY],
+			tArea[id][aMaxZ],
+			tArea[id][aMaxSpeed],
+			tArea[id][aDimension],
+			tArea[id][aCost]
 		);
-#endif
 
-		Iter_Add(areaItter, i);
-		i++;
+		id++;
 	}
 
 	if(Iter_Count(areaItter)) {
-		printf("[LOG]: Wczytano %d stref.\n", Iter_Count(areaItter));
+		printf("[LOG]: [AREA] Wczytano %d stref.\n", Iter_Count(areaItter));
 	} else {
-		printf("[LOG]: Brak stref.\n");
+		printf("[LOG]: [AREA] Brak stref.\n");
 	}
 
 	mysql_free_result();
 	return 1;
 }
 
-stock getServerAreaId(playerid) {
-	new id = INVALID_AREA_ID;
-
-	foreach(new i : areaItter) {
-		if(tArea[i][aUid] == tPlayer[playerid][pArea]) {
-			id = i;
-			break;
-		}
-	}
-	return id;
-}
-
-stock getServerAreaIdFromUid(uid) {
+stock getServerAreaId(uid) {
 	new id = INVALID_AREA_ID;
 
 	foreach(new i : areaItter) {
@@ -98,34 +85,32 @@ stock getServerAreaIdFromUid(uid) {
 	return id;
 }
 
-stock addArea(owner, type, ownertype, color[], Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2, speed, cost) {
+stock addArea(owner, type, ownertype, color[], Float:minx, Float:miny, Float:minz, Float:maxx, Float:maxy, Float:maxz, speed, cost) {
 	new freeId = INVALID_AREA_ID;
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Areas`");
-	mysql_query(queryStr);
-
+	mysql_query("SELECT COUNT(`UID`) FROM `osrp_Areas`");
 	mysql_store_result();
-	freeId = mysql_fetch_int();
 
+	freeId = mysql_fetch_int();
 	mysql_free_result();
+
+	Iter_Add(areaItter, freeId);
 
 	tArea[freeId][aUid] = freeId + 1;
 	tArea[freeId][aOUid] = owner;
 	tArea[freeId][aType] = type;
 	tArea[freeId][aOType] = ownertype;
 	format(tArea[freeId][t3dColor], 10, color);
-	tArea[freeId][aMinX] = x1;
-	tArea[freeId][aMinY] = y1;
-	tArea[freeId][aMinZ] = z1;
-	tArea[freeId][aMaxX] = x2;
-	tArea[freeId][aMaxY] = y2;
-	tArea[freeId][aMaxZ] = z2;
+	tArea[freeId][aMinX] = minx;
+	tArea[freeId][aMinY] = miny;
+	tArea[freeId][aMinZ] = minz;
+	tArea[freeId][aMaxX] = maxx;
+	tArea[freeId][aMaxY] = maxy;
+	tArea[freeId][aMaxZ] = maxz;
 	tArea[freeId][aMaxSpeed] = speed;
 	tArea[freeId][aCost] = cost;
 	tArea[freeId][aArea] = CreateDynamicRectangle(tArea[freeId][aMinX], tArea[freeId][aMinY], tArea[freeId][aMaxX], tArea[freeId][aMaxY], 0, 0, -1);
-
-	Iter_Add(areaItter, freeId);
+	tArea[freeId][aArea2] = GangZoneCreate(tArea[freeId][aMinX], tArea[freeId][aMinY], tArea[freeId][aMaxX], tArea[freeId][aMaxY]);
 
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Areas` (`OUID`, `Type`, `OType`, `Color`, `MinX`, `MinY`, `MinZ`, `MaxX`, `MaxY`, `MaxZ`, `MaxSpeed`, `Cost`) VALUES ('%d', '%d', '%d', '%s', '%f', '%f', '%f', '%f', '%f', '%f', '%d', '%d')",
@@ -144,6 +129,8 @@ stock addArea(owner, type, ownertype, color[], Float:x1, Float:y1, Float:z1, Flo
 	);
 
 	mysql_query(queryStr);
+
+	printf("[LOG]: [AREA] Dodano now¹ strefê o Uid: %d.", tArea[freeId][aUid]);
 	return tArea[freeId][aUid];
 }
 
@@ -162,10 +149,10 @@ stock removeArea(srvareaid) {
 
 	Iter_Remove(areaItter, srvareaid);
 
-	tArea[srvareaid][aUid] = 0;
-	tArea[srvareaid][aOUid] = 0;
+	tArea[srvareaid][aUid] = UID_NONE;
+	tArea[srvareaid][aOUid] = UID_NONE;
 	tArea[srvareaid][aType] = 0;
-	tArea[srvareaid][aOType] = 0;
+	tArea[srvareaid][aOType] = UID_NONE;
 	tArea[srvareaid][aArea] = INVALID_AREA_ID;
 	format(tArea[srvareaid][aColor], 10, NULL);
 	tArea[srvareaid][aMinX] = 0.0;
@@ -202,4 +189,10 @@ stock saveAreaValues(srvareaid) {
 	);
 	mysql_query(queryStr);
 	return 1;
+}
+
+stock saveAreasValues() {
+	foreach(new i : areaItter) {
+		saveAreaValues(i);
+	}
 }

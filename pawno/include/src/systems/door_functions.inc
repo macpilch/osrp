@@ -13,85 +13,106 @@
 #pragma library osrp
 
 stock initDoorValues() {
-	printf("[LOG]: Zaczynam ladowac drzwi...");
-	new i;
+	printf("[LOG]: [DOOR] Zaczynam ladowac drzwi...");
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Doors`");
-	mysql_query(queryStr);
+	new id;
 
+	mysql_query("SELECT * FROM `osrp_Doors`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
 		sscanf(queryStr, "p<|>iiiis[32]ffffffffffffiiiis[16]iiiiiiiii",
-			tDoor[i][dUid],
-			tDoor[i][dOUid],
-			tDoor[i][dOType],
-			tDoor[i][dType],
-			tDoor[i][dName],
-			tDoor[i][dEnterX],
-			tDoor[i][dEnterY],
-			tDoor[i][dEnterZ],
-			tDoor[i][dEnterA],
-			tDoor[i][dExitX],
-			tDoor[i][dExitY],
-			tDoor[i][dExitZ],
-			tDoor[i][dExitA],
-			tDoor[i][dMinX],
-			tDoor[i][dMinY],
-			tDoor[i][dMaxX],
-			tDoor[i][dMaxY],
-			tDoor[i][dCost],
-			tDoor[i][dPassing],
-			tDoor[i][dOpen],
-			tDoor[i][dTax],
-			tDoor[i][dTaxDate],
-			tDoor[i][dTaxCost],
-			tDoor[i][dObjects],
-			tDoor[i][dMaxObjects],
-			tDoor[i][dTexts],
-			tDoor[i][dMaxTexts],
-			tDoor[i][dSecurity],
-			tDoor[i][dAudio],
-			tDoor[i][dVw],
-			tDoor[i][dInt]
+			tDoor[id][dUid],
+			tDoor[id][dOUid],
+			tDoor[id][dOType],
+			tDoor[id][dType],
+			tDoor[id][dName],
+			tDoor[id][dEnterX],
+			tDoor[id][dEnterY],
+			tDoor[id][dEnterZ],
+			tDoor[id][dEnterA],
+			tDoor[id][dExitX],
+			tDoor[id][dExitY],
+			tDoor[id][dExitZ],
+			tDoor[id][dExitA],
+			tDoor[id][dMinX],
+			tDoor[id][dMinY],
+			tDoor[id][dMaxX],
+			tDoor[id][dMaxY],
+			tDoor[id][dCost],
+			tDoor[id][dPassing],
+			tDoor[id][dOpen],
+			tDoor[id][dTax],
+			tDoor[id][dTaxDate],
+			tDoor[id][dTaxCost],
+			tDoor[id][dObjects],
+			tDoor[id][dMaxObjects],
+			tDoor[id][dTexts],
+			tDoor[id][dMaxTexts],
+			tDoor[id][dSecurity],
+			tDoor[id][dAudio],
+			tDoor[id][dVw],
+			tDoor[id][dInt]
 		);
 
 		new size1, size2;
 
-		size1 = (floatToInt(floatabs(tDoor[i][dMaxX] - tDoor[i][dMinX])) / 2);
-		size2 = (floatToInt(floatabs(tDoor[i][dMaxY] - tDoor[i][dMinY])) / 2);
+		size1 = (floatToInt(floatabs(tDoor[id][dMaxX] - tDoor[id][dMinX])) / 2);
+		size2 = (floatToInt(floatabs(tDoor[id][dMaxY] - tDoor[id][dMinY])) / 2);
 
-		tDoor[i][dPickup] = CreateDynamicPickup(1239, 2, tDoor[i][dEnterX], tDoor[i][dEnterY], tDoor[i][dEnterZ], 0, 0, -1, 50.0, -1, 0);
-		tDoor[i][dDimension] = (size1 * size2);
+		tDoor[id][dPickup] = CreateDynamicPickup(1239, 2, tDoor[id][dEnterX], tDoor[id][dEnterY], tDoor[id][dEnterZ], 0, 0, -1, 50.0, -1, 0);
+		tDoor[id][dDimension] = (size1 * size2);
 
-		Iter_Add(doorItter, i);
-		i++;
+		Iter_Add(doorItter, id);
+
+		printf("[LOG]: [DOOR] Uid: %d, OUid: %d, OType: %d, Type: %d, Name: %s, EnterX: %0.1f, EnterY: %0.1f, EnterZ: %0.1f, EnterA: %0.1f, ExitX: %0.1f, ExitY: %0.1f, ExitZ: %0.1f, ExitA: %0.1f, MinX: %0.1f, MinY: %0.1f, MaxX: %0.1f, MaxY: %0.1f, Cost: %d, Passing: %d, Open: %d, Tax: %d, TaxDate: %s, TaxCost: %d, Objects: %d, MaxObjects: %d, Texts: %d, MaxTexts: %d, Security: %d, Audio: %d, VW: %d, INT: %d",
+			tDoor[id][dUid],
+			tDoor[id][dOUid],
+			tDoor[id][dOType],
+			tDoor[id][dType],
+			tDoor[id][dName],
+			tDoor[id][dEnterX],
+			tDoor[id][dEnterY],
+			tDoor[id][dEnterZ],
+			tDoor[id][dEnterA],
+			tDoor[id][dExitX],
+			tDoor[id][dExitY],
+			tDoor[id][dExitZ],
+			tDoor[id][dExitA],
+			tDoor[id][dMinX],
+			tDoor[id][dMinY],
+			tDoor[id][dMaxX],
+			tDoor[id][dMaxY],
+			tDoor[id][dCost],
+			tDoor[id][dPassing],
+			tDoor[id][dOpen],
+			tDoor[id][dTax],
+			tDoor[id][dTaxDate],
+			tDoor[id][dTaxCost],
+			tDoor[id][dObjects],
+			tDoor[id][dMaxObjects],
+			tDoor[id][dTexts],
+			tDoor[id][dMaxTexts],
+			tDoor[id][dSecurity],
+			tDoor[id][dAudio],
+			tDoor[id][dVw],
+			tDoor[id][dInt]
+		);
+
+		id++;
 	}
 
 	if(Iter_Count(doorItter)) {
-		printf("[LOG]: Wczytano %d drzwi.\n", Iter_Count(doorItter));
+		printf("[LOG]: [DOOR] Wczytano %d drzwi.\n", Iter_Count(doorItter));
 	} else {
-		printf("[LOG]: Brak drzwi.\n");
+		printf("[LOG]: [DOOR] Brak drzwi.\n");
 	}
 
 	mysql_free_result();
 	return 1;
 }
 
-stock getServerDoorId(playerid) {
-	new id = INVALID_DOOR_ID;
-
-	foreach(new i : doorItter) {
-		if((tDoor[i][dUid] == tPlayer[playerid][pDoor]) || (insidedHotel[playerid] && tPlayer[playerid][pHotel] == tDoor[i][dUid])) {
-			id = i;
-			break;
-		}
-	}
-	return id;
-}
-
-stock getServerDoorIdFromUid(uid) {
+stock getServerDoorId(uid) {
 	new id = INVALID_DOOR_ID;
 
 	foreach(new i : doorItter) {
@@ -103,41 +124,44 @@ stock getServerDoorIdFromUid(uid) {
 	return id;
 }
 
-stock addDoor(owner, ownertype, type, const name[], Float:enterX, Float:enterY, Float:enterZ, Float:enterA, Float:exitX, Float:exitY, Float:exitZ, Float:exitA, vw, int) {
+stock addDoor(owner, ownertype, type, name[], meters, Float:enterx, Float:entery, Float:enterz, Float:entera, Float:exitx, Float:exity, Float:exitz, Float:exita, vw, int) {
 	new freeId = INVALID_DOOR_ID;
 	new d, m, y;
 
 	getdate(d, m, y);
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Doors`");
-	mysql_query(queryStr);
-
+	mysql_query("SELECT COUNT(`UID`) FROM `osrp_Doors`");
 	mysql_store_result();
 
 	freeId = mysql_fetch_int();
 	mysql_free_result();
+
+	Iter_Add(doorItter, freeId);
 
 	tDoor[freeId][dUid] = freeId + 1;
 	tDoor[freeId][dOUid] = owner;
 	tDoor[freeId][dOType] = ownertype;
 	tDoor[freeId][dType] = type;
 	format(tDoor[freeId][dName], 32, name);
-	tDoor[freeId][dEnterX] = enterX;
-	tDoor[freeId][dEnterY] = enterY
-	tDoor[freeId][dEnterZ] = enterZ;
-	tDoor[freeId][dEnterA] = enterA;
-	tDoor[freeId][dExitX] = exitX;
-	tDoor[freeId][dExitY] = exitY;
-	tDoor[freeId][dExitZ] = exitZ;
-	tDoor[freeId][dExitA] = exitA;
+	tDoor[freeId][dEnterX] = enterx;
+	tDoor[freeId][dEnterY] = entery;
+	tDoor[freeId][dEnterZ] = enterz;
+	tDoor[freeId][dEnterA] = entera;
+	tDoor[freeId][dExitX] = exitx;
+	tDoor[freeId][dExitY] = exity;
+	tDoor[freeId][dExitZ] = exitz;
+	tDoor[freeId][dExitA] = exita;
+	tDoor[freeId][dMinX] = 1.0;
+	tDoor[freeId][dMinY] = 1.0;
+	tDoor[freeId][dMaxX] = 1.0;
+	tDoor[freeId][dMaxY] = 1.0;
 	tDoor[freeId][dCost] = 0;
 	tDoor[freeId][dPassing] = false;
 	tDoor[freeId][dOpen] = false;
 	tDoor[freeId][dTax] = todate(30, 0, 0, 0, 0, 0);
 	format(tDoor[freeId][dTaxDate], 16, "%02d/%02d/%02d", d, m, y);
 	tDoor[freeId][dTaxCost] = 0;
-	tDoor[freeId][dDimension] = 0;
+	tDoor[freeId][dDimension] = meters;
 	tDoor[freeId][dObjects] = 0;
 	tDoor[freeId][dMaxObjects] = 0;
 	tDoor[freeId][dTexts] = 0;
@@ -148,7 +172,6 @@ stock addDoor(owner, ownertype, type, const name[], Float:enterX, Float:enterY, 
 	tDoor[freeId][dInt] = int;
 
 	tDoor[freeId][dPickup] = CreateDynamicPickup(1239, 2, tDoor[freeId][dEnterX], tDoor[freeId][dEnterY], tDoor[freeId][dEnterZ], 0, 0, -1, 50.0, -1, 0);
-	Iter_Add(doorItter, freeId);
 
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Doors` (`OUID`, `OType`, `Type`, `Name`, `EnterX`, `EnterY`, `EnterZ`, `EnterA`, `ExitX`, `ExitY`, `ExitZ`, `ExitA`, `Cost`, `Passing`, `Open`, `Tax`, `TaxDate`, `TaxCost`, `Objects`, `MaxObjects`, `Texts`, `MaxTexts`, `Security`, `VW`, `INT`) VALUES ('%d', '%d', '%d', '%s', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%d', '%d', '%d', '%d', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d')",
@@ -181,6 +204,8 @@ stock addDoor(owner, ownertype, type, const name[], Float:enterX, Float:enterY, 
 	);
 
 	mysql_query(queryStr);
+
+	printf("[LOG]: [DOOR] Dodano nowe drzwi o Uid: %d.", tDoor[freeId][dUid]);
 	return tDoor[freeId][dUid];
 }
 
@@ -203,8 +228,8 @@ stock removeDoor(srvdoorid) {
 		DestroyDynamicPickup(tDoor[srvdoorid][dPickup]);
 	}
 
-	tDoor[srvdoorid][dUid] = 0;
-	tDoor[srvdoorid][dOUid] = 0;
+	tDoor[srvdoorid][dUid] = UID_NONE;
+	tDoor[srvdoorid][dOUid] = UID_NONE;
 	tDoor[srvdoorid][dOType] = DOOR_OWNER_NONE;
 	tDoor[srvdoorid][dType] = DOOR_NONE
 	format(tDoor[srvdoorid][dName], 32, NULL);
@@ -289,24 +314,26 @@ stock doesDoorIsType(srvdoorid, type) {
 }
 
 stock showDoorInfo(playerid, srvdoorid) {
-	if(srvdoorid == INVALID_DOOR_ID) {
-		return 1;
-	}
-
 	new str[128], str2[128], str3[128];
+
 	resetPlayerTextTextDraws(playerid);
 
-	format(str, sizeof(str), "%d. %s~n~~n~~p~Owner: ~w~%d:%d (nr 0/0)   Obiektow: %d", tDoor[srvdoorid][dUid], tDoor[srvdoorid][dName], tDoor[srvdoorid][dOType], tDoor[srvdoorid][dOUid], tDoor[srvdoorid][dObjects]);
-	TextDrawSetString(doorWholeInfo[playerid][0], str);
+	if(tPlayer[playerid][pLang] == LANG_PL) {
+		format(str, sizeof(str), "%d. %s~n~~n~~p~Owner: ~w~%d:%d (nr 0/0)   Obiektow: %d", tDoor[srvdoorid][dUid], tDoor[srvdoorid][dName], tDoor[srvdoorid][dOType], tDoor[srvdoorid][dOUid], tDoor[srvdoorid][dObjects]);
+		format(str2, sizeof(str2), "~r~Zewnatrz: ~w~%0.1f, %0.1f, %0.1f~n~~r~Wewnatrz: ~w~%0.1f, %0.1f, %0.1f", tDoor[srvdoorid][dEnterX], tDoor[srvdoorid][dEnterY], tDoor[srvdoorid][dEnterZ], tDoor[srvdoorid][dExitX], tDoor[srvdoorid][dExitY], tDoor[srvdoorid][dExitZ]);
+		format(str3, sizeof(str3), "~b~VW~w~: %d  ~b~INT~w~: %d~n~~b~Zew. drzwi~w~: %d   ~b~Wew. drzwi~w~: %d   Dni: %d", tDoor[srvdoorid][dVw], tDoor[srvdoorid][dInt], tDoor[srvdoorid][dPickup], INVALID_PLAYER_ID, 0);
+	} else {
+		format(str, sizeof(str), "%d. %s~n~~n~~p~Owner: ~w~%d:%d (nr 0/0)   Objects: %d", tDoor[srvdoorid][dUid], tDoor[srvdoorid][dName], tDoor[srvdoorid][dOType], tDoor[srvdoorid][dOUid], tDoor[srvdoorid][dObjects]);
+		format(str2, sizeof(str2), "~r~Outside: ~w~%0.1f, %0.1f, %0.1f~n~~r~Inside: ~w~%0.1f, %0.1f, %0.1f", tDoor[srvdoorid][dEnterX], tDoor[srvdoorid][dEnterY], tDoor[srvdoorid][dEnterZ], tDoor[srvdoorid][dExitX], tDoor[srvdoorid][dExitY], tDoor[srvdoorid][dExitZ]);
+		format(str3, sizeof(str3), "~b~VW~w~: %d  ~b~INT~w~: %d~n~~b~Out. door~w~: %d   ~b~In. door~w~: %d   Days: %d", tDoor[srvdoorid][dVw], tDoor[srvdoorid][dInt], tDoor[srvdoorid][dPickup], INVALID_PLAYER_ID, 0);
+	}
 
-	format(str2, sizeof(str2), "~r~Zewnatrz: ~w~%0.1f, %0.1f, %0.1f~n~~r~Wewnatrz: ~w~%0.1f, %0.1f, %0.1f", tDoor[srvdoorid][dEnterX], tDoor[srvdoorid][dEnterY], tDoor[srvdoorid][dEnterZ], tDoor[srvdoorid][dExitX], tDoor[srvdoorid][dExitY], tDoor[srvdoorid][dExitZ]);
-	TextDrawSetString(doorWholeInfo[playerid][1], str2);
-
-	format(str3, sizeof(str3), "~b~VW~w~: %d  ~b~INT~w~: %d~n~~b~Zew. drzwi~w~: %d   ~b~Wew. drzwi~w~: %d   Dni: %d", tDoor[srvdoorid][dVw], tDoor[srvdoorid][dInt], tDoor[srvdoorid][dPickup], INVALID_PLAYER_ID, 0);
-	TextDrawSetString(doorWholeInfo[playerid][2], str3);
+	TextDrawSetString(doorInfo2[playerid][0], str);
+	TextDrawSetString(doorInfo2[playerid][1], str2);
+	TextDrawSetString(doorInfo2[playerid][2], str3);
 
 	for(new i = 0; i < 3; i++) {
-		TextDrawShowForPlayer(playerid, doorWholeInfo[playerid][i]);
+		TextDrawShowForPlayer(playerid, doorInfo2[playerid][i]);
 	}
 
 	SetTimerEx("hideDoorMenuInfo", 20000, false, "i", playerid);
@@ -315,49 +342,114 @@ stock showDoorInfo(playerid, srvdoorid) {
 
 Callback hideDoorMenuInfo(playerid) {
 	for(new i = 0; i < 3; i++) {
-		TextDrawHideForPlayer(playerid, doorWholeInfo[playerid][i]);
+		TextDrawHideForPlayer(playerid, doorInfo2[playerid][i]);
 	}
 	return 1;
 }
 
-stock showDoorMenu(playerid, srvdoorid) {
+stock showDoorMenu(playerid) {
 	new str[64];
-
+	new srvdoorid = getServerDoorId(lastDoor[playerid]);
 	mainStr[0] = EOS;
-	format(str, sizeof(str), "Drzwi %d (Op³acone: %s, do zap³aty: $%d; %d m2)", tDoor[srvdoorid][dUid], tDoor[srvdoorid][dTaxDate], tDoor[srvdoorid][dTaxCost], tDoor[srvdoorid][dDimension]);
 
-	if(tDoor[srvdoorid][dOUid] == tPlayer[playerid][pUid] || tPlayer[playerid][pRank] >= RANK_ADMIN1) {
-		format(mainStr, sizeof(mainStr), "{FFFFFF}1\tPoka¿ informacje*\n27\tPrzypisz obiekty (%d + %d przypisanych)\n29\tPrzypisz napisy (%d + %d przypisanych)\n13\tWczytaj mapê obiektów\n30\tSkasuj ostatni obiekt (w razie crashów)\n40\tWykonaj kopiê zapasow¹\n4\tZmieñ interior (widocznoœæ przez okna)\n",
-		tDoor[srvdoorid][dMaxObjects], tDoor[srvdoorid][dObjects], tDoor[srvdoorid][dMaxTexts], tDoor[srvdoorid][dTexts]);
-		format(mainStr, sizeof(mainStr), "%s2\tEdytuj wewnêtrzn¹ pozycjê\n31\tEdytuj wymiary wnêtrza\n20\tW(y)³¹cz przejazd pojazdami\n24\tPrzepisz budynek pod grupê\n16\tZmieñ wyœwietlan¹ nazwê\n35\tPrze³¹cz pickup\n15\tUstal op³atê za wejœcie\n21\tZakup system HiFi ($2500)\n22\tZakup szafê na szyfr ($2000)\n34\tOchrona: %s", mainStr, "brak");
-		ShowPlayerDialog(playerid, DIALOG_DOOR_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
+	if(tPlayer[playerid][pLang] == LANG_PL) {
+		format(str, sizeof(str), "Drzwi %d (Op³acone: %s, do zap³aty: $%d; %d m2)", tDoor[srvdoorid][dUid], tDoor[srvdoorid][dTaxDate], tDoor[srvdoorid][dTaxCost], tDoor[srvdoorid][dDimension]);
+	} else {
+		format(str, sizeof(str), "Door %d (Paid: %s, payable: $%d; %d m2)", tDoor[srvdoorid][dUid], tDoor[srvdoorid][dTaxDate], tDoor[srvdoorid][dTaxCost], tDoor[srvdoorid][dDimension]);
+	}
+
+	if(tDoor[srvdoorid][dOUid] == tPlayer[playerid][pUid]) {
+		if(tPlayer[playerid][pLang] == LANG_PL) {
+			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tPoka¿ informacje*\n27\tPrzypisz obiekty (%d + %d przypisanych)\n29\tPrzypisz napisy (%d + %d przypisanych)\n13\tWczytaj mapê obiektów\n30\tSkasuj ostatni obiekt (w razie crashów)\n40\tWykonaj kopiê zapasow¹\n4\tZmieñ interior (widocznoœæ przez okna)\n",
+			tDoor[srvdoorid][dMaxObjects], tDoor[srvdoorid][dObjects], tDoor[srvdoorid][dMaxTexts], tDoor[srvdoorid][dTexts]);
+			format(mainStr, sizeof(mainStr), "%s2\tEdytuj wewnêtrzn¹ pozycjê\n31\tEdytuj wymiary wnêtrza\n20\tW(y)³¹cz przejazd pojazdami\n24\tPrzepisz budynek pod grupê\n16\tZmieñ wyœwietlan¹ nazwê\n35\tPrze³¹cz pickup\n15\tUstal op³atê za wejœcie\n21\tZakup system HiFi ($2500)\n22\tZakup szafê na szyfr ($2000)\n34\tOchrona: %s", mainStr, "brak");
+			ShowPlayerDialog(playerid, DIALOG_DOOR_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
+		} else {
+			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tShow informations*\n27\tAssign objects (%d + %d assigned)\n29\tAssign inscriptions (%d + %d assigned)\n13\tLoad feature map\n30\tDelete last object (in case of crashes)\n40\tMake a backup\n4\tChange interior (visibility through windows)\n",
+			tDoor[srvdoorid][dMaxObjects], tDoor[srvdoorid][dObjects], tDoor[srvdoorid][dMaxTexts], tDoor[srvdoorid][dTexts]);
+			format(mainStr, sizeof(mainStr), "%s2\tEdit inside position\n31\tEdit interior dimensions\n20\tTurn on/off vehicle passage\n24\tTransfer building to group\n16\tChange display name\n35\tSwitch pickup\n15\tSet an entrance fee\n21\tPurchase a HiFi system ($2500)\n22\tPurchase a combination locker ($2000)\n34\tSecurity: %s", mainStr, "brak");
+			ShowPlayerDialog(playerid, DIALOG_DOOR_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Cancel");
+		}
 	} else if(tDoor[srvdoorid][dOUid] != tPlayer[playerid][pUid]) {
-		format(mainStr, sizeof(mainStr), "{FFFFFF}1\tPoka¿ informacje*\n34\tOchrona: %s", "brak");
-		ShowPlayerDialog(playerid, DIALOG_DOOR_MENU2, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
+		if(tPlayer[playerid][pLang] == LANG_PL) {
+			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tPoka¿ informacje*\n34\tOchrona: %s", "brak");
+			ShowPlayerDialog(playerid, DIALOG_DOOR_MENU2, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
+		} else {
+			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tShow informations*\n34\tSecurity: %s", "brak");
+			ShowPlayerDialog(playerid, DIALOG_DOOR_MENU2, DIALOG_STYLE_LIST, str, mainStr, "OK", "Cancel");
+		}
 	} else if(tDoor[srvdoorid][dOUid] != tPlayer[playerid][pUid] && !tDoor[srvdoorid][dOpen]) {
-		format(mainStr, sizeof(mainStr), "{FFFFFF}1\tPoka¿ informacje*\n34\tOchrona: %s\n39\tZapukaj do drzwi", "brak");
-		ShowPlayerDialog(playerid, DIALOG_DOOR_MENU3, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
+		if(tPlayer[playerid][pLang] == LANG_PL) {
+			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tPoka¿ informacje*\n34\tOchrona: %s\n39\tZapukaj do drzwi", "brak");
+			ShowPlayerDialog(playerid, DIALOG_DOOR_MENU3, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
+		} else {
+			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tShow informations*\n34\tSecurity: %s\n39\tKnock on the door", "brak");
+			ShowPlayerDialog(playerid, DIALOG_DOOR_MENU3, DIALOG_STYLE_LIST, str, mainStr, "OK", "Cancel");
+		}
 	} else if(srvdoorid == INVALID_DOOR_ID) {
-		new srvAreaId = getServerAreaId(playerid);
-		if(srvAreaId == INVALID_AREA_ID) {
-			return 1;
+
+	} else {
+		if(tPlayer[playerid][pLang] == LANG_PL) {
+			strcat(mainStr, "Nie uda³o siê wykryæ budynku.\nNa pewno stoisz pod budynkiem, twarz¹ do œciany?\n");
+			strcat(mainStr, "Nie mo¿esz staæ dalej ni¿ 5m od œciany.");
+		} else {
+			strcat(mainStr, "Unable to detect the building.\nAre you sure you are standing under the building, facing a wall?\n");
+			strcat(mainStr, "You cannot stand more than 5m from the wall.");
 		}
 
+		DialogInfo(playerid, mainStr);
+	}
+
+	new srvAreaId = getServerAreaId(playerid);
+
+	if(srvAreaId == INVALID_AREA_ID) {
+		return 1;
+	}
+
+	if(tPlayer[playerid][pLang] == LANG_PL) {
 		format(mainStr, sizeof(mainStr), "{FFFFFF}11\tStwórz nowy budynek ($%d/m2, min %dm2)", tArea[srvAreaId][aCost], tArea[srvAreaId][aDimension]);
 		ShowPlayerDialog(playerid, DIALOG_DOOR_MENU4, DIALOG_STYLE_LIST, "Subserwer", mainStr, "OK", "Anuluj");
 	} else {
-		strcat(mainStr, "Nie uda³o siê wykryæ budynku.\nNa pewno stoisz pod budynkiem, twarz¹ do œciany?\n");
-		strcat(mainStr, "Nie mo¿esz staæ dalej ni¿ 5m od œciany.");
-		DialogInfo(playerid, mainStr);
+		format(mainStr, sizeof(mainStr), "{FFFFFF}11\tCreate a new building ($%d/m2, min %dm2)", tArea[srvAreaId][aCost], tArea[srvAreaId][aDimension]);
+		ShowPlayerDialog(playerid, DIALOG_DOOR_MENU4, DIALOG_STYLE_LIST, "Subserver", mainStr, "OK", "Cancel");
 	}
 	return 1;
 }
 
 stock showMessageToPlayersInThisDoor(srvdoorid, const mess[]) {
 	foreach(new i : Player) {
-		if(tPlayer[i][pDoor] == tDoor[srvdoorid][dUid]) {
+		if(lastDoor[i] == tDoor[srvdoorid][dUid]) {
 			sendDoMessage(i, mess);
 		}
+	}
+	return 1;
+}
+
+Callback createAndAddDoor(playerid, meters, owner, ownertype, doortype, name[], Float:px, Float:py, Float:pz, Float:pz2, Float:pa) {
+	new Float:doorExitX, Float:doorExitY, Float:doorExitZ, Float:doorExitA;
+	new doorVw, doorInt;
+
+	doorExitX = px;
+	doorExitY = py;
+	doorExitZ = pz2;
+	doorExitA = pa;
+
+	doorVw = playerid + 1;
+	doorInt = 0;
+
+	lastDoor[playerid] = addDoor(owner, ownertype, doortype, name, meters, px, py, pz, pa, doorExitX, doorExitY, doorExitZ, doorExitA, doorVw, doorInt);
+	new srvDoorId = getServerDoorId(lastDoor[playerid]);
+
+	OSRP_SetPlayerPos(playerid, tDoor[srvDoorId][dEnterX], tDoor[srvDoorId][dEnterY], tDoor[srvDoorId][dEnterZ]);
+	SetPlayerFacingAngle(playerid, tDoor[srvDoorId][dEnterA]);
+	OSRP_TogglePlayerControllable(playerid, 1);
+
+	if(tPlayer[playerid][pLang] == LANG_PL) {
+		DialogInfo(playerid, "Budynek zosta³ utworzony. Have fun!");
+		DialogInfo(playerid, "Nie posiadasz przy sobie %d USD w gotówce.");
+	} else {
+		DialogInfo(playerid, "The building has been created. Have fun!");
+		DialogInfo(playerid, "You do not have %d USD in cash on you.");
 	}
 	return 1;
 }

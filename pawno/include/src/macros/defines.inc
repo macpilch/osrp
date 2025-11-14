@@ -15,35 +15,43 @@
 #pragma dynamic 8192 //rozmiar stosu
 #pragma tabsize 0
 
+#if defined MAX_PLAYERS
 #undef MAX_PLAYERS
+#endif
+
+#if defined MAX_VEHICLES
 #undef MAX_VEHICLES
+#endif
+
+#if defined MAX_OBJECTS
 #undef MAX_OBJECTS
+#endif
 
-#define MAX_PLAYERS 2
-#define MAX_VEHICLES 100
-#define MAX_OBJECTS 1000
-#define MAX_3DTEXTS 100
-
+#define MAX_PLAYERS 				70
+#define MAX_VEHICLES 				100
+#define MAX_OBJECTS 				100
+#define MAX_3DTEXTS 				100
 #define MAX_PLAYER_CHARS 			6
 #define MAX_PLAYER_GROUPS 			5
 #define MAX_PLAYER_VEHICLES 		10
-#define MAX_THINGS 					50
-#define MAX_DOORS 					50
-#define MAX_BOOTHS 					50
-#define MAX_BUS_STOPS 				50
-#define MAX_CASHPOINTS 				50
-#define MAX_GROUPS 					50
-#define MAX_GROUP_SETS 				50
-#define MAX_GROUP_TASKS 			50
-#define MAX_GROUP_ORDERS 			50
-#define MAX_GROUP_VEHICLES 			50
-#define MAX_RACES 					50
-#define MAX_CPS 					50
-#define MAX_GPS_ICONS 				50
-#define MAX_AREAS 					50
-#define MAX_CONTACTS 				50
+#define MAX_CHATS					3
+#define MAX_THINGS 					100
+#define MAX_DOORS 					100
+#define MAX_BOOTHS 					100
+#define MAX_BUS_STOPS 				100
+#define MAX_CASHPOINTS 				100
+#define MAX_GROUPS 					100
+#define MAX_GROUP_SETS 				100
+#define MAX_GROUP_TASKS 			100
+#define MAX_GROUP_ORDERS 			100
+#define MAX_GROUP_VEHICLES 			100
+#define MAX_RACES 					100
+#define MAX_CPS 					100
+#define MAX_GPS_ICONS 				100
+#define MAX_AREAS 					100
+#define MAX_CONTACTS 				100
 #define MAX_BLOCKADES 				5
-#define MAX_PENALTIES 				50
+#define MAX_PENALTIES 				1000
 #define MAX_ANIMATIONS 				135
 #define MAX_ACHIEVEMENTS			22
 
@@ -94,8 +102,11 @@
 #define COLOR_DO4 					0x486FE1FF
 #define COLOR_DO5 					0x3C65DFFF
 #define COLOR_QUIT					0xDEDEDECC
-#define COLOR_GOLD					0xe8d97fFF
-#define COLOR_SPAWN					0xFFFF00AA
+#define COLOR_GOLD					0xe8d97fAA
+#define COLOR_SPAWN1				0xE6E6E6AA
+#define COLOR_SPAWN2				0xFFFF80AA
+#define COLOR_SPAWN3				0xFFFFE6AA
+#define COLOR_SPAWN4				0xFFFFCCAA
 #define COLOR_INFO					0xA9C4E4FF
 #define COLOR_DESC 					0xC2A2DAFF
 #define COLOR_GM					0x20B2AAFF
@@ -129,12 +140,17 @@
 #define Distance(%0,%1,%2,%3,%4,%5) (((%0 - %3) * (%0 - %3)) + ((%1 - %4) * (%1 - %4)) + ((%2 - %5) * (%2 - %5)))
 
 #define NULL ""
+#define UID_NONE 0
 
 #define SEX_MAN 0
 #define SEX_WOMAN 1
 
 #define LANG_PL 0
 #define LANG_ENG 1
+
+#define TOG_W 0
+#define TOG_G 1
+#define TOG_GM 2
 
 #define DEFAULT_POS_X 837.8678
 #define DEFAULT_POS_Y -1344.6394
@@ -187,6 +203,7 @@
 #define BONE_RUARM 4
 #define BONE_LHAND 5
 
+// Dokumenty
 #define DOC_NONE 0
 #define DOC_ID 2
 #define DOC_L_DRIVING 4
@@ -228,9 +245,6 @@
 #define GROUP_GOV 2
 #define GROUP_LSFD 3
 #define GROUP_FBI 4
-#define GROUP_MEDIC 12
-#define GROUP_MAFIA 14
-#define GROUP_GANG 16
 #define GROUP_RADIO 5
 #define GROUP_BAR 6
 #define GROUP_SALON 7
@@ -238,12 +252,16 @@
 #define GROUP_GYM 9
 #define GROUP_SECURITY 10
 #define GROUP_TAXI 11
+#define GROUP_MEDIC 27
 #define GROUP_SHOP 13
+#define GROUP_MAFIA 14
 #define GROUP_DRIVERLICENSE 15
+#define GROUP_GANG 16
+#define GROUP_SANNEWS 17
 #define GROUP_MOBILE 24
 #define GROUP_AMMUNATION 25
 #define GROUP_SHOOT 26
-#define GROUP_SANNEWS 17
+#define GROUP_HOTEL 18
 
 // Drzwi
 #define DOOR_NONE 0
@@ -268,8 +286,9 @@
 #define SAVE_SKILL 512
 #define SAVE_ONLINE 1024
 #define SAVE_LANG 2048
-#define SAVE_PENALTIES 3072
-#define SAVE_STATS 4096
+#define SAVE_PENALTIES 4096
+#define SAVE_STATS 8192
+#define SAVE_HOTEL 16384
 
 // Kary
 #define PEN_NONE 0
@@ -311,29 +330,31 @@
 #define OFFER_GOV 8
 #define OFFER_RP 9
 #define OFFER_TAX 10
-#define OFFER_PURCHASETHG 11
-#define OFFER_PURCHASEWEAP 12
-#define OFFER_VEHREPAIR 13
-#define OFFER_PARTREPAIR 14
-#define OFFER_COMPINSTALL 15
-#define OFFER_COMPMONTAGE 16
-#define OFFER_VEHMODIFICATION 17
-#define OFFER_IMPROVEMENT 18
-#define OFFER_VARNISHING 19
-#define OFFER_PAINTJOB 20
-#define OFFER_VEHBUYING 21
-#define OFFER_VEHCHANGING 22
-#define OFFER_VEHRENTAL 23
-#define OFFER_VEHREGISTER 24
-#define OFFER_REFUELING 25
-#define OFFER_ROPE 26
-#define OFFER_VCARD 27
-#define OFFER_DETENTION 28
-#define OFFER_PRODUCT 29
-#define OFFER_AREA 30
-#define OFFER_TAXI 31
-#define OFFER_AD 32
-#define OFFER_INTERVIEW 33
+#define OFFER_MANDATE 11
+#define OFFER_PURCHASETHG 12
+#define OFFER_PURCHASEWEAP 13
+#define OFFER_VEHREPAIR 14
+#define OFFER_PARTREPAIR 15
+#define OFFER_COMPINSTALL 16
+#define OFFER_COMPMONTAGE 17
+#define OFFER_VEHMODIFICATION 18
+#define OFFER_IMPROVEMENT 19
+#define OFFER_VARNISHING 20
+#define OFFER_PAINTJOB 21
+#define OFFER_VEHBUYING 22
+#define OFFER_VEHCHANGING 23
+#define OFFER_VEHRENTAL 24
+#define OFFER_VEHREGISTER 25
+#define OFFER_REFUELING 26
+#define OFFER_ROPE 27
+#define OFFER_VCARD 28
+#define OFFER_DETENTION 29
+#define OFFER_PRODUCT 30
+#define OFFER_AREA 31
+#define OFFER_TAXI 32
+#define OFFER_AD 33
+#define OFFER_INTERVIEW 34
+#define OFFER_VEHBLOCKOFF 35
 
 // Rodzaje rzeczy, przedmiotów
 #define TKIND_NONE 0
@@ -356,6 +377,7 @@
 #define TKIND_LOTTERY 21 // te¿ 21 jak kostka
 #define	TKIND_CIGARETTE 23
 #define	TKIND_CLOTHES 25
+#define TKIND_CORPSE 26
 #define	TKIND_NOTEBOOK 28
 #define TKIND_POISON 33
 #define	TKIND_CD 37
@@ -374,7 +396,6 @@
 #define TKIND_COUNTER 69696
 #define TKIND_TUNING 69699
 #define TKIND_BEACON 696910
-#define TKIND_CORPSE 696911
 #define TKIND_PICKLOCK 696918
 #define TKIND_VEHICLE 35
 #define TKIND_KNIFE 41
@@ -428,6 +449,7 @@
 #define VEH_ACCESSORIES_LIMITER 16
 
 // thing places
+#define THING_PLACE_NONE 0
 #define THING_PLACE_PLAYER 1
 #define THING_PLACE_FLOOR 2
 #define THING_PLACE_VEHICLE 3
@@ -455,26 +477,13 @@
 #define PART_TIME_JOB_MECHANIC 0
 #define PART_TIME_JOB_COURIER 1
 
-#define AREA_OWNER_NONE 0
-#define AREA_OWNER_PLAYER 9
-#define AREA_OWNER_GROUP 16
-
-#define DOOR_OWNER_NONE 0
-#define DOOR_OWNER_PLAYER 9
-#define DOOR_OWNER_GROUP 16
-
-#define VEHICLE_OWNER_NONE 0
-#define VEHICLE_OWNER_PLAYER 9
-#define VEHICLE_OWNER_GROUP 16
-#define VEHICLE_OWNER_SUB_GROUP 21
-
-#define OBJECT_OWNER_NONE 0
-#define OBJECT_OWNER_AREA 9
-#define OBJECT_OWNER_DOOR 16
-
-#define TEXT3D_OWNER_NONE 0
-#define TEXT3D_OWNER_AREA 9
-#define TEXT3D_OWNER_DOOR 16
+// owner types
+#define OWNER_NONE 0
+#define OWNER_AREA 9
+#define OWNER_PLAYER 9
+#define OWNER_DOOR 16
+#define OWNER_GROUP 16
+#define OWNER_SUB_GROUP 21
 
 // fuel tanks
 #define VEHICLE_FUEL_TANK_SMALL 10

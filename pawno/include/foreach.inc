@@ -12,26 +12,26 @@ Description:
 	still faster.
 Legal:
 	Version: MPL 1.1
-	
-	The contents of this file are subject to the Mozilla Public License Version 
-	1.1 (the "License"); you may not use this file except in compliance with 
+
+	The contents of this file are subject to the Mozilla Public License Version
+	1.1 (the "License"); you may not use this file except in compliance with
 	the License. You may obtain a copy of the License at
 	http://www.mozilla.org/MPL/
-	
+
 	Software distributed under the License is distributed on an "AS IS" basis,
 	WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
 	for the specific language governing rights and limitations under the
 	License.
-	
+
 	The Original Code is the YSI foreach include.
-	
+
 	The Initial Developer of the Original Code is Alex "Y_Less" Cole.
 	Portions created by the Initial Developer are Copyright (C) 2011
 	the Initial Developer. All Rights Reserved.
-	
+
 	Contributors:
 		ZeeX, koolk, JoeBullet/Google63, g_aSlice/Slice, Kar, ZiGGi
-	
+
 	Thanks:
 		JoeBullet/Google63 - Handy arbitrary ASM jump code using SCTRL.
 		ZeeX - Very productive conversations.
@@ -46,15 +46,17 @@ Legal:
 			for me to strive to better.
 		Pixels^ - Running XScripters where the idea was born.
 		Matite - Pestering me to release it and using it.
-	
+
 	Very special thanks to:
 		Thiadmer - PAWN, whose limits continue to amaze me!
 		Kye/Kalcor - SA:MP.
 		SA:MP Team past, present and future - SA:MP.
-	
+
 Version:
-	19 (0.4.3)
-Changelog:S
+	19 (0.4.4)
+Changelog:
+	12/04/14 (0.4.4):
+		Added new Vehicle & Actor iterators (from ZiGGi).
 	26/06/17 (0.4.3):
 		foreach: clear each iterator under OnFilterScriptInit/OnGameModeInit.
 		Added a revised Iter_SafeRemoveInternal by ZiGGi.
@@ -184,24 +186,9 @@ Iterators:
 
 // Foreach is testing us.
 #if defined _FOREACH_INC_TEST
-	#define _FOREACH_CUR_VERSION _FOREACH_LOCAL_VERSION
 	#endinput
 #endif
-#if !defined _FOREACH_NO_TEST
-	#define _FOREACH_INC_TEST
-	#tryinclude <YSI\y_iterate>
-	#undef _FOREACH_INC_TEST
-	// <foreach> exists - test which is newer.
-	#if defined _inc_y_iterate
-		#if _FOREACH_CUR_VERSION > _FOREACH_LOCAL_VERSION
-			// Foreach is newer.
-			#undef _inc_y_iterate
-			#define _FOREACH_NO_TEST
-			#include <YSI\y_iterate>
-			#endinput
-		#endif
-	#endif
-#endif
+#define _FOREACH_INC_TEST
 
 #if !defined _samp_included
 	#error "Please include a_samp or a_npc before foreach"
@@ -228,17 +215,30 @@ Iterators:
 
 // foreach 19 C2 and C3
 //#define _Y_ITER_C2:sizeof%0(%1)@YSII_Ag-1;_:(%2=_Y_ITER_ARRAY:%3(%4)@YSII_Ag[%5])!=%9_Y_ITER_ARRAY_SIZE(%6);) -1;_:(%2=%3@YSII_Ag(%4,%5))!=-1;)
- 
-//#define _Y_ITER_C3:%0[%1]@YSII_Cg,%2[%3]@YSII_Ag[%4]={%5} _Y_ITER_C3:%0@YSII_Cg[%4-1],%0@YSII_Ag[%1][%4]
 
+//#define _Y_ITER_C3:%0[%1]@YSII_Cg,%2[%3]@YSII_Ag[%4]={%5} _Y_ITER_C3:%0@YSII_Cg[%4-1],%0@YSII_Ag[%1][%4]
 
 #if !defined BOTSYNC_IS_BOT
 	static stock
 		YSI_g_sCallbacks = 0;
-#endif
 
-#if !defined BOTSYNC_IS_BOT
 	forward Iter_OPDCInternal(playerid);
+
+	#if !defined _FOREACH_VEHICLES
+		#define _FOREACH_VEHICLES 1
+	#endif
+
+	#if !defined _FOREACH_ACTORS
+		#define _FOREACH_ACTORS 1
+	#endif
+#else
+	#if !defined _FOREACH_VEHICLES
+		#define _FOREACH_VEHICLES 0
+	#endif
+
+	#if !defined _FOREACH_ACTORS
+		#define _FOREACH_ACTORS 0
+	#endif
 #endif
 
 /*----------------------------------------------------------------------------*\
@@ -395,7 +395,7 @@ Return:
 	-
 Notes:
 	Wrapper for Iter_SafeRemoveInternal. Common use:
-	
+
 	Iter_SafeRemove(iter, i, i);
 
 native Iter_SafeRemove(Iterator:Name<>, value, &next);
@@ -457,14 +457,21 @@ Create the internal iterators.
 \*----------------------------------------------------------------------------*/
 
 #if !defined BOTSYNC_IS_BOT
-	new
-		Iterator:Player<MAX_PLAYERS>;
-	
+	new Iterator:Player<MAX_PLAYERS>;
+
+	#if _FOREACH_VEHICLES
+		new Iterator:Vehicle<MAX_VEHICLES>;
+	#endif
+
+	#if _FOREACH_ACTORS
+		new Iterator:Actor<MAX_ACTORS>;
+	#endif
+
 	#if defined _FOREACH_BOT && !defined FOREACH_NO_BOTS
 		new
 			Iterator:Bot<MAX_PLAYERS>,
 			Iterator:Character<MAX_PLAYERS>;
-		
+
 		#define NPC@YSII_Cg Bot@YSII_Cg
 		#define NPC@YSII_Ag Bot@YSII_Ag
 	#endif
@@ -480,6 +487,7 @@ static stock
 	YSI_gsOnPlayerConnect[] = "Iter_OnPlayerConnect",
 	YSI_gsOnPlayerDisconnect[] = "Iter_OnPlayerDisconnect",
 	YSI_gsOnGameModeInit[] = "Iter_OnGameModeInit",
+	YSI_OnFilterScriptInit[] = "Iter_OnFilterScriptInit",
 	YSI_gsSpecifier@[] = "",
 	YSI_gsSpecifier@i[] = "i";
 
@@ -499,7 +507,7 @@ Notes:
 \*----------------------------------------------------------------------------*/
 
 //#define foreach(%1,%2)
-//	for (new %2 = %1@YSII_Sg; _:%2 != -1; %2 = %1@YSII_Ag[%2])
+//	for(new %2 = %1@YSII_Sg; _:%2 != -1; %2 = %1@YSII_Ag[%2])
 #define foreach%1(%0) for(new Y_FOREACH_SECOND|||Y_FOREACH_THIRD|||%0|||)
 // This allows us to use "new" multiple times - stripping off ONLY whole words.
 #define new%0|||%9|||%1:%2||| %9|||%0|||%1|||%2|||
@@ -548,60 +556,52 @@ Notes:
 \*----------------------------------------------------------------------------*/
 
 #define foreachex(%1,%2) foreach(%2:%1)
-	//for (%2=_Y_ITER_ARRAY_SIZE(%1);(%2=_Y_ITER_ARRAY:%1@YSII_Ag[%2])!=_Y_ITER_ARRAY_SIZE(%1);)
+	//for(%2=_Y_ITER_ARRAY_SIZE(%1);(%2=_Y_ITER_ARRAY:%1@YSII_Ag[%2])!=_Y_ITER_ARRAY_SIZE(%1);)
 
 /*----------------------------------------------------------------------------*\
 Function:
-	Iter_OnPlayerConnect
+	Iter_ScriptInit
 Params:
-	playerid - Player who joined.
+	-
 Return:
 	-
 Notes:
-	Adds a player to the loop data. Now sorts the list too. Note that I found
-	the most bizzare bug ever (I *think* it may be a compiler but, but it
-	requires further investigation), basically it seems that multiple variables
-	were being treated as the same variable (namely @YSII_EgotS and
-	@YSII_CgharacterS were the same and @YSII_EgotC and @YSII_CgharacterC were the
-	same). Adding print statements which reference these variables seem to fix
-	the problem, and I have tried to make sure that the values will never actually
-	get printed.
+	-
 \*----------------------------------------------------------------------------*/
 
-#if !defined BOTSYNC_IS_BOT
-	public OnPlayerConnect(playerid)
-	{
-		#if defined _FOREACH_BOT
-			if (!IsPlayerNPC(playerid))
-			{
-				Iter_Add(Player, playerid);
-			}
-			#if !defined FOREACH_NO_BOTS
-				else
-				{
-					Iter_Add(Bot, playerid);
-				}
-				#pragma tabsize 4
-				Iter_Add(Character, playerid);
-			#endif
-		#else
-			Iter_Add(Player, playerid);
-		#endif
-		if (YSI_g_sCallbacks & 2)
-		{
-			CallLocalFunction(YSI_gsOnPlayerConnect, YSI_gsSpecifier@i, playerid);
-		}
-		return 1;
-	}
-	
-	#if defined _ALS_OnPlayerConnect
-		#undef OnPlayerConnect
-	#else
-		#define _ALS_OnPlayerConnect
+stock Iter_ScriptInit()
+{
+	// Clear everything.
+	Iter_Clear(Player);
+	#if defined _FOREACH_BOT && !defined FOREACH_NO_BOTS
+		Iter_Clear(Bot);
+		Iter_Clear(Character);
 	#endif
-	#define OnPlayerConnect Iter_OnPlayerConnect
-	forward OnPlayerConnect(playerid);
-#endif
+	#if _FOREACH_VEHICLES
+		Iter_Clear(Vehicle);
+		for(new vehicleid = 1; vehicleid != MAX_VEHICLES; ++vehicleid) {
+			if(!GetVehicleModel(vehicleid)) {
+				continue;
+			}
+			Iter_Add(Vehicle, vehicleid);
+		}
+	#endif
+	#if _FOREACH_ACTORS
+		Iter_Clear(Actor);
+		for(new actorid = 0; actorid != MAX_ACTORS; ++actorid) {
+			if(!IsValidActor(actorid)) {
+				continue;
+			}
+			Iter_Add(Actor, actorid);
+		}
+	#endif
+	if(funcidx(YSI_gsOnPlayerDisconnect) != -1) {
+		YSI_g_sCallbacks |= 1;
+	}
+	if(funcidx(YSI_gsOnPlayerConnect) != -1) {
+		YSI_g_sCallbacks |= 2;
+	}
+}
 
 /*----------------------------------------------------------------------------*\
 Function:
@@ -618,19 +618,8 @@ Notes:
 #if !defined BOTSYNC_IS_BOT
 	public OnFilterScriptInit()
 	{
-		Iter_Clear(Player);
-		#if defined _FOREACH_BOT && !defined FOREACH_NO_BOTS
-			Iter_Clear(Bot);
-			Iter_Clear(Character);
-		#endif
-		if (funcidx(YSI_gsOnPlayerDisconnect) != -1)
-		{
-			YSI_g_sCallbacks |= 1;
-		}
-		if (funcidx(YSI_gsOnPlayerConnect) != -1)
-		{
-			YSI_g_sCallbacks |= 2;
-		}
+		Iter_ScriptInit();
+		// Do the forward iterator list.
 		#if defined _FOREACH_BOT && !defined FOREACH_NO_BOTS
 			Bot@YSII_Cg = _Y_ITER_C3:0;
 			Character@YSII_Cg = _Y_ITER_C3:0;
@@ -641,21 +630,17 @@ Notes:
 		Player@YSII_Cg = _Y_ITER_C3:0;
 		new
 			lastPlayer = MAX_PLAYERS;
-		for (new i = 0; i != MAX_PLAYERS; ++i)
-		{
-			if (IsPlayerConnected(i))
-			{
+		for(new i = 0; i != MAX_PLAYERS; ++i) {
+			if(IsPlayerConnected(i)) {
 				#if defined _FOREACH_BOT
 					// Had to do "if ! else" due to compile options.
-					if (!IsPlayerNPC(i))
-					{
+					if(!IsPlayerNPC(i)) {
 						Player@YSII_Ag[lastPlayer] = i;
 						++Player@YSII_Cg;
 						lastPlayer = i;
 					}
 					#if !defined FOREACH_NO_BOTS
-						else
-						{
+						else {
 							Bot@YSII_Ag[lastBot] = i;
 							++Bot@YSII_Cg;
 							lastBot = i;
@@ -670,9 +655,7 @@ Notes:
 					++Player@YSII_Cg;
 					lastPlayer = i;
 				#endif
-			}
-			else
-			{
+			} else {
 				#if defined _FOREACH_BOT && !defined FOREACH_NO_BOTS
 					Bot@YSII_Ag[i] = MAX_PLAYERS + 1;
 					//Bot@YSII_Rg[i] = -1;
@@ -688,10 +671,10 @@ Notes:
 			Character@YSII_Ag[lastPlayer] = MAX_PLAYERS;
 		#endif
 		Player@YSII_Ag[lastPlayer] = MAX_PLAYERS;
-		CallLocalFunction("Iter_OnFilterScriptInit", YSI_gsSpecifier@);
+		CallLocalFunction(YSI_OnFilterScriptInit, YSI_gsSpecifier@);
 		return 1;
 	}
-	
+
 	#if defined _ALS_OnFilterScriptInit
 		#undef OnFilterScriptInit
 	#else
@@ -718,29 +701,7 @@ Notes:
 #if !defined BOTSYNC_IS_BOT
 	public OnGameModeInit()
 	{
-		// Clear everything.
-		Iter_Clear(Player);
-		#if defined _FOREACH_BOT && !defined FOREACH_NO_BOTS
-			Iter_Clear(Bot);
-			Iter_Clear(Character);
-		#endif
-		if (funcidx(YSI_gsOnPlayerDisconnect) != -1)
-		{
-			YSI_g_sCallbacks |= 1;
-		}
-		if (funcidx(YSI_gsOnPlayerConnect) != -1)
-		{
-			YSI_g_sCallbacks |= 2;
-		}
-		if (!Player@YSII_Cg)
-		{
-			#if defined _FOREACH_BOT && !defined FOREACH_NO_BOTS
-				CallLocalFunction(YSI_gsOnGameModeInit, YSI_gsSpecifier@, Bot@YSII_Cg, Character@YSII_Cg, Player@YSII_Cg);
-			#else
-				CallLocalFunction(YSI_gsOnGameModeInit, YSI_gsSpecifier@, Player@YSII_Cg);
-			#endif
-			return 1;
-		}
+		Iter_ScriptInit();
 		// Do the forward iterator list.
 		#if defined _FOREACH_BOT && !defined FOREACH_NO_BOTS
 			Bot@YSII_Cg = _Y_ITER_C3:0;
@@ -755,21 +716,17 @@ Notes:
 		Player@YSII_Ag[MAX_PLAYERS] = MAX_PLAYERS;
 		new
 			lastPlayer = MAX_PLAYERS;
-		for (new i = 0; i != MAX_PLAYERS; ++i)
-		{
-			if (IsPlayerConnected(i))
-			{
+		for(new i = 0; i != MAX_PLAYERS; ++i) {
+			if(IsPlayerConnected(i)) {
 				#if defined _FOREACH_BOT
 					// Had to do "if ! else" due to compile options.
-					if (!IsPlayerNPC(i))
-					{
+					if(!IsPlayerNPC(i)) {
 						Player@YSII_Ag[lastPlayer] = i;
 						++Player@YSII_Cg;
 						lastPlayer = i;
 					}
 					#if !defined FOREACH_NO_BOTS
-						else
-						{
+						else {
 							Bot@YSII_Ag[lastBot] = i;
 							++Bot@YSII_Cg;
 							lastBot = i;
@@ -784,9 +741,7 @@ Notes:
 					++Player@YSII_Cg;
 					lastPlayer = i;
 				#endif
-			}
-			else
-			{
+			} else {
 				#if defined _FOREACH_BOT && !defined FOREACH_NO_BOTS
 					Bot@YSII_Ag[i] = MAX_PLAYERS + 1;
 					//Bot@YSII_Rg[i] = -1;
@@ -805,7 +760,7 @@ Notes:
 		CallLocalFunction(YSI_gsOnGameModeInit, YSI_gsSpecifier@);
 		return 1;
 	}
-	
+
 	#if defined _ALS_OnGameModeInit
 		#undef OnGameModeInit
 	#else
@@ -813,6 +768,56 @@ Notes:
 	#endif
 	#define OnGameModeInit Iter_OnGameModeInit
 	forward OnGameModeInit();
+#endif
+
+/*----------------------------------------------------------------------------*\
+Function:
+	Iter_OnPlayerConnect
+Params:
+	playerid - Player who joined.
+Return:
+	-
+Notes:
+	Adds a player to the loop data. Now sorts the list too. Note that I found
+	the most bizzare bug ever (I *think* it may be a compiler but, but it
+	requires further investigation), basically it seems that multiple variables
+	were being treated as the same variable (namely @YSII_EgotS and
+	@YSII_CgharacterS were the same and @YSII_EgotC and @YSII_CgharacterC were the
+	same). Adding print statements which reference these variables seem to fix
+	the problem, and I have tried to make sure that the values will never actually
+	get printed.
+\*----------------------------------------------------------------------------*/
+
+#if !defined BOTSYNC_IS_BOT
+	public OnPlayerConnect(playerid)
+	{
+		#if defined _FOREACH_BOT
+			if(!IsPlayerNPC(playerid)) {
+				Iter_Add(Player, playerid);
+			}
+			#if !defined FOREACH_NO_BOTS
+				else {
+					Iter_Add(Bot, playerid);
+				}
+				#pragma tabsize 4
+				Iter_Add(Character, playerid);
+			#endif
+		#else
+			Iter_Add(Player, playerid);
+		#endif
+		if(YSI_g_sCallbacks & 2) {
+			CallLocalFunction(YSI_gsOnPlayerConnect, YSI_gsSpecifier@i, playerid);
+		}
+		return 1;
+	}
+
+	#if defined _ALS_OnPlayerConnect
+		#undef OnPlayerConnect
+	#else
+		#define _ALS_OnPlayerConnect
+	#endif
+	#define OnPlayerConnect Iter_OnPlayerConnect
+	forward OnPlayerConnect(playerid);
 #endif
 
 /*----------------------------------------------------------------------------*\
@@ -831,14 +836,13 @@ Notes:
 #if !defined BOTSYNC_IS_BOT
 	public OnPlayerDisconnect(playerid, reason)
 	{
-		if (YSI_g_sCallbacks & 1)
-		{
+		if(YSI_g_sCallbacks & 1) {
 			CallLocalFunction(YSI_gsOnPlayerDisconnect, "ii", playerid, reason);
 		}
 		SetTimerEx("Iter_OPDCInternal", 0, false, YSI_gsSpecifier@i, playerid);
 		return 1;
 	}
-	
+
 	#if defined _ALS_OnPlayerDisconnect
 		#undef OnPlayerDisconnect
 	#else
@@ -863,18 +867,15 @@ Notes:
 #if !defined BOTSYNC_IS_BOT
 	public Iter_OPDCInternal(playerid)
 	{
-		if (IsPlayerConnected(playerid))
-		{
+		if(IsPlayerConnected(playerid)) {
 			return;
 		}
 		#if defined _FOREACH_BOT
-			if (!IsPlayerNPC(playerid))
-			{
+			if(!IsPlayerNPC(playerid)) {
 				Iter_Remove(Player, playerid);
 			}
 			#if !defined FOREACH_NO_BOTS
-				else
-				{
+				else {
 					Iter_Remove(Bot, playerid);
 				}
 				#pragma tabsize 4
@@ -884,6 +885,140 @@ Notes:
 			Iter_Remove(Player, playerid);
 		#endif
 	}
+#endif
+
+/* VEHICLES */
+
+#if _FOREACH_VEHICLES
+	/* Iter_CreateVehicle */
+
+	stock Iter_CreateVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
+	{
+		new
+			ret = CreateVehicle(modelid, x, y, z, angle, color1, color2, respawn_delay, !!addsiren);
+		if(ret != INVALID_VEHICLE_ID && ret != 0) {
+			Iter_Add(Vehicle, ret);
+		}
+		return ret;
+	}
+
+	#if defined _ALS_CreateVehicle
+		#undef CreateVehicle
+	#else
+		#define _ALS_CreateVehicle
+	#endif
+	#define CreateVehicle Iter_CreateVehicle
+
+	/* Iter_AddStaticVehicle */
+
+	stock Iter_AddStaticVehicle(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2)
+	{
+		new
+			ret = AddStaticVehicle(modelid, x, y, z, angle, color1, color2);
+		if(ret != INVALID_VEHICLE_ID) {
+			Iter_Add(Vehicle, ret);
+		}
+		return ret;
+	}
+
+	#if defined _ALS_AddStaticVehicle
+		#undef AddStaticVehicle
+	#else
+		#define _ALS_AddStaticVehicle
+	#endif
+	#define AddStaticVehicle Iter_AddStaticVehicle
+
+	/* Iter_AddStaticVehicleEx */
+
+	stock Iter_AddStaticVehicleEx(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, addsiren = 0)
+	{
+		new
+			ret = AddStaticVehicleEx(modelid, x, y, z, angle, color1, color2, respawn_delay, !!addsiren);
+		if(ret != INVALID_VEHICLE_ID) {
+			Iter_Add(Vehicle, ret);
+		}
+		return ret;
+	}
+
+	#if defined _ALS_AddStaticVehicleEx
+		#undef AddStaticVehicleEx
+	#else
+		#define _ALS_AddStaticVehicleEx
+	#endif
+	#define AddStaticVehicleEx Iter_AddStaticVehicleEx
+
+	/* DestroyVehicleSafe */
+
+	stock DestroyVehicleSafe(&vehicleid)
+	{
+		new
+			ret = DestroyVehicle(vehicleid);
+		Iter_SafeRemove(Vehicle, vehicleid, vehicleid);
+		return ret;
+	}
+
+	/* Iter_DestroyVehicle */
+
+	stock Iter_DestroyVehicle(vehicleid)
+	{
+		Iter_Remove(Vehicle, vehicleid);
+		return DestroyVehicle(vehicleid);
+	}
+
+	#if defined _ALS_DestroyVehicle
+		#undef DestroyVehicle
+	#else
+		#define _ALS_DestroyVehicle
+	#endif
+	#define DestroyVehicle Iter_DestroyVehicle
+#endif
+
+/* ACTORS */
+
+#if _FOREACH_ACTORS
+	/* Iter_CreateActor */
+
+	stock Iter_CreateActor(modelid, Float:x, Float:y, Float:z, Float:zAngle)
+	{
+		new
+			ret = CreateActor(modelid, x, y, z, zAngle);
+		if(ret != INVALID_ACTOR_ID) {
+			Iter_Add(Actor, ret);
+		}
+		return ret;
+	}
+
+	#if defined _ALS_CreateActor
+		#undef CreateActor
+	#else
+		#define _ALS_CreateActor
+	#endif
+	#define CreateActor Iter_CreateActor
+
+	/* DestroyActorSafe */
+
+	stock DestroyActorSafe(&actorid)
+	{
+		new
+			ret = DestroyActor(actorid);
+		Iter_SafeRemove(Actor, actorid, actorid);
+		return ret;
+	}
+
+	/* Iter_DestroyActor */
+
+	stock Iter_DestroyActor(actorid)
+	{
+		Iter_Remove(Actor, actorid);
+		return DestroyActor(actorid);
+	}
+
+	#if defined _ALS_DestroyActor
+		#undef DestroyActor
+	#else
+		#define _ALS_DestroyActor
+	#endif
+	#define DestroyActor Iter_DestroyActor
 #endif
 
 /*----------------------------------------------------------------------------*\
@@ -899,19 +1034,16 @@ Notes:
 	Returns a random value from an iterator.
 \*----------------------------------------------------------------------------*/
 
-stock Iter_RandomInternal(count, array[], size)
+stock Iter_RandomInternal(count, const array[], size)
 {
-	if (count == 0)
-	{
+	if(count == 0) {
 		return ITER_NONE;
 	}
 	new
 		rnd = random(count),
 		cur = array[size];
-	while (cur != size)
-	{
-		if (rnd-- == 0)
-		{
+	while(cur != size) {
+		if(rnd-- == 0) {
 			return cur;
 		}
 		cur = array[cur];
@@ -935,12 +1067,10 @@ Notes:
 	the data.
 \*----------------------------------------------------------------------------*/
 
-stock Iter_FreeInternal(array[], size)
+stock Iter_FreeInternal(const array[], size)
 {
-	for (new i = 0; i != size; ++i)
-	{
-		if (array[i] > size)
-		{
+	for(new i = 0; i != size; ++i) {
+		if(array[i] > size) {
 			return i;
 		}
 	}
@@ -965,13 +1095,11 @@ Notes:
 
 stock Iter_AddInternal(&count, array[], value, size)
 {
-	if (0 <= value < size && array[value] > size)
-	{
+	if(0 <= value < size && array[value] > size) {
 		new
 			last = size,
 			next = array[last];
-		while (next < value)
-		{
+		while(next < value) {
 			last = next;
 			next = array[last];
 		}
@@ -1021,13 +1149,11 @@ Notes:
 
 /*stock Iter_SafeRemoveInternal(&count, array[], value, &last, size)
 {
-	if (0 <= value < size && array[value] <= size)
-	{
+	if(0 <= value < size && array[value] <= size) {
 		last = size;
 		new
 			next = array[last];
-		while (next != value)
-		{
+		while(next != value) {
 			last = next;
 			next = array[last];
 		}
@@ -1041,12 +1167,12 @@ Notes:
 
 stock Iter_SafeRemoveInternal(&count, array[], value, &last, size)
 {
-	if (0 <= value < size && array[value] <= size) {
+	if(0 <= value < size && array[value] <= size) {
 		last = size;
 		new
 			next = array[last];
-		while (next < size) {
-			if (next == value) {
+		while(next < size) {
+			if(next == value) {
 				array[last] = array[value];
 				array[value] = size + 1;
 				--count;
@@ -1072,7 +1198,7 @@ Notes:
 	Checks if this item is in the iterator.
 \*----------------------------------------------------------------------------*/
 
-stock Iter_ContainsInternal(array[], value, size)
+stock Iter_ContainsInternal(const array[], value, size)
 {
 	return 0 <= value < size && array[value] <= size;
 }
@@ -1092,8 +1218,7 @@ Notes:
 
 stock Iter_ClearInternal(&count, array[], size)
 {
-	for (new i = 0, t = size + 1; i < size; ++i)
-	{
+	for(new i = 0, t = size + 1; i < size; ++i) {
 		array[i] = t;
 	}
 	array[size] = size;
@@ -1116,10 +1241,8 @@ Notes:
 
 stock Iter_InitInternal(arr[][], s0, s1)
 {
-	for (new i = 0, t = s1 + 1; i < s0; ++i)
-	{
-		for (new j = 0; j < s1; ++j)
-		{
+	for(new i = 0, t = s1 + 1; i < s0; ++i) {
+		for(new j = 0; j < s1; ++j) {
 			arr[i][j] = t;
 		}
 		arr[i][s1] = s1;
@@ -1141,15 +1264,12 @@ Notes:
 
 stock Iter_PrevInternal(array[], size, slot)
 {
-	if (0 <= slot <= size && array[slot] <= size)
-	{
-		for (new last = slot; last--; )
- 		{
- 			if (array[last] == slot)
- 			{
- 			    return last;
- 			}
- 		}
+	if(0 <= slot <= size && array[slot] <= size) {
+		for(new last = slot; last--; ) {
+			if(array[last] == slot) {
+				return last;
+			}
+		}
 	}
 	return size;
 }
@@ -1237,26 +1357,26 @@ Notes:
 
 /*----------------------------------------------------------------------------*\
 Function:
-    Iter_InternalArray
+	Iter_InternalArray
 Params:
-    iter - Name of the iterator to get the true name of.
+	iter - Name of the iterator to get the true name of.
 Return:
-    -
+	-
 Notes:
-    Accesses the internal array of an iterator.
+	Accesses the internal array of an iterator.
 \*----------------------------------------------------------------------------*/
 
 #define Iter_InternalArray(%1) (_Y_ITER_ARRAY:%1@YSII_Ag)
 
 /*----------------------------------------------------------------------------*\
 Function:
-    Iter_InternalSize
+	Iter_InternalSize
 Params:
-    iter - Name of the iterator to get the true size of.
+	iter - Name of the iterator to get the true size of.
 Return:
-    -
+	-
 Notes:
-    Accesses the internal size of an iterator.
+	Accesses the internal size of an iterator.
 \*----------------------------------------------------------------------------*/
 
 #define _Y_ITER_INT_SIZE:%0(%2[%1]@YSII_Ag)) %0(%2@YSII_Ag[]))

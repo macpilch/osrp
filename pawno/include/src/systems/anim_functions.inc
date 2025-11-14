@@ -13,37 +13,49 @@
 #pragma library osrp
 
 stock initAnimationValues() {
-	printf("[LOG]: Zaczynam ladowac animacje...");
-	new i;
+	printf("[LOG]: [ANIMATION] Zaczynam ladowac animacje...");
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Animations`");
-	mysql_query(queryStr);
+	new id;
 
+	mysql_query("SELECT * FROM `osrp_Animations`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
 		sscanf(queryStr, "p<|>is[32]s[32]s[32]fiiiiii",
-			tAnim[i][aUid],
-			tAnim[i][aName],
-			tAnim[i][aAnimLib],
-			tAnim[i][aAnimName],
-			tAnim[i][aDelta],
-			tAnim[i][aLoop],
-			tAnim[i][aLockX],
-			tAnim[i][aLockY],
-			tAnim[i][aFreeze],
-			tAnim[i][aTime],
-			tAnim[i][aForesync]
+			tAnim[id][aUid],
+			tAnim[id][aName],
+			tAnim[id][aAnimLib],
+			tAnim[id][aAnimName],
+			tAnim[id][aDelta],
+			tAnim[id][aLoop],
+			tAnim[id][aLockX],
+			tAnim[id][aLockY],
+			tAnim[id][aFreeze],
+			tAnim[id][aTime],
+			tAnim[id][aForeSync]
 		);
 
-		i++;
+		printf("[LOG]: [ANIMATION] Uid: %d, Name: %s, AnimLib: %s, AnimName: %s, Delta: %0.1f, Loop: %d, LockX: %d, LockY: %d, Freeze: %d, Time: %d, ForeSync: %d",
+			tAnim[id][aUid],
+			tAnim[id][aName],
+			tAnim[id][aAnimLib],
+			tAnim[id][aAnimName],
+			tAnim[id][aDelta],
+			tAnim[id][aLoop],
+			tAnim[id][aLockX],
+			tAnim[id][aLockY],
+			tAnim[id][aFreeze],
+			tAnim[id][aTime],
+			tAnim[id][aForeSync]
+		);
+
+		id++;
 	}
 
-	if(i) {
-		printf("[LOG]: Wczytano %d animacji.\n", i + 1);
+	if(id) {
+		printf("[LOG]: [ANIMATION] Wczytano %d animacji.\n", id + 1);
 	} else {
-		printf("[LOG]: Brak animacji.\n");
+		printf("[LOG]: [ANIMATION] Brak animacji.\n");
 	}
 
 	mysql_free_result();
@@ -62,16 +74,24 @@ stock getServerAnimationIdFromName(name[]) {
 	return id;
 }
 
-stock getAnimationNameFromServerId(id) {
+stock getAnimationNameFromServerId(srvanimid) {
 	new name[32];
 
 	for(new i = 0; i < MAX_ANIMATIONS; i++) {
-		if(id == i) {
+		if(srvanimid == i) {
 			format(name, sizeof(name), tAnim[i][aName]);
 			break;
 		}
 	}
 	return name;
+}
+
+stock addAnimation() {
+	
+}
+
+stock removeAnimation() {
+	
 }
 
 stock showPlayerAnimations(playerid, dialogid) {
@@ -81,23 +101,39 @@ stock showPlayerAnimations(playerid, dialogid) {
 		format(animStr, sizeof(animStr), "%s\n{FFFFFF}//%s", animStr, tAnim[i][aName]);
 	}
 
-	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, "Lista animacji", animStr, "Aktywuj", "Zamknij");
+	if(tPlayer[playerid][pLang] == LANG_PL) {
+		ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, "Lista animacji", animStr, "Aktywuj", "Zamknij");
+	} else {
+		ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, "Animation list", animStr, "Activate", "Close");
+	}
 }
 
-stock applyAnimationEx(playerid, id) {
+stock applyAnimationEx(playerid, srvanimid) {
+	if(hasAnim[playerid]) {
+		hasAnim[playerid] = false;
+	}
+
 	ClearAnimations(playerid);
-	ApplyAnimation(playerid, tAnim[id][aAnimLib], tAnim[id][aAnimName], tAnim[id][aDelta], tAnim[id][aLoop], tAnim[id][aLockX], tAnim[id][aLockY], tAnim[id][aFreeze], tAnim[id][aTime], tAnim[id][aForesync]);
+	ApplyAnimation(playerid, tAnim[srvanimid][aAnimLib], tAnim[srvanimid][aAnimName], tAnim[srvanimid][aDelta], tAnim[srvanimid][aLoop], tAnim[srvanimid][aLockX], tAnim[srvanimid][aLockY], tAnim[srvanimid][aFreeze], tAnim[srvanimid][aTime], tAnim[srvanimid][aForeSync]);
 
 	hasAnim[playerid] = true;
 }
 
 stock enablePlayerAnimation(playerid, anim[]) {
-	new id = getServerAnimationIdFromName(anim);
+	if(tPlayer[playerid][pLang] == LANG_PL) {
+		GameTextForPlayer(playerid, "~r~Odczekaj kilka sekund od utraty~n~HP", 5000, 3);
+	} else {
+		GameTextForPlayer(playerid, "~r~Wait a few seconds after losing~n~HP", 5000, 3);
+	}
 
-	if(id != INVALID_ANIM_ID && id != 4) {
-		applyAnimationEx(playerid, id);
-	} else if(id == 4) {
+	new srvAnimId = getServerAnimationIdFromName(anim);
+
+	if(srvAnimId != INVALID_ANIM_ID && srvAnimId != 4) {
+		applyAnimationEx(playerid, srvAnimId);
+	} else if(srvAnimId == 4) {
 		ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0, 0);
+
 		hasAnim[playerid] = false;
 	}
+	return 1;
 }

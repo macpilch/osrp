@@ -33,7 +33,7 @@ enum ThingData {
 	tInt
 };
 
-enum WholesaleData {
+enum WholeSaleData {
 	wsUid,
 	wsKind,
 	wsThingKind,

@@ -223,6 +223,7 @@ Notes:
 		}
 	}
 	CallLocalFunction("Timers_OnScriptInit", "");
+	return 1;
 }
 
 #if defined FILTERSCRIPT

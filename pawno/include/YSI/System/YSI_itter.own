@@ -198,13 +198,14 @@ Notes:
 	Removes a player from the loop data.
 -*----------------------------------------------------------------------------*/
 
-Itter_OnPlayerDisconnect(playerid)
+Itter_OnPlayerDisconnect(playerid, reason)
 {
 	DBGP2("Itter_OnPlayerDisconnect() start");
 	DBGC5(Itter_ShowArray(YSI_gPlayerS, YSI_gPlayerA, MAX_PLAYERS););
 	Itter_Remove(Player, playerid);
 	DBGC5(Itter_ShowArray(YSI_gPlayerS, YSI_gPlayerA, MAX_PLAYERS););
 	DBGP2("Itter_OnPlayerDisconnect() end");
+	#pragma unused reason
 	return 1;
 }
 

@@ -13,58 +13,58 @@
 #pragma library osrp
 
 stock initBoothValues() {
-	printf("[LOG]: Zaczynam ladowac budki...");
-	new i;
+	printf("[LOG]: [BOOTH] Zaczynam ladowac budki...");
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Booths`");
-	mysql_query(queryStr);
+	new id;
 
+	mysql_query("SELECT * FROM `osrp_Booths`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
 		sscanf(queryStr, "p<|>is[32]fffffffi",
-			tBooth[i][boUid],
-			tBooth[i][boName],
-			tBooth[i][boPosX],
-			tBooth[i][boPosY],
-			tBooth[i][boPosZ],
-			tBooth[i][boRotX],
-			tBooth[i][boRotY],
-			tBooth[i][boRotZ],
-			tBooth[i][boRange],
-			tBooth[i][boWorking]
+			tBooth[id][boUid],
+			tBooth[id][boName],
+			tBooth[id][boPosX],
+			tBooth[id][boPosY],
+			tBooth[id][boPosZ],
+			tBooth[id][boRotX],
+			tBooth[id][boRotY],
+			tBooth[id][boRotZ],
+			tBooth[id][boRange],
+			tBooth[id][boWorking]
 		);
 
-		tBooth[i][boObject] = CreateDynamicObject(1216, tBooth[i][boPosX], tBooth[i][boPosY], tBooth[i][boPosZ], tBooth[i][boRotX], tBooth[i][boRotY], tBooth[i][boRotZ], 0, 0, -1, 100.0);
+		tBooth[id][boObject] = CreateDynamicObject(1216, tBooth[id][boPosX], tBooth[id][boPosY], tBooth[id][boPosZ], tBooth[id][boRotX], tBooth[id][boRotY], tBooth[id][boRotZ], 0, 0, -1, 100.0);
 
-		Iter_Add(boothItter, i);
-		i++;
+		Iter_Add(boothItter, id);
+
+		printf("[LOG]: [BOOTH] Uid: %d, Name: %s, PosX: %0.1f, PosY: %0.1f, PosZ: %0.1f, RotX: %0.1f, RotY: %0.1f, RotZ: %0.1f, Range: %0.1f, Working: %d",
+			tBooth[id][boUid],
+			tBooth[id][boName],
+			tBooth[id][boPosX],
+			tBooth[id][boPosY],
+			tBooth[id][boPosZ],
+			tBooth[id][boRotX],
+			tBooth[id][boRotY],
+			tBooth[id][boRotZ],
+			tBooth[id][boRange],
+			tBooth[id][boWorking]
+		);
+
+		id++;
 	}
 
 	if(Iter_Count(boothItter)) {
-		printf("[LOG]: Wczytano %d budek.\n", Iter_Count(boothItter));
+		printf("[LOG]: [BOOTH] Wczytano %d budek.\n", Iter_Count(boothItter));
 	} else {
-		printf("[LOG]: Brak budek.\n");
+		printf("[LOG]: [BOOTH] Brak budek.\n");
 	}
 
 	mysql_free_result();
 	return 1;
 }
 
-stock getServerBoothId(playerid) {
-	new id = INVALID_BOOTH_ID;
-
-	foreach(new i : boothItter) {
-		if(tPlayer[playerid][pBooth] == tBooth[i][boUid]) {
-			id = i;
-			break;
-		}
-	}
-	return id;
-}
-
-stock getServerBoothIdFromUid(uid) {
+stock getServerBoothId(uid) {
 	new id = INVALID_BOOTH_ID;
 
 	foreach(new i : boothItter) {
@@ -76,31 +76,28 @@ stock getServerBoothIdFromUid(uid) {
 	return id;
 }
 
-stock addBooth(name[], Float:x, Float:y, Float:z, Float:a) {
+stock addBooth(const name[], Float:posx, Float:posy, Float:posz, Float:posa) {
 	new freeId = INVALID_BOOTH_ID;
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Booths`");
-	mysql_query(queryStr);
-
+	mysql_query("SELECT COUNT(`UID`) FROM `osrp_Booths`");
 	mysql_store_result();
 
 	freeId = mysql_fetch_int();
 	mysql_free_result();
 
+	Iter_Add(boothItter, freeId);
+
 	tBooth[freeId][boUid] = freeId + 1;
 	format(tBooth[freeId][boName], 32, name);
-	tBooth[freeId][boPosX] = x;
-	tBooth[freeId][boPosY] = y;
-	tBooth[freeId][boPosZ] = z;
+	tBooth[freeId][boPosX] = posx;
+	tBooth[freeId][boPosY] = posy;
+	tBooth[freeId][boPosZ] = posz;
 	tBooth[freeId][boRotX] = 0.0;
 	tBooth[freeId][boRotY] = 0.0;
-	tBooth[freeId][boRotZ] = a;
+	tBooth[freeId][boRotZ] = posa;
 	tBooth[freeId][boRange] = 5.0;
 	tBooth[freeId][boWorking] = true;
 	tBooth[freeId][boObject] = CreateDynamicObject(1216, tBooth[freeId][boPosX], tBooth[freeId][boPosY], tBooth[freeId][boPosZ], tBooth[freeId][boRotX], tBooth[freeId][boRotY], tBooth[freeId][boRotZ], 0, 0, -1, 100.0);
-
-	Iter_Add(boothItter, freeId);
 
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Booths` (`Name`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`, `Range`, `Working`) VALUES ('%s', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%d')",
@@ -116,6 +113,8 @@ stock addBooth(name[], Float:x, Float:y, Float:z, Float:a) {
 	);
 
 	mysql_query(queryStr);
+
+	printf("[LOG]: [BOOTH] Dodano now¹ budkê o Uid %d.", tBooth[freeId][boUid]);
 	return tBooth[freeId][boUid];
 }
 
@@ -134,7 +133,7 @@ stock removeBooth(srvboothid) {
 
 	Iter_Remove(boothItter, srvboothid);
 
-	tBooth[srvboothid][boUid] = 0;
+	tBooth[srvboothid][boUid] = UID_NONE;
 	format(tBooth[srvboothid][boName], 32, NULL);
 	tBooth[srvboothid][boObject] = INVALID_OBJECT_ID;
 	tBooth[srvboothid][boPosX] = 0.0;
@@ -175,36 +174,63 @@ stock searchPlayerBooth(playerid) {
 		if(playerToPoint(playerid, tBooth[i][boRange], tBooth[i][boPosX], tBooth[i][boPosY], tBooth[i][boPosZ])) {
 			if(IsValidDynamicObject(tBooth[i][boObject]) && tBooth[i][boWorking]) {
 				if(tPlayer[playerid][pHours] > 20) {
-					return SendClientMessage(playerid, COLOR_GRAY, "Budki telefoniczne dostêpne s¹ tylko dla graczy, którzy przegrali mniej ni¿ 20 godzin.");
+					if(tPlayer[playerid][pLang] == LANG_PL) {
+						return SendClientMessage(playerid, COLOR_GRAY, "Budki telefoniczne dostêpne s¹ tylko dla graczy, którzy przegrali mniej ni¿ 20 godzin.");
+					} else {
+						return SendClientMessage(playerid, COLOR_GRAY, "Phone booths are only available to players who have played less than 20 hours.");
+					}
 				}
 
-				new count;
-
+				new countPlayer;
 				mainStr[0] = EOS;
-				strcat(mainStr, "{FFFFFF}Zadzwoñ do WSZYSTKICH taksówek >>\n--\n");
+
+				if(tPlayer[playerid][pLang] == LANG_PL) {
+					strcat(mainStr, "{FFFFFF}Zadzwoñ do WSZYSTKICH taksówek >>\n--\n");
+				} else {
+					strcat(mainStr, "{FFFFFF}Call ALL taxis >>\n--\n");
+				}
 
 				foreach(new j : groupItter) {
 					foreach(new k : Player) {
 						if(isGroupType(j, GROUP_TAXI)) {
-							if(tPlayer[k][pGroup][0] == tGroup[j][gUid] && isPlayerOnDuty(k)) {
-								count++;
+							if(isPlayerOnDuty(k) && lastGroup[k][tPlayer[k][pSlot] - 1] == tGroup[j][gUid]) {
+								countPlayer++;
 							}
 						}
 
-						format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[j][gUid], count, tGroup[j][gName]);
+						if(tPlayer[playerid][pLang] == LANG_PL) {
+							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[j][gUid], countPlayer, tGroup[j][gName]);
+						} else {
+							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d people on duty)\t%s", mainStr, tGroup[j][gUid], countPlayer, tGroup[j][gName]);
+						}
 					}
 				}
 
-				if(!count) {
-					return GameTextForPlayer(playerid, "~r~Brak taksowkarzy.", 5000, 3);
+				if(!countPlayer) {
+					if(tPlayer[playerid][pLang] == LANG_PL) {
+						return GameTextForPlayer(playerid, "~r~Brak taksowkarzy.", 5000, 3);
+					} else {
+						return GameTextForPlayer(playerid, "~r~No taxi drivers.", 5000, 3);
+					}
 				}
 
 				ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 1, 1, 1, 1, 1);
-				SendClientMessage(playerid, COLOR_WHITE, "{FFFF00}Automat (telefon): Witamy. Gdzie chce siê Pan/Pani dodzwoniæ?");
 
-				ShowPlayerDialog(playerid, DIALOG_TELEPHONE_GROUPS, DIALOG_STYLE_LIST, "Dostêpne grupy", mainStr, "Wybierz", "Anuluj");
+				if(tPlayer[playerid][pLang] == LANG_PL) {
+					SendClientMessage(playerid, COLOR_YELLOW, "Automat (telefon): Witamy. Gdzie chce siê Pan/Pani dodzwoniæ?");
+					ShowPlayerDialog(playerid, DIALOG_TELEPHONE_GROUPS, DIALOG_STYLE_LIST, "Dostêpne grupy", mainStr, "Wybierz", "Anuluj");
+				} else {
+					SendClientMessage(playerid, COLOR_YELLOW, "Auto dialer (phone): Welcome. Where would you like to call?");
+					ShowPlayerDialog(playerid, DIALOG_TELEPHONE_GROUPS, DIALOG_STYLE_LIST, "Available groups", mainStr, "Choose", "Cancel");
+				}
 			}
 		}
 	}
 	return 1;
+}
+
+stock saveBoothsValues() {
+	foreach(new i : boothItter) {
+		saveBoothValues(i);
+	}
 }

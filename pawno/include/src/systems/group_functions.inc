@@ -14,49 +14,49 @@
 #pragma library osrp
 
 stock initGroupValues() {
-	printf("[LOG]: Zaczynam ladowac grupy...");
-	new i;
+	printf("[LOG]: [GROUP] Zaczynam ladowac grupy...");
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_Groups`");
-	mysql_query(queryStr);
+	new id;
 
+	mysql_query("SELECT * FROM `osrp_Groups`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
 		sscanf(queryStr, "p<|>is[32]s[16]iiiis[10]i",
-			tGroup[i][gUid],
-			tGroup[i][gName],
-			tGroup[i][gDate],
-			tGroup[i][gType],
-			tGroup[i][gMembers],
-			tGroup[i][gVehLimit],
-			tGroup[i][gMoney],
-			tGroup[i][gColor],
-			tGroup[i][gRegister]
+			tGroup[id][gUid],
+			tGroup[id][gName],
+			tGroup[id][gDate],
+			tGroup[id][gType],
+			tGroup[id][gMembers],
+			tGroup[id][gVehLimit],
+			tGroup[id][gMoney],
+			tGroup[id][gColor],
+			tGroup[id][gRegistered]
 		);
 
-		tGroup[i][gVehCount] = 0;
+		tGroup[id][gVehCount] = 0;
 
-		printf("[DEBUG] Id: %d, Uid: %d, Name: %s, Type: %d, Members: %d, VehLimit: %d, Money: %d, Register: %d",
-			i,
-			tGroup[i][gUid],
-			tGroup[i][gName],
-			tGroup[i][gType],
-			tGroup[i][gMembers],
-			tGroup[i][gVehLimit],
-			tGroup[i][gMoney],
-			tGroup[i][gRegister]
+		Iter_Add(groupItter, id);
+
+		printf("[LOG]: [GROUP] Uid: %d, Name: %s, Date: %s, Type: %d, Members: %d, VehLimit: %d, Money: %d, Color: %d, Registered: %d",
+			tGroup[id][gUid],
+			tGroup[id][gName],
+			tGroup[id][gDate],
+			tGroup[id][gType],
+			tGroup[id][gMembers],
+			tGroup[id][gVehLimit],
+			tGroup[id][gMoney],
+			tGroup[id][gColor],
+			tGroup[id][gRegistered]
 		);
 
-		Iter_Add(groupItter, i);
-		i++;
+		id++;
 	}
 
 	if(Iter_Count(groupItter)) {
-		printf("[LOG]: Wczytano %d grup.\n", Iter_Count(groupItter));
+		printf("[LOG]: [GROUP] Wczytano %d grup.\n", Iter_Count(groupItter));
 	} else {
-		printf("[LOG]: Brak grup.\n");
+		printf("[LOG]: [GROUP] Brak grup.\n");
 	}
 
 	mysql_free_result();
@@ -64,9 +64,9 @@ stock initGroupValues() {
 }
 
 stock initGroupPermValues() {
-	new tmpFlags[15];
+	printf("[LOG]: [GROUPFLAG] Zaczynam ladowac flagi grupy...\n");
 
-	printf("[LOG]: Zaczynam ladowac flagi grupy...");
+	new tmpFlags[15];
 
 	foreach(new i : groupItter) {
 		queryStr[0] = EOS;
@@ -164,35 +164,45 @@ stock initGroupPermValues() {
 }
 
 stock initGroupSetValues() {
-	printf("[LOG]: Zaczynam ladowac zestawy rzeczy grupy...");
-	new i;
+	printf("[LOG]: [GROUPSET] Zaczynam ladowac zestawy rzeczy grupy...");
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_GroupSets`");
-	mysql_query(queryStr);
+	new id;
 
+	mysql_query("SELECT * FROM `osrp_GroupSets`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
 		sscanf(queryStr, "p<|>iiis[32]iiii",
-			tGroupSet[i][gsUid],
-			tGroupSet[i][gsOUid],
-			tGroupSet[i][gsKind],
-			tGroupSet[i][gsName],
-			tGroupSet[i][gsValue1],
-			tGroupSet[i][gsValue2],
-			tGroupSet[i][gsPrice],
-			tGroupSet[i][gsAmount]
+			tGroupSet[id][gsUid],
+			tGroupSet[id][gsOUid],
+			tGroupSet[id][gsKind],
+			tGroupSet[id][gsName],
+			tGroupSet[id][gsValue1],
+			tGroupSet[id][gsValue2],
+			tGroupSet[id][gsPrice],
+			tGroupSet[id][gsAmount]
 		);
 
-		Iter_Add(groupSetItter, i);
-		i++;
+		Iter_Add(groupSetItter, id);
+
+		printf("[LOG]: [GROUPSET] Uid: %d, OUid: %d, Kind: %d, Name: %s, Value1: %d, Value2: %d, Price: %d, Amount: %d",
+			tGroupSet[id][gsUid],
+			tGroupSet[id][gsOUid],
+			tGroupSet[id][gsKind],
+			tGroupSet[id][gsName],
+			tGroupSet[id][gsValue1],
+			tGroupSet[id][gsValue2],
+			tGroupSet[id][gsPrice],
+			tGroupSet[id][gsAmount]
+		);
+
+		id++;
 	}
 
 	if(Iter_Count(groupSetItter)) {
-		printf("[LOG]: Wczytano %d zestawow rzeczy grupy.\n", Iter_Count(groupSetItter));
+		printf("[LOG]: [GROUPSET] Wczytano %d zestawow rzeczy grupy.\n", Iter_Count(groupSetItter));
 	} else {
-		printf("[LOG]: Brak zestawow.\n");
+		printf("[LOG]: [GROUPSET] Brak zestawow.\n");
 	}
 
 	mysql_free_result();
@@ -200,32 +210,39 @@ stock initGroupSetValues() {
 }
 
 stock initGroupTaskValues() {
-	printf("[LOG]: Zaczynam ladowac zadania grupy...");
-	new i;
+	printf("[LOG]: [GROUPTASK] Zaczynam ladowac zadania grupy...");
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_GroupTasks`");
-	mysql_query(queryStr);
+	new id;
 
+	mysql_query("SELECT * FROM `osrp_GroupTasks`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
 		sscanf(queryStr, "p<|>iis[128]s[64]s[24]",
-			tGroupTask[i][gtUid],
-			tGroupTask[i][gtOUid],
-			tGroupTask[i][gtDesc],
-			tGroupTask[i][gtDate],
-			tGroupTask[i][gtCaller]
+			tGroupTask[id][gtUid],
+			tGroupTask[id][gtOUid],
+			tGroupTask[id][gtDesc],
+			tGroupTask[id][gtDate],
+			tGroupTask[id][gtCaller]
 		);
 
-		Iter_Add(groupTaskItter, i);
-		i++;
+		Iter_Add(groupTaskItter, id);
+
+		printf("[LOG]: [GROUPTASK] Uid: %d, OUid: %d, Desc: %s, Date: %s, Caller: %d",
+			tGroupTask[id][gtUid],
+			tGroupTask[id][gtOUid],
+			tGroupTask[id][gtDesc],
+			tGroupTask[id][gtDate],
+			tGroupTask[id][gtCaller]
+		);
+
+		id++;
 	}
 
 	if(Iter_Count(groupTaskItter)) {
-		printf("[LOG]: Wczytano %d zadan.\n", Iter_Count(groupTaskItter));
+		printf("[LOG]: [GROUPTASK] Wczytano %d zadan.\n", Iter_Count(groupTaskItter));
 	} else {
-		printf("[LOG]: Brak zadan.\n");
+		printf("[LOG]: [GROUPTASK] Brak zadan.\n");
 	}
 
 	mysql_free_result();
@@ -233,81 +250,88 @@ stock initGroupTaskValues() {
 }
 
 stock initGroupOrderValues() {
-	printf("[LOG]: Zaczynam ladowac zamowienia grupy...");
-	new i;
+	printf("[LOG]: [GROUPORDER] Zaczynam ladowac zamowienia grupy...");
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_GroupOrders`");
-	mysql_query(queryStr);
+	new id;
 
+	mysql_query("SELECT * FROM `osrp_GroupOrders`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
 		sscanf(queryStr, "p<|>iis[32]s[32]s[24]iiiii",
-			tGroupOrder[i][goUid],
-			tGroupOrder[i][goOUid],
-			tGroupOrder[i][goDName],
-			tGroupOrder[i][goIName],
-			tGroupOrder[i][goOwner],
-			tGroupOrder[i][goKind],
-			tGroupOrder[i][goValue1],
-			tGroupOrder[i][goValue2],
-			tGroupOrder[i][goPrice],
-			tGroupOrder[i][goAmount]
+			tGroupOrder[id][goUid],
+			tGroupOrder[id][goOUid],
+			tGroupOrder[id][goDName],
+			tGroupOrder[id][goIName],
+			tGroupOrder[id][goOwner],
+			tGroupOrder[id][goKind],
+			tGroupOrder[id][goValue1],
+			tGroupOrder[id][goValue2],
+			tGroupOrder[id][goPrice],
+			tGroupOrder[id][goAmount]
 		);
 
-		Iter_Add(groupOrderItter, i);
-		i++;
+		Iter_Add(groupOrderItter, id);
+
+		printf("[LOG]: [GROUPORDER] Uid: %d, OUid: %d, DName: %s, IName: %s, Owner: %s, Kind: %d, Value1: %d, Value2: %d, Price: %d, Amount: %d",
+			tGroupOrder[id][goUid],
+			tGroupOrder[id][goOUid],
+			tGroupOrder[id][goDName],
+			tGroupOrder[id][goIName],
+			tGroupOrder[id][goOwner],
+			tGroupOrder[id][goKind],
+			tGroupOrder[id][goValue1],
+			tGroupOrder[id][goValue2],
+			tGroupOrder[id][goPrice],
+			tGroupOrder[id][goAmount]
+		);
+
+		id++;
 	}
 
 	mysql_free_result();
 
 	if(Iter_Count(groupOrderItter)) {
-		printf("[LOG]: Wczytano %d zamowien.\n", Iter_Count(groupOrderItter));
+		printf("[LOG]: [GROUPORDER] Wczytano %d zamowien.\n", Iter_Count(groupOrderItter));
 	} else {
-		printf("[LOG]: Brak zamowien.\n");
+		printf("[LOG]: [GROUPORDER] Brak zamowien.\n");
 	}
 	return 1;
 }
 
 stock initGroupVehicleValues() {
-	printf("[LOG]: Zaczynam ladowac uprawnienia do pojazdow grupy...");
-	new i;
+	printf("[LOG]: [GROUPVEHICLE] Zaczynam ladowac uprawnienia do pojazdow grupy...\n");
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT * FROM `osrp_GroupVehicles`");
-	mysql_query(queryStr);
+	new id;
 
+	mysql_query("SELECT * FROM `osrp_GroupVehicles`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
 		sscanf(queryStr, "p<|>iiiii",
-			tGroupVehicle[i][gvUid],
-			tGroupVehicle[i][gvGUid],
-			tGroupVehicle[i][gvOUid],
-			tGroupVehicle[i][gvVehs][0],
-			tGroupVehicle[i][gvVehs][1]
+			tGroupVehicle[id][gvUid],
+			tGroupVehicle[id][gvGUid],
+			tGroupVehicle[id][gvOUid],
+			tGroupVehicle[id][gvVehs][0],
+			tGroupVehicle[id][gvVehs][1]
 		);
-		i++;
+
+		printf("[LOG]: [GROUPVEHICLE] Uid: %d, GUid: %d, OUid: %d, Veh0: %d, Veh1: %d",
+			tGroupVehicle[id][gvUid],
+			tGroupVehicle[id][gvGUid],
+			tGroupVehicle[id][gvOUid],
+			tGroupVehicle[id][gvVehs][0],
+			tGroupVehicle[id][gvVehs][1]
+		);
+
+		id++;
 	}
 
 	mysql_free_result();
 	return 1;
 }
 
-stock getServerGroupId(playerid, slot) {
-	new id = INVALID_GROUP_ID;
-
-	foreach(new i : groupItter) {
-		if(slot && tGroup[i][gUid] == tPlayer[playerid][pGroup][slot - 1]) {
-			id = i;
-			break;
-		}
-	}
-	return id;
-}
-
-stock getServerGroupIdFromUid(uid) {
+stock getServerGroupId(uid) {
 	new id = INVALID_GROUP_ID;
 
 	foreach(new i : groupItter) {
@@ -319,19 +343,7 @@ stock getServerGroupIdFromUid(uid) {
 	return id;
 }
 
-stock getServerGroupSetId(playerid) {
-	new id = INVALID_SET_ID;
-
-	foreach(new i : groupSetItter) {
-		if(tGroupSet[i][gsUid] == tPlayer[playerid][pGroupSet]) {
-			id = i;
-			break;
-		}
-	}
-	return id;
-}
-
-stock getServerGroupSetIdFromUid(uid) {
+stock getServerGroupSetId(uid) {
 	new id = INVALID_SET_ID;
 
 	foreach(new i : groupSetItter) {
@@ -343,7 +355,7 @@ stock getServerGroupSetIdFromUid(uid) {
 	return id;
 }
 
-stock getServerGroupTaskIdFromUid(uid) {
+stock getServerGroupTaskId(uid) {
 	new id = INVALID_TASK_ID;
 
 	foreach(new i : groupTaskItter) {
@@ -355,19 +367,7 @@ stock getServerGroupTaskIdFromUid(uid) {
 	return id;
 }
 
-stock getServerOrderId(playerid) {
-	new id = INVALID_ORDER_ID;
-
-	foreach(new i : groupOrderItter) {
-		if(tGroupOrder[i][goUid] == tPlayer[playerid][pOrder]) {
-			id = i;
-			break;
-		}
-	}
-	return id;
-}
-
-stock getServerOrderIdFromUid(uid) {
+stock getServerOrderId(uid) {
 	new id = INVALID_ORDER_ID;
 
 	foreach(new i : groupOrderItter) {
@@ -394,7 +394,7 @@ stock getServerDoorIdFromOrder(playerid) {
 
 stock getFreePlayerGroupSlot(playerid) {	
 	for(new i = 0; i < MAX_PLAYER_GROUPS; i++) {
-		if(!tPlayer[playerid][pGroup][i]) {
+		if(lastGroup[playerid][i] == UID_NONE) {
 			return i;
 		}
 	}
@@ -407,10 +407,7 @@ stock addGroup(const name[], type, balance, perms, const color[]) {
 
 	getdate(d, m, y);
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_Groups`");
-	mysql_query(queryStr);
-
+	mysql_query("SELECT COUNT(`UID`) FROM `osrp_Groups`");
 	mysql_store_result();
 
 	freeId = mysql_fetch_int();
@@ -426,12 +423,12 @@ stock addGroup(const name[], type, balance, perms, const color[]) {
 	tGroup[freeId][gMoney] = balance;
 	tGroup[freeId][gPerms] += perms;
 	format(tGroup[freeId][gColor], 8, color);
-	tGroup[freeId][gRegister] = true;
+	tGroup[freeId][gRegistered] = true;
 
 	Iter_Add(groupItter, freeId);
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Groups` (`Name`, `Date`, `Type`, `Members`, `VehLimit`, `Money`, `Color`, `Register`) VALUES ('%s', '%s', '%d', '%d', '%d', '%d', '%s', '%d')",
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Groups` (`Name`, `Date`, `Type`, `Members`, `VehLimit`, `Money`, `Color`, `Registered`) VALUES ('%s', '%s', '%d', '%d', '%d', '%d', '%s', '%d')",
 		tGroup[freeId][gName],
 		tGroup[freeId][gDate],
 		tGroup[freeId][gType],
@@ -439,20 +436,12 @@ stock addGroup(const name[], type, balance, perms, const color[]) {
 		tGroup[freeId][gVehLimit],
 		tGroup[freeId][gMoney],
 		tGroup[freeId][gColor],
-		tGroup[freeId][gRegister]
+		tGroup[freeId][gRegistered]
 	);
+
 	mysql_query(queryStr);
 
-	printf("[DEBUG] Id: %d, Uid: %d, Name: %s, Type: %d, Members: %d, VehLimit: %d, Money: %d, Perms: %d",
-		freeId,
-		tGroup[freeId][gUid],
-		tGroup[freeId][gName],
-		tGroup[freeId][gType],
-		tGroup[freeId][gMembers],
-		tGroup[freeId][gVehLimit],
-		tGroup[freeId][gMoney],
-		tGroup[freeId][gPerms]
-	);
+	printf("[LOG]: [GROUP] Dodano now¹ grupê o Uid: %d.", tGroup[freeId][gUid]);
 	return tGroup[freeId][gUid];
 }
 
@@ -470,8 +459,9 @@ stock removeGroup(srvgrpid) {
 	mysql_query(queryStr);
 
 	Iter_Remove(groupItter, srvgrpid);
+	printf("[LOG]: [GROUP] Usuniêto grupê o Uid: %d.", tGroup[freeId][gUid]);
 
-	tGroup[srvgrpid][gUid] = 0;
+	tGroup[srvgrpid][gUid] = UID_NONE;
 	format(tGroup[srvgrpid][gName], 32, NULL);
 	format(tGroup[srvgrpid][gDate], 16, NULL);
 	tGroup[srvgrpid][gType] = G_NONE;
@@ -481,7 +471,7 @@ stock removeGroup(srvgrpid) {
 	tGroup[srvgrpid][gMoney] = 0;
 	tGroup[srvgrpid][gPerms] = 0;
 	format(tGroup[srvgrpid][gColor], 10, NULL);
-	tGroup[srvgrpid][gRegister] = false;
+	tGroup[srvgrpid][gRegistered] = false;
 	return 1;
 }
 
@@ -491,27 +481,30 @@ stock saveGroupValues(srvgrpid) {
 	}
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Groups` SET `Name` = '%s', `Type` = '%d', `Members` = '%d', `VehLimit` = '%d', `Money` = '%d', `Color` = '%s', `Register` = '%d' WHERE `UID` = '%d'",
+	format(queryStr, sizeof(queryStr), "UPDATE `osrp_Groups` SET `Name` = '%s', `Type` = '%d', `Members` = '%d', `VehLimit` = '%d', `Money` = '%d', `Color` = '%s', `Registered` = '%d' WHERE `UID` = '%d'",
 		tGroup[srvgrpid][gName],
 		tGroup[srvgrpid][gType],
 		tGroup[srvgrpid][gMembers],
 		tGroup[srvgrpid][gVehLimit],
 		tGroup[srvgrpid][gMoney],
 		tGroup[srvgrpid][gColor],
-		tGroup[srvgrpid][gRegister],
+		tGroup[srvgrpid][gRegistered],
 		tGroup[srvgrpid][gUid]
 	);
 	mysql_query(queryStr);
 	return 1;
 }
 
+stock saveGroupsValues() {
+	foreach(new i : groupItter) {
+		saveGroupValues(i);
+	}
+}
+
 stock addGroupSet(owner, kind, const name[], value1, value2, price, amount) {
 	new freeId = INVALID_SET_ID;
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_GroupSets`");
-	mysql_query(queryStr);
-
+	mysql_query("SELECT COUNT(`UID`) FROM `osrp_GroupSets`");
 	mysql_store_result();
 
 	freeId = mysql_fetch_int();
@@ -539,6 +532,8 @@ stock addGroupSet(owner, kind, const name[], value1, value2, price, amount) {
 		tGroupSet[freeId][gsAmount]
 	);
 	mysql_query(queryStr);
+
+	printf("[LOG]: [GROUPSET] Dodano nowy zestaw grupy o Uid: %d.", tGroupSet[freeId][gsUid]);
 }
 
 stock removeGroupSet(srvsetid, amount) {
@@ -582,13 +577,16 @@ stock saveGroupSetValues(srvsetid) {
 	return 1;
 }
 
+stock saveGroupSetsValues() {
+	foreach(new i : groupSetItter) {
+		saveGroupSetValues(i);
+	}
+}
+
 stock addGroupTask(owner, const desc[], const date[], const caller[]) {
 	new freeId = INVALID_TASK_ID;
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_GroupTasks`");
-	mysql_query(queryStr);
-
+	mysql_query("SELECT COUNT(`UID`) FROM `osrp_GroupTasks`");
 	mysql_store_result();
 
 	freeId = mysql_fetch_int();
@@ -610,6 +608,8 @@ stock addGroupTask(owner, const desc[], const date[], const caller[]) {
 		tGroupTask[freeId][gtCaller]
 	);
 	mysql_query(queryStr);
+
+	printf("[LOG]: [GROUPTASK] Dodano nowe zadanie grupy o Uid: %d.", tGroupTask[freeId][gtUid]);
 }
 
 stock removeGroupTask(srvtaskid) {
@@ -627,8 +627,8 @@ stock removeGroupTask(srvtaskid) {
 
 	Iter_Remove(groupTaskItter, srvtaskid);
 
-	tGroupTask[srvtaskid][gtUid] = 0;
-	tGroupTask[srvtaskid][gtOUid] = 0;
+	tGroupTask[srvtaskid][gtUid] = UID_NONE;
+	tGroupTask[srvtaskid][gtOUid] = UID_NONE;
 	format(tGroupTask[srvtaskid][gtDesc], 128, NULL);
 	format(tGroupTask[srvtaskid][gtDate], 64, NULL);
 	format(tGroupTask[srvtaskid][gtCaller], 24, NULL);
@@ -652,13 +652,16 @@ stock saveGroupTaskValues(srvtaskid) {
 	return 1;
 }
 
+stock saveGroupTasksValues() {
+	foreach(new i : groupTaskItter) {
+		saveGroupTaskValues(i);
+	}
+}
+
 stock addGroupOrder(owneruid, const dname[], const iname[], const owner[], kind, value1, value2, price, amount) {
 	new freeId = INVALID_ORDER_ID;
 
-	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT COUNT(`UID`) FROM `osrp_GroupOrders`");
-	mysql_query(queryStr);
-
+	mysql_query("SELECT COUNT(`UID`) FROM `osrp_GroupOrders`");
 	mysql_store_result();
 
 	freeId = mysql_fetch_int();
@@ -690,6 +693,8 @@ stock addGroupOrder(owneruid, const dname[], const iname[], const owner[], kind,
 		tGroupOrder[freeId][goAmount]
 	);
 	mysql_query(queryStr);
+
+	printf("[LOG]: [GROUPORDER] Dodano nowe zamowienie grupy o Uid: %d.", tGroupOrder[freeId][goUid]);
 }
 
 stock removeGroupOrder(srvorderid) {
@@ -707,8 +712,8 @@ stock removeGroupOrder(srvorderid) {
 
 	Iter_Remove(groupOrderItter, srvorderid);
 
-	tGroupOrder[srvorderid][goUid] = 0;
-	tGroupOrder[srvorderid][goOUid] = 0;
+	tGroupOrder[srvorderid][goUid] = UID_NONE;
+	tGroupOrder[srvorderid][goOUid] = UID_NONE;
 	format(tGroupOrder[srvorderid][goDName], 32, NULL);
 	format(tGroupOrder[srvorderid][goIName], 32, NULL);
 	format(tGroupOrder[srvorderid][goOwner], 24, NULL);
@@ -744,171 +749,227 @@ stock saveGroupOrderValues(srvorderid) {
 	return 1;
 }
 
+stock saveGroupOrdersValues() {
+	foreach(new i : groupOrderItter) {
+		saveGroupOrderValues(i);
+	}
+}
+
 stock showPlayerGroupInfo(playerid, slot) {
-	new srvGrpId = getServerGroupId(playerid, slot);
+	new srvGrpId = getServerGroupId(lastGroup[playerid][slot - 1]);
+
 	if(srvGrpId == INVALID_GROUP_ID) {
 		return 1;
 	}
 
 	new str[256];
 
-	format(str, sizeof(str), "{FFFFFF}UID:\t\t\t%d\nKonto:\t\t\t%d\nLimit pojazdów:\t\t%d\nRodzaj:\t\t\t%d\nFlagi:\t\t\t%d\n\n1\tCzat OOC aktywny:\t\t%s\n2\tCzat IC aktywny:\t\t%s",
-	tGroup[srvGrpId][gUid], tGroup[srvGrpId][gMoney], tGroup[srvGrpId][gVehLimit], tGroup[srvGrpId][gType], tGroup[srvGrpId][gPerms], (tGroup[srvGrpId][gPerms] & G_GROUP_PERM_CHATOOC) ? ("T") : ("N"), (tGroup[srvGrpId][gPerms] & G_GROUP_PERM_CHATIC) ? ("T") : ("N"));
-	ShowPlayerDialog(playerid, DIALOG_GROUP_INFO, DIALOG_STYLE_LIST, tGroup[srvGrpId][gName], str, "OK", "Zamknij");
+	if(tPlayer[playerid][pLang] == LANG_PL) {
+		format(str, sizeof(str), "{FFFFFF}UID:\t\t\t%d\nKonto:\t\t\t%d\nLimit pojazdów:\t\t%d\nRodzaj:\t\t\t%d\nFlagi:\t\t\t%d\n\n1\tCzat OOC aktywny:\t\t%s\n2\tCzat IC aktywny:\t\t%s",
+		tGroup[srvGrpId][gUid], tGroup[srvGrpId][gMoney], tGroup[srvGrpId][gVehLimit], tGroup[srvGrpId][gType], tGroup[srvGrpId][gPerms], (tGroup[srvGrpId][gPerms] & G_GROUP_PERM_CHATOOC) ? ("T") : ("N"), (tGroup[srvGrpId][gPerms] & G_GROUP_PERM_CHATIC) ? ("T") : ("N"));
+		ShowPlayerDialog(playerid, DIALOG_GROUP_INFO, DIALOG_STYLE_LIST, tGroup[srvGrpId][gName], str, "OK", "Zamknij");
+	} else {
+		format(str, sizeof(str), "{FFFFFF}UID:\t\t\t%d\nAccount:\t\t\t%d\nLimit of vehicles:\t\t%d\nType:\t\t\t%d\nFlags:\t\t\t%d\n\n1\tOOC chat active:\t\t%s\n2\tIC chat active:\t\t%s",
+		tGroup[srvGrpId][gUid], tGroup[srvGrpId][gMoney], tGroup[srvGrpId][gVehLimit], tGroup[srvGrpId][gType], tGroup[srvGrpId][gPerms], (tGroup[srvGrpId][gPerms] & G_GROUP_PERM_CHATOOC) ? ("Y") : ("N"), (tGroup[srvGrpId][gPerms] & G_GROUP_PERM_CHATIC) ? ("Y") : ("N"));
+		ShowPlayerDialog(playerid, DIALOG_GROUP_INFO, DIALOG_STYLE_LIST, tGroup[srvGrpId][gName], str, "OK", "Close");
+	}
 	return 1;
 }
 
 stock showPlayerGroupOnlineMembers(playerid, slot) {
-	new charNames[20][24];
-	new i, id;
+	new charNames[32][24];
+	new id, pId;
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `CharName` FROM `osrp_Players` WHERE `Group0` = '%d' OR `Group1` = '%d' OR `Group2` = '%d' OR `Group3` = '%d' OR `Group4` = '%d'", tPlayer[playerid][pGroup][slot - 1], tPlayer[playerid][pGroup][slot - 1], tPlayer[playerid][pGroup][slot - 1], tPlayer[playerid][pGroup][slot - 1], tPlayer[playerid][pGroup][slot - 1]);
+	format(queryStr, sizeof(queryStr), "SELECT `CharName` FROM `osrp_Players` WHERE `Group0` = '%d' OR `Group1` = '%d' OR `Group2` = '%d' OR `Group3` = '%d' OR `Group4` = '%d'", lastGroup[playerid][slot - 1], lastGroup[playerid][slot - 1], lastGroup[playerid][slot - 1], lastGroup[playerid][slot - 1], lastGroup[playerid][slot - 1]);
 	mysql_query(queryStr);
 
 	mysql_store_result();
 
 	mainStr[0] = EOS;
-	while(mysql_fetch_row(queryStr, " ")) {
-		sscanf(queryStr, "s[24]", charNames[i]);
-		id = getPlayerIdFromName(charNames[i]);
 
-		if(IsPlayerConnected(id)) {
-			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s*", mainStr, id, tPlayer[id][pCharName]);
+	while(mysql_fetch_row(queryStr, " ")) {
+		sscanf(queryStr, "s[24]", charNames[id]);
+		pId = getPlayerIdFromName(charNames[id]);
+
+		if(IsPlayerConnected(pId)) {
+			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, pId, tPlayer[pId][pCharName]);
 		} else {
-			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, id, tPlayer[id][pCharName]);
+			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s*", mainStr, pId, tPlayer[pId][pCharName]);
 		}
 
-		i++;
+		id++;
 	}
 
 	mysql_free_result();
-	ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_LIST, "Lista graczy", mainStr, "OK", "Zamknij");
+
+	if(tPlayer[playerid][pLang] == LANG_PL) {
+		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_LIST, "Lista graczy", mainStr, "OK", "Zamknij");
+	} else {
+		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_LIST, "Player list", mainStr, "OK", "Close");
+	}
 }
 
 stock showPlayerGroupTasks(playerid, slot) {
 	if(!isPlayerDuty[playerid][slot - 1]) {
-		return GameTextForPlayer(playerid, "~r~Musisz byc na sluzbie tej grupy,~n~by ogladac jej zamowienia.", 5000, 3);
+		if(tPlayer[playerid][pLang] == LANG_PL) {
+			return GameTextForPlayer(playerid, "~r~Musisz byc na sluzbie tej grupy,~n~by ogladac jej zamowienia.", 5000, 3);
+		} else {
+			return GameTextForPlayer(playerid, "~r~You must be on the duty of this group,~n~to view its orders.", 5000, 3);
+		}
 	}
 
-	new srvGrpId = getServerGroupId(playerid, slot);
+	new srvGrpId = getServerGroupId(lastGroup[playerid][slot - 1]);
+
 	if(srvGrpId == INVALID_GROUP_ID) {
 		return 1;
 	}
 
 	if((usedLastTaskTime[playerid] + 5) > gettime()) {
-		return GameTextForPlayer(playerid, "~r~Odczekaj chwile przed ponownym~n~uzyciem tej funkcji.", 5000, 3);
+		if(tPlayer[playerid][pLang] == LANG_PL) {
+			return GameTextForPlayer(playerid, "~r~Odczekaj chwile przed ponownym~n~uzyciem tej funkcji.", 5000, 3);
+		} else {
+			return GameTextForPlayer(playerid, "~r~Please wait a moment before~n~using this function again.", 5000, 3);
+		}
 	}
 
-	new tasks;
+	new taskCount;
 	mainStr[0] = EOS;
 
 	foreach(new i : groupTaskItter) {
 		if(tGroupTask[i][gtOUid] == tGroup[srvGrpId][gUid]) {
 			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s\t%s\t%s", mainStr, tGroupTask[i][gtUid], tGroupTask[i][gtCaller], tGroupTask[i][gtDate], tGroupTask[i][gtDesc]);
-			tasks++;
+
+			taskCount++;
 		}
 	}
 
 	mysql_free_result();
 	TextDrawHideForPlayer(playerid, taskInfo[playerid]);
 
-	if(!tasks) {
-		return GameTextForPlayer(playerid, "~y~Zaden gracz nie dzwonil do tej~n~grupy z ~r~zadaniem", 5000, 3);
+	if(!taskCount) {
+		if(tPlayer[playerid][pLang] == LANG_PL) {
+			return GameTextForPlayer(playerid, "~y~Zaden gracz nie dzwonil do tej~n~grupy z ~r~zadaniem", 5000, 3);
+		} else {
+			return GameTextForPlayer(playerid, "~y~No player has called this~n~group with ~r~a task", 5000, 3);
+		}
 	}
 
 	usedLastTaskTime[playerid] = gettime();
-	ShowPlayerDialog(playerid, DIALOG_GROUP_TASKS, DIALOG_STYLE_LIST, "Oczekuj¹ce ¿¹dania", mainStr, "Akceptuj", "Zamknij");
+
+	if(tPlayer[playerid][pLang] == LANG_PL) {
+		ShowPlayerDialog(playerid, DIALOG_GROUP_TASKS, DIALOG_STYLE_LIST, "Oczekuj¹ce ¿¹dania", mainStr, "Akceptuj", "Zamknij");
+	} else {
+		ShowPlayerDialog(playerid, DIALOG_GROUP_TASKS, DIALOG_STYLE_LIST, "Pending requests", mainStr, "Accept", "Close");
+	}
 	return 1;
 }
 
 stock showPlayerGroupVehicles(playerid, slot) {
-	new srvGrpId = getServerGroupId(playerid, slot);
+	new srvGrpId = getServerGroupId(lastGroup[playerid][slot - 1]);
+
 	if(srvGrpId == INVALID_GROUP_ID) {
 		return 1;
 	}
 
-	new countVehs;
-	mainStr[0] = EOS;
+	new vehCount;
 
+	mainStr[0] = EOS;
 	// Spawnowanie nie bêd¹c na s³u¿bie.
 	tPlayer[playerid][pSlot] = slot;
 
 	foreach(new i : vehItter) {
-		if(tVehicle[i][vOUid] == tGroup[srvGrpId][gUid] && tVehicle[i][vType] == VEHICLE_OWNER_GROUP) {
+		if(tVehicle[i][vOUid] == tGroup[srvGrpId][gUid] && tVehicle[i][vOType] == OWNER_GROUP) {
 			if(tVehicle[i][vSpawned]) {
 				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d  %0.1f  %s*", mainStr, tVehicle[i][vUid], tVehicle[i][vEngineHp], vehicleNames[tVehicle[i][vModelId] - 400]);
 			} else {
 				format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d  %0.1f  %s", mainStr, tVehicle[i][vUid], tVehicle[i][vEngineHp], vehicleNames[tVehicle[i][vModelId] - 400]);
 			}
 
-			countVehs++;
+			vehCount++;
 		}
 	}
 
-	if(!countVehs) {
-		return GameTextForPlayer(playerid, "~r~Ta grupa nie posiada zadnego~n~pojazdu.", 5000, 3);
+	if(!vehCount) {
+		if(tPlayer[playerid][pLang] == LANG_PL) {
+			return GameTextForPlayer(playerid, "~r~Ta grupa nie posiada zadnego~n~pojazdu.", 5000, 3);
+		} else {
+			return GameTextForPlayer(playerid, "~r~This group does not own any~n~vehicle.", 5000, 3);
+		}
 	}
 
-	ShowPlayerDialog(playerid, DIALOG_GROUP_VEHICLE_SELECT, DIALOG_STYLE_LIST, "Wybór pojazdu (* = zespawnowany)", mainStr, "(Un)spawn", "Wiêcej");
+	if(tPlayer[playerid][pLang] == LANG_PL) {
+		ShowPlayerDialog(playerid, DIALOG_GROUP_VEHICLE_SELECT, DIALOG_STYLE_LIST, "Wybór pojazdu (* = zespawnowany)", mainStr, "(Un)spawn", "Wiêcej");
+	} else {
+		ShowPlayerDialog(playerid, DIALOG_GROUP_VEHICLE_SELECT, DIALOG_STYLE_LIST, "Vehicle selection (* = spawned)", mainStr, "(Un)spawn", "More");
+	}
 	return 1;
 }
 
-stock kickPlayerFromGroup(playerid, id, slot) {
+stock kickPlayerFromGroup(playerid, kickerid, slot) {
 	if(slot > 4 || slot < 0) {
 		return 1;
 	}
 
-	endPlayerDuty(id);
+	endPlayerDuty(kickerid);
 
-	new srvGrpId = getServerGroupId(playerid, slot + 1);
-
+	new srvGrpId = getServerGroupId(lastGroup[playerid][slot - 1]);
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "%s wyprosi³(a) Ciê z grupy %s.", tPlayer[playerid][pCharName], tGroup[srvGrpId][gName]);
-	SendClientMessage(id, COLOR_DARKRED, mainStr);
 
-	GameTextForPlayer(playerid, "~y~Wyprosiles gracza z grupy.", 5000, 3);
+	if(tPlayer[playerid][pLang] == LANG_PL) {
+		format(mainStr, sizeof(mainStr), "%s wyprosi³(a) Ciê z grupy %s.", tPlayer[playerid][pCharName], tGroup[srvGrpId][gName]);
+	} else {
+		format(mainStr, sizeof(mainStr), "%s took you away from the group %s.", tPlayer[playerid][pCharName], tGroup[srvGrpId][gName]);
+	}
+
+	SendClientMessage(kickerid, COLOR_DARKRED, mainStr);
+
+	if(tPlayer[playerid][pLang] == LANG_PL) {
+		GameTextForPlayer(playerid, "~y~Wyprosiles gracza z grupy.", 5000, 3);
+	} else {
+		GameTextForPlayer(playerid, "~y~You took player away from the group.", 5000, 3);
+	}
 
 	tGroup[srvGrpId][gMembers]--;
 	saveGroupValues(srvGrpId);
 
-	if(slot < 5 && !tPlayer[id][pGroup][slot + 1]) {
+	if(slot < 5 && lastGroup[kickerid][slot + 1] == UID_NONE) {
 		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Group%d` = '0', `Perm%d` = '0', `PayDay%d` = '0', `Duty%d` = '0' WHERE `UID` = '%d'", slot, slot, slot, slot, tPlayer[id][pUid]);
+		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Group%d` = '0', `Perm%d` = '0', `PayDay%d` = '0', `Duty%d` = '0' WHERE `UID` = '%d'", slot, slot, slot, slot, tPlayer[kickerid][pUid]);
 		mysql_query(queryStr);
 
-		tPlayer[id][pGroup][slot] = 0;
-		tPlayer[id][pPerm][slot] = 0;
-		tPlayer[id][pPayDay][slot] = 0;
-		tPlayer[id][pDuty][slot] = 0;
+		lastGroup[kickerid][slot] = UID_NONE;
+		tPlayer[kickerid][pPerm][slot] = 0;
+		tPlayer[kickerid][pPayDay][slot] = 0;
+		tPlayer[kickerid][pDuty][slot] = 0;
 	} else {
 		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Group%d` = '%d', `Perm%d` = '%d', `PayDay%d` = '%d', `Duty%d` = '%d' WHERE `UID` = '%d'",
 			slot,
-			tPlayer[id][pGroup][slot + 1],
+			lastGroup[kickerid][slot + 1],
 			slot,
-			tPlayer[id][pPerm][slot + 1],
+			tPlayer[kickerid][pPerm][slot + 1],
 			slot,
-			tPlayer[id][pPayDay][slot + 1],
+			tPlayer[kickerid][pPayDay][slot + 1],
 			slot,
-			tPlayer[id][pDuty][slot + 1],
-			tPlayer[id][pUid]
+			tPlayer[kickerid][pDuty][slot + 1],
+			tPlayer[kickerid][pUid]
 		);
 		mysql_query(queryStr);
 
-		tPlayer[id][pGroup][slot] = tPlayer[id][pGroup][slot + 1];
-		tPlayer[id][pPerm][slot] = tPlayer[id][pPerm][slot + 1];
-		tPlayer[id][pPayDay][slot] = tPlayer[id][pPayDay][slot + 1];
-		tPlayer[id][pDuty][slot] = tPlayer[id][pDuty][slot + 1];
+		lastGroup[kickerid][slot] = lastGroup[kickerid][slot + 1];
+		tPlayer[kickerid][pPerm][slot] = tPlayer[kickerid][pPerm][slot + 1];
+		tPlayer[kickerid][pPayDay][slot] = tPlayer[kickerid][pPayDay][slot + 1];
+		tPlayer[kickerid][pDuty][slot] = tPlayer[kickerid][pDuty][slot + 1];
 
 		queryStr[0] = EOS;
-		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Group%d` = '0', `Perm%d` = '0', `PayDay%d` = '0', `Duty%d` = '0' WHERE `UID` = '%d'", slot + 1, slot + 1, slot + 1, slot + 1, tPlayer[id][pUid]);
+		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Group%d` = '0', `Perm%d` = '0', `PayDay%d` = '0', `Duty%d` = '0' WHERE `UID` = '%d'", slot + 1, slot + 1, slot + 1, slot + 1, tPlayer[kickerid][pUid]);
 		mysql_query(queryStr);
 
-		tPlayer[id][pGroup][slot + 1] = 0;
-		tPlayer[id][pPerm][slot + 1] = 0;
-		tPlayer[id][pPayDay][slot + 1] = 0;
-		tPlayer[id][pDuty][slot + 1] = 0;
+		lastGroup[kickerid][slot + 1] = UID_NONE;
+		tPlayer[kickerid][pPerm][slot + 1] = 0;
+		tPlayer[kickerid][pPayDay][slot + 1] = 0;
+		tPlayer[kickerid][pDuty][slot + 1] = 0;
 	}
 	return 1;
 }
@@ -925,45 +986,105 @@ stock giveGroupMoney(srvgrpid, money) {
 	mysql_query(queryStr);
 }
 
-stock showPlayerGroupMagazineSets(playerid, slot, dialogid) {
-	if(!isPlayerDuty[playerid][slot - 1]) {
-		return GameTextForPlayer(playerid, "~r~Musisz byc na sluzbie tej grupy,~n~by ogladac jej przedmioty.", 5000, 3);
+stock showPlayerGroupMagazineSets(playerid, slot, dialogid, customer) {
+	new srvGrpId = INVALID_GROUP_ID;
+
+	if(!customer && slot) {
+		if(!isPlayerDuty[playerid][slot - 1]) {
+			if(tPlayer[playerid][pLang] == LANG_PL) {
+				return GameTextForPlayer(playerid, "~r~Musisz byc na sluzbie tej grupy,~n~by ogladac jej przedmioty.", 5000, 3);
+			} else {
+				return GameTextForPlayer(playerid, "~r~You must be on the duty of this group,~n~to view its items.", 5000, 3);
+			}
+		}
+
+		srvGrpId = getServerGroupId(lastGroup[playerid][slot - 1]);
+
+		if(srvGrpId == INVALID_GROUP_ID) {
+			return 1;
+		}
+	} else {
+		new srvDoorId = getServerDoorId(lastDoor[playerid]);
+
+		if(srvDoorId == INVALID_DOOR_ID) {
+			return 1;
+		}
+
+		if(!doesDoorIsType(srvDoorId, DOOR_SHOP)) {
+			if(tPlayer[playerid][pLang] == LANG_PL) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Musisz znajdowaæ siê w sklepie.");
+			} else {
+				return SendClientMessage(playerid, COLOR_GRAY, "You must be in the store.");
+			}
+		}
+
+		if(tDoor[srvDoorId][dOUid] && tDoor[srvDoorId][dOType] == OWNER_GROUP) {
+			srvGrpId = getServerGroupId(tDoor[srvDoorId][dOUid]);
+
+			if(srvGrpId == INVALID_GROUP_ID) {
+				return 1;
+			}
+
+			for(new i = 0; i < 3; i++) {
+				TextDrawHideForPlayer(playerid, shopInfo[playerid][i]);
+			}
+
+			if(tPlayer[playerid][pLang] == LANG_PL) {
+				TextDrawSetString(shopInfo[playerid][0], "Po zakupieniu przedmiotu, wpisz ~r~/p~w~, aby go uzyc.");
+			} else {
+				TextDrawSetString(shopInfo[playerid][0], "After purchasing an item, type ~r~/i~w~, to use it.");
+			}
+
+			TextDrawShowForPlayer(playerid, shopInfo[playerid][0]);
+			SetTimerEx("hideShopInfo", 10000, false, "i", playerid);
+		}
 	}
 
-	new srvGrpId = getServerGroupId(playerid, slot);
-	if(srvGrpId == INVALID_GROUP_ID) {
-		return 1;
-	}
+	new setCount, noPriceCount;
 
-	new sets, noprice;
 	mainStr[0] = EOS;
+	strcat(mainStr, "#\tNazwa\tCena\tIloœæ\n");
 
 	foreach(new i : groupSetItter) {
 		if(tGroupSet[i][gsOUid] == tGroup[srvGrpId][gUid]) {
 			if(tGroupSet[i][gsPrice] <= 0) {
-				noprice++;
+				noPriceCount++;
 				continue;
 			}
 
-			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t$%d\t%s (x%d)", mainStr, tGroupSet[i][gsUid], tGroupSet[i][gsPrice], tGroupSet[i][gsName], tGroupSet[i][gsAmount]);
-			sets++;
+			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s\t$%d\t%d", mainStr, tGroupSet[i][gsUid], tGroupSet[i][gsName], tGroupSet[i][gsPrice], tGroupSet[i][gsAmount]);
+
+			setCount++;
 		}
 	}
 
-	if(!sets) {
-		return GameTextForPlayer(playerid, "~b~Brak przedmiotow w magazynie.", 5000, 3);
+	if(!setCount) {
+		if(tPlayer[playerid][pLang] == LANG_PL) {
+			return GameTextForPlayer(playerid, "~b~Brak przedmiotow w magazynie.", 5000, 3);
+		} else {
+			return GameTextForPlayer(playerid, "~b~No items in warehouse.", 5000, 3);
+		}
 	}
 
-	if(noprice) {
-		format(mainStr, sizeof(mainStr), "%s\n{C8C8C8}... i %d niewycenionych przedmiotów.", mainStr, noprice);
+	if(noPriceCount) {
+		if(tPlayer[playerid][pLang] == LANG_PL) {
+			format(mainStr, sizeof(mainStr), "%s\n{C8C8C8}... i %d niewycenionych przedmiotów.", mainStr, noPriceCount);
+		} else {
+			format(mainStr, sizeof(mainStr), "%s\n{C8C8C8}... and %d unpriced items.", mainStr, noPriceCount);
+		}
 	}
 
-	ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_LIST, "Menu", mainStr, "Wybierz", "Anuluj");
+	if(tPlayer[playerid][pLang] == LANG_PL) {
+		ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_TABLIST_HEADERS, "Menu", mainStr, "Wybierz", "Anuluj");
+	} else {
+		ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE_TABLIST_HEADERS, "Menu", mainStr, "Choose", "Cancel");
+	}
 	return 1;
 }
 
-stock doesPlayerHaveVehicleLicense(playerid, srvvehid) {
-	new srvGrpId = getServerGroupId(playerid);
+stock doesPlayerHasVehicleLicense(playerid, srvvehid) {
+	new srvGrpId = getServerGroupId(lastGroup[playerid][tPlayer[playerid][pSlot] - 1]);
+
 	if(srvGrpId == INVALID_GROUP_ID) {
 		return 0;
 	}
@@ -1000,7 +1121,7 @@ stock isPlayerOnDuty(playerid) {
 }
 
 stock isPlayerInGroupType(playerid, slot, type) {
-	new srvGrpId = getServerGroupId(playerid, slot);
+	new srvGrpId = getServerGroupId(lastGroup[playerid][slot - 1]);
 
 	if(srvGrpId != INVALID_GROUP_ID && tGroup[srvGrpId][gType] == type) {
 		return 1;
@@ -1015,7 +1136,7 @@ stock isGroupType(srvgrpid, type) {
 	return 0;
 }
 
-stock isGroupHavePermission(srvgrpid, perm) {
+stock doesGroupHasPermission(srvgrpid, perm) {
 	if(tGroup[srvgrpid][gPerms] & perm) {
 		return 1;
 	}
@@ -1023,7 +1144,8 @@ stock isGroupHavePermission(srvgrpid, perm) {
 }
 
 stock isPlayerInAnyGroup(playerid) {
-	if(!tPlayer[playerid][pGroup][0] && !tPlayer[playerid][pGroup][1] && !tPlayer[playerid][pGroup][2] && !tPlayer[playerid][pGroup][3] && !tPlayer[playerid][pGroup][4]) {
+	if(lastGroup[playerid][0] == UID_NONE && lastGroup[playerid][1] == UID_NONE && lastGroup[playerid][2] == UID_NONE &&
+	   lastGroup[playerid][3] == UID_NONE && lastGroup[playerid][4] == UID_NONE) {
 		return 0;
 	}
 	return 1;
@@ -1031,8 +1153,8 @@ stock isPlayerInAnyGroup(playerid) {
 
 stock sendGroupMessage(srvgrpid, color, const str[]) {
 	foreach(new i : Player) {
-		if(tPlayer[i][pGroup][0] == tGroup[srvgrpid][gUid] || tPlayer[i][pGroup][1] == tGroup[srvgrpid][gUid] ||
-		   tPlayer[i][pGroup][2] == tGroup[srvgrpid][gUid] || tPlayer[i][pGroup][3] == tGroup[srvgrpid][gUid] || tPlayer[i][pGroup][4] == tGroup[srvgrpid][gUid]) {
+		if(lastGroup[i][0] == tGroup[srvgrpid][gUid] || lastGroup[i][1] == tGroup[srvgrpid][gUid] || lastGroup[i][2] == tGroup[srvgrpid][gUid] ||
+		   lastGroup[i][3] == tGroup[srvgrpid][gUid] || lastGroup[i][4] == tGroup[srvgrpid][gUid]) {
 			SendClientMessage(i, color, str);
 		}
 	}
@@ -1044,8 +1166,8 @@ stock gameTextForGroup(srvgrpid, const str[], time, style, excludesender) {
 			continue;
 		}
 
-		if(tPlayer[i][pGroup][0] == tGroup[srvgrpid][gUid] || tPlayer[i][pGroup][1] == tGroup[srvgrpid][gUid] ||
-		   tPlayer[i][pGroup][2] == tGroup[srvgrpid][gUid] || tPlayer[i][pGroup][3] == tGroup[srvgrpid][gUid] || tPlayer[i][pGroup][4] == tGroup[srvgrpid][gUid]) {
+		if(lastGroup[i][0] == tGroup[srvgrpid][gUid] || lastGroup[i][1] == tGroup[srvgrpid][gUid] || lastGroup[i][2] == tGroup[srvgrpid][gUid] ||
+		   lastGroup[i][3] == tGroup[srvgrpid][gUid] || lastGroup[i][4] == tGroup[srvgrpid][gUid]) {
 			GameTextForPlayer(i, str, time, style);
 		}
 	}

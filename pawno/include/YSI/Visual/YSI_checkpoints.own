@@ -1069,8 +1069,10 @@ public Checkpoint_Loop()
 {
 	#if defined _YSI_SETUP_MASTER
 		if (!YSI_g_sIsMaster) return;
+		DBGP4("Checkpoint_Loop() master %d", YSI_gMasterID);
+	#else
+		DBGP4("Checkpoint_Loop()");
 	#endif
-	DBGP4("Checkpoint_Loop() master %d", YSI_gMasterID);
 	foreach (Player, j)
 	{
 		new

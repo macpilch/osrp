@@ -24,7 +24,7 @@ enum GroupData {
 	gMoney,
 	gPerms,
 	gColor[10],
-	bool:gRegister
+	bool:gRegistered
 };
 
 enum GroupSetData {

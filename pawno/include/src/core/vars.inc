@@ -21,6 +21,20 @@ new numPlayerRace;
 new serverTime;
 new serverWeather = 10;
 
+new lastGroup[MAX_PLAYERS][MAX_PLAYER_GROUPS];
+new lastSet[MAX_PLAYERS];
+new lastArea[MAX_PLAYERS];
+new lastBusStop[MAX_PLAYERS];
+new lastBusStop2[MAX_PLAYERS];
+new lastDoor[MAX_PLAYERS];
+new lastOrder[MAX_PLAYERS];
+new lastThing[MAX_PLAYERS];
+new lastRace[MAX_PLAYERS];
+new lastVehicle[MAX_PLAYERS];
+new lastCashPoint[MAX_PLAYERS];
+new last3dText[MAX_PLAYERS];
+new lastObject[MAX_PLAYERS];
+
 new playerCps[MAX_PLAYERS];
 new playerRcPosition[MAX_PLAYERS];
 
@@ -40,8 +54,12 @@ new telEnterNumber[MAX_PLAYERS];
 new telEnterGroup[MAX_PLAYERS];
 
 new lastPmId[MAX_PLAYERS];
-new adminPmStr[MAX_PLAYERS][128];
+new adminPmStr[MAX_PLAYERS][256];
 
+new playerBwTimer[MAX_PLAYERS];
+new playerAjTimer[MAX_PLAYERS];
+new playerDtTimer[MAX_PLAYERS];
+new spectatingPlayer[MAX_PLAYERS];
 new endBWTime[MAX_PLAYERS];
 new lastPressesTime[MAX_PLAYERS];
 new called[MAX_PLAYERS];
@@ -49,7 +67,6 @@ new usedLastThingTime[MAX_PLAYERS];
 new usedLastTaskTime[MAX_PLAYERS];
 new hpSeconds[MAX_PLAYERS];
 new numberPresses[MAX_PLAYERS];
-new antiCheatGym[MAX_PLAYERS];
 new numberBlows[MAX_PLAYERS];
 new fightAttacker[MAX_PLAYERS];
 new lastBlowTime[MAX_PLAYERS];
@@ -58,6 +75,9 @@ new blockadeObjects[MAX_BLOCKADES];
 new chatEnabledId[MAX_PLAYERS];
 new cubeUseTime[MAX_PLAYERS];
 new packageUseTime[MAX_PLAYERS];
+new antiCheatSpeed[MAX_PLAYERS];
+new antiCheatPos[MAX_PLAYERS];
+new antiCheatGym[MAX_PLAYERS];
 new fakeKillDeathsCount[MAX_PLAYERS];
 new fakeKillDeathsTick[MAX_PLAYERS];
 
@@ -69,6 +89,7 @@ new Float:taxiDistance[MAX_PLAYERS];
 new taxiCost[MAX_PLAYERS];
 
 new playerVehicles[MAX_PLAYERS][10];
+new playerVehRentTime[MAX_PLAYERS];
 new gpsMapIcons[MAX_PLAYERS][100];
 
 //part time job
@@ -93,11 +114,11 @@ new Float:playerRcTime[MAX_PLAYERS];
 new Float:playerRcActualTime[MAX_PLAYERS];
 
 // type - bool
+new bool:playerAchievements[MAX_PLAYERS][MAX_ACHIEVEMENTS];
 new bool:isSpawned[MAX_PLAYERS];
 new bool:isLogged[MAX_PLAYERS];
-new bool:isAdminDuty[MAX_PLAYERS]; // false(0) is admin duty off or true(1) is admin duty on only when player have ranks: SUPPORT_RANK, ADMIN_RANK, HEADADMIN_RANK
+new bool:isAdminDuty[MAX_PLAYERS]; // false(0) is admin duty off or true(1) is admin duty on only when player has ranks: SUPPORT_RANK, ADMIN_RANK, HEADADMIN_RANK
 new bool:isPlayerDuty[MAX_PLAYERS][MAX_PLAYER_GROUPS];
-new	bool:isSpectating[MAX_PLAYERS];
 new	bool:isGodMode[MAX_PLAYERS];
 new bool:isFreeze[MAX_PLAYERS];
 new bool:isInBus[MAX_PLAYERS];
@@ -108,7 +129,7 @@ new bool:usedCmdReport[MAX_PLAYERS];
 stock bool:hasBank[MAX_PLAYERS];
 new bool:isDizzines[MAX_PLAYERS];
 new bool:usesTelephone[MAX_PLAYERS];
-new bool:chatMessages[MAX_PLAYERS][2]; // 0 - PM, 1 - Grupowe
+new bool:chatMessages[MAX_PLAYERS][MAX_CHATS]; // 0 - PM, 1 - Grupowe, 2 - GM
 new bool:showGroupsInfo[MAX_PLAYERS][MAX_PLAYER_GROUPS];
 new bool:insidedHotel[MAX_PLAYERS];
 new bool:deliveringPackage[MAX_PLAYERS];
@@ -118,24 +139,24 @@ new bool:isGym[MAX_PLAYERS];
 new bool:acceptTraining[MAX_PLAYERS];
 new bool:pressedBarbell[MAX_PLAYERS];
 new bool:isPlayerFight[MAX_PLAYERS];
-new bool:haveTaxiCourse[MAX_PLAYERS];
-new bool:selectChatStyle[MAX_PLAYERS];
+new bool:hasTaxiCourse[MAX_PLAYERS];
+new bool:selectedChatStyle[MAX_PLAYERS];
+new bool:usedPackageAction[MAX_PLAYERS];
 new bool:gpsEnabled[MAX_PLAYERS];
 new bool:spawnFreeze[MAX_PLAYERS];
 new bool:hasAnim[MAX_PLAYERS];
-new bool:createdChar[MAX_PLAYERS];
 new bool:gymObjectsInUse[MAX_OBJECTS];
 
 // type - MySQL
 new MySQL:hMySQL;
 
 // type - 3DText
-new Text3D:exit3dInfo[MAX_PLAYERS];
+new Text3D:kick3dInfo[MAX_PLAYERS];
 
 // type - Text
-new Text:website;
-new Text:news;
-new Text:penalty;
+new Text:tdWebsite;
+new Text:tdNews;
+new Text:tdPenalty;
 new Text:helpInfo[MAX_PLAYERS][2];
 new Text:animsInfo[MAX_PLAYERS][3];
 new Text:thingTips[MAX_PLAYERS][2];
@@ -156,12 +177,12 @@ new Text:areaSpeedWarning[MAX_PLAYERS][2];
 new Text:areaMandate[MAX_PLAYERS][3];
 new Text:courseDrivingInfo[MAX_PLAYERS][2];
 new Text:taskInfo[MAX_PLAYERS];
+new Text:shopInfo[MAX_PLAYERS][3];
 new Text:oocWarning[MAX_PLAYERS][2];
 new Text:damageRedScreen[MAX_PLAYERS];
 new Text:photoRadarScreen[MAX_PLAYERS];
-new Text:doorInfo[MAX_PLAYERS][3];
-new Text:doorExtraInfo[MAX_PLAYERS];
-new Text:doorWholeInfo[MAX_PLAYERS][3];
+new Text:doorInfo[MAX_PLAYERS][7];
+new Text:doorInfo2[MAX_PLAYERS][3];
 new Text:telephoneCall[MAX_PLAYERS][2];
 new Text:telephoneEnabled[MAX_PLAYERS][2];
 new Text:groupsInfo[MAX_PLAYERS][37];

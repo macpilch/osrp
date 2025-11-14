@@ -23,5 +23,5 @@ enum AnimData {
 	aLockY,
 	aFreeze,
 	aTime,
-	aForesync
+	aForeSync
 };

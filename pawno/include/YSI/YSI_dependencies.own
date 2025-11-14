@@ -111,12 +111,14 @@ Operators:
 #define _YSI_CORE_INI
 #define _YSI_CORE_BINTREE
 #define _YSI_CORE_XML
-#define _YSI_CORE_HELP
 #define _YSI_POST
 #define _YSI_SETUP_TIMERS
 #define _YSI_SYSTEM_ITTER
 #define _YSI_CODE_MD5
-#define _YSI_PLAYER_CONN
+
+#if !defined YSI_NO_CONNECTIONS
+	#define _YSI_PLAYER_CONN
+#endif
 
 #if !defined YSI_NO_USERS
 	#define _YSI_CORE_PLAYER
@@ -131,6 +133,7 @@ Operators:
 
 #if !defined YSI_NO_COMMANDS
 	#define _YSI_CORE_COMMANDS
+	#define _YSI_CORE_HELP
 #endif
 
 #if !defined YSI_NO_MODULES
@@ -170,7 +173,7 @@ Operators:
 		#define _YSI_SYSTEM_CALLBACKS
 	#endif
 	
-	#if !defined YSI_NO_MASTER
+	#if defined YSI_USE_MASTER
 		#define _YSI_SETUP_MASTER
 	#endif
 	

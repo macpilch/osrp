@@ -32,6 +32,8 @@ enum DoorData {
 	Float:dMaxY,
 	dPickup,
 	dCost,
+	dPeople,
+	dPeopleAfk,
 	bool:dPassing,
 	bool:dOpen,
 	dTax,

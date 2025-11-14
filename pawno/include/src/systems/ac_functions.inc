@@ -15,57 +15,78 @@
 stock antySpeedHack(playerid) {
 	if(isLogged[playerid] && isSpawned[playerid] && !spawnFreeze[playerid]) {
 		if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
-			new Float:x, Float:y, Float:z;
-			new srvVehId = getServerVehicleId(playerid);
+			new Float:vOldX, Float:vOldY, Float:vOldZ;
+			new srvVehId = getServerVehicleId(lastVehicle[playerid]),
+				speed = getVehicleSpeed(tVehicle[srvVehId][vId]);
 
 			if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 				return 1;
 			}
 
-			GetVehicleVelocity(tVehicle[srvVehId][vId], x, y, z);
+			if(antiCheatSpeed[playerid]) {
+				GetVehicleVelocity(tVehicle[srvVehId][vId], vOldX, vOldY, vOldZ);
+				antiCheatSpeed[playerid] = false;
 
-			if(getVehicleSpeed(tVehicle[srvVehId][vId]) > 180) {
-				new reas[128];
-
-				format(reas, sizeof(reas), "SpeedHack V %f %f %f", x, y, z);
-				givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, 30, 0, reas);
+				SetTimerEx("checkVehicleSpeed", 750, false, "iiifff", srvVehId, playerid, speed, vOldX, vOldY, vOldZ);
 			}
 		}
 	}
 	return 1;
 }
 
+Callback checkVehicleSpeed(srvvehid, playerid, speed, Float:oldx, Float:oldy, Float:oldz) {
+	new Float:vX, Float:vY, Float:vZ;
+
+	GetVehicleVelocity(tVehicle[srvvehid][vId], vX, vY, vZ);
+	antiCheatSpeed[playerid] = true;
+
+	new diffX = floatToInt(floatabs(floatabs(vX) - floatabs(oldx)));
+	new diffY = floatToInt(floatabs(floatabs(vY) - floatabs(oldy)));
+	new diffSpeed = (getVehicleSpeed(tVehicle[srvvehid][vId]) - speed);
+
+	if(!diffX && !diffY && diffSpeed > 45) {
+		new reas[128];
+
+		format(reas, sizeof(reas), "SpeedHack V %f %f %f", vX, vY, vZ);
+		givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, 30, reas);
+	}
+}
+
 stock antyUnFreeze(playerid) {
 	if(isLogged[playerid] && isSpawned[playerid] && !spawnFreeze[playerid]) {
 		if(isFreeze[playerid] && !numberBlows[playerid] && !tPlayer[playerid][pBw] && !tPlayer[playerid][pAj] && !endBWTime[playerid] && (!busCameraSelect[playerid] &&
 		   !isInBus[playerid] && !busCameraChoose[playerid])) {
-			new Float:x, Float:y, Float:z, Float:totalPos;
-			GetPlayerPos(playerid, x, y, z);
+			new Float:pX, Float:pY, Float:pZ, Float:totalPos;
+
+			GetPlayerPos(playerid, pX, pY, pZ);
 
 			if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) {
-				if(((x > tPlayer[playerid][pPosX] || x < tPlayer[playerid][pPosX]) && (tPlayer[playerid][pPosY] > y || tPlayer[playerid][pPosY] < y))) {
-					totalPos = floatabs((x - tPlayer[playerid][pPosX]) + (y - tPlayer[playerid][pPosY]));
+				if(((pX > tPlayer[playerid][pPos][0] || pX < tPlayer[playerid][pPos][0]) && (tPlayer[playerid][pPos][1] > pY || tPlayer[playerid][pPos][1] < pY))) {
+					totalPos = floatabs((pX - tPlayer[playerid][pPos][0]) + (pY - tPlayer[playerid][pPos][1]));
 
 					new reas[64];
-					format(reas, sizeof(reas), "Ruch o %0.1fj podczas zamrozenia pieszo.", totalPos);
-					givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, 30, 3, reas);
+
+					format(reas, sizeof(reas), "Unfreeze: %0.1fj onfoot.", totalPos);
+					givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, 30, reas);
 				}
 			}
 
 			if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
 				new srvVehId = getServerVehicleId(playerid);
+
 				if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 					return 1;
 				}
 
-				if(getVehicleSpeed(tVehicle[srvVehId][vId]) > 0 && (x > tPlayer[playerid][pPosX] || x < tPlayer[playerid][pPosX]) && (tPlayer[playerid][pPosY] > y ||
-				   tPlayer[playerid][pPosY] < y) && (enteredVehicleSec[playerid] + 10) > gettime()) {
+				if(getVehicleSpeed(tVehicle[srvVehId][vId]) > 0 && (pX > tPlayer[playerid][pPos][0] || pX < tPlayer[playerid][pPos][0]) && (tPlayer[playerid][pPos][1] > pY ||
+				   tPlayer[playerid][pPos][1] < pY) && (enteredVehicleSec[playerid] + 10) > gettime()) {
 					enteredVehicleSec[playerid] = 0;
-					totalPos = floatabs((x - tPlayer[playerid][pPosX]) + (y - tPlayer[playerid][pPosY]));
+					totalPos = floatabs((pX - tPlayer[playerid][pPos][0]) + (pY - tPlayer[playerid][pPos][1]));
 
 					new reas[64];
-					format(reas, sizeof(reas), "3x ruch o %0.1fj podczas zamrozenia w pojezdzie.", totalPos);
-					givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, 30, 3, reas);
+
+					format(reas, sizeof(reas), "Unfreeze: %0.1fj invehicle.", totalPos);
+					givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, 30, reas);
 				}
 			}
 		}
@@ -75,10 +96,17 @@ stock antyUnFreeze(playerid) {
 
 stock antyWeapon(playerid) {
 	if(isLogged[playerid] && isSpawned[playerid] && !spawnFreeze[playerid]) {
-		if(GetPlayerWeapon(playerid) != 0) {
-			if(tPlayer[playerid][pWeapon] != GetPlayerWeapon(playerid) && getServerThingId(playerid) != INVALID_THING_ID) {
-				format(timerStr, sizeof(timerStr), "Bron: %d/%d(%s). Systemowa: %d/%d:%d (Weap)", GetPlayerWeapon(playerid), GetPlayerAmmo(playerid), weaponNames[tPlayer[playerid][pWeapon]], tThing[getServerThingId(playerid)][tUid], tPlayer[playerid][pWeapon], tPlayer[playerid][pWeapAmmo]);
-				givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_KICK, 0, 0, timerStr);
+		if(GetPlayerWeapon(playerid) && tPlayer[playerid][pWeapon]) {
+			if(tPlayer[playerid][pWeapon] != GetPlayerWeapon(playerid) && getServerThingId(lastThing[playerid]) != INVALID_THING_ID) {
+				foreach(new i : Player) {
+					if(tPlayer[i][pLang] == LANG_PL) {
+						format(timerStr, sizeof(timerStr), "Bron: %d/%d(%s). Systemowa: %d/%d:%d (Weap)", GetPlayerWeapon(playerid), GetPlayerAmmo(playerid), weaponNamesPl[tPlayer[playerid][pWeapon]], tThing[getServerThingId(lastThing[playerid])][tUid], tPlayer[playerid][pWeapon], tPlayer[playerid][pWeapAmmo]);
+					} else {
+						format(timerStr, sizeof(timerStr), "Weapon: %d/%d(%s). System: %d/%d:%d (Weap)", GetPlayerWeapon(playerid), GetPlayerAmmo(playerid), weaponNamesEng[tPlayer[playerid][pWeapon]], tThing[getServerThingId(lastThing[playerid])][tUid], tPlayer[playerid][pWeapon], tPlayer[playerid][pWeapAmmo]);
+					}
+				}
+
+				givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_KICK, 0, timerStr);
 			}
 		}
 	}
@@ -87,15 +115,53 @@ stock antyWeapon(playerid) {
 stock antyAdmJail(playerid) {
 	if(isLogged[playerid] && isSpawned[playerid] && !spawnFreeze[playerid]) {
 		if(tPlayer[playerid][pAj] > 0 && tPlayer[playerid][pVw] != 0 && !tPlayer[playerid][pInt]) {
-			if(!playerToPoint(playerid, 10.0, 1174.3706, -1180.3267, 87.0350)) {
-				givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_KICK, 0, 0, "Admin-jail break");
+			if(!playerToPoint(playerid, 20.0, 1174.3706, -1180.3267, 87.0350)) {
+				givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_KICK, 0, "Admin-jail break");
 			}
 		}
 	}
 }
 
 stock antyAirBreak(playerid) {
-	if(isLogged[playerid] && isSpawned[playerid] && !spawnFreeze[playerid]) {
-		
+	if(isLogged[playerid] && isSpawned[playerid] && !spawnFreeze[playerid] && !tPlayer[playerid][pBw]) {
+		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) {
+			new speed = getPlayerSpeed(playerid);
+
+			if(!speed && !tPlayer[playerid][pSafeTele] && antiCheatPos[playerid]) {
+				GetPlayerPos(playerid, tPlayer[playerid][pPos][0], tPlayer[playerid][pPos][1], tPlayer[playerid][pPos][2]);
+				antiCheatPos[playerid] = false;
+
+				SetTimerEx("checkPlayerPos", 500, false, "i", playerid);
+			}
+
+			//format(timerStr, sizeof(timerStr), "Latanie cheatem V2.");
+			//givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_KICK, 0, timerStr);
+		}
+	}
+	return 1;
+}
+
+Callback checkPlayerPos(playerid) {
+	new Float:pX, Float:pY, Float:pZ;
+	new Float:pOldX, Float:pOldY, Float:pOldZ;
+
+	GetPlayerPos(playerid, pX, pY, pZ);
+
+	pOldX = tPlayer[playerid][pPos][0];
+	pOldY = tPlayer[playerid][pPos][1];
+	pOldZ = tPlayer[playerid][pPos][2];
+
+	antiCheatPos[playerid] = true;
+
+	new diffX = floatToInt(floatabs(floatabs(pX) - floatabs(pOldX)));
+	new diffY = floatToInt(floatabs(floatabs(pY) - floatabs(pOldY)));
+	new diffZ = floatToInt(floatabs(floatabs(pZ) - floatabs(pOldZ)));
+	new delta = (diffX + diffY + diffZ);
+
+	if(diffX > 10 && diffY > 10 && diffZ > 3) {
+		new reas[128];
+
+		format(reas, sizeof(reas), "AirBreak V6 A: d%0.1f", intToFloat(delta));
+		givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, 2, reas);
 	}
 }

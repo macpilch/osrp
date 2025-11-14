@@ -376,11 +376,13 @@ stock Pickup_Add(model, Float:x, Float:y, Float:z, respawn = 60000, destroy = -1
 	YSI_g_sPickupData[pickupid][E_PICKUP_RESPAWN] = respawn;
 	YSI_g_sPickupData[pickupid][E_PICKUP_REMOVE] = destroy;
 	YSI_g_sPickupData[pickupid][E_PICKUP_TIME] = destroy;
-	YSI_g_sPickupData[pickupid][E_PICKUP_FLAGS] = e_PICKUP_FLAGS_VALID | e_PICKUP_FLAGS_SHOW | ((destroy != -1) ? (e_PICKUP_FLAGS_REMOVE) : (e_PICKUP_FLAGS:0)) | ((types & 2) ? (e_PICKUP_FLAGS_VEHICLE) : (e_PICKUP_FLAGS:0)) | ((types & 1) ? (e_PICKUP_FLAGS_FOOT) : (e_PICKUP_FLAGS:0));
 	#if defined _YSI_SETUP_MASTER
+	YSI_g_sPickupData[pickupid][E_PICKUP_FLAGS] = e_PICKUP_FLAGS_VALID | e_PICKUP_FLAGS_SHOW | ((destroy != -1) ? (e_PICKUP_FLAGS_REMOVE) : (e_PICKUP_FLAGS:0)) | ((types & 2) ? (e_PICKUP_FLAGS_VEHICLE) : (e_PICKUP_FLAGS:0)) | ((types & 1) ? (e_PICKUP_FLAGS_FOOT) : (e_PICKUP_FLAGS:0));
 		YSI_g_sPickupData[pickupid][E_PICKUP_MASTER] = master;
 		setproperty(0, "YSIReq", pickupid);
 		DBGP2("Pickup_AddRemote() end");
+	#else
+	YSI_g_sPickupData[pickupid][E_PICKUP_FLAGS] = e_PICKUP_FLAGS_VALID | e_PICKUP_FLAGS_SHOW | ((destroy != -1) ? (e_PICKUP_FLAGS_REMOVE) : (e_PICKUP_FLAGS:0)) | (vehicle ? (e_PICKUP_FLAGS_VEHICLE) : (e_PICKUP_FLAGS:0)) | (foot ? (e_PICKUP_FLAGS_FOOT) : (e_PICKUP_FLAGS:0));
 	#endif
 	return pickupid;
 }
@@ -723,10 +725,10 @@ Pickup_OnPlayerPickUpPickup(playerid, pickupid, vehicle = 0)
 				if (!vehicle)
 				{
 					#if defined _YSI_SETUP_MASTER
-						CallRemoteFunction("Property_OnPlayerPickUpPickup", "iifff", playerid, pid, YSI_g_sPickupData[pid][E_PICKUP_X], YSI_g_sPickupData[pid][E_PICKUP_Y], YSI_g_sPickupData[pid][E_PICKUP_Z]);
+						CallRemoteFunction("Property_OnPlayerPickUpPickup", "ii", playerid, pid);
 						ret = getproperty(0, "YSIReq");
 					#else
-						ret = Property_OnPlayerPickUpPickup(playerid, pid, YSI_g_sPickupData[pid][E_PICKUP_X], YSI_g_sPickupData[pid][E_PICKUP_Y], YSI_g_sPickupData[pid][E_PICKUP_Z]);
+						ret = Property_OnPlayerPickUpPickup(playerid, pid);
 					#endif
 				}
 			#endif

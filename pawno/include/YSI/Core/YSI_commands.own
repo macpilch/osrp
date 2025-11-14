@@ -1566,8 +1566,10 @@ public ycmd_commands(playerid, params[], help)
 {
 	#if defined _YSI_SETUP_MASTER
 		if (!YSI_g_sIsMaster) return 0;
+		DBGP2("ycmd_commands() %d", YSI_gMasterID);
+	#else
+		DBGP2("ycmd_commands()");
 	#endif
-	DBGP2("ycmd_commands() %d", YSI_gMasterID);
 	if (help)
 	{
 		Text_Send(playerid, "YSI_COMM_HELP_1");

@@ -63,11 +63,27 @@ new charManNames[][] = {
 	"Vance", "Volody", "Yadiel", "Yahir", "Yakov", "Yuuto"
 };
 
-new charWomNames[][] = {
+new charWomanNames[][] = {
+	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA",
+	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA",
+	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA",
+	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA",
+	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA",
+	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA",
+	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA",
+	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA",
+	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA",
+	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA",
+	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA",
+	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA",
+	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA",
+	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA",
+	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA",
+	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA",
 	"AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA", "AAAAAAAAAAA"
 };
 
-new charSurs[][] = {
+new charSurnames[][] = {
 	"Abate", "Abbattista", "Adami", "Adamo", "Adams", "Adriani", "Agnoli", "Agrusa", 
 	"Aiello", "Alessi", "Alfano", "Alonge", "Altosinno", "Alunni", "Alvarez", "Alvine", 
 	"Anasetti", "Anderlini", "Anderson", "Andollina", "Androsciani", "Angeletti", "Angelicola", 
@@ -96,19 +112,31 @@ new serviceTypes[] = {
 	GROUP_TAXI, GROUP_SHOP, GROUP_DRIVERLICENSE, GROUP_MOBILE, GROUP_AMMUNATION, GROUP_SHOOT
 };
 
-new serviceNames[][] = {
-	"Brak", "", "Rzad", "", "", "Radio", "Bar lub restauracja", "Salon samochodowy", "Warsztat", "Silownia", "Ochrona",
+new serviceNamesEng[][] = {
+	"Nieznany", "", "Rzad", "", "", "Radio", "Bar lub restauracja", "Salon samochodowy", "Warsztat", "Silownia", "Ochrona",
 	"Taxi", "", "24/7", "", "Nauka jazdy", "", "", "", "", "", "", "", "", "Operator komorkowy", "Ammu-nation", "Airsoft gun"
 };
 
-new weaponNames[][] = {
-	"", "Kastet", "Kij golfowy", "Pa³ka", "Nó¿", "Baseball Bat", "£opata", "Pool Cue", "Katana", "Chainsaw", "Dildo",
+new serviceNamesPl[][] = {
+	"Nieznany", "", "Rzad", "", "", "Radio", "Bar lub restauracja", "Salon samochodowy", "Warsztat", "Silownia", "Ochrona",
+	"Taxi", "", "24/7", "", "Nauka jazdy", "", "", "", "", "", "", "", "", "Operator komorkowy", "Ammu-nation", "Airsoft gun"
+};
+
+new weaponNamesEng[][] = {
+	"", "Brass Knuckles", "Kij golfowy", "Pa³ka", "Nó¿", "Baseball Bat", "£opata", "Pool Cue", "Katana", "Chainsaw", "Dildo",
 	"Dildo 2", "Wibrator", "Wibrator 2", "Kwiaty", "Laska", "Granat", "Gaz ³zawi¹cy", "Mo³otow", "Colt 45", "Pistolet z t³umikiem",
-	"Desert Eagle", "Shotgun", "Sawn OFF", "Combat", "UZI", "MP5", "AK-47", "M4", "TEC9", "Karabin", "Snajperka", "RPG", "Wyrzutnia rakiet",
+	"Desert Eagle", "Shotgun", "Sawn OFF", "Combat Shotgun", "UZI", "MP5", "AK-47", "M4", "TEC9", "Karabin", "Snajperka", "RPG", "Wyrzutnia rakiet",
 	"Flamethrower", "Minigun", "Satchel charge", "Detonator", "Spray Can", "Gaœnica", "Aparat", "Gogle", "Gogle", "Spadochron"
 };
 
-new vehicleNames[212][] = {
+new weaponNamesPl[][] = {
+	"", "Brass Knuckles", "Kij golfowy", "Pa³ka", "Nó¿", "Baseball Bat", "£opata", "Pool Cue", "Katana", "Chainsaw", "Dildo",
+	"Dildo 2", "Wibrator", "Wibrator 2", "Kwiaty", "Laska", "Granat", "Gaz ³zawi¹cy", "Mo³otow", "Colt 45", "Pistolet z t³umikiem",
+	"Desert Eagle", "Shotgun", "Sawn OFF", "Combat Shotgun", "UZI", "MP5", "AK-47", "M4", "TEC9", "Karabin", "Snajperka", "RPG", "Wyrzutnia rakiet",
+	"Flamethrower", "Minigun", "Satchel charge", "Detonator", "Spray Can", "Gaœnica", "Aparat", "Gogle", "Gogle", "Spadochron"
+};
+
+new vehicleNames[][] = {
 	"Landstalker",
 	"Bravura",
 	"Buffalo",
@@ -352,17 +380,20 @@ new asianSkins[] = {
 };
 
 new tClothes[][ClothesData] = {
-	{8, "Ubranie (8)", 200}, {23, "Ubranie (23)", 80}, {26, "Ubranie (26)", 60}, {29, "Ubranie (29)", 130}, {32, "Ubranie (32)", 60},
-	{33, "Ubranie (33)", 70}, {34, "Ubranie (34)", 80}, {35, "Ubranie (35)", 200}, {37, "Ubranie (37)", 90}, {43, "Ubranie (43)", 85},
-	{44, "Ubranie (44)", 50}, {45, "Ubranie (45)", 50}, {46, "Ubranie (46)", 250}, {48, "Ubranie (48)", 100}, {57, "Ubranie (57)", 100},
-	{58, "Ubranie (58)", 60}, {59, "Ubranie (59)", 270}, {60, "Ubranie (60)", 110}, {62, "Ubranie (62)", 45}, {72, "Ubranie (72)", 70},
-	{73, "Ubranie (73)", 85}, {78, "Ubranie (78)", 20}, {94, "Ubranie (94)", 90}, {95, "Ubranie (95)", 85}, {96, "Ubranie (96)", 90},
-	{97, "Ubranie (97)", 50}, {98, "Ubranie (98)", 200}, {101, "Ubranie (101)", 110}, {128, "Ubranie (128)", 60}, {132, "Ubranie (132)", 80},
-	{133, "Ubranie (133)", 70}, {147, "Ubranie (147)", 270}, {154, "Ubranie (154)", 50}, {158, "Ubranie (158)", 50}, {159, "Ubranie (159)", 40},
-	{160, "Ubranie (160)", 40}, {161, "Ubranie (161)", 60}, {170, "Ubranie (170)", 180}, {171, "Ubranie (171)", 250}, {177, "Ubranie (177)", 80},
-	{184, "Ubranie (184)", 100}, {185, "Ubranie (185)", 200}, {186, "Ubranie (186)", 280}, {187, "Ubranie (187)", 380}, {188, "Ubranie (188)", 130},
-	{189, "Ubranie (189)", 290}, {202, "Ubranie (202)", 65}, {206, "Ubranie (206)", 65}, {208, "Ubranie (208)", 300}, {210, "Ubranie (210)", 60},
-	{217, "Ubranie (217)", 160}, {223, "Ubranie (223)", 180}, {227, "Ubranie (227)", 110}, {228, "Ubranie (228)", 260}, {230, "Ubranie (230)", 45},
-	{235, "Ubranie (235)", 90}, {236, "Ubranie (236)", 80}, {240, "Ubranie (240)", 260}, {250, "Ubranie (250)", 100}, {252, "Ubranie (252)", 30},
-	{261, "Ubranie (261)", 60}, {295, "Ubranie (295)", 380}, {299, "Ubranie (299)", 999}
+	{8, "Ubranie (8)", "Clothes (8)", 200}, {23, "Ubranie (23)", "Clothes (23)", 80}, {26, "Ubranie (26)", "Clothes (26)", 60}, {29, "Ubranie (29)", "Clothes (29)", 130},
+	{32, "Ubranie (32)", "Clothes (32)", 60}, {33, "Ubranie (33)", "Clothes (33)", 70}, {34, "Ubranie (34)", "Clothes (34)", 80}, {35, "Ubranie (35)", "Clothes (35)", 200},
+	{37, "Ubranie (37)", "Clothes (37)", 90}, {43, "Ubranie (43)", "Clothes (43)", 85}, {44, "Ubranie (44)", "Clothes (44)", 50}, {45, "Ubranie (45)", "Clothes (45)", 50},
+	{46, "Ubranie (46)", "Clothes (46)", 250}, {48, "Ubranie (48)", "Clothes (48)", 100}, {57, "Ubranie (57)", "Clothes (57)", 100}, {58, "Ubranie (58)", "Clothes (58)", 60},
+	{59, "Ubranie (59)", "Clothes (59)", 270}, {60, "Ubranie (60)", "Clothes (60)", 110}, {62, "Ubranie (62)", "Clothes (62)", 45}, {72, "Ubranie (72)", "Clothes (72)", 70},
+	{73, "Ubranie (73)", "Clothes (73)", 85}, {78, "Ubranie (78)", "Clothes (78)", 20}, {94, "Ubranie (94)", "Clothes (94)", 90}, {95, "Ubranie (95)", "Clothes (95)", 85},
+	{96, "Ubranie (96)", "Clothes (96)", 90}, {97, "Ubranie (97)", "Clothes (97)", 50}, {98, "Ubranie (98)", "Clothes (98)", 200}, {101, "Ubranie (101)", "Clothes (101)", 110},
+	{128, "Ubranie (128)", "Clothes (128)", 60}, {132, "Ubranie (132)", "Clothes (132)", 80}, {133, "Ubranie (133)", "Clothes (133)", 70}, {147, "Ubranie (147)", "Clothes (147)", 270},
+	{154, "Ubranie (154)", "Clothes (154)", 50}, {158, "Ubranie (158)", "Clothes (158)", 50}, {159, "Ubranie (159)", "Clothes (159)", 40}, {160, "Ubranie (160)", "Clothes (160)", 40},
+	{161, "Ubranie (161)", "Clothes (161)", 60}, {170, "Ubranie (170)", "Clothes (170)", 180}, {171, "Ubranie (171)", "Clothes (171)", 250}, {177, "Ubranie (177)", "Clothes (177)", 80},
+	{184, "Ubranie (184)", "Clothes (184)", 100}, {185, "Ubranie (185)", "Clothes (185)", 200}, {186, "Ubranie (186)", "Clothes (186)", 280}, {187, "Ubranie (187)", "Clothes (187)", 380},
+	{188, "Ubranie (188)", "Clothes (188)", 130}, {189, "Ubranie (189)", "Clothes (189)", 290}, {202, "Ubranie (202)", "Clothes (202)", 65}, {206, "Ubranie (206)", "Clothes (206)", 65},
+	{208, "Ubranie (208)", "Clothes (208)", 300}, {210, "Ubranie (210)", "Clothes (210)", 60}, {217, "Ubranie (217)", "Clothes (217)", 160}, {223, "Ubranie (223)", "Clothes (223)", 180},
+	{227, "Ubranie (227)", "Clothes (227)", 110}, {228, "Ubranie (228)", "Clothes (228)", 260}, {230, "Ubranie (230)", "Clothes (230)", 45}, {235, "Ubranie (235)", "Clothes (235)", 90},
+	{236, "Ubranie (236)", "Clothes (236)", 80}, {240, "Ubranie (240)", "Clothes (240)", 260}, {250, "Ubranie (250)", "Clothes (250)", 100}, {252, "Ubranie (252)", "Clothes (252)", 30},
+	{261, "Ubranie (261)", "Clothes (261)", 60}, {295, "Ubranie (295)", "Clothes (295)", 380}, {299, "Ubranie (299)", "Clothes (299)", 999}
 };
