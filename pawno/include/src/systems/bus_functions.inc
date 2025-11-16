@@ -18,7 +18,7 @@ stock initBusStopValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_BusStops`");
+	mysql_query("SELECT UID, OUID, Name, PosX, PosY, PosZ, RotX, RotY, RotZ FROM `osrp_BusStops`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -377,7 +377,7 @@ Callback teleportToBusStop(playerid, uid) {
 	mainStr[0] = EOS;
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		format(mainStr, sizeof(mainStr), "* %s wsiad³ do autobusu jad¹cego w kierunku przystanku nr %d", tPlayer[playerid][pCharName], tBusStop[srvBusId][bsUid]);
+		format(mainStr, sizeof(mainStr), "* %s wsiad  do autobusu jad cego w kierunku przystanku nr %d", tPlayer[playerid][pCharName], tBusStop[srvBusId][bsUid]);
 	} else {
 		format(mainStr, sizeof(mainStr), "* %s boarded the bus heading towards bus stop no. %d", tPlayer[playerid][pCharName], tBusStop[srvBusId][bsUid]);
 	}
