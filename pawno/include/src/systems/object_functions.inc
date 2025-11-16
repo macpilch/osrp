@@ -17,7 +17,7 @@ stock initObjectValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_Objects`");
+	mysql_query("SELECT `UID`, `OUID`, `OType`, `Gate`, `ModelId`, `Spared`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`, `GateX`, `GateY`, `GateZ`, `Texture`, `MatIndex`, `MatType`, `MatColor`, `MatModel`, `MatTxdName`, `MatTexName`, `MatSize`, `MatFontSize`, `MatBold`, `MatFColor`, `MatBColor`, `MatAlign`, `MatFont`, `MatText`, `Distance`, `VW`, `INT` FROM `osrp_Objects`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -111,9 +111,9 @@ stock initObjectValues() {
 	}
 
 	if(Iter_Count(objectItter)) {
-		printf("[LOG]: [OBJECT] Wczytano %d obiektów.\n", Iter_Count(objectItter));
+		printf("[LOG]: [OBJECT] Wczytano %d obiekt w.\n", Iter_Count(objectItter));
 	} else {
-		printf("[LOG]: [OBJECT] Brak obiektów.\n");
+		printf("[LOG]: [OBJECT] Brak obiekt w.\n");
 	}
 
 	mysql_free_result();

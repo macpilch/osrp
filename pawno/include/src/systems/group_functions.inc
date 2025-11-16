@@ -18,7 +18,7 @@ stock initGroupValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_Groups`");
+	mysql_query("SELECT `UID`, `Name`, `Date`, `Type`, `Members`, `VehLimit`, `Money`, `Color`, `Registered` FROM `osrp_Groups`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -168,7 +168,7 @@ stock initGroupSetValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_GroupSets`");
+	mysql_query("SELECT `UID`, `OUID`, `Kind`, `Name`, `Value1`, `Value2`, `Price`, `Amount` FROM `osrp_GroupSets`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -214,7 +214,7 @@ stock initGroupTaskValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_GroupTasks`");
+	mysql_query("SELECT `UID`, `OUID`, `Desc`, `Date`, `Caller` FROM `osrp_GroupTasks`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -254,7 +254,7 @@ stock initGroupOrderValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_GroupOrders`");
+	mysql_query("SELECT `UID`, `OUID`, `DName`, `IName`, `Owner`, `Kind`, `Value1`, `Value2`, `Price`, `Amount` FROM `osrp_GroupOrders`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -304,7 +304,7 @@ stock initGroupVehicleValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_GroupVehicles`");
+	mysql_query("SELECT `UID`, `GUID`, `OUID`, `Veh0`, `Veh1`, `Veh2`, `Veh3`, `Veh4`, `Veh5`, `Veh6`, `Veh7`, `Veh8`, `Veh9` FROM `osrp_GroupVehicles`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -441,7 +441,7 @@ stock addGroup(const name[], type, balance, perms, const color[]) {
 
 	mysql_query(queryStr);
 
-	printf("[LOG]: [GROUP] Dodano now¹ grupê o Uid: %d.", tGroup[freeId][gUid]);
+	printf("[LOG]: [GROUP] Dodano now  grup  o Uid: %d.", tGroup[freeId][gUid]);
 	return tGroup[freeId][gUid];
 }
 
@@ -459,7 +459,7 @@ stock removeGroup(srvgrpid) {
 	mysql_query(queryStr);
 
 	Iter_Remove(groupItter, srvgrpid);
-	printf("[LOG]: [GROUP] Usuniêto grupê o Uid: %d.", tGroup[freeId][gUid]);
+	printf("[LOG]: [GROUP] Usuni to grup  o Uid: %d.", tGroup[freeId][gUid]);
 
 	tGroup[srvgrpid][gUid] = UID_NONE;
 	format(tGroup[srvgrpid][gName], 32, NULL);
@@ -765,7 +765,7 @@ stock showPlayerGroupInfo(playerid, slot) {
 	new str[256];
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		format(str, sizeof(str), "{FFFFFF}UID:\t\t\t%d\nKonto:\t\t\t%d\nLimit pojazdów:\t\t%d\nRodzaj:\t\t\t%d\nFlagi:\t\t\t%d\n\n1\tCzat OOC aktywny:\t\t%s\n2\tCzat IC aktywny:\t\t%s",
+		format(str, sizeof(str), "{FFFFFF}UID:\t\t\t%d\nKonto:\t\t\t%d\nLimit pojazd w:\t\t%d\nRodzaj:\t\t\t%d\nFlagi:\t\t\t%d\n\n1\tCzat OOC aktywny:\t\t%s\n2\tCzat IC aktywny:\t\t%s",
 		tGroup[srvGrpId][gUid], tGroup[srvGrpId][gMoney], tGroup[srvGrpId][gVehLimit], tGroup[srvGrpId][gType], tGroup[srvGrpId][gPerms], (tGroup[srvGrpId][gPerms] & G_GROUP_PERM_CHATOOC) ? ("T") : ("N"), (tGroup[srvGrpId][gPerms] & G_GROUP_PERM_CHATIC) ? ("T") : ("N"));
 		ShowPlayerDialog(playerid, DIALOG_GROUP_INFO, DIALOG_STYLE_LIST, tGroup[srvGrpId][gName], str, "OK", "Zamknij");
 	} else {
@@ -858,7 +858,7 @@ stock showPlayerGroupTasks(playerid, slot) {
 	usedLastTaskTime[playerid] = gettime();
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		ShowPlayerDialog(playerid, DIALOG_GROUP_TASKS, DIALOG_STYLE_LIST, "Oczekuj¹ce ¿¹dania", mainStr, "Akceptuj", "Zamknij");
+		ShowPlayerDialog(playerid, DIALOG_GROUP_TASKS, DIALOG_STYLE_LIST, "Oczekuj ce   dania", mainStr, "Akceptuj", "Zamknij");
 	} else {
 		ShowPlayerDialog(playerid, DIALOG_GROUP_TASKS, DIALOG_STYLE_LIST, "Pending requests", mainStr, "Accept", "Close");
 	}
@@ -875,7 +875,7 @@ stock showPlayerGroupVehicles(playerid, slot) {
 	new vehCount;
 
 	mainStr[0] = EOS;
-	// Spawnowanie nie bêd¹c na s³u¿bie.
+	// Spawnowanie nie b d c na s u bie.
 	tPlayer[playerid][pSlot] = slot;
 
 	foreach(new i : vehItter) {
@@ -899,7 +899,7 @@ stock showPlayerGroupVehicles(playerid, slot) {
 	}
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		ShowPlayerDialog(playerid, DIALOG_GROUP_VEHICLE_SELECT, DIALOG_STYLE_LIST, "Wybór pojazdu (* = zespawnowany)", mainStr, "(Un)spawn", "Wiêcej");
+		ShowPlayerDialog(playerid, DIALOG_GROUP_VEHICLE_SELECT, DIALOG_STYLE_LIST, "Wyb r pojazdu (* = zespawnowany)", mainStr, "(Un)spawn", "Wi cej");
 	} else {
 		ShowPlayerDialog(playerid, DIALOG_GROUP_VEHICLE_SELECT, DIALOG_STYLE_LIST, "Vehicle selection (* = spawned)", mainStr, "(Un)spawn", "More");
 	}
@@ -917,7 +917,7 @@ stock kickPlayerFromGroup(playerid, kickerid, slot) {
 	mainStr[0] = EOS;
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		format(mainStr, sizeof(mainStr), "%s wyprosi³(a) Ciê z grupy %s.", tPlayer[playerid][pCharName], tGroup[srvGrpId][gName]);
+		format(mainStr, sizeof(mainStr), "%s wyprosi (a) Ci  z grupy %s.", tPlayer[playerid][pCharName], tGroup[srvGrpId][gName]);
 	} else {
 		format(mainStr, sizeof(mainStr), "%s took you away from the group %s.", tPlayer[playerid][pCharName], tGroup[srvGrpId][gName]);
 	}
@@ -1012,7 +1012,7 @@ stock showPlayerGroupMagazineSets(playerid, slot, dialogid, customer) {
 
 		if(!doesDoorIsType(srvDoorId, DOOR_SHOP)) {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				return SendClientMessage(playerid, COLOR_GRAY, "Musisz znajdowaæ siê w sklepie.");
+				return SendClientMessage(playerid, COLOR_GRAY, "Musisz znajdowa  si  w sklepie.");
 			} else {
 				return SendClientMessage(playerid, COLOR_GRAY, "You must be in the store.");
 			}
@@ -1043,7 +1043,7 @@ stock showPlayerGroupMagazineSets(playerid, slot, dialogid, customer) {
 	new setCount, noPriceCount;
 
 	mainStr[0] = EOS;
-	strcat(mainStr, "#\tNazwa\tCena\tIloœæ\n");
+	strcat(mainStr, "#\tNazwa\tCena\tIlo  \n");
 
 	foreach(new i : groupSetItter) {
 		if(tGroupSet[i][gsOUid] == tGroup[srvGrpId][gUid]) {
@@ -1068,7 +1068,7 @@ stock showPlayerGroupMagazineSets(playerid, slot, dialogid, customer) {
 
 	if(noPriceCount) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			format(mainStr, sizeof(mainStr), "%s\n{C8C8C8}... i %d niewycenionych przedmiotów.", mainStr, noPriceCount);
+			format(mainStr, sizeof(mainStr), "%s\n{C8C8C8}... i %d niewycenionych przedmiot w.", mainStr, noPriceCount);
 		} else {
 			format(mainStr, sizeof(mainStr), "%s\n{C8C8C8}... and %d unpriced items.", mainStr, noPriceCount);
 		}

@@ -17,7 +17,7 @@ stock initCashPointValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_CashPoints`");
+	mysql_query("SELECT `UID`, `Name`, `IsOpen`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`, `Distance`, `VW`, `INT` FROM `osrp_CashPoints`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -120,7 +120,7 @@ stock searchPlayerCashPoint(playerid) {
 			mainStr[0] = EOS;
 
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				format(mainStr, sizeof(mainStr), "{FFFFFF}1\tStan konta (%d)\n2\tWyp³aæ pieni¹dze\n3\tWp³aæ pieni¹dze\n4\tDokonaj przelewu\n5\tSp³aæ d³ug ($%d)", tPlayer[playerid][pBank], tPlayer[playerid][pDebt]);
+				format(mainStr, sizeof(mainStr), "{FFFFFF}1\tStan konta (%d)\n2\tWyp a  pieni dze\n3\tWp a  pieni dze\n4\tDokonaj przelewu\n5\tSp a  d ug ($%d)", tPlayer[playerid][pBank], tPlayer[playerid][pDebt]);
 				ShowPlayerDialog(playerid, DIALOG_CASHPOINT, DIALOG_STYLE_LIST, "Bankomat", mainStr, "OK", "Anuluj");
 			} else {
 				format(mainStr, sizeof(mainStr), "{FFFFFF}1\tAccount balance (%d)\n2\tWithdraw money\n3\tDeposit money\n4\tMake a transfer\n5\tPay off debt ($%d)", tPlayer[playerid][pBank], tPlayer[playerid][pDebt]);
@@ -136,7 +136,7 @@ stock searchPlayerCashPoint(playerid) {
 			}
 		} else {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				DialogInfo(playerid, "Nie znajdujesz siê wystarczaj¹co blisko bankomatu (model obiektu: 2942).");
+				DialogInfo(playerid, "Nie znajdujesz si  wystarczaj co blisko bankomatu (model obiektu: 2942).");
 			} else {
 				DialogInfo(playerid, "You are not close enough to the ATM (object model: 2942).");
 			}
