@@ -18,7 +18,7 @@ stock initBusStopValues() {
 
 	new id;
 
-	mysql_query("SELECT UID, OUID, Name, PosX, PosY, PosZ, RotX, RotY, RotZ FROM `osrp_BusStops`");
+	mysql_query("SELECT `UID`, `OUID`, `Name`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ` FROM `osrp_BusStops`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
