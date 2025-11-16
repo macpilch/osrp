@@ -17,7 +17,7 @@ stock initAchievementValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_Achievements`");
+	mysql_query("SELECT `UID`, `ID`, `Name`, `Desc`, `Reward` FROM `osrp_Achievements`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {

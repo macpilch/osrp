@@ -17,7 +17,7 @@ stock initDoorValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_Doors`");
+	mysql_query("SELECT `UID`, `OUID`, `OType`, `Type`, `Name`, `EnterX`, `EnterY`, `EnterZ`, `EnterA`, `ExitX`, `ExitY`, `ExitZ`, `ExitA`, `MinX`, `MinY`, `MaxX`, `MaxY`, `Cost`, `Passing`, `Open`, `Tax`, `TaxDate`, `TaxCost`, `Objects`, `MaxObjects`, `Texts`, `MaxTexts`, `Security`, `Audio`, `VW`, `INT` FROM `osrp_Doors`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -353,16 +353,16 @@ stock showDoorMenu(playerid) {
 	mainStr[0] = EOS;
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		format(str, sizeof(str), "Drzwi %d (Op³acone: %s, do zap³aty: $%d; %d m2)", tDoor[srvdoorid][dUid], tDoor[srvdoorid][dTaxDate], tDoor[srvdoorid][dTaxCost], tDoor[srvdoorid][dDimension]);
+		format(str, sizeof(str), "Drzwi %d (Op acone: %s, do zap aty: $%d; %d m2)", tDoor[srvdoorid][dUid], tDoor[srvdoorid][dTaxDate], tDoor[srvdoorid][dTaxCost], tDoor[srvdoorid][dDimension]);
 	} else {
 		format(str, sizeof(str), "Door %d (Paid: %s, payable: $%d; %d m2)", tDoor[srvdoorid][dUid], tDoor[srvdoorid][dTaxDate], tDoor[srvdoorid][dTaxCost], tDoor[srvdoorid][dDimension]);
 	}
 
 	if(tDoor[srvdoorid][dOUid] == tPlayer[playerid][pUid]) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tPoka¿ informacje*\n27\tPrzypisz obiekty (%d + %d przypisanych)\n29\tPrzypisz napisy (%d + %d przypisanych)\n13\tWczytaj mapê obiektów\n30\tSkasuj ostatni obiekt (w razie crashów)\n40\tWykonaj kopiê zapasow¹\n4\tZmieñ interior (widocznoœæ przez okna)\n",
+			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tPoka  informacje*\n27\tPrzypisz obiekty (%d + %d przypisanych)\n29\tPrzypisz napisy (%d + %d przypisanych)\n13\tWczytaj map  obiekt w\n30\tSkasuj ostatni obiekt (w razie crash w)\n40\tWykonaj kopi  zapasow \n4\tZmie  interior (widoczno   przez okna)\n",
 			tDoor[srvdoorid][dMaxObjects], tDoor[srvdoorid][dObjects], tDoor[srvdoorid][dMaxTexts], tDoor[srvdoorid][dTexts]);
-			format(mainStr, sizeof(mainStr), "%s2\tEdytuj wewnêtrzn¹ pozycjê\n31\tEdytuj wymiary wnêtrza\n20\tW(y)³¹cz przejazd pojazdami\n24\tPrzepisz budynek pod grupê\n16\tZmieñ wyœwietlan¹ nazwê\n35\tPrze³¹cz pickup\n15\tUstal op³atê za wejœcie\n21\tZakup system HiFi ($2500)\n22\tZakup szafê na szyfr ($2000)\n34\tOchrona: %s", mainStr, "brak");
+			format(mainStr, sizeof(mainStr), "%s2\tEdytuj wewn trzn  pozycj \n31\tEdytuj wymiary wn trza\n20\tW(y)  cz przejazd pojazdami\n24\tPrzepisz budynek pod grup \n16\tZmie  wy wietlan  nazw \n35\tPrze  cz pickup\n15\tUstal op at  za wej cie\n21\tZakup system HiFi ($2500)\n22\tZakup szaf  na szyfr ($2000)\n34\tOchrona: %s", mainStr, "brak");
 			ShowPlayerDialog(playerid, DIALOG_DOOR_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
 		} else {
 			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tShow informations*\n27\tAssign objects (%d + %d assigned)\n29\tAssign inscriptions (%d + %d assigned)\n13\tLoad feature map\n30\tDelete last object (in case of crashes)\n40\tMake a backup\n4\tChange interior (visibility through windows)\n",
@@ -372,7 +372,7 @@ stock showDoorMenu(playerid) {
 		}
 	} else if(tDoor[srvdoorid][dOUid] != tPlayer[playerid][pUid]) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tPoka¿ informacje*\n34\tOchrona: %s", "brak");
+			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tPoka  informacje*\n34\tOchrona: %s", "brak");
 			ShowPlayerDialog(playerid, DIALOG_DOOR_MENU2, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
 		} else {
 			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tShow informations*\n34\tSecurity: %s", "brak");
@@ -380,7 +380,7 @@ stock showDoorMenu(playerid) {
 		}
 	} else if(tDoor[srvdoorid][dOUid] != tPlayer[playerid][pUid] && !tDoor[srvdoorid][dOpen]) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tPoka¿ informacje*\n34\tOchrona: %s\n39\tZapukaj do drzwi", "brak");
+			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tPoka  informacje*\n34\tOchrona: %s\n39\tZapukaj do drzwi", "brak");
 			ShowPlayerDialog(playerid, DIALOG_DOOR_MENU3, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
 		} else {
 			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tShow informations*\n34\tSecurity: %s\n39\tKnock on the door", "brak");
@@ -390,8 +390,8 @@ stock showDoorMenu(playerid) {
 
 	} else {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			strcat(mainStr, "Nie uda³o siê wykryæ budynku.\nNa pewno stoisz pod budynkiem, twarz¹ do œciany?\n");
-			strcat(mainStr, "Nie mo¿esz staæ dalej ni¿ 5m od œciany.");
+			strcat(mainStr, "Nie uda o si  wykry  budynku.\nNa pewno stoisz pod budynkiem, twarz  do  ciany?\n");
+			strcat(mainStr, "Nie mo esz sta  dalej ni  5m od  ciany.");
 		} else {
 			strcat(mainStr, "Unable to detect the building.\nAre you sure you are standing under the building, facing a wall?\n");
 			strcat(mainStr, "You cannot stand more than 5m from the wall.");
@@ -407,7 +407,7 @@ stock showDoorMenu(playerid) {
 	}
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		format(mainStr, sizeof(mainStr), "{FFFFFF}11\tStwórz nowy budynek ($%d/m2, min %dm2)", tArea[srvAreaId][aCost], tArea[srvAreaId][aDimension]);
+		format(mainStr, sizeof(mainStr), "{FFFFFF}11\tStw rz nowy budynek ($%d/m2, min %dm2)", tArea[srvAreaId][aCost], tArea[srvAreaId][aDimension]);
 		ShowPlayerDialog(playerid, DIALOG_DOOR_MENU4, DIALOG_STYLE_LIST, "Subserwer", mainStr, "OK", "Anuluj");
 	} else {
 		format(mainStr, sizeof(mainStr), "{FFFFFF}11\tCreate a new building ($%d/m2, min %dm2)", tArea[srvAreaId][aCost], tArea[srvAreaId][aDimension]);
@@ -445,8 +445,8 @@ Callback createAndAddDoor(playerid, meters, owner, ownertype, doortype, name[], 
 	OSRP_TogglePlayerControllable(playerid, 1);
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		DialogInfo(playerid, "Budynek zosta³ utworzony. Have fun!");
-		DialogInfo(playerid, "Nie posiadasz przy sobie %d USD w gotówce.");
+		DialogInfo(playerid, "Budynek zosta  utworzony. Have fun!");
+		DialogInfo(playerid, "Nie posiadasz przy sobie %d USD w got wce.");
 	} else {
 		DialogInfo(playerid, "The building has been created. Have fun!");
 		DialogInfo(playerid, "You do not have %d USD in cash on you.");

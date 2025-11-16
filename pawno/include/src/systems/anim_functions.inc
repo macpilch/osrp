@@ -17,7 +17,7 @@ stock initAnimationValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_Animations`");
+	mysql_query("SELECT `UID`, `Name`, `AnimLib`, `AnimName`, `Delta`, `Loop`, `LockX`, `LockY`, `Freeze`, `Time`, `Forcesync` FROM `osrp_Animations`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
