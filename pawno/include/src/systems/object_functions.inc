@@ -17,7 +17,7 @@ stock initObjectValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_Objects`");
+	mysql_query("SELECT `UID`, `OUID`, `OType`, `Gate`, `ModelId`, `Spared`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`, `GateX`, `GateY`, `GateZ`, `Texture`, `MatIndex`, `MatType`, `MatColor`, `MatModel`, `MatTxdName`, `MatTexName`, `MatSize`, `MatFontSize`, `MatBold`, `MatFColor`, `MatBColor`, `MatAlign`, `MatFont`, `MatText`, `Distance`, `VW`, `INT` FROM `osrp_Objects`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -111,9 +111,9 @@ stock initObjectValues() {
 	}
 
 	if(Iter_Count(objectItter)) {
-		printf("[LOG]: [OBJECT] Wczytano %d obiektów.\n", Iter_Count(objectItter));
+		printf("[LOG]: [OBJECT] Wczytano %d obiektow.\n", Iter_Count(objectItter));
 	} else {
-		printf("[LOG]: [OBJECT] Brak obiektów.\n");
+		printf("[LOG]: [OBJECT] Brak obiektow.\n");
 	}
 
 	mysql_free_result();
@@ -214,8 +214,12 @@ stock removeObject(srvobjid) {
 	format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Objects` WHERE `UID` = '%d'", tObject[srvobjid][oUid]);
 	mysql_query(queryStr);
 
-	DestroyDynamicObject(tObject[srvobjid][oObject]);
+	if(IsValidDynamicObject(tObject[srvobjid][oObject])) {
+		DestroyDynamicObject(tObject[srvobjid][oObject]);
+	}
+
 	Iter_Remove(objectItter, srvobjid);
+	printf("[LOG]: [OBJECT] Usunieto obiekt o Uid: %d.", tObject[srvobjid][oUid]);
 
 	tObject[srvobjid][oUid] = UID_NONE;
 	tObject[srvobjid][oOUid] = UID_NONE;
@@ -304,6 +308,7 @@ stock addTexture(srvobjid, index, type, matcolor, model, const txdname[], const 
 	}
 
 	saveTextureValues(srvobjid);
+	printf("[LOG]: [OBJECT] Dodano teksture do obiektu o Uid: %d.", tObject[srvobjid][oUid]);
 	return 1;
 }
 
@@ -335,6 +340,7 @@ stock removeTexture(srvobjid) {
 	format(tObject[srvobjid][oMatText], 32, NULL);
 
 	saveTextureValues(srvobjid);
+	printf("[LOG]: [OBJECT] Usunieto teksture z obiektu o Uid: %d.", tObject[srvobjid][oUid]);
 	return 1;
 }
 

@@ -128,10 +128,9 @@ stock onEnterRaceCheckpoint(playerid) {
 		}
 
 		GameTextForPlayer(playerid, mainStr, 5000, 3);
-
 		mainStr[0] = EOS;
-		
-		sendDefaultMessage(playerid, 30.0, mainStr, COLOR_GREEN);
+
+		sendRegularMessage(playerid, 30.0, mainStr, COLOR_GREEN);
 	}
 
 	mainStr[0] = EOS;

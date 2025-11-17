@@ -17,7 +17,7 @@ stock initCashPointValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_CashPoints`");
+	mysql_query("SELECT `UID`, `Name`, `IsOpen`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`, `Distance`, `VW`, `INT` FROM `osrp_CashPoints`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -127,8 +127,8 @@ stock searchPlayerCashPoint(playerid) {
 				ShowPlayerDialog(playerid, DIALOG_CASHPOINT, DIALOG_STYLE_LIST, "ATM", mainStr, "OK", "Cancel");
 			}
 
-			lastCashPoint[playerid] = tCashPoint[i][cpUid];
-		} else if(playerToPoint(playerid, tCashPoint[i][cpDistance] + 1.0, tCashPoint[i][cpPosX], tCashPoint[i][cpPosY], tCashPoint[i][cpPosZ])) {
+			tPlayer[playerid][pCashPoint] = tCashPoint[i][cpUid];
+		} else if(playerToPoint(playerid, (tCashPoint[i][cpDistance] / 1.5), tCashPoint[i][cpPosX], tCashPoint[i][cpPosY], tCashPoint[i][cpPosZ])) {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
 				GameTextForPlayer(playerid, "~n~~r~Podejdz blizej.", 5000, 3);
 			} else {
@@ -205,6 +205,11 @@ stock removeCashPoint(srvcashid) {
 	mysql_query(queryStr);
 
 	Iter_Remove(cashPointItter, srvcashid);
+	printf("[LOG]: [CASHPOINT] Usunieto bankomat o Uid: %d.", tCashPoint[srvcashid][cpUid]);
+
+	if(IsValidDynamicObject(tCashPoint[srvcashid][cpObject])) {
+		DestroyDynamicObject(tCashPoint[srvcashid][cpObject]);
+	}
 
 	tCashPoint[srvcashid][cpUid] = UID_NONE;
 	format(tCashPoint[srvcashid][cpName], 32, NULL);

@@ -15,7 +15,7 @@
 sampCallback OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 	new srvVehId = getServerVehicleIdFromMapId(vehicleid);
 
-	lastVehicle[playerid] = tVehicle[srvVehId][vUid];
+	tPlayer[playerid][pVehicle] = tVehicle[srvVehId][vUid];
 
 	if(tPlayer[playerid][pBlock] & BLOCK_VEH) {
 		ClearAnimations(playerid);
@@ -129,7 +129,7 @@ sampCallback OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 		ClearAnimations(playerid);
 
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			DialogInfo(playerid, "Nie mo¿esz wsiadaæ do pojazdu z za³o¿onymi rolkami.");
+			DialogInfo(playerid, "Nie mo¿esz wsiadaæ do pojazdu z za³o¿onymi rolkami.\nU¿yj /p, by je zdj¹æ.");
 		} else {
 			DialogInfo(playerid, "You cannot get into a vehicle with rollers on.");
 		}

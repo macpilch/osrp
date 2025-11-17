@@ -27,8 +27,8 @@ CMD:pomoc(playerid, params[]) {
 	}
 
 	for(new i = 0; i < MAX_PLAYER_GROUPS; i++) {
-		if(lastGroup[playerid][i] != UID_NONE) {
-			format(mainStr, sizeof(mainStr), "%s\n%d\t%s", mainStr, i + 1, tGroup[getServerGroupId(lastGroup[playerid][i])][gName]);
+		if(tPlayer[playerid][pGroup][i] != UID_NONE) {
+			format(mainStr, sizeof(mainStr), "%s\n%d\t%s", mainStr, i + 1, tGroup[getServerGroupId(tPlayer[playerid][pGroup][i])][gName]);
 		}
 	}
 
@@ -832,7 +832,7 @@ CMD:sex(playerid, params[]) {
 		}
 	}
 
-	new srvDoorId = getServerDoorId(lastDoor[playerid]);
+	new srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 	if(srvDoorId == INVALID_DOOR_ID || tDoor[srvDoorId][dUid] != tPlayer[playerid][pUid]) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -1061,7 +1061,7 @@ CMD:sprobuj(playerid, params[]) {
 		format(mainStr, sizeof(mainStr), "*** %s %s %s.", tPlayer[playerid][pCharName], actionCasesEng[random(sizeof(actionCasesEng))], action);
 	}
 
-	sendDefaultMessage(playerid, 30.0, mainStr, COLOR_PINK);
+	sendRegularMessage(playerid, 30.0, mainStr, COLOR_PINK);
 	return 1;
 }
 
@@ -1310,7 +1310,7 @@ CMD:stats(playerid, params[]) {
 	}
 
 	new title[64];
-	new dim1, dim2, speed, srvAreaId = getServerAreaId(lastArea[playerid]);
+	new dim1, dim2, speed, srvAreaId = getServerAreaId(tPlayer[playerid][pArea]);
 
 	if(srvAreaId == INVALID_AREA_ID) {
 		dim1 = dim2 = 0;
@@ -1326,7 +1326,8 @@ CMD:stats(playerid, params[]) {
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
 		format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t%dh %dm\nEnergy:\t\t%d%, %dmin BW\nDrzwi:\t\t%d\nGotówka:\t$%d, €%d\nBank:\t\t$%d\nSkill:\t\tPist. %d, Semi %d, Auto %d, Shotg. %d, Rifle %d\nRz¹d:\t\t\t%d\nPrawko:\t\t%s, %dkm wyje¿d¿one\nHotel:\t\t\t%d\nPrzetrzymanie:\t\t%dh %dm\nTelefon:\t\t%d (sieæ %d)\nNumer konta:\t%d\nUzale¿nienie:\t%0.1f\nSi³a:\t\t%d\nStrefa:\t\t%dx%d (max %dkm/h)\nGrupy:\t\t%s\nSkin:\t\t%d (ostatni %d)\nAJ:\t\t\t%d\nAL:\t\t\t%d, vg0\n",
-		tPlayer[playerid][pHours], tPlayer[playerid][pMinutes], floatToInt(tPlayer[playerid][pHp]), tPlayer[playerid][pBw], lastDoor[playerid], tPlayer[playerid][pMoney], tPlayer[playerid][pEuro], tPlayer[playerid][pBank], tPlayer[playerid][pWeapSkill][0], tPlayer[playerid][pWeapSkill][1], tPlayer[playerid][pWeapSkill][2], tPlayer[playerid][pWeapSkill][3], tPlayer[playerid][pWeapSkill][4], (tPlayer[playerid][pDocuments] & DOC_ID) ? DOC_ID : 0, (tPlayer[playerid][pDocuments] & DOC_L_DRIVING) ? ("T") : ("N"),
+		tPlayer[playerid][pHours], tPlayer[playerid][pMinutes], floatToInt(tPlayer[playerid][pHp]), tPlayer[playerid][pBw], tPlayer[playerid][pDoor], tPlayer[playerid][pMoney], tPlayer[playerid][pEuro], tPlayer[playerid][pBank], tPlayer[playerid][pWeapSkill][0], tPlayer[playerid][pWeapSkill][1], tPlayer[playerid][pWeapSkill][2], tPlayer[playerid][pWeapSkill][3], tPlayer[playerid][pWeapSkill][4], (tPlayer[playerid][pDocuments] & DOC_ID) ? DOC_ID : 0,
+		(tPlayer[playerid][pDocuments] & DOC_L_DRIVING) ? ("T") : ("N"),
 		floatToInt(tPlayer[playerid][pTraveled]), tPlayer[playerid][pHotel], tPlayer[playerid][pDetention], 0, tPlayer[playerid][pTelNum], tPlayer[playerid][pTelNetwork], tPlayer[playerid][pBankAcc], tPlayer[playerid][pAddiction], tPlayer[playerid][pStrength], dim1, dim2, speed, tPlayer[playerid][pGroupDesc], tPlayer[playerid][pSkin], tPlayer[playerid][pLastSkin], tPlayer[playerid][pAj], tPlayer[playerid][pRank]);
 		format(mainStr, sizeof(mainStr), "%s------\n1\tStyl rozmowy:\t\t%d\n2\tSzybki komputer:\t%s\n3\tAnimacja chodzenia:\t%s\n5\tStyl walki aktywny:\t%s", mainStr, tPlayer[playerid][pChatStyle], tPlayer[playerid][pComputer] ? ("T") : ("N"), tPlayer[playerid][pWalkAnim] != INVALID_ANIM_ID ? getAnimationNameFromServerId(tPlayer[playerid][pWalkAnim]) : "Brak",
 		tPlayer[playerid][pStyleFight] ? ("T") : ("N"));
@@ -1334,7 +1335,7 @@ CMD:stats(playerid, params[]) {
 	} else {
 		format(mainStr, sizeof(mainStr), "{FFFFFF}Play time:\t\t\t%dh %dm\nAL:\t\t\t\t%d\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nStrength:\t\t\t%d\nDollars:\t\t\t\t$%d\nEuro:\t\t\t\t%d €\nBank:\t\t\t\t$%d\nDebt:\t\t\t\t$%d\nGov:\t\t\t\t%d\nDriving:\t\t\t%d\nHotel:\t\t\t\t%d\nDetention:\t\t\t%dh\nPDP:\t\t\t\t%d\nPhone:\t\t\t\t%d (%d)\nAccount number:\t\t%d\nAddiction:\t\t\t%0.1f\nDoor:\t\t\t\t%d\nZone:\t\t\t\t%dx%d (max %dkm/h)\nGroups:\t\t\t%s\nSkin:\t\t\t\t%d\n",
 		tPlayer[playerid][pHours], tPlayer[playerid][pMinutes], tPlayer[playerid][pRank], tPlayer[playerid][pAj], tPlayer[playerid][pBw], tPlayer[playerid][pHp], tPlayer[playerid][pStrength], tPlayer[playerid][pMoney], tPlayer[playerid][pEuro], tPlayer[playerid][pBank], tPlayer[playerid][pDebt], (tPlayer[playerid][pDocuments] & DOC_ID) ? DOC_ID : 0, (tPlayer[playerid][pDocuments] & DOC_L_DRIVING) ? DOC_L_DRIVING : 0, tPlayer[playerid][pHotel], tPlayer[playerid][pDetention],
-		tPlayer[playerid][pPdp], tPlayer[playerid][pTelNum], tPlayer[playerid][pTelNetwork], tPlayer[playerid][pBankAcc], tPlayer[playerid][pAddiction], lastDoor[playerid], dim1, dim2, speed, tPlayer[playerid][pGroupDesc], tPlayer[playerid][pSkin]);
+		tPlayer[playerid][pPdp], tPlayer[playerid][pTelNum], tPlayer[playerid][pTelNetwork], tPlayer[playerid][pBankAcc], tPlayer[playerid][pAddiction], tPlayer[playerid][pDoor], dim1, dim2, speed, tPlayer[playerid][pGroupDesc], tPlayer[playerid][pSkin]);
 		format(mainStr, sizeof(mainStr), "%sTraveled:\t\t\t%dkm\nLast skin:\t\t\t%d\n------\n1\tConversation style:\t%d\n2\tFast computer:\t\t%s\n3\tWalking animation:\t%s\n5\tActive fighting style:\t%s", mainStr, floatToInt(tPlayer[playerid][pTraveled]), tPlayer[playerid][pLastSkin], tPlayer[playerid][pChatStyle], tPlayer[playerid][pComputer] ? ("Y") : ("N"), tPlayer[playerid][pWalkAnim] != INVALID_ANIM_ID ? getAnimationNameFromServerId(tPlayer[playerid][pWalkAnim]) : "None",
 		tPlayer[playerid][pStyleFight] ? ("Y") : ("N"));
 		ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, title, mainStr, "OK", "Close");
@@ -1362,7 +1363,7 @@ CMD:opis(playerid, params[]) {
 	queryStr[0] = EOS;
 
 	if(!strcmp(desc, "usun", true) || !strcmp(desc, "delete", true)) {
-		new srvVehId = getServerVehicleId(lastVehicle[playerid]);
+		new srvVehId = getServerVehicleId(tPlayer[playerid][pVehicle]);
 
 		if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 			if(!strcmp(tPlayer[playerid][pDesc], " ", false)) {
@@ -1459,7 +1460,7 @@ CMD:p(playerid, params[]) {
 			}
 		}
 
-		lastThing[playerid] = tThing[srvThingId][tUid];
+		tPlayer[playerid][pThing] = tThing[srvThingId][tUid];
 
 		if(!isnull(values) && isThingKind(srvThingId, TKIND_TELEPHONE) && tThing[srvThingId][tUsed]) {
 			new number, sms[64];
@@ -1576,7 +1577,7 @@ CMD:o(playerid, params[]) {
 	}
 
 	if(!strcmp(service, "naukajazdy", true) || !strcmp(service, "drivinglessons", true)) {
-		new srvGrpId = getServerGroupId(lastGroup[playerid][tPlayer[playerid][pSlot] - 1]);
+		new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][tPlayer[playerid][pSlot] - 1]);
 
 		if(srvGrpId == INVALID_GROUP_ID) {
 			return 1;
@@ -1627,7 +1628,7 @@ CMD:o(playerid, params[]) {
 		sendOffer(playerid, pId, price, 0, 0, OFFER_NORMAL, OFFER_DRIVINGLESS);
 	} else if(!strcmp(service, "dokument", true) || !strcmp(service, "document", true)) {
 		new type[16];
-		new srvGrpId = getServerGroupId(lastGroup[playerid][tPlayer[playerid][pSlot] - 1]);
+		new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][tPlayer[playerid][pSlot] - 1]);
 
 		if(srvGrpId == INVALID_GROUP_ID) {
 			return 1;
@@ -1703,7 +1704,7 @@ CMD:o(playerid, params[]) {
 
 		sendOffer(playerid, pId, price, 0, 0, OFFER_NORMAL, OFFER_RP);
 	} else if(!strcmp(service, "podatek", true) || !strcmp(service, "tax", true)) {
-		new srvGrpId = getServerGroupId(lastGroup[playerid][tPlayer[playerid][pSlot] - 1]);
+		new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][tPlayer[playerid][pSlot] - 1]);
 
 		if(srvGrpId == INVALID_GROUP_ID) {
 			return 1;
@@ -1739,7 +1740,7 @@ CMD:o(playerid, params[]) {
 			sendOffer(playerid, pId, 0, uid, 0, OFFER_NORMAL, OFFER_TAX);
 		//}
 	} else if(!strcmp(service, "mandat", true) || !strcmp(service, "ticket", true)) {
-		new srvGrpId = getServerGroupId(lastGroup[playerid][tPlayer[playerid][pSlot] - 1]);
+		new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][tPlayer[playerid][pSlot] - 1]);
 
 		if(srvGrpId == INVALID_GROUP_ID) {
 			return 1;
@@ -1783,7 +1784,7 @@ CMD:o(playerid, params[]) {
 			sendOffer(playerid, pId, price, amount, 0, OFFER_NORMAL, OFFER_MANDATE);
 		}
 	} else if(!strcmp(service, "rejestracje", true) || !strcmp(service, "registrations", true)) {
-		new srvGrpId = getServerGroupId(lastGroup[playerid][tPlayer[playerid][pSlot] - 1]);
+		new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][tPlayer[playerid][pSlot] - 1]);
 
 		if(srvGrpId == INVALID_GROUP_ID) {
 			return 1;
@@ -2276,7 +2277,7 @@ CMD:o(playerid, params[]) {
 			return 1;
 		}
 	} else if(!strcmp(service, "wywiad", true) || !strcmp(service, "interview", true)) {
-		new srvGrpId = getServerGroupId(lastGroup[playerid][tPlayer[playerid][pSlot] - 1]);
+		new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][tPlayer[playerid][pSlot] - 1]);
 
 		if(srvGrpId == INVALID_GROUP_ID) {
 			return 1;
@@ -2479,8 +2480,8 @@ CMD:g(playerid, params[]) {
 
 		for(new i = 0; i < MAX_PLAYER_GROUPS; i++) {
 			if(!showGroupsInfo[playerid][i]) {
-				if(lastGroup[playerid][i]) {
-					format(str, sizeof(str), "%s%d  ~w~%s (%d)", isPlayerDuty[playerid][i] ? ("~r~") : ("~b~"), i + 1, tGroup[getServerGroupId(lastGroup[playerid][i])][gName], tGroup[getServerGroupId(lastGroup[playerid][i])][gUid]);
+				if(tPlayer[playerid][pGroup][i]) {
+					format(str, sizeof(str), "%s%d  ~w~%s (%d)", isPlayerDuty[playerid][i] ? ("~r~") : ("~b~"), i + 1, tGroup[getServerGroupId(tPlayer[playerid][pGroup][i])][gName], tGroup[getServerGroupId(tPlayer[playerid][pGroup][i])][gUid]);
 					TextDrawSetString(groupsInfo[playerid][tdsToDraw[i][0]], str);
 
 					if(tPlayer[playerid][pRank] == RANK_GOLD && isPlayerDuty[playerid][i]) {
@@ -2601,7 +2602,7 @@ CMD:g(playerid, params[]) {
 		}
 
 		for(new i = 0; i < MAX_PLAYER_GROUPS; i++) {
-			if(lastGroup[playerid][slot - 1] == lastGroup[pId][i]) {
+			if(tPlayer[playerid][pGroup][slot - 1] == tPlayer[pId][pGroup][i]) {
 				slot2 = i;
 				break;
 			}
@@ -2617,13 +2618,13 @@ CMD:g(playerid, params[]) {
 			}
 		}
 
-		new srvGrpId = getServerGroupId(lastGroup[playerid][slot - 1]);
+		new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][slot - 1]);
 
 		if(srvGrpId == INVALID_GROUP_ID) {
 			return 1;
 		}
 
-		new money, srvDoorId = getServerDoorId(lastDoor[playerid]);
+		new money, srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 		if(sscanf(values, "i", money)) {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -2675,13 +2676,13 @@ CMD:g(playerid, params[]) {
 			}
 		}
 
-		new srvGrpId = getServerGroupId(lastGroup[playerid][slot - 1]);
+		new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][slot - 1]);
 
 		if(srvGrpId == INVALID_GROUP_ID) {
 			return 1;
 		}
 
-		new money, srvDoorId = getServerDoorId(lastDoor[playerid]);
+		new money, srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 		if(sscanf(values, "i", money)) {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -2737,7 +2738,7 @@ CMD:g(playerid, params[]) {
 			}
 		}
 
-		new srvGrpId = getServerGroupId(lastGroup[playerid][slot - 1]);
+		new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][slot - 1]);
 
 		if(srvGrpId == INVALID_GROUP_ID) {
 			return 1;
@@ -2773,7 +2774,7 @@ CMD:g(playerid, params[]) {
 }
 
 CMD:area(playerid, params[]) {
-	new srvAreaId = getServerAreaId(lastArea[playerid]);
+	new srvAreaId = getServerAreaId(tPlayer[playerid][pArea]);
 
 	if(srvAreaId == INVALID_AREA_ID) {
 		return 1;
@@ -2828,7 +2829,7 @@ CMD:area(playerid, params[]) {
 }
 
 CMD:drzwi(playerid, params[]) {
-	new srvDoorId = getServerDoorId(lastDoor[playerid]);
+	new srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 	if(srvDoorId == INVALID_DOOR_ID) {
 		return 1;
@@ -2843,16 +2844,16 @@ CMD:door(playerid, params[]) {
 }
 
 CMD:zamknij(playerid, params[]) {
-	new srvDoorId = getServerDoorId(lastDoor[playerid]);
+	new srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 	if(srvDoorId == INVALID_DOOR_ID) {
 		return 1;
 	}
 
-	if((tDoor[srvDoorId][dOUid] == tPlayer[playerid][pUid] && tDoor[srvDoorId][dOType] == OWNER_PLAYER) || ((tDoor[srvDoorId][dOUid] == lastGroup[playerid][0] &&
-	    (tPlayer[playerid][pPerm][0] & P_GROUP_PERM_DOOR) || tDoor[srvDoorId][dOUid] == lastGroup[playerid][1] && (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_DOOR) ||
-		tDoor[srvDoorId][dOUid] == lastGroup[playerid][2] && (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_DOOR) || tDoor[srvDoorId][dOUid] == lastGroup[playerid][3] &&
-		(tPlayer[playerid][pPerm][3] & P_GROUP_PERM_DOOR) || tDoor[srvDoorId][dOUid] == lastGroup[playerid][4] && (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_DOOR)) &&
+	if((tDoor[srvDoorId][dOUid] == tPlayer[playerid][pUid] && tDoor[srvDoorId][dOType] == OWNER_PLAYER) || ((tDoor[srvDoorId][dOUid] == tPlayer[playerid][pGroup][0] &&
+	    (tPlayer[playerid][pPerm][0] & P_GROUP_PERM_DOOR) || tDoor[srvDoorId][dOUid] == tPlayer[playerid][pGroup][1] && (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_DOOR) ||
+		tDoor[srvDoorId][dOUid] == tPlayer[playerid][pGroup][2] && (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_DOOR) || tDoor[srvDoorId][dOUid] == tPlayer[playerid][pGroup][3] &&
+		(tPlayer[playerid][pPerm][3] & P_GROUP_PERM_DOOR) || tDoor[srvDoorId][dOUid] == tPlayer[playerid][pGroup][4] && (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_DOOR)) &&
 		tDoor[srvDoorId][dOType] == OWNER_GROUP)) {
 		if(tPlayer[playerid][pVw]) {
 			if(!playerToPoint(playerid, 1.0, tDoor[srvDoorId][dExitX], tDoor[srvDoorId][dExitY], tDoor[srvDoorId][dExitZ])) {
@@ -3072,7 +3073,7 @@ CMD:pokoj(playerid, params[]) {
 		}
 	}
 
-	new srvDoorId = getServerDoorId(lastDoor[playerid]);
+	new srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 	if(srvDoorId == INVALID_DOOR_ID) {
 		return 1;
@@ -3092,9 +3093,12 @@ CMD:pokoj(playerid, params[]) {
 				ShowPlayerDialog(playerid, DIALOG_HOTEL_OPTS, DIALOG_STYLE_MSGBOX, "Check in at the hotel", mainStr, "Rent", "Cancel");
 			}
 		} else {
-			OSRP_SetPlayerPos(playerid, 2216.12, -1076.30, 1050.48);
+			SetCameraBehindPlayer(playerid);
+			OSRP_SetPlayerPos(playerid, 266.4997,305.0342,999.1484);
+			SetPlayerFacingAngle(playerid, 266.4575);
+
 			OSRP_SetPlayerVirtualWorld(playerid, playerid + 1);
-			OSRP_SetPlayerInterior(playerid, 1);
+			OSRP_SetPlayerInterior(playerid, 2);
 
 			insidedHotel[playerid] = true;
 		}
@@ -3185,7 +3189,7 @@ CMD:wyrzuc(playerid, params[]) {
 	} else {
 		if(tPlayer[playerid][pVw] != 0 && tPlayer[playerid][pInt] != 0 && tPlayer[pId][pVw] != 0 && tPlayer[pId][pInt] != 0) {
 			if(insidedHotel[playerid] && insidedHotel[pId]) {
-				new srvDoorId = getServerDoorId(lastDoor[pId]);
+				new srvDoorId = getServerDoorId(tPlayer[pId][pDoor]);
 
 				OSRP_SetPlayerPos(pId, tDoor[srvDoorId][dExitX], tDoor[srvDoorId][dExitY], tDoor[srvDoorId][dExitZ]);
 				SetPlayerFacingAngle(pId, tDoor[srvDoorId][dExitA]);
@@ -3312,7 +3316,7 @@ CMD:sluzba(playerid, params[]) {
 			}
 		}
 
-		if(!lastGroup[playerid][slot - 1]) {
+		if(!tPlayer[playerid][pGroup][slot - 1]) {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
 				return GameTextForPlayer(playerid, "~r~Nie masz grupy na tym slocie.", 5000, 3);
 			} else {
@@ -3320,8 +3324,8 @@ CMD:sluzba(playerid, params[]) {
 			}
 		}
 
-		if(lastGroup[playerid][slot - 1] != 0) {
-			new srvGrpId = getServerGroupId(lastGroup[playerid][slot - 1]);
+		if(tPlayer[playerid][pGroup][slot - 1] != 0) {
+			new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][slot - 1]);
 
 			if(srvGrpId == INVALID_GROUP_ID) {
 				return 1;
@@ -3354,9 +3358,9 @@ CMD:sluzba(playerid, params[]) {
 
 				GameTextForPlayer(playerid, mainStr, 5000, 3);
 
-				if(tPlayer[playerid][pVw] != 0 && !tPlayer[playerid][pInt] && getServerDoorId(lastDoor[playerid]) != INVALID_DOOR_ID &&
-				   tDoor[getServerDoorId(lastDoor[playerid])][dOUid] == lastGroup[playerid][slot - 1] &&
-				   tDoor[getServerDoorId(lastDoor[playerid])][dOType] == OWNER_GROUP) {
+				if(tPlayer[playerid][pVw] != 0 && !tPlayer[playerid][pInt] && getServerDoorId(tPlayer[playerid][pDoor]) != INVALID_DOOR_ID &&
+				   tDoor[getServerDoorId(tPlayer[playerid][pDoor])][dOUid] == tPlayer[playerid][pGroup][slot - 1] &&
+				   tDoor[getServerDoorId(tPlayer[playerid][pDoor])][dOType] == OWNER_GROUP) {
 					if(!isPlayerOnDuty(playerid)) {
 						resetPlayerBoxTextDraws(playerid);
 
@@ -3431,7 +3435,7 @@ CMD:paczka(playerid, params[]) {
 		}
 	}
 
-	new srvOrderId = getServerOrderId(lastOrder[playerid]);
+	new srvOrderId = getServerOrderId(tPlayer[playerid][pOrder]);
 
 	if(!strcmp(params, "anuluj", true) || !strcmp(params, "cancel", true)) {
 		DisablePlayerCheckpoint(playerid);
@@ -3441,7 +3445,7 @@ CMD:paczka(playerid, params[]) {
 		usedPackageAction[playerid] = false;
 		oldPackOwner[playerid] = UID_NONE;
 		countPack[playerid] = 0;
-		lastOrder[playerid] = UID_NONE;
+		tPlayer[playerid][pOrder] = UID_NONE;
 
 		tGroupOrder[srvOrderId][goCourier] = INVALID_PLAYER_ID;
 		tGroupOrder[srvOrderId][goIsDelivering] = false;
@@ -3543,11 +3547,11 @@ CMD:paczka(playerid, params[]) {
 
 			deliveringPackage[playerid] = false;
 			usedPackageAction[playerid] = false;
-			lastOrder[playerid] = UID_NONE;
+			tPlayer[playerid][pOrder] = UID_NONE;
 
-			if((tGroupOrder[srvOrderId][goOUid] == oldPackOwner[playerid] && countPack[playerid] > 0) || (tGroupOrder[srvOrderId][goOUid] == lastGroup[playerid][0] ||
-			   tGroupOrder[srvOrderId][goOUid] == lastGroup[playerid][1] || tGroupOrder[srvOrderId][goOUid] == lastGroup[playerid][2] ||
-				tGroupOrder[srvOrderId][goOUid] == lastGroup[playerid][3] || tGroupOrder[srvOrderId][goOUid] == lastGroup[playerid][4] && !countPack[playerid])) {
+			if((tGroupOrder[srvOrderId][goOUid] == oldPackOwner[playerid] && countPack[playerid] > 0) || (tGroupOrder[srvOrderId][goOUid] == tPlayer[playerid][pGroup][0] ||
+			   tGroupOrder[srvOrderId][goOUid] == tPlayer[playerid][pGroup][1] || tGroupOrder[srvOrderId][goOUid] == tPlayer[playerid][pGroup][2] ||
+				tGroupOrder[srvOrderId][goOUid] == tPlayer[playerid][pGroup][3] || tGroupOrder[srvOrderId][goOUid] == tPlayer[playerid][pGroup][4] && !countPack[playerid])) {
 				if(tPlayer[playerid][pLang] == LANG_PL) {
 					GameTextForPlayer(playerid, "~b~~h~Paczka dostarczona za darmo", 5000, 3);
 				} else {
@@ -3580,11 +3584,11 @@ CMD:d(playerid, params[]) {
 		return 1;
 	}
 
-	if(doesGroupHasPermission(getServerGroupId(lastGroup[playerid][0]), G_GROUP_PERM_DEPT) ||
-	   doesGroupHasPermission(getServerGroupId(lastGroup[playerid][1]), G_GROUP_PERM_DEPT) ||
-	   doesGroupHasPermission(getServerGroupId(lastGroup[playerid][2]), G_GROUP_PERM_DEPT) ||
-	   doesGroupHasPermission(getServerGroupId(lastGroup[playerid][3]), G_GROUP_PERM_DEPT) ||
-	   doesGroupHasPermission(getServerGroupId(lastGroup[playerid][4]), G_GROUP_PERM_DEPT)) {
+	if(doesGroupHasPermission(getServerGroupId(tPlayer[playerid][pGroup][0]), G_GROUP_PERM_DEPT) ||
+	   doesGroupHasPermission(getServerGroupId(tPlayer[playerid][pGroup][1]), G_GROUP_PERM_DEPT) ||
+	   doesGroupHasPermission(getServerGroupId(tPlayer[playerid][pGroup][2]), G_GROUP_PERM_DEPT) ||
+	   doesGroupHasPermission(getServerGroupId(tPlayer[playerid][pGroup][3]), G_GROUP_PERM_DEPT) ||
+	   doesGroupHasPermission(getServerGroupId(tPlayer[playerid][pGroup][4]), G_GROUP_PERM_DEPT)) {
 		new dept[128];
 		new grpName[32];
 
@@ -3596,16 +3600,16 @@ CMD:d(playerid, params[]) {
 			}
 		}
 
-		if(lastGroup[playerid][0]) {
-			format(grpName, sizeof(grpName), tGroup[getServerGroupId(lastGroup[playerid][0])][gName]);
-		} else if(lastGroup[playerid][1]) {
-			format(grpName, sizeof(grpName), tGroup[getServerGroupId(lastGroup[playerid][1])][gName]);
-		} else if(lastGroup[playerid][2]) {
-			format(grpName, sizeof(grpName), tGroup[getServerGroupId(lastGroup[playerid][2])][gName]);
-		} else if(lastGroup[playerid][3]) {
-			format(grpName, sizeof(grpName), tGroup[getServerGroupId(lastGroup[playerid][3])][gName]);
-		} else if(lastGroup[playerid][4]) {
-			format(grpName, sizeof(grpName), tGroup[getServerGroupId(lastGroup[playerid][4])][gName]);
+		if(tPlayer[playerid][pGroup][0]) {
+			format(grpName, sizeof(grpName), tGroup[getServerGroupId(tPlayer[playerid][pGroup][0])][gName]);
+		} else if(tPlayer[playerid][pGroup][1]) {
+			format(grpName, sizeof(grpName), tGroup[getServerGroupId(tPlayer[playerid][pGroup][1])][gName]);
+		} else if(tPlayer[playerid][pGroup][2]) {
+			format(grpName, sizeof(grpName), tGroup[getServerGroupId(tPlayer[playerid][pGroup][2])][gName]);
+		} else if(tPlayer[playerid][pGroup][3]) {
+			format(grpName, sizeof(grpName), tGroup[getServerGroupId(tPlayer[playerid][pGroup][3])][gName]);
+		} else if(tPlayer[playerid][pGroup][4]) {
+			format(grpName, sizeof(grpName), tGroup[getServerGroupId(tPlayer[playerid][pGroup][4])][gName]);
 		}
 
 		mainStr[0] = EOS;
@@ -3646,13 +3650,13 @@ CMD:m(playerid, params[]) {
 	mainStr[0] = EOS;
 	str[0] = toupper(str[0]);
 
-	if(doesGroupHasPermission(getServerGroupId(lastGroup[playerid][0]), G_GROUP_PERM_MEGAPHONE) ||
-	   doesGroupHasPermission(getServerGroupId(lastGroup[playerid][1]), G_GROUP_PERM_MEGAPHONE) ||
-	   doesGroupHasPermission(getServerGroupId(lastGroup[playerid][2]), G_GROUP_PERM_MEGAPHONE) ||
-	   doesGroupHasPermission(getServerGroupId(lastGroup[playerid][3]), G_GROUP_PERM_MEGAPHONE) ||
-	   doesGroupHasPermission(getServerGroupId(lastGroup[playerid][4]), G_GROUP_PERM_MEGAPHONE)) {
+	if(doesGroupHasPermission(getServerGroupId(tPlayer[playerid][pGroup][0]), G_GROUP_PERM_MEGAPHONE) ||
+	   doesGroupHasPermission(getServerGroupId(tPlayer[playerid][pGroup][1]), G_GROUP_PERM_MEGAPHONE) ||
+	   doesGroupHasPermission(getServerGroupId(tPlayer[playerid][pGroup][2]), G_GROUP_PERM_MEGAPHONE) ||
+	   doesGroupHasPermission(getServerGroupId(tPlayer[playerid][pGroup][3]), G_GROUP_PERM_MEGAPHONE) ||
+	   doesGroupHasPermission(getServerGroupId(tPlayer[playerid][pGroup][4]), G_GROUP_PERM_MEGAPHONE)) {
 		format(mainStr, sizeof(mainStr), "{FFFF00}%s :o< %s!!!", tPlayer[playerid][pCharName], str);
-		sendDefaultMessage(playerid, 60.0, mainStr, COLOR_YELLOW);
+		sendRegularMessage(playerid, 60.0, mainStr, COLOR_YELLOW);
 	} else {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
 			format(mainStr, sizeof(mainStr), "{FFFF00}%s (mikrofon): %s", tPlayer[playerid][pCharName], str);
@@ -3660,7 +3664,7 @@ CMD:m(playerid, params[]) {
 			format(mainStr, sizeof(mainStr), "{FFFF00}%s (microphone): %s", tPlayer[playerid][pCharName], str);
 		}
 
-		sendDefaultMessage(playerid, 30.0, mainStr, COLOR_YELLOW);
+		sendRegularMessage(playerid, 30.0, mainStr, COLOR_YELLOW);
 	}
 	return 1;
 }
@@ -3723,7 +3727,7 @@ CMD:give(playerid, params[]) {
 }
 
 CMD:cennik(playerid, params[]) {
-	new srvDoorId = getServerDoorId(lastDoor[playerid]);
+	new srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 	if(srvDoorId == INVALID_DOOR_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -3769,7 +3773,7 @@ CMD:cennik(playerid, params[]) {
 	}
 
 	GameTextForPlayer(pId, str, 5000, 3);
-	showPlayerGroupMagazineSets(pId, tPlayer[playerid][pSlot], DIALOG_DEFAULT, 0);
+	showPlayerGroupMagazineSets(pId, tPlayer[playerid][pSlot], DIALOG_GROUP_MENU_SHOP, 0);
 	return 1;
 }
 
@@ -3844,7 +3848,7 @@ CMD:ubranie(playerid, params[]) {
 		return 1;
 	}
 
-	new srvDoorId = getServerDoorId(lastDoor[playerid]);
+	new srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 	if(srvDoorId == INVALID_DOOR_ID) {
 		return 1;
@@ -3934,7 +3938,7 @@ CMD:wyscig(playerid, params[]) {
 			format(mainStr, sizeof(mainStr), "> %s restarted the race.", tPlayer[playerid][pCharName]);
 		}
 
-		sendDefaultMessage(playerid, 30.0, mainStr, COLOR_GREEN);
+		sendRegularMessage(playerid, 30.0, mainStr, COLOR_GREEN);
 	}
 	return 1;
 }
@@ -3944,7 +3948,7 @@ CMD:race(playerid, params[]) {
 }
 
 CMD:news(playerid, params[]) {
-	new srvGrpId = getServerGroupId(lastGroup[playerid][tPlayer[playerid][pSlot] - 1]);
+	new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][tPlayer[playerid][pSlot] - 1]);
 
 	if(srvGrpId == INVALID_GROUP_ID) {
 		return 1;
@@ -3971,7 +3975,7 @@ CMD:news(playerid, params[]) {
 }
 
 CMD:live(playerid, params[]) {
-	new srvGrpId = getServerGroupId(lastGroup[playerid][tPlayer[playerid][pSlot] - 1]);
+	new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][tPlayer[playerid][pSlot] - 1]);
 
 	if(srvGrpId == INVALID_GROUP_ID || isPlayerOnDuty(playerid)) {
 		return 1;
@@ -4003,7 +4007,7 @@ CMD:live(playerid, params[]) {
 }
 
 CMD:reklama(playerid, params[]) {
-	new srvGrpId = getServerGroupId(lastGroup[playerid][tPlayer[playerid][pSlot] - 1]);
+	new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][tPlayer[playerid][pSlot] - 1]);
 
 	if(srvGrpId == INVALID_GROUP_ID) {
 		return 1;

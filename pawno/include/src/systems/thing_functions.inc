@@ -17,7 +17,7 @@ stock initThingValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_Things`");
+	mysql_query("SELECT `UID`, `OUID`, `Kind`, `Name`, `Value1`, `Value2`, `Value3`, `Value4`, `PosX`, `PosY`, `PosZ`, `Used`, `Term`, `Place`, `VW`, `INT` FROM `osrp_Things`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -215,7 +215,7 @@ stock addThing(owner, kind, const name[], value1, value2, value3, value4, Float:
 	);
 	mysql_query(queryStr);
 
-	printf("[LOG]: [THING] Dodano now¹ rzecz o Uid: %d.", tThing[freeId][tUid]);
+	printf("[LOG]: [THING] Dodano nowa rzecz o Uid: %d.", tThing[freeId][tUid]);
 }
 
 stock removeThing(srvthingid) {
@@ -232,6 +232,11 @@ stock removeThing(srvthingid) {
 	mysql_query(queryStr);
 
 	Iter_Remove(thingItter, srvthingid);
+	printf("[LOG]: [THING] Usunieto rzecz o Uid: %d.", tThing[srvthingid][tUid]);
+
+	if(IsValidDynamicObject(tThing[srvthingid][tObj])) {
+		DestroyDynamicObject(tThing[srvthingid][tObj]);
+	}
 
 	tThing[srvthingid][tUid] = UID_NONE;
 	tThing[srvthingid][tOUid] = UID_NONE;
@@ -335,7 +340,7 @@ stock sellPlayerThingFromPlayer(playerid, receiverid, price) {
 	sendOffer(playerid, receiverid, price, 0, 0, OFFER_NORMAL, OFFER_PURCHASETHG);
 
 	mainStr[0] = EOS;
-	format(mainStr, sizeof(mainStr), "[CASH] [%s] (%d:%d / %dh, global %d) offers thing %d for %d USD to [%s] (%d:%d / %dh, global %d) [!!!!]", tPlayer[playerid][pCharName], tPlayer[playerid][pUid], playerid, tPlayer[playerid][pHours], tPlayer[playerid][pGUid], tThing[getServerThingId(lastThing[playerid])][tName], price, tPlayer[receiverid][pCharName], tPlayer[receiverid][pUid], receiverid, tPlayer[receiverid][pHours], tPlayer[receiverid][pGUid]);
+	format(mainStr, sizeof(mainStr), "[CASH] [%s] (%d:%d / %dh, global %d) offers thing %d for %d USD to [%s] (%d:%d / %dh, global %d) [!!!!]", tPlayer[playerid][pCharName], tPlayer[playerid][pUid], playerid, tPlayer[playerid][pHours], tPlayer[playerid][pGUid], tThing[getServerThingId(tPlayer[playerid][pThing])][tName], price, tPlayer[receiverid][pCharName], tPlayer[receiverid][pUid], receiverid, tPlayer[receiverid][pHours], tPlayer[receiverid][pGUid]);
 	sendClientMessageToAdmins(1, COLOR_ORANGE, mainStr);
 }
 
@@ -448,8 +453,29 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				}
 			}
 
-			//SendClientMessage(playerid, COLOR_GRAY, "Nie mo¿esz u¿ywaæ broni, poniewa¿ otrzyma³eœ(aœ) jak¹œ karê w przeci¹gu ostatniego miesi¹ca.");
-			//SendClientMessage(playerid, COLOR_GRAY, "You cannot use the weapon because you have received a penalty within the last month.");
+			new day, month, year, oldDay, oldMonth, oldYear;
+			new bool:havePenalty;
+
+			getdate(day, month, year);
+
+			foreach(new i : penItter) {
+				if(tPenalty[i][penOUid] == tPlayer[playerid][pUid]) {
+					sscanf(tPenalty[i][penDate], "p<.>iii", oldDay, oldMonth, oldYear);
+
+					if(((month - oldMonth) >= 0 && (month - oldMonth) < 2) && year == oldYear) {
+						havePenalty = true;
+						break;
+					}
+				}
+			}
+
+			if(havePenalty) {
+				if(tPlayer[playerid][pLang] == LANG_PL) {
+					return SendClientMessage(playerid, COLOR_GRAY, "Nie mo¿esz u¿ywaæ broni, poniewa¿ otrzyma³eœ(aœ) jak¹œ karê w przeci¹gu ostatniego miesi¹ca.");
+				} else {
+					return SendClientMessage(playerid, COLOR_GRAY, "You cannot use the weapon because you have received a penalty within the last month.");
+				}
+			}
 
 			if(!strlen(thingParms[playerid])) {
 				if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -469,7 +495,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				} else {
 					resetPlayerWeapon(playerid, srvthingid, thingParms[playerid]);
 
-					lastThing[playerid] = UID_NONE;
+					tPlayer[playerid][pThing] = UID_NONE;
 					tThing[srvthingid][tUsed] = false;
 				}
 			}
@@ -616,7 +642,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 
 			sendMeMessage(playerid, mainStr);
 
-			lastThing[playerid] = UID_NONE;
+			tPlayer[playerid][pThing] = UID_NONE;
 			removeThing(srvthingid);
 		}
 		case TKIND_DRINK: {
@@ -629,7 +655,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			SetPlayerSpecialAction(playerid, SPECIAL_ACTION_DRINK_SPRUNK);
 
 			isDizzines[playerid] = false;
-			lastThing[playerid] = UID_NONE;
+			tPlayer[playerid][pThing] = UID_NONE;
 
 			removeThing(srvthingid);
 		}
@@ -688,7 +714,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 					GameTextForPlayer(playerid, "~y~You take off the mask.", 5000, 3);
 				}
 
-				lastThing[playerid] = UID_NONE;
+				tPlayer[playerid][pThing] = UID_NONE;
 				tThing[srvthingid][tUsed] = false;
 			}
 		}
@@ -846,7 +872,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 
 			sendMeMessage(playerid, mainStr);
 
-			lastThing[playerid] = UID_NONE;
+			tPlayer[playerid][pThing] = UID_NONE;
 			cubeUseTime[playerid] = gettime();
 			count++;
 		}
@@ -887,7 +913,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				SetPlayerSkin(playerid, tPlayer[playerid][pSkin]);
 				savePlayerValues(playerid, SAVE_SKIN);
 
-				lastThing[playerid] = UID_NONE;
+				tPlayer[playerid][pThing] = UID_NONE;
 				tThing[srvthingid][tUsed] = false;
 			}
 		}
@@ -999,8 +1025,8 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				tThing[srvthingid][tValue2] -= 2;
 				saveThingValues(srvthingid);
 
-				lastThing[playerid] = UID_NONE;
-				lastThing[pId] = UID_NONE;
+				tPlayer[playerid][pThing] = UID_NONE;
+				tPlayer[pId][pThing] = UID_NONE;
 
 				if(tPlayer[playerid][pLang] == LANG_PL) {
 					GameTextForPlayer(playerid, "~r~Rozmowa zakonczona.", 5000, 3);
@@ -1081,7 +1107,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				}
 
 				tPlayer[playerid][pStatus] -= STATUS_ROLLERS;
-				lastThing[playerid] = UID_NONE;
+				tPlayer[playerid][pThing] = UID_NONE;
 				tThing[srvthingid][tUsed] = false;
 			}
 
@@ -1131,7 +1157,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 					format(mainStr, sizeof(mainStr), "* %s takes of gloves.", tPlayer[playerid][pCharName]);
 				}
 
-				lastThing[playerid] = UID_NONE;
+				tPlayer[playerid][pThing] = UID_NONE;
 				tPlayer[playerid][pStatus] -= STATUS_GLOVES;
 
 				if(tThing[srvthingid][tValue2] >= 0) {
@@ -1167,7 +1193,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				sendMeMessage(playerid, mainStr);
 
 				tThing[srvthingid][tUsed] = false;
-				lastThing[playerid] = UID_NONE;
+				tPlayer[playerid][pThing] = UID_NONE;
 
 				OSRP_SetPlayerArmour(playerid, 0);
 			}
@@ -1310,7 +1336,7 @@ stock dropOutAllPlayerThings(playerid) {
 }
 
 stock putDownThing(playerid, place) {
-	new srvThingId = getServerThingId(lastThing[playerid]);
+	new srvThingId = getServerThingId(tPlayer[playerid][pThing]);
 
 	if(srvThingId == INVALID_THING_ID) {
 		return 1;
@@ -1395,7 +1421,7 @@ stock putDownThing(playerid, place) {
 	}
 
 	ApplyAnimation(playerid, "BOMBER", "BOM_Plant", 4.1, 0, 0, 0, 0, 0, 0);
-	lastThing[playerid] = UID_NONE;
+	tPlayer[playerid][pThing] = UID_NONE;
 
 	saveThingValues(srvThingId);
 	sendMeMessage(playerid, mainStr);

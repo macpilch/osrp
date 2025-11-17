@@ -17,7 +17,7 @@ stock initBoothValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_Booths`");
+	mysql_query("SELECT `UID`, `Name`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`, `Range`, `Working` FROM `osrp_Booths`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -97,7 +97,7 @@ stock addBooth(const name[], Float:posx, Float:posy, Float:posz, Float:posa) {
 	tBooth[freeId][boRotZ] = posa;
 	tBooth[freeId][boRange] = 5.0;
 	tBooth[freeId][boWorking] = true;
-	tBooth[freeId][boObject] = CreateDynamicObject(1216, tBooth[freeId][boPosX], tBooth[freeId][boPosY], tBooth[freeId][boPosZ], tBooth[freeId][boRotX], tBooth[freeId][boRotY], tBooth[freeId][boRotZ], 0, 0, -1, 100.0);
+	tBooth[freeId][boObject] = CreateDynamicObject(1216, tBooth[freeId][boPosX], tBooth[freeId][boPosY], tBooth[freeId][boPosZ] - 2.0, tBooth[freeId][boRotX], tBooth[freeId][boRotY], tBooth[freeId][boRotZ], 0, 0, -1, 100.0);
 
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Booths` (`Name`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`, `Range`, `Working`) VALUES ('%s', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%d')",
@@ -114,7 +114,7 @@ stock addBooth(const name[], Float:posx, Float:posy, Float:posz, Float:posa) {
 
 	mysql_query(queryStr);
 
-	printf("[LOG]: [BOOTH] Dodano now¹ budkê o Uid %d.", tBooth[freeId][boUid]);
+	printf("[LOG]: [BOOTH] Dodano nowa budke o Uid %d.", tBooth[freeId][boUid]);
 	return tBooth[freeId][boUid];
 }
 
@@ -132,6 +132,11 @@ stock removeBooth(srvboothid) {
 	mysql_query(queryStr);
 
 	Iter_Remove(boothItter, srvboothid);
+	printf("[LOG]: [BOOTH] Usunieto budke o Uid %d.", tBooth[srvboothid][boUid]);
+
+	if(IsValidDynamicObject(tBooth[srvboothid][boObject])) {
+		DestroyDynamicObject(tBooth[srvboothid][boObject]);
+	}
 
 	tBooth[srvboothid][boUid] = UID_NONE;
 	format(tBooth[srvboothid][boName], 32, NULL);
@@ -193,7 +198,7 @@ stock searchPlayerBooth(playerid) {
 				foreach(new j : groupItter) {
 					foreach(new k : Player) {
 						if(isGroupType(j, GROUP_TAXI)) {
-							if(isPlayerOnDuty(k) && lastGroup[k][tPlayer[k][pSlot] - 1] == tGroup[j][gUid]) {
+							if(isPlayerOnDuty(k) && tPlayer[k][pGroup][tPlayer[k][pSlot] - 1] == tGroup[j][gUid]) {
 								countPlayer++;
 							}
 						}

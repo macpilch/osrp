@@ -1166,11 +1166,13 @@ CMD:res(playerid, params[]) {
 		SetCameraBehindPlayer(pId);
 
 		if(tPlayer[pId][pHotel]) {
-			OSRP_SetPlayerPos(pId, 2216.12, -1076.30, 1050.48);
-			OSRP_SetPlayerVirtualWorld(pId, pId + 1);
-			OSRP_SetPlayerInterior(pId, 1);
+			OSRP_SetPlayerPos(pId, 266.4997,305.0342,999.1484);
+			SetPlayerFacingAngle(pId, 266.4575);
 
-			lastDoor[pId] = tPlayer[pId][pHotel];
+			OSRP_SetPlayerVirtualWorld(pId, pId + 1);
+			OSRP_SetPlayerInterior(pId, 2);
+
+			tPlayer[pId][pDoor] = tPlayer[pId][pHotel];
 			insidedHotel[pId] = true;
 		} else {
 			OSRP_SetPlayerPos(pId, DEFAULT_POS_X, DEFAULT_POS_Y, DEFAULT_POS_Z);
@@ -1840,7 +1842,7 @@ CMD:set(playerid, params[]) {
 			}
 		}
 
-		lastGroup[pId][0] = uid;
+		tPlayer[pId][pGroup][0] = uid;
 		savePlayerValues(pId, SAVE_GROUPS);
 
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -1869,7 +1871,7 @@ CMD:set(playerid, params[]) {
 			}
 		}
 
-		lastGroup[pId][1] = uid;
+		tPlayer[pId][pGroup][1] = uid;
 		savePlayerValues(pId, SAVE_GROUPS);
 
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -1898,7 +1900,7 @@ CMD:set(playerid, params[]) {
 			}
 		}
 
-		lastGroup[pId][2] = uid;
+		tPlayer[pId][pGroup][2] = uid;
 		savePlayerValues(pId, SAVE_GROUPS);
 
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -1927,7 +1929,7 @@ CMD:set(playerid, params[]) {
 			}
 		}
 
-		lastGroup[pId][3] = uid;
+		tPlayer[pId][pGroup][3] = uid;
 		savePlayerValues(pId, SAVE_GROUPS);
 
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -1956,7 +1958,7 @@ CMD:set(playerid, params[]) {
 			}
 		}
 
-		lastGroup[pId][4] = uid;
+		tPlayer[pId][pGroup][4] = uid;
 		savePlayerValues(pId, SAVE_GROUPS);
 
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -2206,9 +2208,9 @@ CMD:av(playerid, params[]) {
 
 		if(sscanf(params, "s[32]S()[64]", type, opt)) {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				return OSRP_Tip(playerid, "/av [stworz, usun, fix, info, goto]");
+				return OSRP_Tip(playerid, "/av [stworz, usun, fix, info, goto, tp]");
 			} else {
-				return OSRP_Tip(playerid, "/av [create, delete, fix, info, goto]");
+				return OSRP_Tip(playerid, "/av [create, delete, fix, info, goto, tp]");
 			}
 		}
 
@@ -2335,6 +2337,34 @@ CMD:av(playerid, params[]) {
 				RepairVehicle(tVehicle[srvVehId][vId]);
 				saveVehicleValues(srvVehId);
 			}
+		} else if(!strcmp(type, "tp", true)) {
+			new uid, srvVehId = OSRP_VEHICLE_INVALID_ID;
+
+			if(sscanf(opt, "i", uid)) {
+				if(tPlayer[playerid][pLang] == LANG_PL) {
+					return OSRP_Tip(playerid, "/av tp [UID pojazdu]");
+				} else {
+					return OSRP_Tip(playerid, "/av tp [Vehicle UID]");
+				}
+			}
+
+			srvVehId = getServerVehicleId(uid);
+
+			if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
+				if(tPlayer[playerid][pLang] == LANG_PL) {
+					return SendClientMessage(playerid, COLOR_GRAY, "Podany pojazd nie istnieje.");
+				} else {
+					return SendClientMessage(playerid, COLOR_GRAY, "The specified vehicle does not exit.");
+				}
+			}
+
+			new Float:pX, Float:pY, Float:pZ;
+
+			GetPlayerPos(playerid, pX, pY, pZ);
+
+			SetVehiclePos(tVehicle[srvVehId][vId], pX + 0.8, pY + 1.5, pZ);
+			SetVehicleVirtualWorld(tVehicle[srvVehId][vId], tPlayer[playerid][pVw]);
+			LinkVehicleToInterior(tVehicle[srvVehId][vId], tPlayer[playerid][pInt]);
 		}
 	}
 	return 1;
@@ -2504,7 +2534,7 @@ CMD:ad(playerid, params[]) {
 				}
 			}
 
-			lastDoor[playerid] = uid;
+			tPlayer[playerid][pDoor] = uid;
 			showDoorMenu(playerid);
 		} else if(!strcmp(type, "vw", true)) {
 			new uid, vw, srvDoorId = INVALID_DOOR_ID;
@@ -2657,7 +2687,7 @@ CMD:ab(playerid, params[]) {
 			}
 		}
 
-		new srvAreaId = getServerAreaId(lastArea[playerid]);
+		new srvAreaId = getServerAreaId(tPlayer[playerid][pArea]);
 
 		if(srvAreaId == INVALID_AREA_ID) {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -2672,7 +2702,47 @@ CMD:ab(playerid, params[]) {
 		GetPlayerPos(playerid, pX, pY, pZ);
 		GetPlayerFacingAngle(playerid, pA);
 
-		lastBusStop[playerid] = addBusStop(tArea[srvAreaId][aUid], name, pX, pY, pZ, pA);
+		tPlayer[playerid][pBusStop] = addBusStop(tArea[srvAreaId][aUid], name, pX, pY, pZ, pA);
+	}
+	return 1;
+}
+
+CMD:abo(playerid, params[]) {
+	if(tPlayer[playerid][pRank] >= RANK_ADMIN2 && isAdminDuty[playerid]) {
+		new name[32];
+
+		if(sscanf(params, "s[32]", name)) {
+			if(tPlayer[playerid][pLang] == LANG_PL) {
+				return OSRP_Tip(playerid, "/abo [Nazwa budki telefoniczej]");
+			} else {
+				return OSRP_Tip(playerid, "/abo [Booth phone name]");
+			}
+		}
+
+		if(tPlayer[playerid][pVw]) {
+			if(tPlayer[playerid][pLang] == LANG_PL) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Nieprawid³owy Virtual World.");
+			} else {
+				return SendClientMessage(playerid, COLOR_GRAY, "Invalid Virtual World.");
+			}
+		}
+
+		new srvAreaId = getServerAreaId(tPlayer[playerid][pArea]);
+
+		if(srvAreaId == INVALID_AREA_ID) {
+			if(tPlayer[playerid][pLang] == LANG_PL) {
+				return SendClientMessage(playerid, COLOR_GRAY, "Musisz znajdowaæ siê w jednej z dzielnic Los Santos.");
+			} else {
+				return SendClientMessage(playerid, COLOR_GRAY, "You must be in one of the district of Los Santos.");
+			}
+		}
+
+		new Float:pX, Float:pY, Float:pZ, Float:pA;
+
+		GetPlayerPos(playerid, pX, pY, pZ);
+		GetPlayerFacingAngle(playerid, pA);
+
+		addBooth(name, pX, pY, pZ, pA);
 	}
 	return 1;
 }
@@ -2694,7 +2764,7 @@ CMD:acash(playerid, params[]) {
 		GetPlayerPos(playerid, pX, pY, pZ);
 		GetPlayerFacingAngle(playerid, pA);
 
-		lastCashPoint[playerid] = addCashPoint(name, pX, pY, pZ, pA, tPlayer[playerid][pVw], tPlayer[playerid][pInt]);
+		tPlayer[playerid][pCashPoint] = addCashPoint(name, pX, pY, pZ, pA, tPlayer[playerid][pVw], tPlayer[playerid][pInt]);
 	}
 	return 1;
 }

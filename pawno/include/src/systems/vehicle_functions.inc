@@ -282,6 +282,7 @@ stock removeVehicle(srvvehid) {
 	vehMapIcon[srvvehid] = -1;
 
 	Iter_Remove(vehItter, srvvehid);
+	printf("[LOG]: [VEHICLE] Usunieto pojazd o Uid: %d.", tVehicle[srvvehid][vUid]);
 
 	tVehicle[srvvehid][vUid] = UID_NONE;
 	tVehicle[srvvehid][vId] = INVALID_VEHICLE_ID;
@@ -436,7 +437,7 @@ stock spawnVehicle(playerid, uid, bool:groupveh) {
 
 	if(!tVehicle[srvVehId][vSpawned]) {
 		if(groupveh) {
-			if(tGroup[getServerGroupId(lastGroup[playerid][tPlayer[playerid][pSlot] - 1])][gVehCount] > 1) {
+			if(tGroup[getServerGroupId(tPlayer[playerid][pGroup][tPlayer[playerid][pSlot] - 1])][gVehCount] > 1) {
 				if(tPlayer[playerid][pLang] == LANG_PL) {
 					return GameTextForPlayer(playerid, "~n~~r~Pojazd~n~~n~~w~Wykorzystujecie wszystkie sloty~n~grupy.~n~Odspawnuj ktorys pojazd.", 5000, 3);
 				} else {
@@ -521,7 +522,7 @@ stock spawnVehicle(playerid, uid, bool:groupveh) {
 		exitedVehicleSec[srvVehId] = 0;
 		spawnedVehicleSec[srvVehId] = gettime();
 
-		lastVehicle[playerid] = tVehicle[srvVehId][vUid];
+		tPlayer[playerid][pVehicle] = tVehicle[srvVehId][vUid];
 	} else {
 		if((spawnedVehicleSec[srvVehId] + 10) > gettime()) {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -548,7 +549,7 @@ stock spawnVehicle(playerid, uid, bool:groupveh) {
 			// Info dla innych graczy
 			mainStr[0] = EOS;
 			format(mainStr, sizeof(mainStr), "~w~%s: ~r~-%s", tPlayer[playerid][pCharName], vehicleNames[tVehicle[srvVehId][vModelId] - 400]);
-			gameTextForGroup(getServerGroupId(lastGroup[playerid][tPlayer[playerid][pSlot] - 1]), mainStr, 5000, 3, playerid);
+			gameTextForGroup(getServerGroupId(tPlayer[playerid][pGroup][tPlayer[playerid][pSlot] - 1]), mainStr, 5000, 3, playerid);
 		}
 
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -557,7 +558,7 @@ stock spawnVehicle(playerid, uid, bool:groupveh) {
 			GameTextForPlayer(playerid, "~n~~r~Vehicle~n~~n~~w~Vehicle has been respawned.", 5000, 3);
 		}
 
-		lastVehicle[playerid] = UID_NONE;
+		tPlayer[playerid][pVehicle] = UID_NONE;
 		spawnedVehicleSec[srvVehId] = 0;
 	}
 	return 1;
@@ -604,7 +605,7 @@ Callback vehicleLightsOn(playerid) {
 		return 1;
 	}
 
-	new srvVehId = getServerVehicleId(lastVehicle[playerid]);
+	new srvVehId = getServerVehicleId(tPlayer[playerid][pVehicle]);
 
 	if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 		return 1;
@@ -625,7 +626,7 @@ Callback vehicleLightsOff(playerid) {
 		return 1;
 	}
 
-	new srvVehId = getServerVehicleId(lastVehicle[playerid]);
+	new srvVehId = getServerVehicleId(tPlayer[playerid][pVehicle]);
 
 	if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 		return 1;
@@ -642,7 +643,7 @@ Callback vehicleLightsOff(playerid) {
 }
 
 stock vehicleEngineStatus(playerid) {
-	new srvVehId = getServerVehicleId(lastVehicle[playerid]);
+	new srvVehId = getServerVehicleId(tPlayer[playerid][pVehicle]);
 
 	if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 		return 1;
@@ -704,7 +705,7 @@ Callback vehicleEngineOn(playerid) {
 		return 1;
 	}
 
-	new srvVehId = getServerVehicleId(lastVehicle[playerid]);
+	new srvVehId = getServerVehicleId(tPlayer[playerid][pVehicle]);
 
 	if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 		return 1;
@@ -760,7 +761,7 @@ Callback vehicleEngineOn(playerid) {
 }
 
 Callback addFuelToVehicle(playerid) {
-	new srvVehId = getServerVehicleId(lastVehicle[playerid]);
+	new srvVehId = getServerVehicleId(tPlayer[playerid][pVehicle]);
 	new Float:fuel = VEHICLE_FUEL_TANK_LARGE - tVehicle[srvVehId][vFuel];
 
 	tVehicle[srvVehId][vFuel] += fuel;
@@ -774,7 +775,7 @@ Callback addFuelToVehicle(playerid) {
 		format(mainStr, sizeof(mainStr), "** Vehicle %s has been refueled. **", vehicleNames[tVehicle[srvVehId][vModelId] - 400]);
 	}
 
-	sendDefaultMessage(playerid, 30.0, mainStr, COLOR_DO1);
+	sendRegularMessage(playerid, 30.0, mainStr, COLOR_DO1);
 	resetOfferData(playerid);
 	return 1;
 }
@@ -788,7 +789,7 @@ Callback vehicleModificationTimer(playerid, receiverid, price, what, seconds) {
 		}
 	}
 
-	new srvVehId = getServerVehicleId(lastVehicle[playerid]);
+	new srvVehId = getServerVehicleId(tPlayer[playerid][pVehicle]);
 	new Float:vX, Float:vY, Float:vZ;
 
 	GetVehiclePos(tVehicle[srvVehId][vId], vX, vY, vZ);
@@ -846,7 +847,7 @@ Callback vehicleVarnishingTimer(playerid, receiverid, color1, color2) {
 		}
 	}
 
-	new srvVehId = getServerVehicleId(lastVehicle[playerid]);
+	new srvVehId = getServerVehicleId(tPlayer[playerid][pVehicle]);
 
 	if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 		return 1;
@@ -874,7 +875,7 @@ Callback vehicleVarnishingTimer(playerid, receiverid, color1, color2) {
 		}
 
 		playerSprayTimer[playerid] = 0;
-		lastVehicle[playerid] = UID_NONE;
+		tPlayer[playerid][pVehicle] = UID_NONE;
 		resetOfferData(receiverid);
 		return 1;
 	}
@@ -941,7 +942,7 @@ Callback vehicleVarnishingTimer(playerid, receiverid, color1, color2) {
 							GameTextForPlayer(playerid, "~r~Ready!~n~~w~Vehicle has been revarnishing.", 5000, 3);
 						}
 
-						lastVehicle[playerid] = UID_NONE;
+						tPlayer[playerid][pVehicle] = UID_NONE;
 						resetOfferData(receiverid);
 					} else {
 						if(showSprayProgress[playerid]) {
@@ -1010,9 +1011,9 @@ Callback updatePlayerTaxiCourse(playerid, srvvehid) {
 
 stock isVehicleOwner(playerid, srvvehid) {
 	if((tVehicle[srvvehid][vOUid] == tPlayer[playerid][pUid] && tVehicle[srvvehid][vOType] == OWNER_PLAYER) ||
-	   ((tVehicle[srvvehid][vOUid] == lastGroup[playerid][0] || tVehicle[srvvehid][vOUid] == lastGroup[playerid][1] ||
-	    tVehicle[srvvehid][vOUid] == lastGroup[playerid][2] || tVehicle[srvvehid][vOUid] == lastGroup[playerid][3] ||
-		tVehicle[srvvehid][vOUid] == lastGroup[playerid][4]) && tVehicle[srvvehid][vOType] == OWNER_GROUP)) {
+	   ((tVehicle[srvvehid][vOUid] == tPlayer[playerid][pGroup][0] || tVehicle[srvvehid][vOUid] == tPlayer[playerid][pGroup][1] ||
+	    tVehicle[srvvehid][vOUid] == tPlayer[playerid][pGroup][2] || tVehicle[srvvehid][vOUid] == tPlayer[playerid][pGroup][3] ||
+		tVehicle[srvvehid][vOUid] == tPlayer[playerid][pGroup][4]) && tVehicle[srvvehid][vOType] == OWNER_GROUP)) {
 		return 1;
 	}
 	return 0;
@@ -1041,7 +1042,7 @@ stock getVehicleSpeed(vehicleid) {
 }
 
 stock setPlayerVehicleDamage(playerid) {
-	new srvVehId = getServerVehicleId(lastVehicle[playerid]);
+	new srvVehId = getServerVehicleId(tPlayer[playerid][pVehicle]);
 
 	if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 		return 1;

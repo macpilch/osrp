@@ -17,7 +17,7 @@ stock initDoorValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_Doors`");
+	mysql_query("SELECT `UID`, `OUID`, `OType`, `Type`, `Name`, `EnterX`, `EnterY`, `EnterZ`, `EnterA`, `ExitX`, `ExitY`, `ExitZ`, `ExitA`, `MinX`, `MinY`, `MaxX`, `MaxY`, `Cost`, `Passing`, `Open`, `Tax`, `TaxDate`, `TaxCost`, `Objects`, `MaxObjects`, `Texts`, `MaxTexts`, `Security`, `Audio`, `VW`, `INT` FROM `osrp_Doors`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -60,7 +60,30 @@ stock initDoorValues() {
 		size1 = (floatToInt(floatabs(tDoor[id][dMaxX] - tDoor[id][dMinX])) / 2);
 		size2 = (floatToInt(floatabs(tDoor[id][dMaxY] - tDoor[id][dMinY])) / 2);
 
-		tDoor[id][dPickup] = CreateDynamicPickup(1239, 2, tDoor[id][dEnterX], tDoor[id][dEnterY], tDoor[id][dEnterZ], 0, 0, -1, 50.0, -1, 0);
+		switch(tDoor[id][dType]) {
+			case DOOR_SHOP: {
+				tDoor[id][dPickup] = CreateDynamicPickup(1212, 2, tDoor[id][dEnterX], tDoor[id][dEnterY], tDoor[id][dEnterZ], 0, 0, -1, 50.0, -1, 0);
+			}
+			case DOOR_HOTEL: {
+				tDoor[id][dPickup] = CreateDynamicPickup(1272, 2, tDoor[id][dEnterX], tDoor[id][dEnterY], tDoor[id][dEnterZ], 0, 0, -1, 50.0, -1, 0);
+			}
+			case DOOR_GYM: {
+				tDoor[id][dPickup] = CreateDynamicPickup(1239, 2, tDoor[id][dEnterX], tDoor[id][dEnterY], tDoor[id][dEnterZ], 0, 0, -1, 50.0, -1, 0);
+			}
+			case DOOR_CLOTHES: {
+				tDoor[id][dPickup] = CreateDynamicPickup(1275, 2, tDoor[id][dEnterX], tDoor[id][dEnterY], tDoor[id][dEnterZ], 0, 0, -1, 50.0, -1, 0);
+			}
+			case DOOR_PHARMACY: {
+				tDoor[id][dPickup] = CreateDynamicPickup(1241, 2, tDoor[id][dEnterX], tDoor[id][dEnterY], tDoor[id][dEnterZ], 0, 0, -1, 50.0, -1, 0);
+			}
+			case DOOR_MECHANIC: {
+				tDoor[id][dPickup] = CreateDynamicPickup(1239, 2, tDoor[id][dEnterX], tDoor[id][dEnterY], tDoor[id][dEnterZ], 0, 0, -1, 50.0, -1, 0);
+			}
+			case DOOR_MOBILE: {
+				tDoor[id][dPickup] = CreateDynamicPickup(330, 2, tDoor[id][dEnterX], tDoor[id][dEnterY], tDoor[id][dEnterZ], 0, 0, -1, 50.0, -1, 0);
+			}
+		}
+
 		tDoor[id][dDimension] = (size1 * size2);
 
 		Iter_Add(doorItter, id);
@@ -223,6 +246,7 @@ stock removeDoor(srvdoorid) {
 	mysql_query(queryStr);
 
 	Iter_Remove(doorItter, srvdoorid);
+	printf("[LOG]: [DOOR] Usunieto drzwi o Uid: %d.", tDoor[srvdoorid][dUid]);
 
 	if(IsValidDynamicPickup(tDoor[srvdoorid][dPickup])) {
 		DestroyDynamicPickup(tDoor[srvdoorid][dPickup]);
@@ -349,7 +373,7 @@ Callback hideDoorMenuInfo(playerid) {
 
 stock showDoorMenu(playerid) {
 	new str[64];
-	new srvdoorid = getServerDoorId(lastDoor[playerid]);
+	new srvdoorid = getServerDoorId(tPlayer[playerid][pDoor]);
 	mainStr[0] = EOS;
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -400,7 +424,7 @@ stock showDoorMenu(playerid) {
 		DialogInfo(playerid, mainStr);
 	}
 
-	new srvAreaId = getServerAreaId(playerid);
+	new srvAreaId = getServerAreaId(tPlayer[playerid][pArea]);
 
 	if(srvAreaId == INVALID_AREA_ID) {
 		return 1;
@@ -418,7 +442,7 @@ stock showDoorMenu(playerid) {
 
 stock showMessageToPlayersInThisDoor(srvdoorid, const mess[]) {
 	foreach(new i : Player) {
-		if(lastDoor[i] == tDoor[srvdoorid][dUid]) {
+		if(tPlayer[i][pDoor] == tDoor[srvdoorid][dUid]) {
 			sendDoMessage(i, mess);
 		}
 	}
@@ -437,8 +461,8 @@ Callback createAndAddDoor(playerid, meters, owner, ownertype, doortype, name[], 
 	doorVw = playerid + 1;
 	doorInt = 0;
 
-	lastDoor[playerid] = addDoor(owner, ownertype, doortype, name, meters, px, py, pz, pa, doorExitX, doorExitY, doorExitZ, doorExitA, doorVw, doorInt);
-	new srvDoorId = getServerDoorId(lastDoor[playerid]);
+	tPlayer[playerid][pDoor] = addDoor(owner, ownertype, doortype, name, meters, px, py, pz, pa, doorExitX, doorExitY, doorExitZ, doorExitA, doorVw, doorInt);
+	new srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 	OSRP_SetPlayerPos(playerid, tDoor[srvDoorId][dEnterX], tDoor[srvDoorId][dEnterY], tDoor[srvDoorId][dEnterZ]);
 	SetPlayerFacingAngle(playerid, tDoor[srvDoorId][dEnterA]);

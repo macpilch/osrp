@@ -94,7 +94,7 @@ CMD:v(playerid, params[]) {
 				return 1;
 			}
 
-			new srvVehId = getServerVehicleId(lastVehicle[playerid]);
+			new srvVehId = getServerVehicleId(tPlayer[playerid][pVehicle]);
 
 			if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 				return 1;
@@ -168,7 +168,7 @@ CMD:v(playerid, params[]) {
 			new Float:vX, Float:vY, Float:vZ;
 
 			GetVehiclePos(tVehicle[srvVehId][vId], vX, vY, vZ);
-			lastVehicle[playerid] = tVehicle[srvVehId][vUid];
+			tPlayer[playerid][pVehicle] = tVehicle[srvVehId][vUid];
 
 			if(playerToPoint(playerid, 2.0, vX, vY, vZ)) {
 				if(tVehicle[srvVehId][vAccessories] & VEH_ACCESSORIES_ALARM) {
@@ -354,7 +354,7 @@ CMD:v(playerid, params[]) {
 				}
 			}
 
-			new srvVehId = getServerVehicleId(lastVehicle[playerid]);
+			new srvVehId = getServerVehicleId(tPlayer[playerid][pVehicle]);
 
 			if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 				return 1;
@@ -411,7 +411,7 @@ CMD:pasy(playerid, params[]) {
 		return 1;
 	}
 
-	new srvVehId = getServerVehicleId(lastVehicle[playerid]);
+	new srvVehId = getServerVehicleId(tPlayer[playerid][pVehicle]);
 
 	if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 		return 1;
@@ -470,7 +470,7 @@ CMD:tankuj(playerid, params[]) {
 		}
 	}
 
-	new srvVehId = getServerVehicleId(lastVehicle[playerid]);
+	new srvVehId = getServerVehicleId(tPlayer[playerid][pVehicle]);
 
 	if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -506,7 +506,7 @@ CMD:przejazd(playerid, params[]) {
 		return 1;
 	}
 
-	new srvDoorId = getServerDoorId(lastDoor[playerid]);
+	new srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 	if(srvDoorId == INVALID_DOOR_ID) {
 		return 1;
@@ -544,7 +544,7 @@ CMD:przejazd(playerid, params[]) {
 					OSRP_SetPlayerInterior(i, tDoor[srvDoorId][dInt]);
 
 					PutPlayerInVehicle(i, GetPlayerVehicleID(i), GetPlayerVehicleSeat(i));
-					lastDoor[i] = lastDoor[playerid];
+					tPlayer[i][pDoor] = tPlayer[playerid][pDoor];
 				}
 			}
 		}

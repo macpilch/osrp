@@ -21,20 +21,6 @@ new numPlayerRace;
 new serverTime;
 new serverWeather = 10;
 
-new lastGroup[MAX_PLAYERS][MAX_PLAYER_GROUPS];
-new lastSet[MAX_PLAYERS];
-new lastArea[MAX_PLAYERS];
-new lastBusStop[MAX_PLAYERS];
-new lastBusStop2[MAX_PLAYERS];
-new lastDoor[MAX_PLAYERS];
-new lastOrder[MAX_PLAYERS];
-new lastThing[MAX_PLAYERS];
-new lastRace[MAX_PLAYERS];
-new lastVehicle[MAX_PLAYERS];
-new lastCashPoint[MAX_PLAYERS];
-new last3dText[MAX_PLAYERS];
-new lastObject[MAX_PLAYERS];
-
 new playerCps[MAX_PLAYERS];
 new playerRcPosition[MAX_PLAYERS];
 
@@ -181,13 +167,12 @@ new Text:shopInfo[MAX_PLAYERS][3];
 new Text:oocWarning[MAX_PLAYERS][2];
 new Text:damageRedScreen[MAX_PLAYERS];
 new Text:photoRadarScreen[MAX_PLAYERS];
-new Text:doorInfo[MAX_PLAYERS][7];
+new Text:doorInfo[MAX_PLAYERS][4];
 new Text:doorInfo2[MAX_PLAYERS][3];
 new Text:telephoneCall[MAX_PLAYERS][2];
 new Text:telephoneEnabled[MAX_PLAYERS][2];
 new Text:groupsInfo[MAX_PLAYERS][37];
 new Text:usedRollersInfo[MAX_PLAYERS][2];
-new Text:hotelInfo[MAX_PLAYERS][3];
 new Text:collisionInfo[MAX_PLAYERS];
 new Text:afkPrivateMessage[MAX_PLAYERS][2];
 new Text:buildingMusicInfo[MAX_PLAYERS][2];

@@ -271,6 +271,7 @@
 #define DOOR_CLOTHES 4
 #define DOOR_PHARMACY 5
 #define DOOR_MECHANIC 6
+#define DOOR_MOBILE 7
 
 // Flagi zapisu danych
 #define SAVE_NONE 0

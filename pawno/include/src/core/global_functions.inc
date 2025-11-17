@@ -39,26 +39,28 @@ stock initServerPenalties() {
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, " ")) {
-		sscanf(queryStr, "iiis[16]iis[64]s[128]",
+		sscanf(queryStr, "iiis[16]iis[32]s[32]s[128]",
 			tPenalty[index][penUid],
 			tPenalty[index][penSUid],
 			tPenalty[index][penOUid],
 			tPenalty[index][penIp],
 			tPenalty[index][penType],
 			tPenalty[index][penDays],
+			tPenalty[index][penTime],
 			tPenalty[index][penDate],
 			tPenalty[index][penReason]
 		);
 
 		Iter_Add(penItter, index);
 
-		printf("[LOG]: [PENALTY] Uid: %d, SUid: %d, OUid: %d, Ip: %s, Type: %d, Days: %d, Date: %s, Reason: %s",
+		printf("[LOG]: [PENALTY] Uid: %d, SUid: %d, OUid: %d, Ip: %s, Type: %d, Days: %d, Time: %s, Date: %s, Reason: %s",
 			tPenalty[index][penUid],
 			tPenalty[index][penSUid],
 			tPenalty[index][penOUid],
 			tPenalty[index][penIp],
 			tPenalty[index][penType],
 			tPenalty[index][penDays],
+			tPenalty[index][penTime],
 			tPenalty[index][penDate],
 			tPenalty[index][penReason]
 		);
@@ -76,7 +78,7 @@ stock initServerPenalties() {
 	return 1;
 }
 
-stock addPenalty(senderid, victimid, type, date[], days, reason[]) {
+stock addPenalty(senderid, victimid, type, time[], date[], days, reason[]) {
 	new freeIndex = INVALID_PEN_ID;
 
 	mysql_query("SELECT COUNT(`UID`) FROM `osrp_Penalties`");
@@ -90,19 +92,21 @@ stock addPenalty(senderid, victimid, type, date[], days, reason[]) {
 	tPenalty[freeIndex][penUid] = freeIndex + 1;
 	tPenalty[freeIndex][penSUid] = (senderid == INVALID_PLAYER_ID ? UID_NONE : tPlayer[senderid][pUid]);
 	tPenalty[freeIndex][penOUid] = tPlayer[victimid][pUid];
-	tPenalty[freeIndex][penIp] = tPlayer[victimid][pIp];
 	tPenalty[freeIndex][penType] = type;
 	tPenalty[freeIndex][penDays] = days;
-	format(tPenalty[freeIndex][penDate], 64, date);
+	format(tPenalty[freeIndex][penIp], 16, tPlayer[victimid][pIp]);
+	format(tPenalty[freeIndex][penTime], 32, time);
+	format(tPenalty[freeIndex][penDate], 32, date);
 	format(tPenalty[freeIndex][penReason], 64, reason);
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Penalties` (`SUID`, `OUID`, `IP`, `Type`, `Days`, `Date`, `Reason`) VALUES ('%d', '%d', '%s', '%d', '%d', '%s', '%s')",
+	format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Penalties` (`SUID`, `OUID`, `IP`, `Type`, `Days`, `Time`, `Date`, `Reason`) VALUES ('%d', '%d', '%s', '%d', '%d', '%s', '%s', '%s')",
 		tPenalty[freeIndex][penSUid],
 		tPenalty[freeIndex][penOUid],
 		tPenalty[freeIndex][penIp],
 		tPenalty[freeIndex][penType],
 		tPenalty[freeIndex][penDays],
+		tPenalty[freeIndex][penTime],
 		tPenalty[freeIndex][penDate],
 		tPenalty[freeIndex][penReason]
 	);
@@ -132,7 +136,8 @@ stock removePenalty(srvpenid) {
 	format(tPenalty[srvpenid][penIp], 16, NULL);
 	tPenalty[srvpenid][penType] = PEN_NONE;
 	tPenalty[srvpenid][penDays] = 0;
-	format(tPenalty[srvpenid][penDate], 64, NULL);
+	format(tPenalty[srvpenid][penTime], 32, NULL);
+	format(tPenalty[srvpenid][penDate], 32, NULL);
 	format(tPenalty[srvpenid][penReason], 128, NULL);
 	return 1;
 }
@@ -166,8 +171,8 @@ static stock sendDistanceMessage(playerid, Float:range, const mess[], length, sk
 				}
 			}
 
-			if(!IsPlayerInAnyVehicle(playerid) || (IsPlayerInAnyVehicle(playerid) && getServerVehicleId(lastVehicle[playerid]) != OSRP_VEHICLE_INVALID_ID &&
-			   tVehicle[getServerVehicleId(lastVehicle[playerid])][vWindow])) {
+			if(!IsPlayerInAnyVehicle(playerid) || (IsPlayerInAnyVehicle(playerid) && getServerVehicleId(tPlayer[playerid][pVehicle]) != OSRP_VEHICLE_INVALID_ID &&
+			   tVehicle[getServerVehicleId(tPlayer[playerid][pVehicle])][vWindow])) {
 				if(playerToPoint(i, (range / 16), pX, pY, pZ)) {
 					if(!isnull(str) && !isnull(str2)) {
 						SendClientMessage(i, color1, str);
@@ -205,7 +210,7 @@ static stock sendDistanceMessage(playerid, Float:range, const mess[], length, sk
 					}
 				}
 			} else if(IsPlayerInAnyVehicle(playerid) && IsPlayerInAnyVehicle(i) && GetPlayerVehicleID(playerid) == GetPlayerVehicleID(i) &&
-			          getServerVehicleId(lastVehicle[playerid]) != OSRP_VEHICLE_INVALID_ID && !tVehicle[getServerVehicleId(lastVehicle[playerid])][vWindow]) {
+			          getServerVehicleId(tPlayer[playerid][pVehicle]) != OSRP_VEHICLE_INVALID_ID && !tVehicle[getServerVehicleId(tPlayer[playerid][pVehicle])][vWindow]) {
 				if(!isnull(str) && !isnull(str2)) {
 					SendClientMessage(i, color1, str);
 					SendClientMessage(i, color1, str2);
@@ -241,7 +246,7 @@ stock sendRadioMessage(playerid, const mess[]) {
 	sendDistanceMessage(playerid, 30.0, mess, 96, 1, COLOR_CHAT1, COLOR_CHAT2, COLOR_CHAT3, COLOR_CHAT4, COLOR_CHAT5);
 }
 
-stock sendDefaultMessage(playerid, Float:range, const mess[], color) {
+stock sendRegularMessage(playerid, Float:range, const mess[], color) {
 	sendDistanceMessage(playerid, range, mess, 0, 0, color, color, color, color, color);
 }
 

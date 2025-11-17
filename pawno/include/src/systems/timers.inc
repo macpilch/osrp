@@ -22,9 +22,9 @@ Timer:globalTimer[1000]() {
 
 		if(playerAFKTime[i] != 0) {
 			if(playerAFKTime[i] == 3) {
-				if(getServerDoorId(lastDoor[i]) != INVALID_DOOR_ID && tPlayer[i][pVw] && !tPlayer[i][pInt]) {
-					if(tDoor[getServerDoorId(lastDoor[i])][dCost]) {
-						tDoor[getServerDoorId(lastDoor[i])][dPeopleAfk]++;
+				if(getServerDoorId(tPlayer[i][pDoor]) != INVALID_DOOR_ID && tPlayer[i][pVw] && !tPlayer[i][pInt]) {
+					if(tDoor[getServerDoorId(tPlayer[i][pDoor])][dCost]) {
+						tDoor[getServerDoorId(tPlayer[i][pDoor])][dPeopleAfk]++;
 					}
 				}
 
@@ -43,8 +43,8 @@ Timer:globalTimer[1000]() {
 					tPlayer[i][pSeconds] = 0;
 
 					if(isPlayerOnDuty(i)) {
-						new srvGrpId = getServerGroupId(lastGroup[i][tPlayer[i][pSlot] - 1]);
-						new srvDoorId = getServerDoorId(lastDoor[i]);
+						new srvGrpId = getServerGroupId(tPlayer[i][pGroup][tPlayer[i][pSlot] - 1]);
+						new srvDoorId = getServerDoorId(tPlayer[i][pDoor]);
 
 						if(srvGrpId != INVALID_GROUP_ID && srvDoorId != INVALID_DOOR_ID && tDoor[srvDoorId][dOUid] == tGroup[srvGrpId][gUid] &&
 						   tDoor[srvDoorId][dOType] == OWNER_GROUP && tPlayer[i][pVw] && !tPlayer[i][pInt]) {
@@ -54,7 +54,7 @@ Timer:globalTimer[1000]() {
 
 						if(tPlayer[i][pDuty][tPlayer[i][pSlot] - 1] >= 15) {
 							if((tPlayer[i][pDuty][tPlayer[i][pSlot] - 1] % 30) == 0) {
-								giveGroupMoney(getServerGroupId(lastGroup[i][tPlayer[i][pSlot] - 1]), -tPlayer[i][pPayDay][tPlayer[i][pSlot] - 1]);
+								giveGroupMoney(getServerGroupId(tPlayer[i][pGroup][tPlayer[i][pSlot] - 1]), -tPlayer[i][pPayDay][tPlayer[i][pSlot] - 1]);
 								tPlayer[i][pBank] += tPlayer[i][pPayDay][tPlayer[i][pSlot] - 1];
 								savePlayerValues(i, SAVE_MONEY);
 
@@ -81,25 +81,24 @@ Timer:globalTimer[1000]() {
 					savePlayerValues(i, SAVE_SCORE);
 				}
 
-				if(insidedHotel[i] && tPlayer[i][pHotel] && playerToPoint(i, 5.0, 2216.12, -1076.30, 1050.48)) {
+				if(insidedHotel[i] && tPlayer[i][pHotel] && playerToPoint(i, 3.0, 266.4997, 305.0342, 999.1484)) {
 					if(tPlayer[i][pLang] == LANG_PL) {
-						GameTextForPlayer(i, "~n~~n~~n~~w~_(~k~~SNEAK_ABOUT~+~k~~PED_SPRINT~)_~p~by wyjsc z ~n~pokoju~n~~r~albo /pokoj wymelduj", 6000, 3);
+						GameTextForPlayer(i, "~n~~n~~n~~n~~n~~w~(~k~~SNEAK_ABOUT~+~k~~PED_SPRINT~) ~p~by wyjsc z pokoju", 6000, 3);
 					} else {
-						GameTextForPlayer(i, "~n~~n~~n~~w~_(~k~~SNEAK_ABOUT~+~k~~PED_SPRINT~)_~p~to leave ~n~the room~n~~r~or /room checkout", 6000, 3);
+						GameTextForPlayer(i, "~n~~n~~n~~n~~n~~w~(~k~~SNEAK_ABOUT~+~k~~PED_SPRINT~) ~p~to leave the room", 6000, 3);
 					}
 				}
 
 				if(tPlayer[i][pStatus] & STATUS_AFK) {
-					if(getServerDoorId(lastDoor[i]) != INVALID_DOOR_ID && tPlayer[i][pVw] && !tPlayer[i][pInt]) {
-						if(tDoor[getServerDoorId(lastDoor[i])][dCost]) {
-							if(tDoor[getServerDoorId(lastDoor[i])][dPeopleAfk]) {
-								tDoor[getServerDoorId(lastDoor[i])][dPeopleAfk]--;
+					if(getServerDoorId(tPlayer[i][pDoor]) != INVALID_DOOR_ID && tPlayer[i][pVw] && !tPlayer[i][pInt]) {
+						if(tDoor[getServerDoorId(tPlayer[i][pDoor])][dCost]) {
+							if(tDoor[getServerDoorId(tPlayer[i][pDoor])][dPeopleAfk]) {
+								tDoor[getServerDoorId(tPlayer[i][pDoor])][dPeopleAfk]--;
 							}
 						}
 					}
 
 					tPlayer[i][pStatus] -= STATUS_AFK;
-
 					updatePlayerGameStatus(i);
 				}
 
@@ -182,14 +181,14 @@ Timer:globalTimer[1000]() {
 							RemovePlayerFromVehicle(i);
 						}
 
-						new srvVehId = getServerVehicleId(lastVehicle[i]);
+						new srvVehId = getServerVehicleId(tPlayer[i][pVehicle]);
 
 						if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
 							return 1;
 						}
 
-						if(lastVehicle[i]) {
-							lastVehicle[i] = UID_NONE;
+						if(tPlayer[i][pVehicle]) {
+							tPlayer[i][pVehicle] = UID_NONE;
 						}
 
 						playerVehRentTime[i] = 0;

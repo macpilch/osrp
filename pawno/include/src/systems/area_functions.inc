@@ -17,7 +17,7 @@ stock initAreaValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_Areas`");
+	mysql_query("SELECT `UID`, `OUID`, `Type`, `OType`, `Color`, `MinX`, `MinY`, `MinZ`, `MaxX`, `MaxY`, `MaxZ`, `MaxSpeed`, `Dimension`, `Cost` FROM `osrp_Areas`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -130,7 +130,7 @@ stock addArea(owner, type, ownertype, color[], Float:minx, Float:miny, Float:min
 
 	mysql_query(queryStr);
 
-	printf("[LOG]: [AREA] Dodano now¹ strefê o Uid: %d.", tArea[freeId][aUid]);
+	printf("[LOG]: [AREA] Dodano nowa strefe o Uid: %d.", tArea[freeId][aUid]);
 	return tArea[freeId][aUid];
 }
 
@@ -148,6 +148,7 @@ stock removeArea(srvareaid) {
 	mysql_query(queryStr);
 
 	Iter_Remove(areaItter, srvareaid);
+	printf("[LOG]: [AREA] Usunieto strefe o Uid: %d.", tArea[srvareaid][aUid]);
 
 	tArea[srvareaid][aUid] = UID_NONE;
 	tArea[srvareaid][aOUid] = UID_NONE;

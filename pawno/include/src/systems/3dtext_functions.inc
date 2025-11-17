@@ -17,7 +17,7 @@ stock init3dTextValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_3DTexts`");
+	mysql_query("SELECT `UID`, `OUID`, `OType`, `Desc`, `Color`, `PosX`, `PosY`, `PosZ`, `Distance`, `VW`, `INT` FROM `osrp_3DTexts`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -57,9 +57,9 @@ stock init3dTextValues() {
 	}
 
 	if(Iter_Count(text3dItter)) {
-		printf("[LOG]: [3D TEXT] Wczytano %d 3D Textów.\n", Iter_Count(text3dItter));
+		printf("[LOG]: [3D TEXT] Wczytano %d 3D Textow.\n", Iter_Count(text3dItter));
 	} else {
-		printf("[LOG]: [3D TEXT] Brak 3D Textów.\n");
+		printf("[LOG]: [3D TEXT] Brak 3D Textow.\n");
 	}
 
 	mysql_free_result();
@@ -140,6 +140,7 @@ stock remove3dText(srvtextid) {
 	}
 
 	Iter_Remove(text3dItter, srvtextid);
+	printf("[LOG]: [3D TEXT] Usunieto 3D Text o Uid: %d.", t3dText[srvtextid][t3dUid]);
 
 	t3dText[srvtextid][t3dUid] = UID_NONE;
 	t3dText[srvtextid][t3dOUid] = UID_NONE;

@@ -13,18 +13,18 @@
 #pragma library osrp
 
 CMD:mc(playerid, params[]) {
-	new srvDoorId = getServerDoorId(lastDoor[playerid]);
+	new srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 	if(srvDoorId == INVALID_DOOR_ID) {
 		return 1;
 	}
 
 	if((tDoor[srvDoorId][dOUid] == tPlayer[playerid][pUid] && tDoor[srvDoorId][dOType] == OWNER_PLAYER) ||
-	   (((tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][0]) && (tPlayer[playerid][pPerm][0] & P_GROUP_PERM_OBJECT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][1]) && (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_OBJECT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][2]) && (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_OBJECT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][3]) && (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_OBJECT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][4]) && (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_OBJECT))) &&
+	   (((tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][0]) && (tPlayer[playerid][pPerm][0] & P_GROUP_PERM_OBJECT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][1]) && (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_OBJECT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][2]) && (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_OBJECT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][3]) && (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_OBJECT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][4]) && (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_OBJECT))) &&
 	   tDoor[srvDoorId][dOType] == OWNER_GROUP)) {
 		if(tDoor[srvDoorId][dMaxObjects] <= 0) {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -60,7 +60,7 @@ CMD:mc(playerid, params[]) {
 
 		GetPlayerPos(playerid, pX, pY, pZ);
 
-		lastObject[playerid] = addObject(tDoor[srvDoorId][dUid], OWNER_DOOR, modelId, pX, pY, pZ, tPlayer[playerid][pVw], tPlayer[playerid][pInt]);
+		tPlayer[playerid][pObject] = addObject(tDoor[srvDoorId][dUid], OWNER_DOOR, modelId, pX, pY, pZ, tPlayer[playerid][pVw], tPlayer[playerid][pInt]);
 		Streamer_Update(playerid);
 
 		tDoor[srvDoorId][dObjects]++;
@@ -88,13 +88,13 @@ CMD:amc(playerid, params[]) {
 
 	GetPlayerPos(playerid, pX, pY, pZ);
 
-	lastObject[playerid] = addObject(1, OWNER_AREA, modelId, pX, pY, pZ, tPlayer[playerid][pVw], tPlayer[playerid][pInt]);
+	tPlayer[playerid][pObject] = addObject(1, OWNER_AREA, modelId, pX, pY, pZ, tPlayer[playerid][pVw], tPlayer[playerid][pInt]);
 	Streamer_Update(playerid);
 	return 1;
 }
 
 CMD:md(playerid, params[]) {
-	new srvObjId = getServerObjectId(lastObject[playerid]);
+	new srvObjId = getServerObjectId(tPlayer[playerid][pObject]);
 
 	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -110,7 +110,7 @@ CMD:md(playerid, params[]) {
 	removeObject(srvObjId);
 	Streamer_Update(playerid);
 
-	lastObject[playerid] = UID_NONE;
+	tPlayer[playerid][pObject] = UID_NONE;
 	CancelEdit(playerid);
 
 	if(tPlayer[playerid][pObjectEdit]) {
@@ -122,7 +122,7 @@ CMD:md(playerid, params[]) {
 }
 
 CMD:mgate(playerid, params[]) {
-	new srvObjId = getServerObjectId(lastObject[playerid]);
+	new srvObjId = getServerObjectId(tPlayer[playerid][pObject]);
 
 	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -186,7 +186,7 @@ CMD:brama(playerid, params[]) {
 	   (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_OBJECT) ||
 	   (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_OBJECT) ||
 	   (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_OBJECT)) {
-		new srvObjId = getServerObjectId(lastObject[playerid]);
+		new srvObjId = getServerObjectId(tPlayer[playerid][pObject]);
 
 		if(srvObjId == OSRP_OBJECT_INVALID_ID) {
 			return 1;
@@ -264,18 +264,18 @@ CMD:mowner(playerid, params[]) {
 }
 
 CMD:mpick(playerid, params[]) {
-	new srvDoorId = getServerDoorId(lastDoor[playerid]);
+	new srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 	if(srvDoorId == INVALID_DOOR_ID) {
 		return 1;
 	}
 
 	if((tDoor[srvDoorId][dOUid] == tPlayer[playerid][pUid] && tDoor[srvDoorId][dOType] == OWNER_PLAYER) ||
-	   (((tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][0]) && (tPlayer[playerid][pPerm][0] & P_GROUP_PERM_OBJECT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][1]) && (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_OBJECT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][2]) && (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_OBJECT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][3]) && (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_OBJECT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][4]) && (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_OBJECT))) &&
+	   (((tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][0]) && (tPlayer[playerid][pPerm][0] & P_GROUP_PERM_OBJECT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][1]) && (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_OBJECT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][2]) && (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_OBJECT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][3]) && (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_OBJECT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][4]) && (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_OBJECT))) &&
 	   tDoor[srvDoorId][dOType] == OWNER_GROUP)) {
 		SelectObject(playerid);
 	}
@@ -283,7 +283,7 @@ CMD:mpick(playerid, params[]) {
 }
 
 CMD:mmat(playerid, params[]) {
-	new srvObjId = getServerObjectId(lastObject[playerid]);
+	new srvObjId = getServerObjectId(tPlayer[playerid][pObject]);
 
 	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -347,29 +347,29 @@ CMD:mmat(playerid, params[]) {
 }
 
 CMD:msel(playerid, params[]) {
-	new srvDoorId = getServerDoorId(lastDoor[playerid]);
+	new srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 	if(srvDoorId == INVALID_DOOR_ID) {
 		return 1;
 	}
 
 	if((tDoor[srvDoorId][dOUid] == tPlayer[playerid][pUid] && tDoor[srvDoorId][dOType] == OWNER_PLAYER) ||
-	   (((tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][0]) && (tPlayer[playerid][pPerm][0] & P_GROUP_PERM_OBJECT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][1]) && (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_OBJECT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][2]) && (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_OBJECT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][3]) && (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_OBJECT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][4]) && (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_OBJECT))) &&
+	   (((tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][0]) && (tPlayer[playerid][pPerm][0] & P_GROUP_PERM_OBJECT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][1]) && (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_OBJECT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][2]) && (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_OBJECT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][3]) && (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_OBJECT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][4]) && (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_OBJECT))) &&
 	   tDoor[srvDoorId][dOType] == OWNER_GROUP)) {
-		if(getServerObjectId(lastObject[playerid]) != OSRP_OBJECT_INVALID_ID) {
+		if(getServerObjectId(tPlayer[playerid][pObject]) != OSRP_OBJECT_INVALID_ID) {
 			CancelEdit(playerid);
-			saveObjectValues(getServerObjectId(lastObject[playerid]));
+			saveObjectValues(getServerObjectId(tPlayer[playerid][pObject]));
 
 			ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.1, 0, 0, 0, 0, 0, 0);
 
 			TextDrawHideForPlayer(playerid, objectInfo[playerid][0]);
 			TextDrawHideForPlayer(playerid, objectInfo[playerid][1]);
 
-			lastObject[playerid] = UID_NONE;
+			tPlayer[playerid][pObject] = UID_NONE;
 			tPlayer[playerid][pObjectEdit] = false;
 		}
 
@@ -378,9 +378,9 @@ CMD:msel(playerid, params[]) {
 
 		if(sscanf(params, "i", modelId)) {
 			foreach(new i : objectItter) {
-				if(tObject[i][oOUid] == lastDoor[playerid] && tObject[i][oOType] == OWNER_DOOR) {
+				if(tObject[i][oOUid] == tPlayer[playerid][pDoor] && tObject[i][oOType] == OWNER_DOOR) {
 					if(playerToPoint(playerid, radius, tObject[i][oPosX], tObject[i][oPosY], tObject[i][oPosZ])) {
-						lastObject[playerid] = tObject[i][oUid];
+						tPlayer[playerid][pObject] = tObject[i][oUid];
 						countObject = true;
 					}
 				} else {
@@ -401,9 +401,9 @@ CMD:msel(playerid, params[]) {
 			}
 		} else {
 			foreach(new i : objectItter) {
-				if(tObject[i][oObject] == modelId && tObject[i][oOUid] == lastDoor[playerid] && tObject[i][oOType] == OWNER_DOOR) {
+				if(tObject[i][oObject] == modelId && tObject[i][oOUid] == tPlayer[playerid][pDoor] && tObject[i][oOType] == OWNER_DOOR) {
 					if(playerToPoint(playerid, radius, tObject[i][oPosX], tObject[i][oPosY], tObject[i][oPosZ])) {
-						lastObject[playerid] = tObject[i][oUid];
+						tPlayer[playerid][pObject] = tObject[i][oUid];
 						countObject = true;
 					} else {
 						if(radius > 4.0) {
@@ -434,7 +434,7 @@ CMD:msel(playerid, params[]) {
 }
 
 CMD:msave(playerid, params[]) {
-	new srvObjId = getServerObjectId(lastObject[playerid]);
+	new srvObjId = getServerObjectId(tPlayer[playerid][pObject]);
 
 	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -450,7 +450,7 @@ CMD:msave(playerid, params[]) {
 		ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.1, 0, 0, 0, 0, 0, 0);
 	}
 
-	lastObject[playerid] = UID_NONE;
+	tPlayer[playerid][pObject] = UID_NONE;
 	tPlayer[playerid][pObjectEdit] = false;
 
 	TextDrawHideForPlayer(playerid, objectInfo[playerid][0]);
@@ -461,7 +461,7 @@ CMD:msave(playerid, params[]) {
 }
 
 CMD:px(playerid, params[]) {
-	new srvObjId = getServerObjectId(lastObject[playerid]);
+	new srvObjId = getServerObjectId(tPlayer[playerid][pObject]);
 
 	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -488,7 +488,7 @@ CMD:px(playerid, params[]) {
 }
 
 CMD:py(playerid, params[]) {
-	new srvObjId = getServerObjectId(lastObject[playerid]);
+	new srvObjId = getServerObjectId(tPlayer[playerid][pObject]);
 
 	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -515,7 +515,7 @@ CMD:py(playerid, params[]) {
 }
 
 CMD:pz(playerid, params[]) {
-	new srvObjId = getServerObjectId(lastObject[playerid]);
+	new srvObjId = getServerObjectId(tPlayer[playerid][pObject]);
 
 	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -542,7 +542,7 @@ CMD:pz(playerid, params[]) {
 }
 
 CMD:rx(playerid, params[]) {
-	new srvObjId = getServerObjectId(lastObject[playerid]);
+	new srvObjId = getServerObjectId(tPlayer[playerid][pObject]);
 
 	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -569,7 +569,7 @@ CMD:rx(playerid, params[]) {
 }
 
 CMD:ry(playerid, params[]) {
-	new srvObjId = getServerObjectId(lastObject[playerid]);
+	new srvObjId = getServerObjectId(tPlayer[playerid][pObject]);
 
 	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -596,7 +596,7 @@ CMD:ry(playerid, params[]) {
 }
 
 CMD:rz(playerid, params[]) {
-	new srvObjId = getServerObjectId(lastObject[playerid]);
+	new srvObjId = getServerObjectId(tPlayer[playerid][pObject]);
 
 	if(srvObjId == OSRP_OBJECT_INVALID_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {

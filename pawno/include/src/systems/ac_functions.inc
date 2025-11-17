@@ -16,7 +16,7 @@ stock antySpeedHack(playerid) {
 	if(isLogged[playerid] && isSpawned[playerid] && !spawnFreeze[playerid]) {
 		if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
 			new Float:vOldX, Float:vOldY, Float:vOldZ;
-			new srvVehId = getServerVehicleId(lastVehicle[playerid]),
+			new srvVehId = getServerVehicleId(tPlayer[playerid][pVehicle]),
 				speed = getVehicleSpeed(tVehicle[srvVehId][vId]);
 
 			if(srvVehId == OSRP_VEHICLE_INVALID_ID) {
@@ -97,12 +97,12 @@ stock antyUnFreeze(playerid) {
 stock antyWeapon(playerid) {
 	if(isLogged[playerid] && isSpawned[playerid] && !spawnFreeze[playerid]) {
 		if(GetPlayerWeapon(playerid) && tPlayer[playerid][pWeapon]) {
-			if(tPlayer[playerid][pWeapon] != GetPlayerWeapon(playerid) && getServerThingId(lastThing[playerid]) != INVALID_THING_ID) {
+			if(tPlayer[playerid][pWeapon] != GetPlayerWeapon(playerid) && getServerThingId(tPlayer[playerid][pThing]) != INVALID_THING_ID) {
 				foreach(new i : Player) {
 					if(tPlayer[i][pLang] == LANG_PL) {
-						format(timerStr, sizeof(timerStr), "Bron: %d/%d(%s). Systemowa: %d/%d:%d (Weap)", GetPlayerWeapon(playerid), GetPlayerAmmo(playerid), weaponNamesPl[tPlayer[playerid][pWeapon]], tThing[getServerThingId(lastThing[playerid])][tUid], tPlayer[playerid][pWeapon], tPlayer[playerid][pWeapAmmo]);
+						format(timerStr, sizeof(timerStr), "Bron: %d/%d(%s). Systemowa: %d/%d:%d (Weap)", GetPlayerWeapon(playerid), GetPlayerAmmo(playerid), weaponNamesPl[tPlayer[playerid][pWeapon]], tThing[getServerThingId(tPlayer[playerid][pThing])][tUid], tPlayer[playerid][pWeapon], tPlayer[playerid][pWeapAmmo]);
 					} else {
-						format(timerStr, sizeof(timerStr), "Weapon: %d/%d(%s). System: %d/%d:%d (Weap)", GetPlayerWeapon(playerid), GetPlayerAmmo(playerid), weaponNamesEng[tPlayer[playerid][pWeapon]], tThing[getServerThingId(lastThing[playerid])][tUid], tPlayer[playerid][pWeapon], tPlayer[playerid][pWeapAmmo]);
+						format(timerStr, sizeof(timerStr), "Weapon: %d/%d(%s). System: %d/%d:%d (Weap)", GetPlayerWeapon(playerid), GetPlayerAmmo(playerid), weaponNamesEng[tPlayer[playerid][pWeapon]], tThing[getServerThingId(tPlayer[playerid][pThing])][tUid], tPlayer[playerid][pWeapon], tPlayer[playerid][pWeapAmmo]);
 					}
 				}
 

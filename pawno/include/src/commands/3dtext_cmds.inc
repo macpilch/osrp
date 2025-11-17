@@ -13,18 +13,18 @@
 #pragma library osrp
 
 CMD:tc(playerid, params[]) {
-	new srvDoorId = getServerDoorId(lastDoor[playerid]);
+	new srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 	if(srvDoorId == INVALID_DOOR_ID) {
 		return 1;
 	}
 
 	if((tDoor[srvDoorId][dOUid] == tPlayer[playerid][pUid] && tDoor[srvDoorId][dOType] == OWNER_PLAYER) ||
-	   (((tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][0]) && (tPlayer[playerid][pPerm][0] & P_GROUP_PERM_3DTEXT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][1]) && (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_3DTEXT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][2]) && (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_3DTEXT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][3]) && (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_3DTEXT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][4]) && (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_3DTEXT))) &&
+	   (((tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][0]) && (tPlayer[playerid][pPerm][0] & P_GROUP_PERM_3DTEXT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][1]) && (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_3DTEXT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][2]) && (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_3DTEXT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][3]) && (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_3DTEXT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][4]) && (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_3DTEXT))) &&
 	   tDoor[srvDoorId][dOType] == OWNER_GROUP)) {
 		if(tDoor[srvDoorId][dMaxTexts] <= 0) {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -68,7 +68,7 @@ CMD:tc(playerid, params[]) {
 		strreplace(desc, "(", "{", true, strlen(desc));
 		strreplace(desc, ")", "}", true, strlen(desc));
 
-		last3dText[playerid] = add3dText(tDoor[srvDoorId][dUid], OWNER_DOOR, desc, "FFFFFFFF", pX, pY, pZ, dist, tPlayer[playerid][pVw], tPlayer[playerid][pInt]);
+		tPlayer[playerid][p3dText] = add3dText(tDoor[srvDoorId][dUid], OWNER_DOOR, desc, "FFFFFFFF", pX, pY, pZ, dist, tPlayer[playerid][pVw], tPlayer[playerid][pInt]);
 		Streamer_Update(playerid);
 
 		tDoor[srvDoorId][dTexts]++;
@@ -103,13 +103,13 @@ CMD:atc(playerid, params[]) {
 
 	GetPlayerPos(playerid, pX, pY, pZ);
 
-	last3dText[playerid] = add3dText(0, OWNER_AREA, desc, "FF0000FF", pX, pY, pZ, dist, tPlayer[playerid][pVw], tPlayer[playerid][pInt]);
+	tPlayer[playerid][p3dText] = add3dText(0, OWNER_AREA, desc, "FF0000FF", pX, pY, pZ, dist, tPlayer[playerid][pVw], tPlayer[playerid][pInt]);
 	Streamer_Update(playerid);
 	return 1;
 }
 
 CMD:td(playerid, params[]) {
-	new srvTextId = getServer3dTextId(last3dText[playerid]);
+	new srvTextId = getServer3dTextId(tPlayer[playerid][p3dText]);
 
 	if(srvTextId == OSRP_3DTEXT_INVALID_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -121,10 +121,10 @@ CMD:td(playerid, params[]) {
 
 	remove3dText(srvTextId);
 
-	last3dText[playerid] = UID_NONE;
+	tPlayer[playerid][p3dText] = UID_NONE;
 	Streamer_Update(playerid);
 
-	new srvDoorId = getServerDoorId(lastDoor[playerid]);
+	new srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 	if(srvDoorId == INVALID_DOOR_ID) {
 		return 1;
@@ -136,26 +136,26 @@ CMD:td(playerid, params[]) {
 }
 
 CMD:tsel(playerid, params[]) {
-	new srvDoorId = getServerDoorId(lastDoor[playerid]);
+	new srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 	if(srvDoorId == INVALID_DOOR_ID) {
 		return 1;
 	}
 
 	if((tDoor[srvDoorId][dOUid] == tPlayer[playerid][pUid] && tDoor[srvDoorId][dOType] == OWNER_PLAYER) ||
-	   (((tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][0]) && (tPlayer[playerid][pPerm][0] & P_GROUP_PERM_3DTEXT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][1]) && (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_3DTEXT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][2]) && (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_3DTEXT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][3]) && (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_3DTEXT)) ||
-	   (tDoor[srvDoorId][dOUid] == getServerGroupId(lastGroup[playerid][4]) && (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_3DTEXT))) &&
+	   (((tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][0]) && (tPlayer[playerid][pPerm][0] & P_GROUP_PERM_3DTEXT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][1]) && (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_3DTEXT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][2]) && (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_3DTEXT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][3]) && (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_3DTEXT)) ||
+	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][4]) && (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_3DTEXT))) &&
 	   tDoor[srvDoorId][dOType] == OWNER_GROUP)) {
 		new bool:found3dText;
 		static Float:radius = 1.5;
 
 		foreach(new i : text3dItter) {
-			if(t3dText[i][t3dOUid] == last3dText[playerid] && t3dText[i][t3dOType] == OWNER_DOOR) {
+			if(t3dText[i][t3dOUid] == tPlayer[playerid][p3dText] && t3dText[i][t3dOType] == OWNER_DOOR) {
 				if(playerToPoint(playerid, radius, t3dText[i][t3dPosX], t3dText[i][t3dPosY], t3dText[i][t3dPosZ])) {
-					last3dText[playerid] = t3dText[i][t3dUid];
+					tPlayer[playerid][p3dText] = t3dText[i][t3dUid];
 					found3dText = true;
 				}
 			} else {
@@ -189,7 +189,7 @@ CMD:ttext(playerid, params[]) {
 }
 
 CMD:tsave(playerid, params[]) {
-	new srvTextId = getServer3dTextId(last3dText[playerid]);
+	new srvTextId = getServer3dTextId(tPlayer[playerid][p3dText]);
 
 	if(srvTextId == OSRP_3DTEXT_INVALID_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -199,7 +199,7 @@ CMD:tsave(playerid, params[]) {
 		}
 	}
 
-	last3dText[playerid] = UID_NONE;
+	tPlayer[playerid][p3dText] = UID_NONE;
 	tPlayer[playerid][p3dTextEdit] = false;
 
 	save3dTextValues(srvTextId);
@@ -211,7 +211,7 @@ CMD:towner(playerid, params[]) {
 }
 
 CMD:tx(playerid, params[]) {
-	new srvTextId = getServer3dTextId(last3dText[playerid]);
+	new srvTextId = getServer3dTextId(tPlayer[playerid][p3dText]);
 
 	if(srvTextId == OSRP_3DTEXT_INVALID_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -238,7 +238,7 @@ CMD:tx(playerid, params[]) {
 }
 
 CMD:ty(playerid, params[]) {
-	new srvTextId = getServer3dTextId(last3dText[playerid]);
+	new srvTextId = getServer3dTextId(tPlayer[playerid][p3dText]);
 
 	if(srvTextId == OSRP_3DTEXT_INVALID_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -265,7 +265,7 @@ CMD:ty(playerid, params[]) {
 }
 
 CMD:tz(playerid, params[]) {
-	new srvTextId = getServer3dTextId(last3dText[playerid]);
+	new srvTextId = getServer3dTextId(tPlayer[playerid][p3dText]);
 
 	if(srvTextId == OSRP_3DTEXT_INVALID_ID) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {

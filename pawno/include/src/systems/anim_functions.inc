@@ -17,7 +17,7 @@ stock initAnimationValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_Animations`");
+	mysql_query("SELECT `UID`, `Name`, `AnimLib`, `AnimName`, `Delta`, `Loop`, `LockX`, `LockY`, `Freeze`, `Time`, `Forcesync` FROM `osrp_Animations`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -108,15 +108,19 @@ stock showPlayerAnimations(playerid, dialogid) {
 	}
 }
 
-stock applyAnimationEx(playerid, srvanimid) {
+stock OSRP_ApplyAnimation(playerid, srvanimid) {
+	OSRP_ClearAnimations(playerid);
+	ApplyAnimation(playerid, tAnim[srvanimid][aAnimLib], tAnim[srvanimid][aAnimName], tAnim[srvanimid][aDelta], tAnim[srvanimid][aLoop], tAnim[srvanimid][aLockX], tAnim[srvanimid][aLockY], tAnim[srvanimid][aFreeze], tAnim[srvanimid][aTime], tAnim[srvanimid][aForeSync]);
+
+	hasAnim[playerid] = true;
+}
+
+stock OSRP_ClearAnimations(playerid) {
 	if(hasAnim[playerid]) {
 		hasAnim[playerid] = false;
 	}
 
 	ClearAnimations(playerid);
-	ApplyAnimation(playerid, tAnim[srvanimid][aAnimLib], tAnim[srvanimid][aAnimName], tAnim[srvanimid][aDelta], tAnim[srvanimid][aLoop], tAnim[srvanimid][aLockX], tAnim[srvanimid][aLockY], tAnim[srvanimid][aFreeze], tAnim[srvanimid][aTime], tAnim[srvanimid][aForeSync]);
-
-	hasAnim[playerid] = true;
 }
 
 stock enablePlayerAnimation(playerid, anim[]) {
@@ -129,7 +133,7 @@ stock enablePlayerAnimation(playerid, anim[]) {
 	new srvAnimId = getServerAnimationIdFromName(anim);
 
 	if(srvAnimId != INVALID_ANIM_ID && srvAnimId != 4) {
-		applyAnimationEx(playerid, srvAnimId);
+		OSRP_ApplyAnimation(playerid, srvAnimId);
 	} else if(srvAnimId == 4) {
 		ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0, 0);
 

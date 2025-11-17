@@ -18,7 +18,7 @@ stock initGroupValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_Groups`");
+	mysql_query("SELECT `UID`, `Name`, `Date`, `Type`, `Members`, `VehLimit`, `Money`, `Color`, `Registered` FROM `osrp_Groups`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -168,7 +168,7 @@ stock initGroupSetValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_GroupSets`");
+	mysql_query("SELECT `UID`, `OUID`, `Kind`, `Name`, `Value1`, `Value2`, `Price`, `Amount` FROM `osrp_GroupSets`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -214,7 +214,7 @@ stock initGroupTaskValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_GroupTasks`");
+	mysql_query("SELECT `UID`, `OUID`, `Desc`, `Date`, `Caller` FROM `osrp_GroupTasks`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -254,7 +254,7 @@ stock initGroupOrderValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_GroupOrders`");
+	mysql_query("SELECT `UID`, `OUID`, `DName`, `IName`, `Owner`, `Kind`, `Value1`, `Value2`, `Price`, `Amount` FROM `osrp_GroupOrders`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -304,7 +304,7 @@ stock initGroupVehicleValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_GroupVehicles`");
+	mysql_query("SELECT `UID`, `GUID`, `OUID`, `Veh0`, `Veh1`, `Veh2`, `Veh3`, `Veh4`, `Veh5`, `Veh6`, `Veh7`, `Veh8`, `Veh9` FROM `osrp_GroupVehicles`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -394,7 +394,7 @@ stock getServerDoorIdFromOrder(playerid) {
 
 stock getFreePlayerGroupSlot(playerid) {	
 	for(new i = 0; i < MAX_PLAYER_GROUPS; i++) {
-		if(lastGroup[playerid][i] == UID_NONE) {
+		if(tPlayer[playerid][pGroup][i] == UID_NONE) {
 			return i;
 		}
 	}
@@ -441,7 +441,7 @@ stock addGroup(const name[], type, balance, perms, const color[]) {
 
 	mysql_query(queryStr);
 
-	printf("[LOG]: [GROUP] Dodano now¹ grupê o Uid: %d.", tGroup[freeId][gUid]);
+	printf("[LOG]: [GROUP] Dodano nowa grupe o Uid: %d.", tGroup[freeId][gUid]);
 	return tGroup[freeId][gUid];
 }
 
@@ -459,7 +459,7 @@ stock removeGroup(srvgrpid) {
 	mysql_query(queryStr);
 
 	Iter_Remove(groupItter, srvgrpid);
-	printf("[LOG]: [GROUP] Usuniêto grupê o Uid: %d.", tGroup[freeId][gUid]);
+	printf("[LOG]: [GROUP] Usunieto grupe o Uid: %d.", tGroup[srvgrpid][gUid]);
 
 	tGroup[srvgrpid][gUid] = UID_NONE;
 	format(tGroup[srvgrpid][gName], 32, NULL);
@@ -554,6 +554,8 @@ stock removeGroupSet(srvsetid, amount) {
 	queryStr[0] = EOS;
 	format(queryStr, sizeof(queryStr), "UPDATE `osrp_GroupSets` SET `Amount` = '%d' WHERE `UID` = '%d'", tGroupSet[srvsetid][gsAmount], tGroupSet[srvsetid][gsUid]);
 	mysql_query(queryStr);
+
+	printf("[LOG]: [GROUPSET] Usunieto %d elementow z zestawu grupy o Uid: %d.", amount, tGroupSet[srvsetid][gsUid]);
 	return 1;
 }
 
@@ -626,6 +628,7 @@ stock removeGroupTask(srvtaskid) {
 	mysql_query(queryStr);
 
 	Iter_Remove(groupTaskItter, srvtaskid);
+	printf("[LOG]: [GROUPTASK] Usunieto zadanie grupy o Uid: %d.", tGroupTask[srvtaskid][gtUid]);
 
 	tGroupTask[srvtaskid][gtUid] = UID_NONE;
 	tGroupTask[srvtaskid][gtOUid] = UID_NONE;
@@ -711,6 +714,7 @@ stock removeGroupOrder(srvorderid) {
 	mysql_query(queryStr);
 
 	Iter_Remove(groupOrderItter, srvorderid);
+	printf("[LOG]: [GROUPORDER] Usunieto zamowienie grupy o Uid: %d.", tGroupOrder[srvorderid][goUid]);
 
 	tGroupOrder[srvorderid][goUid] = UID_NONE;
 	tGroupOrder[srvorderid][goOUid] = UID_NONE;
@@ -756,7 +760,7 @@ stock saveGroupOrdersValues() {
 }
 
 stock showPlayerGroupInfo(playerid, slot) {
-	new srvGrpId = getServerGroupId(lastGroup[playerid][slot - 1]);
+	new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][slot - 1]);
 
 	if(srvGrpId == INVALID_GROUP_ID) {
 		return 1;
@@ -781,7 +785,7 @@ stock showPlayerGroupOnlineMembers(playerid, slot) {
 	new id, pId;
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `CharName` FROM `osrp_Players` WHERE `Group0` = '%d' OR `Group1` = '%d' OR `Group2` = '%d' OR `Group3` = '%d' OR `Group4` = '%d'", lastGroup[playerid][slot - 1], lastGroup[playerid][slot - 1], lastGroup[playerid][slot - 1], lastGroup[playerid][slot - 1], lastGroup[playerid][slot - 1]);
+	format(queryStr, sizeof(queryStr), "SELECT `CharName` FROM `osrp_Players` WHERE `Group0` = '%d' OR `Group1` = '%d' OR `Group2` = '%d' OR `Group3` = '%d' OR `Group4` = '%d'", tPlayer[playerid][pGroup][slot - 1], tPlayer[playerid][pGroup][slot - 1], tPlayer[playerid][pGroup][slot - 1], tPlayer[playerid][pGroup][slot - 1], tPlayer[playerid][pGroup][slot - 1]);
 	mysql_query(queryStr);
 
 	mysql_store_result();
@@ -819,7 +823,7 @@ stock showPlayerGroupTasks(playerid, slot) {
 		}
 	}
 
-	new srvGrpId = getServerGroupId(lastGroup[playerid][slot - 1]);
+	new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][slot - 1]);
 
 	if(srvGrpId == INVALID_GROUP_ID) {
 		return 1;
@@ -866,7 +870,7 @@ stock showPlayerGroupTasks(playerid, slot) {
 }
 
 stock showPlayerGroupVehicles(playerid, slot) {
-	new srvGrpId = getServerGroupId(lastGroup[playerid][slot - 1]);
+	new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][slot - 1]);
 
 	if(srvGrpId == INVALID_GROUP_ID) {
 		return 1;
@@ -913,7 +917,7 @@ stock kickPlayerFromGroup(playerid, kickerid, slot) {
 
 	endPlayerDuty(kickerid);
 
-	new srvGrpId = getServerGroupId(lastGroup[playerid][slot - 1]);
+	new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][slot - 1]);
 	mainStr[0] = EOS;
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -933,12 +937,12 @@ stock kickPlayerFromGroup(playerid, kickerid, slot) {
 	tGroup[srvGrpId][gMembers]--;
 	saveGroupValues(srvGrpId);
 
-	if(slot < 5 && lastGroup[kickerid][slot + 1] == UID_NONE) {
+	if(slot < 5 && tPlayer[kickerid][pGroup][slot + 1] == UID_NONE) {
 		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Group%d` = '0', `Perm%d` = '0', `PayDay%d` = '0', `Duty%d` = '0' WHERE `UID` = '%d'", slot, slot, slot, slot, tPlayer[kickerid][pUid]);
 		mysql_query(queryStr);
 
-		lastGroup[kickerid][slot] = UID_NONE;
+		tPlayer[kickerid][pGroup][slot] = UID_NONE;
 		tPlayer[kickerid][pPerm][slot] = 0;
 		tPlayer[kickerid][pPayDay][slot] = 0;
 		tPlayer[kickerid][pDuty][slot] = 0;
@@ -946,7 +950,7 @@ stock kickPlayerFromGroup(playerid, kickerid, slot) {
 		queryStr[0] = EOS;
 		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Group%d` = '%d', `Perm%d` = '%d', `PayDay%d` = '%d', `Duty%d` = '%d' WHERE `UID` = '%d'",
 			slot,
-			lastGroup[kickerid][slot + 1],
+			tPlayer[kickerid][pGroup][slot + 1],
 			slot,
 			tPlayer[kickerid][pPerm][slot + 1],
 			slot,
@@ -957,7 +961,7 @@ stock kickPlayerFromGroup(playerid, kickerid, slot) {
 		);
 		mysql_query(queryStr);
 
-		lastGroup[kickerid][slot] = lastGroup[kickerid][slot + 1];
+		tPlayer[kickerid][pGroup][slot] = tPlayer[kickerid][pGroup][slot + 1];
 		tPlayer[kickerid][pPerm][slot] = tPlayer[kickerid][pPerm][slot + 1];
 		tPlayer[kickerid][pPayDay][slot] = tPlayer[kickerid][pPayDay][slot + 1];
 		tPlayer[kickerid][pDuty][slot] = tPlayer[kickerid][pDuty][slot + 1];
@@ -966,7 +970,7 @@ stock kickPlayerFromGroup(playerid, kickerid, slot) {
 		format(queryStr, sizeof(queryStr), "UPDATE `osrp_Players` SET `Group%d` = '0', `Perm%d` = '0', `PayDay%d` = '0', `Duty%d` = '0' WHERE `UID` = '%d'", slot + 1, slot + 1, slot + 1, slot + 1, tPlayer[kickerid][pUid]);
 		mysql_query(queryStr);
 
-		lastGroup[kickerid][slot + 1] = UID_NONE;
+		tPlayer[kickerid][pGroup][slot + 1] = UID_NONE;
 		tPlayer[kickerid][pPerm][slot + 1] = 0;
 		tPlayer[kickerid][pPayDay][slot + 1] = 0;
 		tPlayer[kickerid][pDuty][slot + 1] = 0;
@@ -998,13 +1002,13 @@ stock showPlayerGroupMagazineSets(playerid, slot, dialogid, customer) {
 			}
 		}
 
-		srvGrpId = getServerGroupId(lastGroup[playerid][slot - 1]);
+		srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][slot - 1]);
 
 		if(srvGrpId == INVALID_GROUP_ID) {
 			return 1;
 		}
 	} else {
-		new srvDoorId = getServerDoorId(lastDoor[playerid]);
+		new srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
 
 		if(srvDoorId == INVALID_DOOR_ID) {
 			return 1;
@@ -1083,7 +1087,7 @@ stock showPlayerGroupMagazineSets(playerid, slot, dialogid, customer) {
 }
 
 stock doesPlayerHasVehicleLicense(playerid, srvvehid) {
-	new srvGrpId = getServerGroupId(lastGroup[playerid][tPlayer[playerid][pSlot] - 1]);
+	new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][tPlayer[playerid][pSlot] - 1]);
 
 	if(srvGrpId == INVALID_GROUP_ID) {
 		return 0;
@@ -1121,7 +1125,7 @@ stock isPlayerOnDuty(playerid) {
 }
 
 stock isPlayerInGroupType(playerid, slot, type) {
-	new srvGrpId = getServerGroupId(lastGroup[playerid][slot - 1]);
+	new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][slot - 1]);
 
 	if(srvGrpId != INVALID_GROUP_ID && tGroup[srvGrpId][gType] == type) {
 		return 1;
@@ -1144,8 +1148,8 @@ stock doesGroupHasPermission(srvgrpid, perm) {
 }
 
 stock isPlayerInAnyGroup(playerid) {
-	if(lastGroup[playerid][0] == UID_NONE && lastGroup[playerid][1] == UID_NONE && lastGroup[playerid][2] == UID_NONE &&
-	   lastGroup[playerid][3] == UID_NONE && lastGroup[playerid][4] == UID_NONE) {
+	if(tPlayer[playerid][pGroup][0] == UID_NONE && tPlayer[playerid][pGroup][1] == UID_NONE && tPlayer[playerid][pGroup][2] == UID_NONE &&
+	   tPlayer[playerid][pGroup][3] == UID_NONE && tPlayer[playerid][pGroup][4] == UID_NONE) {
 		return 0;
 	}
 	return 1;
@@ -1153,8 +1157,8 @@ stock isPlayerInAnyGroup(playerid) {
 
 stock sendGroupMessage(srvgrpid, color, const str[]) {
 	foreach(new i : Player) {
-		if(lastGroup[i][0] == tGroup[srvgrpid][gUid] || lastGroup[i][1] == tGroup[srvgrpid][gUid] || lastGroup[i][2] == tGroup[srvgrpid][gUid] ||
-		   lastGroup[i][3] == tGroup[srvgrpid][gUid] || lastGroup[i][4] == tGroup[srvgrpid][gUid]) {
+		if(tPlayer[i][pGroup][0] == tGroup[srvgrpid][gUid] || tPlayer[i][pGroup][1] == tGroup[srvgrpid][gUid] || tPlayer[i][pGroup][2] == tGroup[srvgrpid][gUid] ||
+		   tPlayer[i][pGroup][3] == tGroup[srvgrpid][gUid] || tPlayer[i][pGroup][4] == tGroup[srvgrpid][gUid]) {
 			SendClientMessage(i, color, str);
 		}
 	}
@@ -1166,8 +1170,8 @@ stock gameTextForGroup(srvgrpid, const str[], time, style, excludesender) {
 			continue;
 		}
 
-		if(lastGroup[i][0] == tGroup[srvgrpid][gUid] || lastGroup[i][1] == tGroup[srvgrpid][gUid] || lastGroup[i][2] == tGroup[srvgrpid][gUid] ||
-		   lastGroup[i][3] == tGroup[srvgrpid][gUid] || lastGroup[i][4] == tGroup[srvgrpid][gUid]) {
+		if(tPlayer[i][pGroup][0] == tGroup[srvgrpid][gUid] || tPlayer[i][pGroup][1] == tGroup[srvgrpid][gUid] || tPlayer[i][pGroup][2] == tGroup[srvgrpid][gUid] ||
+		   tPlayer[i][pGroup][3] == tGroup[srvgrpid][gUid] || tPlayer[i][pGroup][4] == tGroup[srvgrpid][gUid]) {
 			GameTextForPlayer(i, str, time, style);
 		}
 	}
