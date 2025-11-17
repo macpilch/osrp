@@ -111,9 +111,15 @@ stock initObjectValues() {
 	}
 
 	if(Iter_Count(objectItter)) {
+<<<<<<< HEAD
 		printf("[LOG]: [OBJECT] Wczytano %d obiektow.\n", Iter_Count(objectItter));
 	} else {
 		printf("[LOG]: [OBJECT] Brak obiektow.\n");
+=======
+		printf("[LOG]: [OBJECT] Wczytano %d obiekt w.\n", Iter_Count(objectItter));
+	} else {
+		printf("[LOG]: [OBJECT] Brak obiekt w.\n");
+>>>>>>> e7fd5934fbd73a2c350dbf7cd0c156994657b9ed
 	}
 
 	mysql_free_result();

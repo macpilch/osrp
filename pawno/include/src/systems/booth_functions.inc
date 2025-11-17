@@ -114,7 +114,11 @@ stock addBooth(const name[], Float:posx, Float:posy, Float:posz, Float:posa) {
 
 	mysql_query(queryStr);
 
+<<<<<<< HEAD
 	printf("[LOG]: [BOOTH] Dodano nowa budke o Uid %d.", tBooth[freeId][boUid]);
+=======
+	printf("[LOG]: [BOOTH] Dodano now  budk  o Uid %d.", tBooth[freeId][boUid]);
+>>>>>>> e7fd5934fbd73a2c350dbf7cd0c156994657b9ed
 	return tBooth[freeId][boUid];
 }
 
@@ -180,7 +184,7 @@ stock searchPlayerBooth(playerid) {
 			if(IsValidDynamicObject(tBooth[i][boObject]) && tBooth[i][boWorking]) {
 				if(tPlayer[playerid][pHours] > 20) {
 					if(tPlayer[playerid][pLang] == LANG_PL) {
-						return SendClientMessage(playerid, COLOR_GRAY, "Budki telefoniczne dostêpne s¹ tylko dla graczy, którzy przegrali mniej ni¿ 20 godzin.");
+						return SendClientMessage(playerid, COLOR_GRAY, "Budki telefoniczne dost pne s  tylko dla graczy, kt rzy przegrali mniej ni  20 godzin.");
 					} else {
 						return SendClientMessage(playerid, COLOR_GRAY, "Phone booths are only available to players who have played less than 20 hours.");
 					}
@@ -190,7 +194,7 @@ stock searchPlayerBooth(playerid) {
 				mainStr[0] = EOS;
 
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					strcat(mainStr, "{FFFFFF}Zadzwoñ do WSZYSTKICH taksówek >>\n--\n");
+					strcat(mainStr, "{FFFFFF}Zadzwo  do WSZYSTKICH taks wek >>\n--\n");
 				} else {
 					strcat(mainStr, "{FFFFFF}Call ALL taxis >>\n--\n");
 				}
@@ -204,7 +208,7 @@ stock searchPlayerBooth(playerid) {
 						}
 
 						if(tPlayer[playerid][pLang] == LANG_PL) {
-							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[j][gUid], countPlayer, tGroup[j][gName]);
+							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d os b na s u bie)\t%s", mainStr, tGroup[j][gUid], countPlayer, tGroup[j][gName]);
 						} else {
 							format(mainStr, sizeof(mainStr), "%s\n%d\t(%d people on duty)\t%s", mainStr, tGroup[j][gUid], countPlayer, tGroup[j][gName]);
 						}
@@ -222,8 +226,8 @@ stock searchPlayerBooth(playerid) {
 				ApplyAnimation(playerid, "PED", "PHONE_IN", 4.1, 0, 1, 1, 1, 1, 1);
 
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					SendClientMessage(playerid, COLOR_YELLOW, "Automat (telefon): Witamy. Gdzie chce siê Pan/Pani dodzwoniæ?");
-					ShowPlayerDialog(playerid, DIALOG_TELEPHONE_GROUPS, DIALOG_STYLE_LIST, "Dostêpne grupy", mainStr, "Wybierz", "Anuluj");
+					SendClientMessage(playerid, COLOR_YELLOW, "Automat (telefon): Witamy. Gdzie chce si  Pan/Pani dodzwoni ?");
+					ShowPlayerDialog(playerid, DIALOG_TELEPHONE_GROUPS, DIALOG_STYLE_LIST, "Dost pne grupy", mainStr, "Wybierz", "Anuluj");
 				} else {
 					SendClientMessage(playerid, COLOR_YELLOW, "Auto dialer (phone): Welcome. Where would you like to call?");
 					ShowPlayerDialog(playerid, DIALOG_TELEPHONE_GROUPS, DIALOG_STYLE_LIST, "Available groups", mainStr, "Choose", "Cancel");

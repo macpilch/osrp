@@ -83,7 +83,7 @@ stock initWholesaleValues() {
 
 	new id;
 
-	mysql_query("SELECT * FROM `osrp_WholeSales`");
+	mysql_query("SELECT `UID`, `Kind`, `ThingKind`, `Name`, `Price`, `Value1`, `Value2` FROM `osrp_WholeSales`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -215,7 +215,11 @@ stock addThing(owner, kind, const name[], value1, value2, value3, value4, Float:
 	);
 	mysql_query(queryStr);
 
+<<<<<<< HEAD
 	printf("[LOG]: [THING] Dodano nowa rzecz o Uid: %d.", tThing[freeId][tUid]);
+=======
+	printf("[LOG]: [THING] Dodano now  rzecz o Uid: %d.", tThing[freeId][tUid]);
+>>>>>>> e7fd5934fbd73a2c350dbf7cd0c156994657b9ed
 }
 
 stock removeThing(srvthingid) {
@@ -416,7 +420,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 
 			if(tPlayer[playerid][pLang] == LANG_PL) {
 				format(str, sizeof(str), "~w~godzina: ~p~%02d:%02d:%02d~w~.", hours, minutes, seconds);
-				format(mainStr, sizeof(mainStr), "* %s spogl¹da na swój zegarek %s", tPlayer[playerid][pCharName], tThing[srvthingid][tName]);
+				format(mainStr, sizeof(mainStr), "* %s spogl da na sw j zegarek %s", tPlayer[playerid][pCharName], tThing[srvthingid][tName]);
 			} else {
 				format(str, sizeof(str), "~w~time: ~p~%02d:%02d:%02d~w~.", hours, minutes, seconds);
 				format(mainStr, sizeof(mainStr), "* %s looks at their watch %s", tPlayer[playerid][pCharName], tThing[srvthingid][tName]);
@@ -428,7 +432,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 		case TKIND_WEAPON: {
 			if(IsPlayerInAnyVehicle(playerid)) {
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					return SendClientMessage(playerid, COLOR_GRAY, "Nie mo¿esz znajdowaæ siê w pojeŸdzie.");
+					return SendClientMessage(playerid, COLOR_GRAY, "Nie mo esz znajdowa  si  w poje dzie.");
 				} else {
 					return SendClientMessage(playerid, COLOR_GRAY, "You cannot be in the vehicle.");
 				}
@@ -436,7 +440,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 
 			if(tThing[srvthingid][tTerm] < timestamp()) {
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					SendClientMessage(playerid, COLOR_GRAY, "Ta broñ zepsu³a siê w wyniku eksploatacji.");
+					SendClientMessage(playerid, COLOR_GRAY, "Ta bro  zepsu a si  w wyniku eksploatacji.");
 				} else {
 					SendClientMessage(playerid, COLOR_GRAY, "This weapon has deteriorated due to use.");
 				}
@@ -447,12 +451,13 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 
 			if(!tThing[srvthingid][tValue2]) {
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					return SendClientMessage(playerid, COLOR_GRAY, "Ta broñ nie ma amunicji. Zdob¹dŸ j¹ lub pozb¹dŸ siê broni.");
+					return SendClientMessage(playerid, COLOR_GRAY, "Ta bro  nie ma amunicji. Zdob d  j  lub pozb d  si  broni.");
 				} else {
 					return SendClientMessage(playerid, COLOR_GRAY, "This weapon has no ammo. Get some or dispose of the weapon.");
 				}
 			}
 
+<<<<<<< HEAD
 			new day, month, year, oldDay, oldMonth, oldYear;
 			new bool:havePenalty;
 
@@ -476,12 +481,16 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 					return SendClientMessage(playerid, COLOR_GRAY, "You cannot use the weapon because you have received a penalty within the last month.");
 				}
 			}
+=======
+			//SendClientMessage(playerid, COLOR_GRAY, "Nie mo esz u ywa  broni, poniewa  otrzyma e (a ) jak   kar  w przeci gu ostatniego miesi ca.");
+			//SendClientMessage(playerid, COLOR_GRAY, "You cannot use the weapon because you have received a penalty within the last month.");
+>>>>>>> e7fd5934fbd73a2c350dbf7cd0c156994657b9ed
 
 			if(!strlen(thingParms[playerid])) {
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					strcat(mainStr, "Sk¹d wyci¹gasz/dok¹d chowasz broñ (np. \"z kabury\")?\n\n");
-					strcat(mainStr, "Mo¿esz pomin¹æ ten dialog i szybciej u¿ywaæ przedmiotów (/pomoc -> Przedmioty).");
-					ShowPlayerDialog(playerid, DIALOG_THING_PARAMETERS, DIALOG_STYLE_INPUT, "Parametry", mainStr, "U¿yj", "Anuluj");
+					strcat(mainStr, "Sk d wyci gasz/dok d chowasz bro  (np. \"z kabury\")?\n\n");
+					strcat(mainStr, "Mo esz pomin   ten dialog i szybciej u ywa  przedmiot w (/pomoc -> Przedmioty).");
+					ShowPlayerDialog(playerid, DIALOG_THING_PARAMETERS, DIALOG_STYLE_INPUT, "Parametry", mainStr, "U yj", "Anuluj");
 				} else {
 					strcat(mainStr, "Where do you get/hide your weapon (e.g. \"from a holster\")?\n\n");
 					strcat(mainStr, "You can skip this dialog and use items faster (/help -> Items).");
@@ -513,7 +522,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 						SetPlayerDrunkLevel(playerid, 5000);
 
 						if(tPlayer[playerid][pLang] == LANG_PL) {
-							format(mainStr, sizeof(mainStr), "* %s po³yka %s.", tPlayer[playerid][pCharName], tThing[srvthingid][tName]);
+							format(mainStr, sizeof(mainStr), "* %s po yka %s.", tPlayer[playerid][pCharName], tThing[srvthingid][tName]);
 						} else {
 							format(mainStr, sizeof(mainStr), "* %s swallows %s.", tPlayer[playerid][pCharName], tThing[srvthingid][tName]);
 						}
@@ -608,7 +617,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				mainStr[0] = EOS;
 
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					format(mainStr, sizeof(mainStr), "** Posi³ek %s uleg³ przeterminowaniu. **", tThing[srvthingid][tName]);
+					format(mainStr, sizeof(mainStr), "** Posi ek %s uleg  przeterminowaniu. **", tThing[srvthingid][tName]);
 				} else {
 					format(mainStr, sizeof(mainStr), "** Meal %s has expired. **", tThing[srvthingid][tName]);
 				}
@@ -620,7 +629,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 
 			if(tThing[srvthingid][tCraft]) {
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					return DialogInfo(playerid, "Tego przedmiotu mo¿na u¿ywaæ tylko w celu craftingu.");
+					return DialogInfo(playerid, "Tego przedmiotu mo na u ywa  tylko w celu craftingu.");
 				} else {
 					return DialogInfo(playerid, "This item can only be used for crafting purposes.");
 				}
@@ -635,7 +644,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			ApplyAnimation(playerid, "PED", "gum_eat", 4.1, 0, 0, 0, 0, 0);
 
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				format(mainStr, sizeof(mainStr), "* %s spo¿ywa %s.", tPlayer[playerid][pCharName], tThing[srvthingid][tName]);
+				format(mainStr, sizeof(mainStr), "* %s spo ywa %s.", tPlayer[playerid][pCharName], tThing[srvthingid][tName]);
 			} else {
 				format(mainStr, sizeof(mainStr), "* %s eats %s.", tPlayer[playerid][pCharName], tThing[srvthingid][tName]);
 			}
@@ -692,9 +701,9 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				format(tPlayer[playerid][pCharName], 24, strChat);
 
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					strcat(mainStr, "Zak³adasz maskê.\nPamiêtaj, ¿e maj¹c maskê, nad postaci¹ widaæ Twój zaszyfrowany identyfikator.\n");
-					strcat(mainStr, "Oznacza to, ¿e ka¿dy gracz mo¿e wys³aæ na Ciebie raport, ka¿dy mo¿e napisaæ skargê.\n");
-					strcat(mainStr, "Nie jesteœ wiêc anonimowy(a), administracja zawsze mo¿e Ciê zidentyfikowaæ.");
+					strcat(mainStr, "Zak adasz mask .\nPami taj,  e maj c mask , nad postaci  wida  Tw j zaszyfrowany identyfikator.\n");
+					strcat(mainStr, "Oznacza to,  e ka dy gracz mo e wys a  na Ciebie raport, ka dy mo e napisa  skarg .\n");
+					strcat(mainStr, "Nie jeste  wi c anonimowy(a), administracja zawsze mo e Ci  zidentyfikowa .");
 				} else {
 					strcat(mainStr, "You put on a mask.\nRemember that when wearing a mask, your encrypted ID is visible above your character.\n");
 					strcat(mainStr, "This means any player can report you, anyone can file a complaint.\n");
@@ -765,7 +774,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			ApplyAnimation(playerid, "INT_HOUSE", "wash_up", 4.1, 0, 0, 0, 0, 0);
 
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				format(mainStr, sizeof(mainStr), "* %s uzupe³nia bak paliwem z kanistra.", tPlayer[playerid][pCharName]);
+				format(mainStr, sizeof(mainStr), "* %s uzupe nia bak paliwem z kanistra.", tPlayer[playerid][pCharName]);
 			} else {
 				format(mainStr, sizeof(mainStr), "* %s refills the tank with fuel from a canister.", tPlayer[playerid][pCharName]);
 			}
@@ -776,16 +785,16 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			removeThing(srvthingid);
 		}
 		case TKIND_MEDICINE: {
-			//SendClientMessage(playerid, COLOR_GRAY, "Parametry: [Osoba, któr¹ poddajesz detoksowi]");
-			//SendClientMessage(playerid, COLOR_GRAY, "Jesteœ zbyt daleko tej osoby.");
+			//SendClientMessage(playerid, COLOR_GRAY, "Parametry: [Osoba, kt r  poddajesz detoksowi]");
+			//SendClientMessage(playerid, COLOR_GRAY, "Jeste  zbyt daleko tej osoby.");
 			//SendClientMessage(playerid, COLOR_GRAY, "Niepoprawny gracz.");
 
 			//new srvDoorId = getServerDoorId(playerid);
-			//SendClientMessage(playerid, COLOR_GRAY, "Musisz byæ w aptece, która wyda³a ten lek, lub karetce, aby go u¿yæ.");
+			//SendClientMessage(playerid, COLOR_GRAY, "Musisz by  w aptece, kt ra wyda a ten lek, lub karetce, aby go u y .");
 			OSRP_SetPlayerHealth(playerid, tThing[srvthingid][tValue1]);
 
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				format(mainStr, sizeof(mainStr), "* %s spo¿ywa lek.", tPlayer[playerid][pCharName]);
+				format(mainStr, sizeof(mainStr), "* %s spo ywa lek.", tPlayer[playerid][pCharName]);
 			} else {
 				format(mainStr, sizeof(mainStr), "* %s consumes medicine.", tPlayer[playerid][pCharName]);
 			}
@@ -802,11 +811,11 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				tThing[srvthingid][tUsed] = true;
 
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					SendClientMessage(playerid, COLOR_GRAY, "Parametry: [Gracz, który siedzi w aucie do holowania]");
+					SendClientMessage(playerid, COLOR_GRAY, "Parametry: [Gracz, kt ry siedzi w aucie do holowania]");
 
-					strcat(mainStr, "Na czacie pojawi³ siê tip podaj¹cy wymagane do u¿ycia tego przedmiotu parametry.\n");
-					strcat(mainStr, "Wpisz je proszê oddzielone spacjami (jak przy zwyk³ej komendzie).");
-					ShowPlayerDialog(playerid, DIALOG_THING_PARAMETERS, DIALOG_STYLE_INPUT, "Ten przedmiot wymaga parametrów.", mainStr, "U¿yj", "Anuluj");
+					strcat(mainStr, "Na czacie pojawi  si  tip podaj cy wymagane do u ycia tego przedmiotu parametry.\n");
+					strcat(mainStr, "Wpisz je prosz  oddzielone spacjami (jak przy zwyk ej komendzie).");
+					ShowPlayerDialog(playerid, DIALOG_THING_PARAMETERS, DIALOG_STYLE_INPUT, "Ten przedmiot wymaga parametr w.", mainStr, "U yj", "Anuluj");
 				} else {
 					SendClientMessage(playerid, COLOR_GRAY, "Parameters: [Player, who sits in the auto for towing]");
 
@@ -846,7 +855,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			}
 
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				ShowPlayerDialog(playerid, DIALOG_THING_AMMO, DIALOG_STYLE_LIST, "Dostêpne przedmioty", mainStr, "OK", "Zamknij");
+				ShowPlayerDialog(playerid, DIALOG_THING_AMMO, DIALOG_STYLE_LIST, "Dost pne przedmioty", mainStr, "OK", "Zamknij");
 			} else {
 				ShowPlayerDialog(playerid, DIALOG_THING_AMMO, DIALOG_STYLE_LIST, "Available items", mainStr, "OK", "Close");
 			}
@@ -856,7 +865,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 
 			if((cubeUseTime[playerid] + 5) > gettime() && count > 2) {
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					return SendClientMessage(playerid, COLOR_GRAY, "Mo¿esz losowaæ tylko 2 razy w ci¹gu 5 sekund.");
+					return SendClientMessage(playerid, COLOR_GRAY, "Mo esz losowa  tylko 2 razy w ci gu 5 sekund.");
 				} else {
 					return SendClientMessage(playerid, COLOR_GRAY, "You can only draw 2 times in 5 seconds.");
 				}
@@ -865,7 +874,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			new randNum = random(6) + 1;
 
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				format(mainStr, sizeof(mainStr), "* %s %s liczbê %d (z 1-6) u¿ywaj¹c %s. *", tPlayer[playerid][pCharName], tPlayer[playerid][pSex] ? ("wylosowa³a") : ("wylosowa³"), randNum);
+				format(mainStr, sizeof(mainStr), "* %s %s liczb  %d (z 1-6) u ywaj c %s. *", tPlayer[playerid][pCharName], tPlayer[playerid][pSex] ? ("wylosowa a") : ("wylosowa "), randNum);
 			} else {
 				format(mainStr, sizeof(mainStr), "* %s rolled %d points out of 6.", tPlayer[playerid][pCharName], randNum);
 			}
@@ -889,13 +898,13 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 		case TKIND_CLOTHES: {
 			if(!doesPlayerHasCorrectOrigin(playerid, tThing[srvthingid][tValue1])) {
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					return SendClientMessage(playerid, COLOR_GRAY, "Ten skin nie jest zgodny z ras¹ Twojej postaci.");
+					return SendClientMessage(playerid, COLOR_GRAY, "Ten skin nie jest zgodny z ras  Twojej postaci.");
 				} else {
 					return SendClientMessage(playerid, COLOR_GRAY, "This skin is not compatible with your character's race.");
 				}
 			}
 
-			//ShowPlayerDialogInfo(playerid, "Aby u¿yæ tego przedmiotu, musisz byæ w grupie %d.");
+			//ShowPlayerDialogInfo(playerid, "Aby u y  tego przedmiotu, musisz by  w grupie %d.");
 			resetThingValues(playerid);
 
 			if(!tThing[srvthingid][tUsed]) {
@@ -925,8 +934,8 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 
 			if(!strlen(playerNotes[playerid])) {
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					strcat(mainStr, "Nie posiadasz notatek.\n\nBy jak¹œ dopisaæ, wpisz jej treœæ w tym miejscu.");
-					strcat(mainStr, " Maksymalna d³ugoœæ to 64 znaki.");
+					strcat(mainStr, "Nie posiadasz notatek.\n\nBy jak   dopisa , wpisz jej tre   w tym miejscu.");
+					strcat(mainStr, " Maksymalna d ugo   to 64 znaki.");
 					ShowPlayerDialog(playerid, DIALOG_SET_NOTE_TEXT, DIALOG_STYLE_LIST, "Notes", mainStr, "Napisz", "Zamknij");
 				} else {
 					strcat(mainStr, "You have no notes.\n\nTo add one, enter it here.");
@@ -939,11 +948,11 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 		}
 		case TKIND_POISON: {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				SendClientMessage(playerid, COLOR_GRAY, "Argumenty: [Gracz, który ma BW] [Powód OOC nadania CK, dla administracji]");
+				SendClientMessage(playerid, COLOR_GRAY, "Argumenty: [Gracz, kt ry ma BW] [Pow d OOC nadania CK, dla administracji]");
 
-				strcat(mainStr, "Na czacie pojawi³ siê tip podaj¹cy wymagane do u¿ycia tego przedmiotu parametry.\n");
-				strcat(mainStr, "Wpisz je proszê oddzielone spacjami (jak przy zwyk³ej komendzie).");
-				ShowPlayerDialog(playerid, DIALOG_THING_PARAMETERS, DIALOG_STYLE_INPUT, "Ten przedmiot wymaga parametrów.", mainStr, "U¿yj", "Anuluj");
+				strcat(mainStr, "Na czacie pojawi  si  tip podaj cy wymagane do u ycia tego przedmiotu parametry.\n");
+				strcat(mainStr, "Wpisz je prosz  oddzielone spacjami (jak przy zwyk ej komendzie).");
+				ShowPlayerDialog(playerid, DIALOG_THING_PARAMETERS, DIALOG_STYLE_INPUT, "Ten przedmiot wymaga parametr w.", mainStr, "U yj", "Anuluj");
 			} else {
 				SendClientMessage(playerid, COLOR_GRAY, "Arguments: [Player who has BW] [Reason OOC grants CK for the administration]");
 
@@ -1036,7 +1045,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 					GameTextForPlayer(pId, "~r~Interlocutor hung up.", 5000, 3);
 				}
 			/*} else if() {
-				ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_MENU, DIALOG_STYLE_LIST, "Telefon - brak zasiêgu", "{FFFFFF}(Brak zasiêgu)\n7\tWy³¹cz", "OK", "Anuluj");
+				ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_MENU, DIALOG_STYLE_LIST, "Telefon - brak zasi gu", "{FFFFFF}(Brak zasi gu)\n7\tWy  cz", "OK", "Anuluj");
 				ShowPlayerDialog(playerid, DIALOG_SHOW_TELEPHONE_MENU, DIALOG_STYLE_LIST, "Phone - no coverage", "{FFFFFF}(No coverage)\n7\tTurn off", "OK", "Cancel");
 				*/
 			} else {
@@ -1047,8 +1056,8 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				format(str, sizeof(str), "Phone %d [%d:%d:%d]", tPlayer[playerid][pTelNum], h, m, d);
 
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					strcat(mainStr, "{FFFFFF}1\tZadzwoñ do kontaktu\n2\tWyœlij SMS do kontaktu\n10\tUsuñ kontakt\n");
-					format(mainStr, sizeof(mainStr), "%s3\tWybierz numer\n4\tWyœlij vCard\n5\tWycisz telefon\n7\tWy³¹cz\n(By wys³aæ SMS: /p %s [numer] [tekst])", mainStr, tThing[srvthingid][tName]);
+					strcat(mainStr, "{FFFFFF}1\tZadzwo  do kontaktu\n2\tWy lij SMS do kontaktu\n10\tUsu  kontakt\n");
+					format(mainStr, sizeof(mainStr), "%s3\tWybierz numer\n4\tWy lij vCard\n5\tWycisz telefon\n7\tWy  cz\n(By wys a  SMS: /p %s [numer] [tekst])", mainStr, tThing[srvthingid][tName]);
 					ShowPlayerDialog(playerid, DIALOG_TELEPHONE_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
 				} else {
 					strcat(mainStr, "{FFFFFF}1\tCall contact\n2\tSend an SMS to a contact\n10\tDelete contact\n");
@@ -1068,7 +1077,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 
 				if(IsPlayerInAnyVehicle(playerid)) {
 					if(tPlayer[playerid][pLang] == LANG_PL) {
-						return SendClientMessage(playerid, COLOR_GRAY, "Nie mo¿esz znajdowaæ siê w pojeŸdzie.");
+						return SendClientMessage(playerid, COLOR_GRAY, "Nie mo esz znajdowa  si  w poje dzie.");
 					} else {
 						return SendClientMessage(playerid, COLOR_GRAY, "You cannot be in the vehicle.");
 					}
@@ -1089,7 +1098,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				SetTimerEx("hideUsedRollersInfo", 5000, false, "i", playerid);
 
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					format(mainStr, sizeof(mainStr), "* %s zak³ada rolki", tPlayer[playerid][pCharName]);
+					format(mainStr, sizeof(mainStr), "* %s zak ada rolki", tPlayer[playerid][pCharName]);
 				} else {
 					format(mainStr, sizeof(mainStr), "* %s puts on rollers", tPlayer[playerid][pCharName]);
 				}
@@ -1123,7 +1132,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			isGym[playerid] = false;
 
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				strcat(mainStr, "Zaakceptowano trening.\n\nU¿yj sprzêtu w silowni (/silownia), aby zwiekszyc swoja sile.\n\n");
+				strcat(mainStr, "Zaakceptowano trening.\n\nU yj sprz tu w silowni (/silownia), aby zwiekszyc swoja sile.\n\n");
 				strcat(mainStr, "Niektore narkotyki zwiekszaja szybkosc zdobywania sily, a inne czestotliwosc treningow!");
 			} else {
 				strcat(mainStr, "Training accepted.\n\nUse the equipment in the gym (/gym) to increase your strength.\n\n");
@@ -1137,8 +1146,8 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 		case TKIND_GLOVES: {
 			if(!tThing[srvthingid][tUsed]) {
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					format(mainStr, sizeof(mainStr), "* %s zak³ada rêkawiczki jednorazowe.", tPlayer[playerid][pCharName]);
-					format(mainStr, sizeof(mainStr), "* %s zak³ada rêkawiczki.", tPlayer[playerid][pCharName]);
+					format(mainStr, sizeof(mainStr), "* %s zak ada r kawiczki jednorazowe.", tPlayer[playerid][pCharName]);
+					format(mainStr, sizeof(mainStr), "* %s zak ada r kawiczki.", tPlayer[playerid][pCharName]);
 				} else {
 					format(mainStr, sizeof(mainStr), "* %s puts on disposable gloves.", tPlayer[playerid][pCharName]);
 					format(mainStr, sizeof(mainStr), "* %s puts on gloves.", tPlayer[playerid][pCharName]);
@@ -1150,8 +1159,8 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				tThing[srvthingid][tUsed] = true;
 			} else {
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					format(mainStr, sizeof(mainStr), "* %s zdejmuje rêkawiczki jednorazowe.", tPlayer[playerid][pCharName]);
-					format(mainStr, sizeof(mainStr), "* %s zdejmuje rêkawiczki.", tPlayer[playerid][pCharName]);
+					format(mainStr, sizeof(mainStr), "* %s zdejmuje r kawiczki jednorazowe.", tPlayer[playerid][pCharName]);
+					format(mainStr, sizeof(mainStr), "* %s zdejmuje r kawiczki.", tPlayer[playerid][pCharName]);
 				} else {
 					format(mainStr, sizeof(mainStr), "* %s takes off disposable gloves.", tPlayer[playerid][pCharName]);
 					format(mainStr, sizeof(mainStr), "* %s takes of gloves.", tPlayer[playerid][pCharName]);
@@ -1175,7 +1184,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				OSRP_SetPlayerArmour(playerid, tThing[srvthingid][tValue1]);
 
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					format(mainStr, sizeof(mainStr), "* %s zak³ada kamizelkê.", tPlayer[playerid][pCharName]);
+					format(mainStr, sizeof(mainStr), "* %s zak ada kamizelk .", tPlayer[playerid][pCharName]);
 				} else {
 					format(mainStr, sizeof(mainStr), "* %s puts on the armor.", tPlayer[playerid][pCharName]);
 				}
@@ -1185,7 +1194,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				tThing[srvthingid][tUsed] = true;
 			} else {
 				if(tPlayer[playerid][pLang] == LANG_PL) {
-					format(mainStr, sizeof(mainStr), "* %s zdejmuje kamizelkê.", tPlayer[playerid][pCharName]);
+					format(mainStr, sizeof(mainStr), "* %s zdejmuje kamizelk .", tPlayer[playerid][pCharName]);
 				} else {
 					format(mainStr, sizeof(mainStr), "* %s takes off the armor.", tPlayer[playerid][pCharName]);
 				}
@@ -1198,17 +1207,17 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				OSRP_SetPlayerArmour(playerid, 0);
 			}
 		}
-		//format(mainStr, sizeof(mainStr), "* %s umieszcza cia³o w pojeŸdzie.", tPlayer[playerid][pCharName]);
-		//format(mainStr, sizeof(mainStr), "* %s wsadza p³ytê do odtwarzacza.", tPlayer[playerid][pCharName]);
-		//format(mainStr, sizeof(mainStr), "* %s zmienia p³ytê w systemie audio.", tPlayer[playerid][pCharName]);
-		//format(mainStr, sizeof(mainStr), "* %s zmienia p³ytê w radiu.", tPlayer[playerid][pCharName]);
-		//format(mainStr, sizeof(mainStr), "* %s wy³¹cza muzykê w radiu.", tPlayer[playerid][pCharName]);
+		//format(mainStr, sizeof(mainStr), "* %s umieszcza cia o w poje dzie.", tPlayer[playerid][pCharName]);
+		//format(mainStr, sizeof(mainStr), "* %s wsadza p yt  do odtwarzacza.", tPlayer[playerid][pCharName]);
+		//format(mainStr, sizeof(mainStr), "* %s zmienia p yt  w systemie audio.", tPlayer[playerid][pCharName]);
+		//format(mainStr, sizeof(mainStr), "* %s zmienia p yt  w radiu.", tPlayer[playerid][pCharName]);
+		//format(mainStr, sizeof(mainStr), "* %s wy  cza muzyk  w radiu.", tPlayer[playerid][pCharName]);
 		case TKIND_COMPONENT, TKIND_CARITEM, TKIND_ACCESSORY: {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				strcat(mainStr, "Podaj nastêpuj¹ce parametry oddzielone spacjami:\n[ID/Czêœæ nazwy gracza] [Cena]\n");
-				strcat(mainStr, "\tPrzyk³ad: John_Smith 50 (zamiast nicku wszêdzie mo¿na podaæ ID gracza)\n\n");
-				strcat(mainStr, "Mo¿esz pomin¹æ ten dialog i szybciej u¿ywaæ przedmiotów (/pomoc -> Przedmioty).");
-				ShowPlayerDialog(playerid, DIALOG_THING_PARAMETERS, DIALOG_STYLE_INPUT, "Parametry", mainStr, "U¿yj", "Anuluj");
+				strcat(mainStr, "Podaj nast puj ce parametry oddzielone spacjami:\n[ID/Cz   nazwy gracza] [Cena]\n");
+				strcat(mainStr, "\tPrzyk ad: John_Smith 50 (zamiast nicku wsz dzie mo na poda  ID gracza)\n\n");
+				strcat(mainStr, "Mo esz pomin   ten dialog i szybciej u ywa  przedmiot w (/pomoc -> Przedmioty).");
+				ShowPlayerDialog(playerid, DIALOG_THING_PARAMETERS, DIALOG_STYLE_INPUT, "Parametry", mainStr, "U yj", "Anuluj");
 			} else {
 				strcat(mainStr, "Enter the following parameters separated by spaces:\n[ID/Part of the player name] [Price]\n");
 				strcat(mainStr, "\tExample: John_Smith 50 (instead of a nickname, you can enter the player ID everywhere)\n\n");
@@ -1220,9 +1229,9 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
 				SendClientMessage(playerid, COLOR_GRAY, "Parametry: [Gracz] [Cena]");
 
-				strcat(mainStr, "Na czacie pojawi³ siê tip podaj¹cy wymagane do u¿ycia tego przedmiotu parametry.\n");
-				strcat(mainStr, "Wpisz je proszê oddzielone spacjami (jak przy zwyk³ej komendzie).");
-				ShowPlayerDialog(playerid, DIALOG_THING_PARAMETERS, DIALOG_STYLE_INPUT, "Ten przedmiot wymaga parametrów.", mainStr, "U¿yj", "Anuluj");
+				strcat(mainStr, "Na czacie pojawi  si  tip podaj cy wymagane do u ycia tego przedmiotu parametry.\n");
+				strcat(mainStr, "Wpisz je prosz  oddzielone spacjami (jak przy zwyk ej komendzie).");
+				ShowPlayerDialog(playerid, DIALOG_THING_PARAMETERS, DIALOG_STYLE_INPUT, "Ten przedmiot wymaga parametr w.", mainStr, "U yj", "Anuluj");
 			} else {
 				SendClientMessage(playerid, COLOR_GRAY, "Parameters: [Player] [Price]");
 
@@ -1233,7 +1242,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 		}
 		case TKIND_PICKLOCK: {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				return DialogInfo(playerid, "Aby u¿yæ tego przedmiotu, musisz byæ w grupie Tuska.");
+				return DialogInfo(playerid, "Aby u y  tego przedmiotu, musisz by  w grupie Tuska.");
 			} else {
 				return DialogInfo(playerid, "You must be in a group %s to use this item.");
 			}
@@ -1243,7 +1252,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			removeThing(srvthingid);
 
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				strcat(mainStr, "Pojazd zosta³ odebrany i znajduje siê teraz\nna Twojej liœcie pojazdów - /v.");
+				strcat(mainStr, "Pojazd zosta  odebrany i znajduje si  teraz\nna Twojej li cie pojazd w - /v.");
 			} else {
 				strcat(mainStr, "The vehicle has been picked up and is now\non your vehicle list - /v.");
 			}
@@ -1251,7 +1260,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			DialogInfo(playerid, mainStr);
 		}
 	}
-	//sendDoMessage(playerid, "** Ladunek wybuchowy otworzy³ drzwi. **");
+	//sendDoMessage(playerid, "** Ladunek wybuchowy otworzy  drzwi. **");
 	//sendDoMessage(playerid, "** Explosive charge blew the door open. **");
 
 	usedLastThingTime[playerid] = gettime();
@@ -1264,8 +1273,8 @@ stock addPlayerWeapon(playerid, srvthingid, from[]) {
 	if(tPlayer[playerid][pWeapSkill][0] < 40 || tPlayer[playerid][pWeapSkill][1] < 40 || tPlayer[playerid][pWeapSkill][2] < 40 || tPlayer[playerid][pWeapSkill][3] < 40 ||
 	   tPlayer[playerid][pWeapSkill][4] < 40) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			SendClientMessage(playerid, COLOR_YELLOW, "Twoja postaæ nie ma doœwiadczenia w strzelaniu. Udaj siê na mecz ASG i");
-			SendClientMessage(playerid, COLOR_YELLOW, "fraguj innych danym rodzajem broni - im wiêcej æwiczysz, tym celniej i szybciej strzelasz.");
+			SendClientMessage(playerid, COLOR_YELLOW, "Twoja posta  nie ma do wiadczenia w strzelaniu. Udaj si  na mecz ASG i");
+			SendClientMessage(playerid, COLOR_YELLOW, "fraguj innych danym rodzajem broni - im wi cej  wiczysz, tym celniej i szybciej strzelasz.");
 		} else {
 			SendClientMessage(playerid, COLOR_YELLOW, "Your character has no shooting experience. Go to an ASG and");
 			SendClientMessage(playerid, COLOR_YELLOW, "frag others with a given type of weapon - the more you practice, the more accurate and faster you shoot.");
@@ -1275,7 +1284,7 @@ stock addPlayerWeapon(playerid, srvthingid, from[]) {
 	mainStr[0] = EOS;
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		format(mainStr, sizeof(mainStr), "* %s wyci¹ga %s %s.", tPlayer[playerid][pCharName], tThing[srvthingid][tName], from);
+		format(mainStr, sizeof(mainStr), "* %s wyci ga %s %s.", tPlayer[playerid][pCharName], tThing[srvthingid][tName], from);
 	} else {
 		format(mainStr, sizeof(mainStr), "* %s pulls %s %s.", tPlayer[playerid][pCharName], tThing[srvthingid][tName], from);
 	}
@@ -1371,13 +1380,13 @@ stock putDownThing(playerid, place) {
 
 		if(isThingKind(srvThingId, TKIND_WEAPON) || isThingKind(srvThingId, TKIND_CARITEM) || isThingKind(srvThingId, TKIND_CORPSE)) {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				format(mainStr, sizeof(mainStr), "* %s coœ odk³ada.", tPlayer[playerid][pCharName]);
+				format(mainStr, sizeof(mainStr), "* %s co  odk ada.", tPlayer[playerid][pCharName]);
 			} else {
 				format(mainStr, sizeof(mainStr), "* %s puts something aside.", tPlayer[playerid][pCharName]);
 			}
 		} else {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				format(mainStr, sizeof(mainStr), "* %s upuszcza jakiœ przedmiot.", tPlayer[playerid][pCharName]);
+				format(mainStr, sizeof(mainStr), "* %s upuszcza jaki  przedmiot.", tPlayer[playerid][pCharName]);
 			} else {
 				format(mainStr, sizeof(mainStr), "* %s drops some an item.", tPlayer[playerid][pCharName]);
 			}
@@ -1398,7 +1407,7 @@ stock putDownThing(playerid, place) {
 		tThing[srvThingId][tInt] = tPlayer[playerid][pInt];
 
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			format(mainStr, sizeof(mainStr), "* %s odk³ada coœ w pojeŸdzie.", tPlayer[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "* %s odk ada co  w poje dzie.", tPlayer[playerid][pCharName]);
 		} else {
 			format(mainStr, sizeof(mainStr), "* %s puts something in vehicle.", tPlayer[playerid][pCharName]);
 		}
@@ -1488,7 +1497,7 @@ stock pickUpNearblyThings(playerid, place) {
 	}
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		ShowPlayerDialog(playerid, DIALOG_THING_PICKUP, DIALOG_STYLE_LIST, "Pobliskie przedmioty (/p podnies)", mainStr, "Podnieœ", "Zamknij");
+		ShowPlayerDialog(playerid, DIALOG_THING_PICKUP, DIALOG_STYLE_LIST, "Pobliskie przedmioty (/p podnies)", mainStr, "Podnie ", "Zamknij");
 	} else {
 		ShowPlayerDialog(playerid, DIALOG_THING_PICKUP, DIALOG_STYLE_LIST, "Nearby items (/i pickup)", mainStr, "Pick up", "Close");
 	}
@@ -1585,8 +1594,8 @@ stock showPlayerThings(playerid) {
 
 	if(!countThings) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			strcat(str, "{FFFFFF}Nie posiadasz jeszcze przedmiotów.\nMo¿na je zdobyæ od innych graczy, kupiæ\n");
-			strcat(str, "w ró¿nych firmach lub znaleŸæ na ziemi.\nZdobyte przedmioty mo¿esz u¿yæ lub handlowaæ.");
+			strcat(str, "{FFFFFF}Nie posiadasz jeszcze przedmiot w.\nMo na je zdoby  od innych graczy, kupi \n");
+			strcat(str, "w r nych firmach lub znale   na ziemi.\nZdobyte przedmioty mo esz u y  lub handlowa .");
 		} else {
 			strcat(str, "{FFFFFF}You do not have any items yet.\nThey can be obtained from other players, purchased\n");
 			strcat(str, "from various businesses, or found on the ground.\nYou can use or trade the items you acquire.");
@@ -1611,8 +1620,8 @@ stock showPlayerThings(playerid) {
 	SetTimerEx("hideThingTips", 4000, false, "i", playerid);
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		format(str, sizeof(str), "{AAAAAA}Przedmioty znajduj¹ce siê przy Tobie:\n%s\n{AAAAAA}Podnieœ przedmiot...{000000}\t0\t0", str);
-		ShowPlayerDialog(playerid, DIALOG_THING, DIALOG_STYLE_LIST, "Dostêpne przedmioty", str, "U¿yj", "Wiêcej");
+		format(str, sizeof(str), "{AAAAAA}Przedmioty znajduj ce si  przy Tobie:\n%s\n{AAAAAA}Podnie  przedmiot...{000000}\t0\t0", str);
+		ShowPlayerDialog(playerid, DIALOG_THING, DIALOG_STYLE_LIST, "Dost pne przedmioty", str, "U yj", "Wi cej");
 	} else {
 		format(str, sizeof(str), "{AAAAAA}Items on your person:\n%s\n{AAAAAA}Pick up item...{000000}\t0\t0", str);
 		ShowPlayerDialog(playerid, DIALOG_THING, DIALOG_STYLE_LIST, "Available items", str, "Use", "More");

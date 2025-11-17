@@ -18,7 +18,7 @@ stock initVehicleValues() {
 	new id;
 	new tmpFlags[5];
 
-	mysql_query("SELECT * FROM `osrp_Vehicles`");
+	mysql_query("SELECT `UID`, `OUID`, `OType`, `HostUID`, `SubOUID`, `ModelID`, `Color1`, `Color2`, `PosX`, `PosY`, `PosZ`, `Angle`, `Fuel`, `Lock`, `Engine`, `EngineHealth`, `Spawned`, `LightsOn`, `Window`, `Alarm`, `Immo`, `CBRadio`, `Audio`, `Limiter`, `Panels`, `Doors`, `Lights`, `Tires`, `VW`, `INT`, `Paintjob`, `Nitro`, `Repair`, `Mileage`, `Block`, `Premium`, `Plate`, `Desc` FROM `osrp_Vehicles`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
@@ -659,7 +659,7 @@ stock vehicleEngineStatus(playerid) {
 		mainStr[0] = EOS;
 
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			format(mainStr, sizeof(mainStr), "Na ten pojazd na³o¿ono blokadê ko³a.\nKoszt zdjêcia: $%d.\n\nUdaj siê na komisariat, by siê jej pozbyæ.", tVehicle[srvVehId][vBlock]);
+			format(mainStr, sizeof(mainStr), "Na ten pojazd na o ono blokad  ko a.\nKoszt zdj cia: $%d.\n\nUdaj si  na komisariat, by si  jej pozby .", tVehicle[srvVehId][vBlock]);
 		} else {
 			format(mainStr, sizeof(mainStr), "This vehicle has a wheel clamp.\nRemoval cost: $%d.\n\nGo to the police station to have it removed.", tVehicle[srvVehId][vBlock]);
 		}
@@ -668,7 +668,7 @@ stock vehicleEngineStatus(playerid) {
 
 	if(!tVehicle[srvVehId][vTires]) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			//return DialogInfo(playerid, "Na tych oponach nie da siê jechaæ. Wezwij mechanika.");
+			//return DialogInfo(playerid, "Na tych oponach nie da si  jecha . Wezwij mechanika.");
 		} else {
 			//return DialogInfo(playerid, "These tires are unusable. Call a mechanic.");
 		}
@@ -715,7 +715,7 @@ Callback vehicleEngineOn(playerid) {
 
 	if(tVehicle[srvVehId][vFuel] <= 0) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			format(mainStr, sizeof(mainStr), "* %s próbuje uruchomiæ pojazd, ale silnik nie odpala.", tPlayer[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "* %s pr buje uruchomi  pojazd, ale silnik nie odpala.", tPlayer[playerid][pCharName]);
 			GameTextForPlayer(playerid, "~n~~n~~r~W pojezdzie nie ma paliwa..", 5000, 3);
 		} else {
 			format(mainStr, sizeof(mainStr), "* %s tries to start the vehicle, but the engine does not start.", tPlayer[playerid][pCharName]);
@@ -730,9 +730,9 @@ Callback vehicleEngineOn(playerid) {
 
 	if(tVehicle[srvVehId][vEngineHp] <= 300.0 && (rand == 0 || rand == 2 || rand == 4)) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			SendClientMessage(playerid, COLOR_DARKRED, "Twój pojazd jest w tak z³ym stanie, ¿e czasami nie bêdzie chcia³ odpaliæ.");
+			SendClientMessage(playerid, COLOR_DARKRED, "Tw j pojazd jest w tak z ym stanie,  e czasami nie b dzie chcia  odpali .");
 
-			format(mainStr, sizeof(mainStr), "* %s próbuje uruchomiæ pojazd, ale silnik odmawia pos³uszeñstwa.", tPlayer[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "* %s pr buje uruchomi  pojazd, ale silnik odmawia pos usze stwa.", tPlayer[playerid][pCharName]);
 		} else {
 			SendClientMessage(playerid, COLOR_DARKRED, "Your vehicle is in such poor condition that sometimes it will not start.");
 
@@ -742,7 +742,7 @@ Callback vehicleEngineOn(playerid) {
 		sendMeMessage(playerid, mainStr);
 	} else if(tVehicle[srvVehId][vEngineHp] < 500.0 && tVehicle[srvVehId][vEngineHp] > 300.0) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			format(mainStr, sizeof(mainStr), "* %s próbuje uruchomiæ pojazd, ale silnik jest przegrzany.", tPlayer[playerid][pCharName]);
+			format(mainStr, sizeof(mainStr), "* %s pr buje uruchomi  pojazd, ale silnik jest przegrzany.", tPlayer[playerid][pCharName]);
 		} else {
 			format(mainStr, sizeof(mainStr), "* %s tries to start the vehicle, but the engine is overheated.", tPlayer[playerid][pCharName]);
 		}
@@ -770,7 +770,7 @@ Callback addFuelToVehicle(playerid) {
 	mainStr[0] = EOS;
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		format(mainStr, sizeof(mainStr), "** Pojazd %s zosta³ zatankowany. **", vehicleNames[tVehicle[srvVehId][vModelId] - 400]);
+		format(mainStr, sizeof(mainStr), "** Pojazd %s zosta  zatankowany. **", vehicleNames[tVehicle[srvVehId][vModelId] - 400]);
 	} else {
 		format(mainStr, sizeof(mainStr), "** Vehicle %s has been refueled. **", vehicleNames[tVehicle[srvVehId][vModelId] - 400]);
 	}
@@ -882,7 +882,7 @@ Callback vehicleVarnishingTimer(playerid, receiverid, color1, color2) {
 
 	if(playerToPoint(receiverid, 1.0, vX, vY, vZ)) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			DialogInfo(receiverid, "Pozwól mechanikowi pracowaæ.\nOdejdŸ od pojazdu.");
+			DialogInfo(receiverid, "Pozw l mechanikowi pracowa .\nOdejd  od pojazdu.");
 		} else {
 			DialogInfo(receiverid, "Let the mechanic work.\nStep away from the vehicle.");
 		}
