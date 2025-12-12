@@ -299,38 +299,6 @@ stock initGroupOrderValues() {
 	return 1;
 }
 
-stock initGroupVehicleValues() {
-	printf("[LOG]: [GROUPVEHICLE] Zaczynam ladowac uprawnienia do pojazdow grupy...\n");
-
-	new id;
-
-	mysql_query("SELECT `UID`, `GUID`, `OUID`, `Veh0`, `Veh1`, `Veh2`, `Veh3`, `Veh4`, `Veh5`, `Veh6`, `Veh7`, `Veh8`, `Veh9` FROM `osrp_GroupVehicles`");
-	mysql_store_result();
-
-	while(mysql_fetch_row(queryStr, "|")) {
-		sscanf(queryStr, "p<|>iiiii",
-			tGroupVehicle[id][gvUid],
-			tGroupVehicle[id][gvGUid],
-			tGroupVehicle[id][gvOUid],
-			tGroupVehicle[id][gvVehs][0],
-			tGroupVehicle[id][gvVehs][1]
-		);
-
-		printf("[LOG]: [GROUPVEHICLE] Uid: %d, GUid: %d, OUid: %d, Veh0: %d, Veh1: %d",
-			tGroupVehicle[id][gvUid],
-			tGroupVehicle[id][gvGUid],
-			tGroupVehicle[id][gvOUid],
-			tGroupVehicle[id][gvVehs][0],
-			tGroupVehicle[id][gvVehs][1]
-		);
-
-		id++;
-	}
-
-	mysql_free_result();
-	return 1;
-}
-
 stock getServerGroupId(uid) {
 	new id = INVALID_GROUP_ID;
 
@@ -441,11 +409,7 @@ stock addGroup(const name[], type, balance, perms, const color[]) {
 
 	mysql_query(queryStr);
 
-<<<<<<< HEAD
 	printf("[LOG]: [GROUP] Dodano nowa grupe o Uid: %d.", tGroup[freeId][gUid]);
-=======
-	printf("[LOG]: [GROUP] Dodano now  grup  o Uid: %d.", tGroup[freeId][gUid]);
->>>>>>> e7fd5934fbd73a2c350dbf7cd0c156994657b9ed
 	return tGroup[freeId][gUid];
 }
 
@@ -463,11 +427,7 @@ stock removeGroup(srvgrpid) {
 	mysql_query(queryStr);
 
 	Iter_Remove(groupItter, srvgrpid);
-<<<<<<< HEAD
 	printf("[LOG]: [GROUP] Usunieto grupe o Uid: %d.", tGroup[srvgrpid][gUid]);
-=======
-	printf("[LOG]: [GROUP] Usuni to grup  o Uid: %d.", tGroup[freeId][gUid]);
->>>>>>> e7fd5934fbd73a2c350dbf7cd0c156994657b9ed
 
 	tGroup[srvgrpid][gUid] = UID_NONE;
 	format(tGroup[srvgrpid][gName], 32, NULL);
@@ -777,11 +737,11 @@ stock showPlayerGroupInfo(playerid, slot) {
 	new str[256];
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		format(str, sizeof(str), "{FFFFFF}UID:\t\t\t%d\nKonto:\t\t\t%d\nLimit pojazd w:\t\t%d\nRodzaj:\t\t\t%d\nFlagi:\t\t\t%d\n\n1\tCzat OOC aktywny:\t\t%s\n2\tCzat IC aktywny:\t\t%s",
+		format(str, sizeof(str), "{FFFFFF}UID:\t\t\t%d\nKonto:\t\t\t%d\nLimit pojazd w:\t\t%d\nRodzaj:\t\t\t%d\nFlagi:\t\t\t%d\n \n\tCzat OOC aktywny:\t\t%s\n2\tCzat IC aktywny:\t\t%s",
 		tGroup[srvGrpId][gUid], tGroup[srvGrpId][gMoney], tGroup[srvGrpId][gVehLimit], tGroup[srvGrpId][gType], tGroup[srvGrpId][gPerms], (tGroup[srvGrpId][gPerms] & G_GROUP_PERM_CHATOOC) ? ("T") : ("N"), (tGroup[srvGrpId][gPerms] & G_GROUP_PERM_CHATIC) ? ("T") : ("N"));
 		ShowPlayerDialog(playerid, DIALOG_GROUP_INFO, DIALOG_STYLE_LIST, tGroup[srvGrpId][gName], str, "OK", "Zamknij");
 	} else {
-		format(str, sizeof(str), "{FFFFFF}UID:\t\t\t%d\nAccount:\t\t\t%d\nLimit of vehicles:\t\t%d\nType:\t\t\t%d\nFlags:\t\t\t%d\n\n1\tOOC chat active:\t\t%s\n2\tIC chat active:\t\t%s",
+		format(str, sizeof(str), "{FFFFFF}UID:\t\t\t%d\nAccount:\t\t%d\nLimit of vehicles:\t%d\nType:\t\t\t%d\nFlags:\t\t\t%d\n \n1\tOOC chat active:\t\t%s\n2\tIC chat active:\t\t\t%s",
 		tGroup[srvGrpId][gUid], tGroup[srvGrpId][gMoney], tGroup[srvGrpId][gVehLimit], tGroup[srvGrpId][gType], tGroup[srvGrpId][gPerms], (tGroup[srvGrpId][gPerms] & G_GROUP_PERM_CHATOOC) ? ("Y") : ("N"), (tGroup[srvGrpId][gPerms] & G_GROUP_PERM_CHATIC) ? ("Y") : ("N"));
 		ShowPlayerDialog(playerid, DIALOG_GROUP_INFO, DIALOG_STYLE_LIST, tGroup[srvGrpId][gName], str, "OK", "Close");
 	}
@@ -790,19 +750,20 @@ stock showPlayerGroupInfo(playerid, slot) {
 
 stock showPlayerGroupOnlineMembers(playerid, slot) {
 	new charNames[32][24];
-	new id, pId;
+	new countPlayer, pId, groupUid;
+
+	groupUid = tPlayer[playerid][pGroup][slot - 1];
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `CharName` FROM `osrp_Players` WHERE `Group0` = '%d' OR `Group1` = '%d' OR `Group2` = '%d' OR `Group3` = '%d' OR `Group4` = '%d'", tPlayer[playerid][pGroup][slot - 1], tPlayer[playerid][pGroup][slot - 1], tPlayer[playerid][pGroup][slot - 1], tPlayer[playerid][pGroup][slot - 1], tPlayer[playerid][pGroup][slot - 1]);
+	format(queryStr, sizeof(queryStr), "SELECT `CharName` FROM `osrp_Players` WHERE `Group0` = '%d' OR `Group1` = '%d' OR `Group2` = '%d' OR `Group3` = '%d' OR `Group4` = '%d'", groupUid, groupUid, groupUid, groupUid, groupUid);
 	mysql_query(queryStr);
 
 	mysql_store_result();
-
 	mainStr[0] = EOS;
 
 	while(mysql_fetch_row(queryStr, " ")) {
-		sscanf(queryStr, "s[24]", charNames[id]);
-		pId = getPlayerIdFromName(charNames[id]);
+		sscanf(queryStr, "s[24]", charNames[countPlayer]);
+		pId = getPlayerIdFromName(charNames[countPlayer]);
 
 		if(IsPlayerConnected(pId)) {
 			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, pId, tPlayer[pId][pCharName]);
@@ -810,16 +771,21 @@ stock showPlayerGroupOnlineMembers(playerid, slot) {
 			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s*", mainStr, pId, tPlayer[pId][pCharName]);
 		}
 
-		id++;
+		countPlayer++;
 	}
 
 	mysql_free_result();
+
+	if(!countPlayer) {
+		return 1;
+	}
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
 		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_LIST, "Lista graczy", mainStr, "OK", "Zamknij");
 	} else {
 		ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_LIST, "Player list", mainStr, "OK", "Close");
 	}
+	return 1;
 }
 
 stock showPlayerGroupTasks(playerid, slot) {

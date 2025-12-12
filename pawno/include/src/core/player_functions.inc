@@ -222,6 +222,27 @@ stock createPlayerTextDraws(playerid) {
 
 	fuelProgressBar[playerid] = CreateProgressBar(550.0, 59.0, 56.25, 3.5, 0x00FF00FF, 60.0);
 
+	refuelingGroupVehicle[playerid][0] = TextDrawCreate(602.175781, 284.999969, "_");
+	TextDrawLetterSize(refuelingGroupVehicle[playerid][0], 0.000000, 5.501846);
+	TextDrawTextSize(refuelingGroupVehicle[playerid][0], 404.207946, 0.000000);
+	TextDrawAlignment(refuelingGroupVehicle[playerid][0], 1);
+	TextDrawColor(refuelingGroupVehicle[playerid][0], 0);
+	TextDrawUseBox(refuelingGroupVehicle[playerid][0], 1);
+	TextDrawBoxColor(refuelingGroupVehicle[playerid][0], 102);
+	TextDrawSetShadow(refuelingGroupVehicle[playerid][0], 0);
+	TextDrawSetOutline(refuelingGroupVehicle[playerid][0], 0);
+	TextDrawFont(refuelingGroupVehicle[playerid][0], 0);
+
+	refuelingGroupVehicle[playerid][1] = TextDrawCreate(500.380737, 283.500000, "To pojazd grupowy. Ze~n~wzgledow bezpieczenstwa, nie~n~mozesz otrzymac zaplaty za te~n~ usluge.");
+	TextDrawLetterSize(refuelingGroupVehicle[playerid][1], 0.328184, 1.430834);
+	TextDrawAlignment(refuelingGroupVehicle[playerid][1], 2);
+	TextDrawColor(refuelingGroupVehicle[playerid][1], -1);
+	TextDrawSetShadow(refuelingGroupVehicle[playerid][1], 0);
+	TextDrawSetOutline(refuelingGroupVehicle[playerid][1], 1);
+	TextDrawBackgroundColor(refuelingGroupVehicle[playerid][1], 255);
+	TextDrawFont(refuelingGroupVehicle[playerid][1], 1);
+	TextDrawSetProportional(refuelingGroupVehicle[playerid][1], 1);
+
 	vehicleDeath[playerid][0] = TextDrawCreate(600.770202, 284.416687, "_");
 	TextDrawLetterSize(vehicleDeath[playerid][0], 0.000000, 9.794445);
 	TextDrawTextSize(vehicleDeath[playerid][0], 404.208099, 0.000000);
@@ -252,6 +273,28 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawBackgroundColor(vehicleDeath[playerid][2], 255);
 	TextDrawFont(vehicleDeath[playerid][2], 1);
 	TextDrawSetProportional(vehicleDeath[playerid][2], 1);
+
+	vehicleDamageInfo[playerid][0] = TextDrawCreate(601.238647, 291.416687, "_");
+	TextDrawLetterSize(vehicleDamageInfo[playerid][0], 0.000000, 2.988888);
+	TextDrawTextSize(vehicleDamageInfo[playerid][0], 402.802368, 0.000000);
+	TextDrawAlignment(vehicleDamageInfo[playerid][0], 1);
+	TextDrawColor(vehicleDamageInfo[playerid][0], 0);
+	TextDrawUseBox(vehicleDamageInfo[playerid][0], 1);
+	TextDrawBoxColor(vehicleDamageInfo[playerid][0], 102);
+	TextDrawSetShadow(vehicleDamageInfo[playerid][0], 0);
+	TextDrawSetOutline(vehicleDamageInfo[playerid][0], 0);
+	TextDrawFont(vehicleDamageInfo[playerid][0], 0);
+
+	vehicleDamageInfo[playerid][1] = TextDrawCreate(500.380187, 292.250122, "Uszkodzenie pojazdu zostalo~n~ anulowane.");
+	TextDrawLetterSize(vehicleDamageInfo[playerid][1], 0.330058, 1.518333);
+	TextDrawTextSize(vehicleDamageInfo[playerid][1], 190.199996, 193.083328);
+	TextDrawAlignment(vehicleDamageInfo[playerid][1], 2);
+	TextDrawColor(vehicleDamageInfo[playerid][1], -1);
+	TextDrawSetShadow(vehicleDamageInfo[playerid][1], 0);
+	TextDrawSetOutline(vehicleDamageInfo[playerid][1], 1);
+	TextDrawBackgroundColor(vehicleDamageInfo[playerid][1], 255);
+	TextDrawFont(vehicleDamageInfo[playerid][1], 1);
+	TextDrawSetProportional(vehicleDamageInfo[playerid][1], 1);
 
 	windowInfo[playerid][0] = TextDrawCreate(601.707153, 283.833312, "_");
 	TextDrawLetterSize(windowInfo[playerid][0], 0.000000, 4.349999);
@@ -527,6 +570,28 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawBackgroundColor(telephoneEnabled[playerid][1], 255);
 	TextDrawFont(telephoneEnabled[playerid][1], 1);
 	TextDrawSetProportional(telephoneEnabled[playerid][1], 1);
+
+	telephoneChanged[playerid][0] = TextDrawCreate(601.238647, 285.000000, "_");
+	TextDrawLetterSize(telephoneChanged[playerid][0], 0.000000, 6.812964);
+	TextDrawTextSize(telephoneChanged[playerid][0], 404.207916, 0.000000);
+	TextDrawAlignment(telephoneChanged[playerid][0], 1);
+	TextDrawColor(telephoneChanged[playerid][0], 0);
+	TextDrawUseBox(telephoneChanged[playerid][0], 1);
+	TextDrawBoxColor(telephoneChanged[playerid][0], 102);
+	TextDrawSetShadow(telephoneChanged[playerid][0], 0);
+	TextDrawSetOutline(telephoneChanged[playerid][0], 0);
+	TextDrawFont(telephoneChanged[playerid][0], 0);
+
+	telephoneChanged[playerid][1] = TextDrawCreate(500.849243, 285.250061, "Nie mozesz miec dwoch~n~telefonow aktywnych~n~jednoczesnie. Aktywny telefon~n~zostal zmieniony na ten~n~ przedmiot.");
+	TextDrawLetterSize(telephoneChanged[playerid][1], 0.329121, 1.384166);
+	TextDrawTextSize(telephoneChanged[playerid][1], 1467.409790, 184.333267);
+	TextDrawAlignment(telephoneChanged[playerid][1], 2);
+	TextDrawColor(telephoneChanged[playerid][1], -1);
+	TextDrawSetShadow(telephoneChanged[playerid][1], 0);
+	TextDrawSetOutline(telephoneChanged[playerid][1], 1);
+	TextDrawBackgroundColor(telephoneChanged[playerid][1], 255);
+	TextDrawFont(telephoneChanged[playerid][1], 1);
+	TextDrawSetProportional(telephoneChanged[playerid][1], 1);
 
 	groupsInfo[playerid][0] = TextDrawCreate(82.928298, 139.416717, "_");
 	TextDrawLetterSize(groupsInfo[playerid][0], 0.426573, 1.734167);
@@ -1094,6 +1159,19 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawFont(collisionInfo[playerid], 1);
 	TextDrawSetProportional(collisionInfo[playerid], 1);
 
+	cbRadio[playerid] = TextDrawCreate(620.791015, 425.250000, "~y~~h~CB Radio ~>~ ~w~Czestotliwosc: 1000.0");
+	TextDrawLetterSize(cbRadio[playerid], 0.179194, 1.034166);
+	TextDrawTextSize(cbRadio[playerid], 980.615112, 244.416656);
+	TextDrawAlignment(cbRadio[playerid], 3);
+	TextDrawColor(cbRadio[playerid], -1);
+	TextDrawUseBox(cbRadio[playerid], 1);
+	TextDrawBoxColor(cbRadio[playerid], 255);
+	TextDrawSetShadow(cbRadio[playerid], 0);
+	TextDrawSetOutline(cbRadio[playerid], 1);
+	TextDrawBackgroundColor(cbRadio[playerid], 255);
+	TextDrawFont(cbRadio[playerid], 1);
+	TextDrawSetProportional(cbRadio[playerid], 1);
+
 	afkPrivateMessage[playerid][0] = TextDrawCreate(573.127380, 283.833312, "_");
 	TextDrawLetterSize(afkPrivateMessage[playerid][0], 0.000000, 2.794444);
 	TextDrawTextSize(afkPrivateMessage[playerid][0], 395.774505, 0.000000);
@@ -1239,19 +1317,28 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawFont(specialServicesInfo[playerid], 1);
 	TextDrawSetProportional(specialServicesInfo[playerid], 1);
 
-	bwInfo[playerid][0] = TextDrawCreate(602.175720, 283.833312, "_");
-	TextDrawLetterSize(bwInfo[playerid][0], 0.000000, 12.646299);
+	cameraInfo[playerid] = TextDrawCreate(313.440673, 339.499969, "Mozesz podac budynek w komendzie, np. /kamera 102");
+	TextDrawLetterSize(cameraInfo[playerid], 0.274304, 1.419166);
+	TextDrawAlignment(cameraInfo[playerid], 2);
+	TextDrawColor(cameraInfo[playerid], -1);
+	TextDrawSetShadow(cameraInfo[playerid], 0);
+	TextDrawSetOutline(cameraInfo[playerid], 0);
+	TextDrawBackgroundColor(cameraInfo[playerid], 51);
+	TextDrawFont(cameraInfo[playerid], 1);
+
+	bwInfo[playerid][0] = TextDrawCreate(601.238647, 284.416687, "_");
+	TextDrawLetterSize(bwInfo[playerid][0], 0.000000, 12.646291);
 	TextDrawTextSize(bwInfo[playerid][0], 404.207916, 0.000000);
 	TextDrawAlignment(bwInfo[playerid][0], 1);
 	TextDrawColor(bwInfo[playerid][0], 0);
 	TextDrawUseBox(bwInfo[playerid][0], 1);
-	TextDrawBoxColor(bwInfo[playerid][0], 102);
+	TextDrawBoxColor(bwInfo[playerid][0], 125);
 	TextDrawSetShadow(bwInfo[playerid][0], 0);
 	TextDrawSetOutline(bwInfo[playerid][0], 0);
 	TextDrawFont(bwInfo[playerid][0], 0);
 
-	bwInfo[playerid][1] = TextDrawCreate(500.380889, 284.666503, "_");
-	TextDrawLetterSize(bwInfo[playerid][1], 0.348798, 1.384164);
+	bwInfo[playerid][1] = TextDrawCreate(500.380828, 284.666717, "_");
+	TextDrawLetterSize(bwInfo[playerid][1], 0.329589, 1.401666);
 	TextDrawAlignment(bwInfo[playerid][1], 2);
 	TextDrawColor(bwInfo[playerid][1], -1);
 	TextDrawSetShadow(bwInfo[playerid][1], 0);
@@ -1260,8 +1347,8 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawFont(bwInfo[playerid][1], 1);
 	TextDrawSetProportional(bwInfo[playerid][1], 1);
 
-	bwInfo[playerid][2] = TextDrawCreate(500.849334, 334.833221, "_");
-	TextDrawLetterSize(bwInfo[playerid][2], 0.328183, 1.395832);
+	bwInfo[playerid][2] = TextDrawCreate(500.380798, 359.916717, "_");
+	TextDrawLetterSize(bwInfo[playerid][2], 0.330058, 1.389999);
 	TextDrawAlignment(bwInfo[playerid][2], 2);
 	TextDrawColor(bwInfo[playerid][2], -1);
 	TextDrawSetShadow(bwInfo[playerid][2], 0);
@@ -1269,16 +1356,6 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawBackgroundColor(bwInfo[playerid][2], 255);
 	TextDrawFont(bwInfo[playerid][2], 1);
 	TextDrawSetProportional(bwInfo[playerid][2], 1);
-
-	bwInfo[playerid][3] = TextDrawCreate(503.191894, 384.999908, "_");
-	TextDrawLetterSize(bwInfo[playerid][3], 0.328651, 1.395832);
-	TextDrawAlignment(bwInfo[playerid][3], 2);
-	TextDrawColor(bwInfo[playerid][3], -1);
-	TextDrawSetShadow(bwInfo[playerid][3], 0);
-	TextDrawSetOutline(bwInfo[playerid][3], 1);
-	TextDrawBackgroundColor(bwInfo[playerid][3], 255);
-	TextDrawFont(bwInfo[playerid][3], 1);
-	TextDrawSetProportional(bwInfo[playerid][3], 1);
 
 	endBWTimeInfo[playerid] = TextDrawCreate(230.043930, 340.083496, "_");
 	TextDrawLetterSize(endBWTimeInfo[playerid], 0.274304, 1.314166);
@@ -1572,94 +1649,51 @@ stock createPlayerTextDraws(playerid) {
 	TextDrawBackgroundColor(euroInfo[playerid], 255);
 	TextDrawFont(euroInfo[playerid], 3);
 	TextDrawSetProportional(euroInfo[playerid], 1);
-/*
-Textdraw26 = TextDrawCreate(602.175781, 284.999969, "_");
-TextDrawLetterSize(Textdraw26, 0.000000, 5.501846);
-TextDrawTextSize(Textdraw26, 404.207946, 0.000000);
-TextDrawAlignment(Textdraw26, 1);
-TextDrawColor(Textdraw26, 0);
-TextDrawUseBox(Textdraw26, true);
-TextDrawBoxColor(Textdraw26, 102);
-TextDrawSetShadow(Textdraw26, 0);
-TextDrawSetOutline(Textdraw26, 0);
-TextDrawFont(Textdraw26, 0);
 
-Textdraw27 = TextDrawCreate(500.380737, 283.500000, "To pojazd grupowy. Ze~n~wzgledow bezpieczenstwa, nie~n~mozesz otrzymac zaplaty za te~n~ usluge.");
-TextDrawLetterSize(Textdraw27, 0.328184, 1.430834);
-TextDrawAlignment(Textdraw27, 2);
-TextDrawColor(Textdraw27, -1);
-TextDrawSetShadow(Textdraw27, 0);
-TextDrawSetOutline(Textdraw27, 1);
-TextDrawBackgroundColor(Textdraw27, 51);
-TextDrawFont(Textdraw27, 1);
-TextDrawSetProportional(Textdraw27, 1);
+	achievementInfo[playerid] = TextDrawCreate(305.944122, 37.916656, "_");
+	TextDrawLetterSize(achievementInfo[playerid], 0.299604, 1.185832);
+	TextDrawTextSize(achievementInfo[playerid], 476.017730, 22.749998);
+	TextDrawAlignment(achievementInfo[playerid], 1);
+	TextDrawColor(achievementInfo[playerid], -1);
+	TextDrawUseBox(achievementInfo[playerid], 1);
+	TextDrawBoxColor(achievementInfo[playerid], 255);
+	TextDrawSetShadow(achievementInfo[playerid], 0);
+	TextDrawSetOutline(achievementInfo[playerid], 1);
+	TextDrawBackgroundColor(achievementInfo[playerid], 255);
+	TextDrawFont(achievementInfo[playerid], 1);
+	TextDrawSetProportional(achievementInfo[playerid], 1);
 
-Textdraw29 = TextDrawCreate(313.440673, 339.499969, "Mozesz podac budynek w komendzie, np. /kamera 102");
-TextDrawLetterSize(Textdraw29, 0.274304, 1.419166);
-TextDrawAlignment(Textdraw29, 2);
-TextDrawColor(Textdraw29, -1);
-TextDrawSetShadow(Textdraw29, 0);
-TextDrawSetOutline(Textdraw29, 0);
-TextDrawBackgroundColor(Textdraw29, 51);
-TextDrawFont(Textdraw29, 1);
+	ammoWarning[playerid][0] = TextDrawCreate(602.644226, 284.416687, "_");
+	TextDrawLetterSize(ammoWarning[playerid][0], 0.000000, 3.053701);
+	TextDrawTextSize(ammoWarning[playerid][0], 404.676452, 0.000000);
+	TextDrawAlignment(ammoWarning[playerid][0], 1);
+	TextDrawColor(ammoWarning[playerid][0], 0);
+	TextDrawUseBox(ammoWarning[playerid][0], 1);
+	TextDrawBoxColor(ammoWarning[playerid][0], 102);
+	TextDrawSetShadow(ammoWarning[playerid][0], 0);
+	TextDrawSetOutline(ammoWarning[playerid][0], 0);
+	TextDrawFont(ammoWarning[playerid][0], 0);
 
-Textdraw1 = TextDrawCreate(600.770202, 286.166687, "_");
-TextDrawLetterSize(Textdraw1, 0.000000, 6.784073);
-TextDrawTextSize(Textdraw1, 404.676391, 0.000000);
-TextDrawAlignment(Textdraw1, 1);
-TextDrawColor(Textdraw1, 0);
-TextDrawUseBox(Textdraw1, true);
-TextDrawBoxColor(Textdraw1, 102);
-TextDrawSetShadow(Textdraw1, 0);
-TextDrawSetOutline(Textdraw1, 0);
-TextDrawFont(Textdraw1, 0);
+	ammoWarning[playerid][1] = TextDrawCreate(499.912414, 284.666687, "Nie przekraczaj 9999 ammo, bo~n~ stracisz bron.");
+	TextDrawLetterSize(ammoWarning[playerid][1], 0.331464, 1.454166);
+	TextDrawTextSize(ammoWarning[playerid][1], 1019.501403, 187.250000);
+	TextDrawAlignment(ammoWarning[playerid][1], 2);
+	TextDrawColor(ammoWarning[playerid][1], -1);
+	TextDrawSetShadow(ammoWarning[playerid][1], 0);
+	TextDrawSetOutline(ammoWarning[playerid][1], 1);
+	TextDrawBackgroundColor(ammoWarning[playerid][1], 255);
+	TextDrawFont(ammoWarning[playerid][1], 1);
+	TextDrawSetProportional(ammoWarning[playerid][1], 1);
 
-Textdraw0 = TextDrawCreate(500.380981, 285.249969, "Nie mozesz miec dwoch~n~telefonow aktywnych~n~jednoczesnie. Aktywny telefon~n~zostal zmieniony na ten~n~ przedmiot.");
-TextDrawLetterSize(Textdraw0, 0.329590, 1.378333);
-TextDrawTextSize(Textdraw0, 3006.501464, 187.249954);
-TextDrawAlignment(Textdraw0, 2);
-TextDrawColor(Textdraw0, -1);
-TextDrawSetShadow(Textdraw0, 0);
-TextDrawSetOutline(Textdraw0, 1);
-TextDrawBackgroundColor(Textdraw0, 51);
-TextDrawFont(Textdraw0, 1);
-TextDrawSetProportional(Textdraw0, 1);
-
-Textdraw1 = TextDrawCreate(500.380187, 292.250122, "Uszkodzenie pojazdu zostalo~n~ anulowane.");
-TextDrawLetterSize(Textdraw1, 0.330058, 1.518333);
-TextDrawTextSize(Textdraw1, 190.199996, 193.083328);
-TextDrawAlignment(Textdraw1, 2);
-TextDrawColor(Textdraw1, -1);
-TextDrawSetShadow(Textdraw1, 0);
-TextDrawSetOutline(Textdraw1, 1);
-TextDrawBackgroundColor(Textdraw1, 51);
-TextDrawFont(Textdraw1, 1);
-TextDrawSetProportional(Textdraw1, 1);
-
-Textdraw2 = TextDrawCreate(601.238647, 291.416687, "usebox");
-TextDrawLetterSize(Textdraw2, 0.000000, 2.988888);
-TextDrawTextSize(Textdraw2, 402.802368, 0.000000);
-TextDrawAlignment(Textdraw2, 1);
-TextDrawColor(Textdraw2, 0);
-TextDrawUseBox(Textdraw2, true);
-TextDrawBoxColor(Textdraw2, 102);
-TextDrawSetShadow(Textdraw2, 0);
-TextDrawSetOutline(Textdraw2, 0);
-TextDrawFont(Textdraw2, 0);
-
-Textdraw3 = TextDrawCreate(620.791015, 425.250000, "~y~~h~CB Radio ~>~ ~w~Czestotliwosc: 1000.0");
-TextDrawLetterSize(Textdraw3, 0.179194, 1.034166);
-TextDrawTextSize(Textdraw3, 980.615112, 244.416656);
-TextDrawAlignment(Textdraw3, 3);
-TextDrawColor(Textdraw3, -1);
-TextDrawUseBox(Textdraw3, true);
-TextDrawBoxColor(Textdraw3, 255);
-TextDrawSetShadow(Textdraw3, 0);
-TextDrawSetOutline(Textdraw3, 1);
-TextDrawBackgroundColor(Textdraw3, 51);
-TextDrawFont(Textdraw3, 1);
-TextDrawSetProportional(Textdraw3, 1);
-	*/
+	friendInfo[playerid] = TextDrawCreate(406.676391, 100.333320, "Danny Walker jest online (id 0).");
+	TextDrawLetterSize(friendInfo[playerid], 0.310380, 1.623334);
+	TextDrawAlignment(friendInfo[playerid], 1);
+	TextDrawColor(friendInfo[playerid], -1);
+	TextDrawSetShadow(friendInfo[playerid], 0);
+	TextDrawSetOutline(friendInfo[playerid], 1);
+	TextDrawBackgroundColor(friendInfo[playerid], 255);
+	TextDrawFont(friendInfo[playerid], 1);
+	TextDrawSetProportional(friendInfo[playerid], 1);
 }
 
 stock loadPlayerValues(playerid) {
@@ -1796,7 +1830,7 @@ stock loadPlayerContacts(playerid) {
 	}
 
 	queryStr[0] = EOS;
-	format(queryStr, sizeof(queryStr), "SELECT `Name`, `Number` FROM `osrp_Contacts` WHERE `UID` = '%d'", tPlayer[playerid][pUid]);
+	format(queryStr, sizeof(queryStr), "SELECT `Name`, `Number` FROM `osrp_Contacts` WHERE `OUID` = '%d'", tPlayer[playerid][pUid]);
 	mysql_query(queryStr);
 
 	mysql_store_result();
@@ -2795,16 +2829,14 @@ stock setPlayerBW(playerid, minutes) {
 	resetPlayerBoxTextDraws(playerid);
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		TextDrawSetString(bwInfo[playerid][1], "Im wiecej sily masz, tym~n~ mocniejsze ciosy zadajesz.~n~Niektore narkotyki maja~n~mozliwosc cyklicznego");
-		TextDrawSetString(bwInfo[playerid][2], "zwiekszania Twojego HP podczas~n~starc z wrogiem. Inne powoduja~n~zwiekszenie progu bolu i~n~odpornosci. Znaczaco zwieksza");
-		TextDrawSetString(bwInfo[playerid][3], "to Twoje szanse na wygrana.");
+		TextDrawSetString(bwInfo[playerid][1], "Twoja postac utracila~n~przytomnosc. Ocknie sie za~n~okolo ~g~2 minuty~w~, ale przez 3h~n~nie bedzie w stanie atakowac~n~innych.");
+		TextDrawSetString(bwInfo[playerid][2], "~y~Postac moze pamietac co zaszlo~n~przed BW, a czas leci nawet~n~ offline.");
 	} else {
 		TextDrawSetString(bwInfo[playerid][1], "The more strength you have,~n~ the harder you strike.~n~Some drugs have~n~the ability to cyclically");
 		TextDrawSetString(bwInfo[playerid][2], "increase your HP during~n~encounters with enemy. Others cause increase~n~your pain threshold and~n~resistance. This significantly increases");
-		TextDrawSetString(bwInfo[playerid][3], "your chances of victory.");
 	}
 
-	for(new i = 0; i < 4; i++) {
+	for(new i = 0; i < 3; i++) {
 		TextDrawShowForPlayer(playerid, bwInfo[playerid][i]);
 	}
 
@@ -2972,9 +3004,9 @@ stock updatePlayerGameStatus(playerid) {
 			}
 		} else {
 			if(strlen(tPlayer[playerid][pStatusStr])) {
-				format(tPlayer[playerid][pInfo], 128, "%s\n%s\n[%s]", tPlayer[playerid][pInfo], tPlayer[playerid][pStatusStr], tGroup[srvGrpId][gName]);
+				format(tPlayer[playerid][pInfo], 128, "{%s}%s\n%s\n[%s]", tGroup[srvGrpId][gColor], tPlayer[playerid][pInfo], tPlayer[playerid][pStatusStr], tGroup[srvGrpId][gName]);
 			} else {
-				format(tPlayer[playerid][pInfo], 128, "%s\n[%s]", tPlayer[playerid][pInfo], tGroup[srvGrpId][gName]);
+				format(tPlayer[playerid][pInfo], 128, "{%s}%s\n[%s]", tGroup[srvGrpId][gColor], tPlayer[playerid][pInfo], tGroup[srvGrpId][gName]);
 			}
 		}
 	} else {
@@ -3458,9 +3490,9 @@ stock sendOffer(senderid, receiverid, price, value1, value2, kind, type) {
 			mainStr[0] = EOS;
 
 			if(tPlayer[receiverid][pLang] == LANG_PL) {
-				strcat(mainStr, "{FFFFFF}Wymiana pojazdu z graczem\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", price);
+				format(mainStr, sizeof(mainStr), "{FFFFFF}Wymiana pojazdu z graczem\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", price);
 			} else {
-				strcat(mainStr, "{FFFFFF}Vehicle exchange with player\n\nCost: $%d. Do you accept this offer?", price);
+				format(mainStr, sizeof(mainStr), "{FFFFFF}Vehicle exchange with player\n\nCost: $%d. Do you accept this offer?", price);
 			}
 		}
 		case OFFER_VEHRENTAL: {
@@ -3502,19 +3534,19 @@ stock sendOffer(senderid, receiverid, price, value1, value2, kind, type) {
 		}
 		case OFFER_ROPE: {
 			if(tPlayer[receiverid][pLang] == LANG_PL) {
-				strcat(mainStr, "{FFFFFF}Holowanie pojazdu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", price);
+				format(mainStr, sizeof(mainStr), "{FFFFFF}Holowanie pojazdu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", price);
 			} else {
-				strcat(mainStr, "{FFFFFF}Towing a vehicle\n\nCost: $%d. Do you accept this offer?", price);
+				format(mainStr, sizeof(mainStr), "{FFFFFF}Towing a vehicle\n\nCost: $%d. Do you accept this offer?", price);
 			}
 		}
 		case OFFER_VCARD: {
 			new str[64];
 
 			if(tPlayer[receiverid][pLang] == LANG_PL) {
-				strcat(mainStr, "{FFFFFF}Wizytówka vCard do telefonu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", price);
+				format(mainStr, sizeof(mainStr), "{FFFFFF}Wizytówka vCard do telefonu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", price);
 				format(str, sizeof(str), "* %s bierze do rêki telefon i wysy³a vCard.", tPlayer[senderid][pCharName]);
 			} else {
-				strcat(mainStr, "{FFFFFF}vCard business card for the phone\n\nCost: $%d. Do you accept this offer?", price);
+				format(mainStr, sizeof(mainStr), "{FFFFFF}vCard business card for the phone\n\nCost: $%d. Do you accept this offer?", price);
 				format(str, sizeof(str), "* %s picks up the phone and sends the vCard.", tPlayer[senderid][pCharName]);
 			}
 
@@ -3542,9 +3574,9 @@ stock sendOffer(senderid, receiverid, price, value1, value2, kind, type) {
 		}
 		case OFFER_AREA: {
 			if(tPlayer[receiverid][pLang] == LANG_PL) {
-				strcat(mainStr, "{FFFFFF}Sprzeda¿ strefy\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", price);
+				format(mainStr, sizeof(mainStr), "{FFFFFF}Sprzeda¿ strefy\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", price);
 			} else {
-				strcat(mainStr, "{FFFFFF}Sale of the zone\n\nCost: $%d. Do you accept this offer?", price);
+				format(mainStr, sizeof(mainStr), "{FFFFFF}Sale of the zone\n\nCost: $%d. Do you accept this offer?", price);
 			}
 		}
 		case OFFER_TAXI: {
@@ -3556,23 +3588,23 @@ stock sendOffer(senderid, receiverid, price, value1, value2, kind, type) {
 		}
 		case OFFER_AD: {
 			if(tPlayer[receiverid][pLang] == LANG_PL) {
-				strcat(mainStr, "{FFFFFF}Reklama przez 60 sekund\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", price);
+				format(mainStr, sizeof(mainStr), "{FFFFFF}Reklama przez 60 sekund\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", price);
 			} else {
-				strcat(mainStr, "{FFFFFF}60 second ad\n\nCost: $%d. Do you accept this offer?", price);
+				format(mainStr, sizeof(mainStr), "{FFFFFF}60 second ad\n\nCost: $%d. Do you accept this offer?", price);
 			}
 		}
 		case OFFER_INTERVIEW: {
 			if(tPlayer[receiverid][pLang] == LANG_PL) {
-				strcat(mainStr, "{FFFFFF}Wywiad\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", price);
+				format(mainStr, sizeof(mainStr), "{FFFFFF}Wywiad\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", price);
 			} else {
-				strcat(mainStr, "{FFFFFF}Interview\n\nCost: $%d. Do you accept this offer?", price);
+				format(mainStr, sizeof(mainStr), "{FFFFFF}Interview\n\nCost: $%d. Do you accept this offer?", price);
 			}
 		}
 		case OFFER_VEHBLOCKOFF: {
 			if(tPlayer[receiverid][pLang] == LANG_PL) {
-				strcat(mainStr, "{FFFFFF}Zdjêcie blokady z pojazdu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", price);
+				format(mainStr, sizeof(mainStr), "{FFFFFF}Zdjêcie blokady z pojazdu\n\nKoszt: $%d. Czy akceptujesz tê ofertê?", price);
 			} else {
-				strcat(mainStr, "{FFFFFF}Removing the lock from vehicle\n\nCost: $%d. Do you accept this offer?", price);
+				format(mainStr, sizeof(mainStr), "{FFFFFF}Removing the lock from vehicle\n\nCost: $%d. Do you accept this offer?", price);
 			}
 		}
 	}
@@ -3697,12 +3729,12 @@ stock callToNumber(callerid, number) {
 		mainStr[0] = EOS;
 
 		if(tPlayer[callerid][pLang] == LANG_PL) {
-			format(mainStr, sizeof(mainStr), "~w~Ktos do Ciebie dzwoni!~n~~y~Numer: %d~n~~n~~y~~h~Wejdz do menu telefonu,~n~~w~by odebrac lub odrzucic~n~polaczenie", telEnterNumber[pId]);
+			format(mainStr, sizeof(mainStr), "Ktos do Ciebie dzwoni!~n~~y~Numer: %d~n~~n~~y~~h~Wejdz do menu telefonu,~n~~w~by odebrac lub odrzucic~n~polaczenie", telEnterNumber[pId]);
 		} else {
-			format(mainStr, sizeof(mainStr), "~w~Someone is calling you~n~~y~Number: %d~n~~n~~y~~h~Enter the phone menu,~n~~w~to answer or reject~n~the call", telEnterNumber[pId]);
+			format(mainStr, sizeof(mainStr), "Someone is calling you~n~~y~Number: %d~n~~n~~y~~h~Enter the phone menu,~n~~w~to answer or reject~n~the call", telEnterNumber[pId]);
 		}
 
-		TextDrawSetString(telephoneCall[pId][0], mainStr);
+		TextDrawSetString(telephoneCall[pId][1], mainStr);
 
 		for(new i = 0; i < 2; i++) {
 			TextDrawShowForPlayer(pId, telephoneCall[pId][i]);
@@ -3711,9 +3743,9 @@ stock callToNumber(callerid, number) {
 		mainStr[0] = EOS;
 
 		if(tPlayer[callerid][pLang] == LANG_PL) {
-			format(mainStr, sizeof(mainStr), "** Dzwoni telefon %s. **", tPlayer[pId][pCharName]);
+			format(mainStr, sizeof(mainStr), "* Dzwoni telefon %s. *", tPlayer[pId][pCharName]);
 		} else {
-			format(mainStr, sizeof(mainStr), "** %s's phone is ringing. **", tPlayer[pId][pCharName]);
+			format(mainStr, sizeof(mainStr), "* %s's phone is ringing. *", tPlayer[pId][pCharName]);
 		}
 
 		sendRegularMessage(pId, 10.0, mainStr, COLOR_DO1);
@@ -3799,28 +3831,36 @@ stock showDialogServices(playerid) {
 		}
 	}
 
-	new count, k;
+	new dutyCount, serviceCount;
 
 	mainStr[0] = EOS;
 	PlayerPlaySound(playerid, 3600, 0.0, 0.0, 0.0);
 
 	foreach(new i : groupItter) {
 		foreach(new j : Player) {
-			for(k = 0; k < sizeof(serviceTypes); k++) {
-				if(isPlayerOnDuty(j) && isGroupType(i, serviceTypes[k])) {
-					count++;
+			if(isPlayerOnDuty(j)) {
+				for(serviceCount = 0; serviceCount < sizeof(serviceTypes); serviceCount++) {
+					for(new k = 1; k <= MAX_PLAYER_GROUPS; k++) {
+						if(isPlayerInGroupType(j, k, serviceTypes[serviceCount])) {
+							dutyCount++;
+						}
+					}
 				}
 			}
 		}
 
-		if(tPlayer[playerid][pLang] == LANG_PL) {
-			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t(%d pracuj¹cych osób)\t%s", mainStr, tGroup[i][gType], count, serviceNamesPl[k]);
-		} else {
-			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t(%d working people)\t%s", mainStr, tGroup[i][gType], count, serviceNamesEng[k]);
+		for(serviceCount = 0; serviceCount < sizeof(serviceTypes); serviceCount++) {
+			if(isGroupType(i, serviceTypes[serviceCount])) {
+				if(tPlayer[playerid][pLang] == LANG_PL) {
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t(%d pracuj¹cych osób)\t%s", mainStr, tGroup[i][gType], dutyCount, serviceNamesPl[serviceCount]);
+				} else {
+					format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t(%d working people)\t%s", mainStr, tGroup[i][gType], dutyCount, serviceNamesEng[serviceCount]);
+				}
+			}
 		}
 	}
 
-	if(!count) {
+	if(!dutyCount) {
 		mainStr[0] = EOS;
 
 		if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -4156,7 +4196,7 @@ stock OSRP_ResetPlayerWeapons(playerid) {
 }
 
 stock OSRP_SetPlayerPos(playerid, Float:px, Float:py, Float:pz) {
-	SetTimerEx("setPlayerSafeTele", 750, false, "i", playerid);
+	SetTimerEx("setPlayerSafeTele", 1000, false, "i", playerid);
 	SetPlayerPos(playerid, px, py, pz);
 }
 
@@ -4347,7 +4387,7 @@ Callback secondSMSSound(playerid) {
 }
 
 Callback fightCheckTimer(playerid, attackerid) {
-	if((lastBlowTime[attackerid] + 10) > gettime() && isPlayerFight[playerid] && isPlayerFight[attackerid]) {
+	if(((lastBlowTime[attackerid] + 10) > gettime()) || (isPlayerFight[playerid] && isPlayerFight[attackerid])) {
 		SetTimerEx("fightCheckTimer", 1000, false, "ii", playerid, attackerid);
 	} else {
 		isPlayerFight[attackerid] = false;
@@ -4359,6 +4399,10 @@ Callback fightCheckTimer(playerid, attackerid) {
 		numberBlows[playerid] = 0;
 	}
 	return 1;
+}
+
+stock resetPlayersFight(playerid, attackerid) {
+	
 }
 
 Callback kickPlayer(playerid) {
@@ -4457,7 +4501,7 @@ Callback dtTimer(playerid, srvgrpid) {
 }
 
 Callback hideBwInfo(playerid) {
-	for(new i = 0; i < 4; i++) {
+	for(new i = 0; i < 3; i++) {
 		TextDrawHideForPlayer(playerid, bwInfo[playerid][i]);
 	}
 	return 1;

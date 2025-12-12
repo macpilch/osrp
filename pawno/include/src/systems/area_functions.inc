@@ -130,11 +130,7 @@ stock addArea(owner, type, ownertype, color[], Float:minx, Float:miny, Float:min
 
 	mysql_query(queryStr);
 
-<<<<<<< HEAD
 	printf("[LOG]: [AREA] Dodano nowa strefe o Uid: %d.", tArea[freeId][aUid]);
-=======
-	printf("[LOG]: [AREA] Dodano now  stref  o Uid: %d.", tArea[freeId][aUid]);
->>>>>>> e7fd5934fbd73a2c350dbf7cd0c156994657b9ed
 	return tArea[freeId][aUid];
 }
 

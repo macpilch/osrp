@@ -2876,3 +2876,8 @@ CMD:test(playerid) {
 	SendClientMessage(playerid, COLOR_GRAY, str);
 	return 1;
 }
+
+CMD:achi(playerid, params[]) {
+	givePlayerAchievement(playerid, 0);
+	return 1;
+}

@@ -215,11 +215,7 @@ stock addThing(owner, kind, const name[], value1, value2, value3, value4, Float:
 	);
 	mysql_query(queryStr);
 
-<<<<<<< HEAD
 	printf("[LOG]: [THING] Dodano nowa rzecz o Uid: %d.", tThing[freeId][tUid]);
-=======
-	printf("[LOG]: [THING] Dodano now  rzecz o Uid: %d.", tThing[freeId][tUid]);
->>>>>>> e7fd5934fbd73a2c350dbf7cd0c156994657b9ed
 }
 
 stock removeThing(srvthingid) {
@@ -368,6 +364,10 @@ stock resetThingValues(playerid) {
 		   tThing[t][tPlace] == THING_PLACE_PLAYER && tThing[t][tUsed]) {
 			tThing[t][tUsed] = false;
 
+			if(isThingKind(t, TKIND_WEAPON)) {
+				RemovePlayerAttachedObject(playerid, SLOT_WEAPON);
+			}
+
 			saveThingValues(t);
 		}
 	}
@@ -392,9 +392,9 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 
 	if(getPlayerSpeed(playerid)) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			return GameTextForPlayer(playerid, "~y~Odczekaj 1 minute od ostatniego~n~biegania", 5000, 3);
+			//return GameTextForPlayer(playerid, "~y~Odczekaj 1 minute od ostatniego~n~biegania", 5000, 3);
 		} else {
-			return GameTextForPlayer(playerid, "~y~Wait 1 minute since your last~n~run", 5000, 3);
+			//return GameTextForPlayer(playerid, "~y~Wait 1 minute since your last~n~run", 5000, 3);
 		}
 	}
 
@@ -420,7 +420,7 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 
 			if(tPlayer[playerid][pLang] == LANG_PL) {
 				format(str, sizeof(str), "~w~godzina: ~p~%02d:%02d:%02d~w~.", hours, minutes, seconds);
-				format(mainStr, sizeof(mainStr), "* %s spogl da na sw j zegarek %s", tPlayer[playerid][pCharName], tThing[srvthingid][tName]);
+				format(mainStr, sizeof(mainStr), "* %s spogl da na swój zegarek %s", tPlayer[playerid][pCharName], tThing[srvthingid][tName]);
 			} else {
 				format(str, sizeof(str), "~w~time: ~p~%02d:%02d:%02d~w~.", hours, minutes, seconds);
 				format(mainStr, sizeof(mainStr), "* %s looks at their watch %s", tPlayer[playerid][pCharName], tThing[srvthingid][tName]);
@@ -457,7 +457,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 				}
 			}
 
-<<<<<<< HEAD
 			new day, month, year, oldDay, oldMonth, oldYear;
 			new bool:havePenalty;
 
@@ -481,10 +480,6 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 					return SendClientMessage(playerid, COLOR_GRAY, "You cannot use the weapon because you have received a penalty within the last month.");
 				}
 			}
-=======
-			//SendClientMessage(playerid, COLOR_GRAY, "Nie mo esz u ywa  broni, poniewa  otrzyma e (a ) jak   kar  w przeci gu ostatniego miesi ca.");
-			//SendClientMessage(playerid, COLOR_GRAY, "You cannot use the weapon because you have received a penalty within the last month.");
->>>>>>> e7fd5934fbd73a2c350dbf7cd0c156994657b9ed
 
 			if(!strlen(thingParms[playerid])) {
 				if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -896,6 +891,14 @@ stock enableThingProperties(playerid, srvthingid, kind) {
 			}
 		}
 		case TKIND_CLOTHES: {
+			if(tPlayer[playerid][pDoor] != tPlayer[playerid][pHotel]) {
+				if(tPlayer[playerid][pLang] == LANG_PL) {
+					return SendClientMessage(playerid, COLOR_DARKRED, "Musisz znajdowaæ siê w hotelu lub budynku, do którego posiadasz klucze, by siê przebraæ.");
+				} else {
+					return SendClientMessage(playerid, COLOR_DARKRED, "This skin is not compatible with your character's race.");
+				}
+			}
+
 			if(!doesPlayerHasCorrectOrigin(playerid, tThing[srvthingid][tValue1])) {
 				if(tPlayer[playerid][pLang] == LANG_PL) {
 					return SendClientMessage(playerid, COLOR_GRAY, "Ten skin nie jest zgodny z ras  Twojej postaci.");
@@ -1606,10 +1609,10 @@ stock showPlayerThings(playerid) {
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
 		TextDrawSetString(thingTips[playerid][0], "Istnieje szybsza metoda na uzywanie przedmiotow. Skrot:~n~~b~~h~~h~~h~/p [Czesc nazwy przedmiotu] [opcjonalnie parametry]");
-		TextDrawSetString(thingTips[playerid][1], "~y~Przyklady: ~y~~h~/p rolki    /p deagle z kabury.");
+		TextDrawSetString(thingTips[playerid][1], "~y~Przyklady: ~y~~h~/p rolki    /p telefon 1234567.");
 	} else {
 		TextDrawSetString(thingTips[playerid][0], "There is a faster way to use your items. Shortcut:~n~~b~~h~~h~~h~/i [Items name beginning] [optional argument]");
-		TextDrawSetString(thingTips[playerid][1], "~y~Examples: ~y~~h~/i rollers    /i deagle from holster.");
+		TextDrawSetString(thingTips[playerid][1], "~y~Examples: ~y~~h~/i rollers    /i phone 1234567.");
 		
 	}
 
@@ -1620,11 +1623,11 @@ stock showPlayerThings(playerid) {
 	SetTimerEx("hideThingTips", 4000, false, "i", playerid);
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		format(str, sizeof(str), "{AAAAAA}Przedmioty znajduj ce si  przy Tobie:\n%s\n{AAAAAA}Podnie  przedmiot...{000000}\t0\t0", str);
-		ShowPlayerDialog(playerid, DIALOG_THING, DIALOG_STYLE_LIST, "Dost pne przedmioty", str, "U yj", "Wi cej");
+		format(str, sizeof(str), "{AAAAAA}Przedmioty znajduj¹ce siê przy Tobie:\n%s\n{AAAAAA}Podnieœ przedmiot...{000000}\t0\t0", str);
+		ShowPlayerDialog(playerid, DIALOG_THING, DIALOG_STYLE_LIST, "Przedmioty", str, "U¿yj", "Wiêcej");
 	} else {
 		format(str, sizeof(str), "{AAAAAA}Items on your person:\n%s\n{AAAAAA}Pick up item...{000000}\t0\t0", str);
-		ShowPlayerDialog(playerid, DIALOG_THING, DIALOG_STYLE_LIST, "Available items", str, "Use", "More");
+		ShowPlayerDialog(playerid, DIALOG_THING, DIALOG_STYLE_LIST, "Items", str, "Use", "More");
 	}
 	return 1;
 }

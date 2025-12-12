@@ -29,7 +29,7 @@
 
 #define MAX_PLAYERS 				70
 #define MAX_VEHICLES 				100
-#define MAX_OBJECTS 				100
+#define MAX_OBJECTS 				100000
 #define MAX_3DTEXTS 				100
 #define MAX_PLAYER_CHARS 			6
 #define MAX_PLAYER_GROUPS 			5
@@ -44,7 +44,7 @@
 #define MAX_GROUP_SETS 				100
 #define MAX_GROUP_TASKS 			100
 #define MAX_GROUP_ORDERS 			100
-#define MAX_GROUP_VEHICLES 			100
+#define MAX_GROUP_VEHICLES 			10
 #define MAX_RACES 					100
 #define MAX_CPS 					100
 #define MAX_GPS_ICONS 				100
@@ -245,13 +245,12 @@
 #define GROUP_GOV 2
 #define GROUP_LSFD 3
 #define GROUP_FBI 4
-#define GROUP_RADIO 5
-#define GROUP_BAR 6
-#define GROUP_SALON 7
-#define	GROUP_MECHANIC 8
-#define GROUP_GYM 9
-#define GROUP_SECURITY 10
-#define GROUP_TAXI 11
+#define GROUP_BAR 5
+#define GROUP_SALON 6
+#define	GROUP_MECHANIC 7
+#define GROUP_GYM 8
+#define GROUP_SECURITY 9
+#define GROUP_TAXI 10
 #define GROUP_MEDIC 27
 #define GROUP_SHOP 13
 #define GROUP_MAFIA 14

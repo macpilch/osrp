@@ -350,7 +350,7 @@ Callback downPlayerPos(playerid, Float:posx, Float:posy, Float:posz) {
 		return 1;
 	}
 
-	OSRP_SetPlayerPos(playerid, posx, posy, posz - 20.0);
+	OSRP_SetPlayerPos(playerid, posx, posy, posz - 30.0);
 
 	busCameraChoose[playerid] = true;
 	busCameraSelect[playerid] = false;
@@ -370,7 +370,7 @@ Callback teleportToBusStop(playerid, uid) {
 	GetPlayerCameraPos(playerid, CamX, CamY, CamZ);
 	OSRP_SetPlayerPos(playerid, tPlayer[playerid][pBusStopPos][0], tPlayer[playerid][pBusStopPos][1], tPlayer[playerid][pBusStopPos][2] - 20.0);
 
-	InterpolateCameraPos(playerid, CamX - 25.0, CamY, CamZ + 5, tBusStop[srvBusId][bsPosX], tBusStop[srvBusId][bsPosY] + 10.0, tBusStop[srvBusId][bsPosZ] + 100.0, tPlayer[playerid][pBusStopTime], CAMERA_MOVE);
+	InterpolateCameraPos(playerid, CamX - 25.0, CamY + 50, CamZ + 5, tBusStop[srvBusId][bsPosX], tBusStop[srvBusId][bsPosY] + 10.0, tBusStop[srvBusId][bsPosZ] + 100.0, tPlayer[playerid][pBusStopTime], CAMERA_MOVE);
 	InterpolateCameraLookAt(playerid, CamX, CamY, CamZ, tBusStop[srvBusId][bsPosX], tBusStop[srvBusId][bsPosY], tBusStop[srvBusId][bsPosZ], tPlayer[playerid][pBusStopTime], CAMERA_MOVE);
 
 	tPlayer[playerid][pBusStopPos][0] = tBusStop[srvBusId][bsPosX];

@@ -66,8 +66,10 @@ stock antyUnFreeze(playerid) {
 
 					new reas[64];
 
-					format(reas, sizeof(reas), "Unfreeze: %0.1fj onfoot.", totalPos);
-					givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, 30, reas);
+					if(totalPos > 0.0) {
+						format(reas, sizeof(reas), "Unfreeze: %0.1fj onfoot.", totalPos);
+						givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, 30, reas);
+					}
 				}
 			}
 
@@ -85,8 +87,10 @@ stock antyUnFreeze(playerid) {
 
 					new reas[64];
 
-					format(reas, sizeof(reas), "Unfreeze: %0.1fj invehicle.", totalPos);
-					givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, 30, reas);
+					if(totalPos > 0.0) {
+						format(reas, sizeof(reas), "Unfreeze: %0.1fj invehicle.", totalPos);
+						givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, 30, reas);
+					}
 				}
 			}
 		}
@@ -98,14 +102,7 @@ stock antyWeapon(playerid) {
 	if(isLogged[playerid] && isSpawned[playerid] && !spawnFreeze[playerid]) {
 		if(GetPlayerWeapon(playerid) && tPlayer[playerid][pWeapon]) {
 			if(tPlayer[playerid][pWeapon] != GetPlayerWeapon(playerid) && getServerThingId(tPlayer[playerid][pThing]) != INVALID_THING_ID) {
-				foreach(new i : Player) {
-					if(tPlayer[i][pLang] == LANG_PL) {
-						format(timerStr, sizeof(timerStr), "Bron: %d/%d(%s). Systemowa: %d/%d:%d (Weap)", GetPlayerWeapon(playerid), GetPlayerAmmo(playerid), weaponNamesPl[tPlayer[playerid][pWeapon]], tThing[getServerThingId(tPlayer[playerid][pThing])][tUid], tPlayer[playerid][pWeapon], tPlayer[playerid][pWeapAmmo]);
-					} else {
-						format(timerStr, sizeof(timerStr), "Weapon: %d/%d(%s). System: %d/%d:%d (Weap)", GetPlayerWeapon(playerid), GetPlayerAmmo(playerid), weaponNamesEng[tPlayer[playerid][pWeapon]], tThing[getServerThingId(tPlayer[playerid][pThing])][tUid], tPlayer[playerid][pWeapon], tPlayer[playerid][pWeapAmmo]);
-					}
-				}
-
+				format(timerStr, sizeof(timerStr), "Weapon mismatch: shot %d:%d with %d(%s), mem %d (prev %d)", GetPlayerWeapon(playerid), GetPlayerAmmo(playerid), weaponNames[tPlayer[playerid][pWeapon]], tThing[getServerThingId(tPlayer[playerid][pThing])][tUid], tPlayer[playerid][pWeapon], tPlayer[playerid][pWeapAmmo]);
 				givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_KICK, 0, timerStr);
 			}
 		}
@@ -124,18 +121,15 @@ stock antyAdmJail(playerid) {
 
 stock antyAirBreak(playerid) {
 	if(isLogged[playerid] && isSpawned[playerid] && !spawnFreeze[playerid] && !tPlayer[playerid][pBw]) {
-		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) {
+		if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT && GetPlayerState(playerid) != PLAYER_STATE_SPAWNED) {
 			new speed = getPlayerSpeed(playerid);
 
 			if(!speed && !tPlayer[playerid][pSafeTele] && antiCheatPos[playerid]) {
 				GetPlayerPos(playerid, tPlayer[playerid][pPos][0], tPlayer[playerid][pPos][1], tPlayer[playerid][pPos][2]);
 				antiCheatPos[playerid] = false;
 
-				SetTimerEx("checkPlayerPos", 500, false, "i", playerid);
+				SetTimerEx("checkPlayerPos", 750, false, "i", playerid);
 			}
-
-			//format(timerStr, sizeof(timerStr), "Latanie cheatem V2.");
-			//givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_KICK, 0, timerStr);
 		}
 	}
 	return 1;
@@ -144,6 +138,7 @@ stock antyAirBreak(playerid) {
 Callback checkPlayerPos(playerid) {
 	new Float:pX, Float:pY, Float:pZ;
 	new Float:pOldX, Float:pOldY, Float:pOldZ;
+	new reas[128];
 
 	GetPlayerPos(playerid, pX, pY, pZ);
 
@@ -158,10 +153,10 @@ Callback checkPlayerPos(playerid) {
 	new diffZ = floatToInt(floatabs(floatabs(pZ) - floatabs(pOldZ)));
 	new delta = (diffX + diffY + diffZ);
 
-	if(diffX > 10 && diffY > 10 && diffZ > 3) {
-		new reas[128];
-
+	if(diffX > 5 && diffY > 5 && diffZ > 2) {
+		format(reas, sizeof(reas), "diffX: %d, diffY: %d", diffX, diffY);
+		SendClientMessage(playerid,-1,reas);
 		format(reas, sizeof(reas), "AirBreak V6 A: d%0.1f", intToFloat(delta));
-		givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, 2, reas);
+		//givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, 2, reas);
 	}
 }

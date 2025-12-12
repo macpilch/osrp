@@ -213,6 +213,13 @@ Timer:globalTimer[1000]() {
 				if(GetPlayerSurfingVehicleID(i) != INVALID_VEHICLE_ID) {
 					SendClientMessage(i, -1, "Serfuje!");
 				}
+
+				// AC
+				antySpeedHack(i);
+				antyUnFreeze(i);
+				antyWeapon(i);
+				antyAdmJail(i);
+				antyAirBreak(i);
 			}
 		}
 
@@ -316,24 +323,27 @@ Timer:globalTimer[1000]() {
 				}
 
 				// Przesuwanie pojazdu przez innego gracza
-				if(IsVehicleStreamedIn(tVehicle[j][vId], i)) {
-					new Float:vX, Float:vY, Float:vZ;
+				if(IsVehicleStreamedIn(tVehicle[j][vId], i) && !getVehicleSpeed(tVehicle[j][vId])) {
+					if(!IsPlayerInVehicle(i, tVehicle[j][vId])) {
+						new Float:vX, Float:vY, Float:vZ;
 
-					GetVehiclePos(tVehicle[j][vId], vX, vY, vZ);
+						GetVehiclePos(tVehicle[j][vId], vX, vY, vZ);
 
-					if(tVehicle[j][vOUid] != tPlayer[i][pUid] && tVehicle[j][vOType] == OWNER_PLAYER && ((floatabs(tVehicle[j][vPosX] - vX) >= 0.5 &&
-					   floatabs(tVehicle[j][vPosY] - vY) >= 0.5) && vZ)) {
-						DestroyVehicle(tVehicle[j][vId]);
+						if(tVehicle[j][vOUid] != tPlayer[i][pUid] && tVehicle[j][vOType] == OWNER_PLAYER && ((floatabs(tVehicle[j][vPosX] - vX) >= 0.5 &&
+						   floatabs(tVehicle[j][vPosY] - vY) >= 0.5) && vZ)) {
+							SendClientMessage(i, -1, "To ja Chuju");
+							DestroyVehicle(tVehicle[j][vId]);
 
-						tVehicle[j][vId] = INVALID_VEHICLE_ID;
-						tVehicle[j][vSpawned] = false;
-						tVehicle[j][vEngine] = false;
-						tVehicle[j][vLightsOn] = false;
-						tVehicle[j][vPosX] = vX;
-						tVehicle[j][vPosY] = vY;
-						tVehicle[j][vPosZ] = vZ;
+							tVehicle[j][vId] = INVALID_VEHICLE_ID;
+							tVehicle[j][vSpawned] = false;
+							tVehicle[j][vEngine] = false;
+							tVehicle[j][vLightsOn] = false;
+							tVehicle[j][vPosX] = vX;
+							tVehicle[j][vPosY] = vY;
+							tVehicle[j][vPosZ] = vZ;
 
-						saveVehicleValues(j);
+							saveVehicleValues(j);
+						}
 					}
 				}
 
@@ -355,17 +365,6 @@ Timer:globalTimer[1000]() {
 		}
 	}
 	return 1;
-}
-
-Timer:antiCheatTimer[2000]() {
-	// AC
-	foreach(new i : Player) {
-		antySpeedHack(i);
-		antyUnFreeze(i);
-		antyWeapon(i);
-		antyAdmJail(i);
-		antyAirBreak(i);
-	}
 }
 
 Timer:saveAllValuesTimer[30000]() {

@@ -57,15 +57,9 @@ stock init3dTextValues() {
 	}
 
 	if(Iter_Count(text3dItter)) {
-<<<<<<< HEAD
 		printf("[LOG]: [3D TEXT] Wczytano %d 3D Textow.\n", Iter_Count(text3dItter));
 	} else {
 		printf("[LOG]: [3D TEXT] Brak 3D Textow.\n");
-=======
-		printf("[LOG]: [3D TEXT] Wczytano %d 3D Text w.\n", Iter_Count(text3dItter));
-	} else {
-		printf("[LOG]: [3D TEXT] Brak 3D Text w.\n");
->>>>>>> e7fd5934fbd73a2c350dbf7cd0c156994657b9ed
 	}
 
 	mysql_free_result();

@@ -128,7 +128,7 @@ stock searchPlayerCashPoint(playerid) {
 			}
 
 			tPlayer[playerid][pCashPoint] = tCashPoint[i][cpUid];
-		} else if(playerToPoint(playerid, (tCashPoint[i][cpDistance] / 1.5), tCashPoint[i][cpPosX], tCashPoint[i][cpPosY], tCashPoint[i][cpPosZ])) {
+		} else if(playerToPoint(playerid, (tCashPoint[i][cpDistance] - 1), tCashPoint[i][cpPosX], tCashPoint[i][cpPosY], tCashPoint[i][cpPosZ])) {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
 				GameTextForPlayer(playerid, "~n~~r~Podejdz blizej.", 5000, 3);
 			} else {

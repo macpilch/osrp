@@ -377,21 +377,49 @@ stock showDoorMenu(playerid) {
 	mainStr[0] = EOS;
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		format(str, sizeof(str), "Drzwi %d (Op acone: %s, do zap aty: $%d; %d m2)", tDoor[srvdoorid][dUid], tDoor[srvdoorid][dTaxDate], tDoor[srvdoorid][dTaxCost], tDoor[srvdoorid][dDimension]);
+		format(str, sizeof(str), "Drzwi %d (Op³acone: %s, do zap³aty: $%d; %d m2)", tDoor[srvdoorid][dUid], tDoor[srvdoorid][dTaxDate], tDoor[srvdoorid][dTaxCost], tDoor[srvdoorid][dDimension]);
 	} else {
 		format(str, sizeof(str), "Door %d (Paid: %s, payable: $%d; %d m2)", tDoor[srvdoorid][dUid], tDoor[srvdoorid][dTaxDate], tDoor[srvdoorid][dTaxCost], tDoor[srvdoorid][dDimension]);
 	}
 
 	if(tDoor[srvdoorid][dOUid] == tPlayer[playerid][pUid]) {
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tPoka  informacje*\n27\tPrzypisz obiekty (%d + %d przypisanych)\n29\tPrzypisz napisy (%d + %d przypisanych)\n13\tWczytaj map  obiekt w\n30\tSkasuj ostatni obiekt (w razie crash w)\n40\tWykonaj kopi  zapasow \n4\tZmie  interior (widoczno   przez okna)\n",
-			tDoor[srvdoorid][dMaxObjects], tDoor[srvdoorid][dObjects], tDoor[srvdoorid][dMaxTexts], tDoor[srvdoorid][dTexts]);
-			format(mainStr, sizeof(mainStr), "%s2\tEdytuj wewn trzn  pozycj \n31\tEdytuj wymiary wn trza\n20\tW(y)  cz przejazd pojazdami\n24\tPrzepisz budynek pod grup \n16\tZmie  wy wietlan  nazw \n35\tPrze  cz pickup\n15\tUstal op at  za wej cie\n21\tZakup system HiFi ($2500)\n22\tZakup szaf  na szyfr ($2000)\n34\tOchrona: %s", mainStr, "brak");
+			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tPoka¿ informacje*\n");
+			format(mainStr, sizeof(mainStr), "%s27\tPrzypisz obiekty (%d + %d przypisanych)\n", mainStr, tDoor[srvdoorid][dMaxObjects], tDoor[srvdoorid][dObjects]);
+			format(mainStr, sizeof(mainStr), "%s29\tPrzypisz napisy (%d + %d przypisanych)\n", mainStr, tDoor[srvdoorid][dMaxTexts], tDoor[srvdoorid][dTexts]);
+			format(mainStr, sizeof(mainStr), "%s13\tWczytaj mapê obiektów\n", mainStr);
+			format(mainStr, sizeof(mainStr), "%s30\tSkasuj ostatni obiekt (w razie crashów)\n", mainStr);
+			format(mainStr, sizeof(mainStr), "%s40\tWykonaj kopiê zapasow¹\n", mainStr);
+			format(mainStr, sizeof(mainStr), "%s4\tZmieñ interior (widocznoœæ przez okna)\n", mainStr);
+			format(mainStr, sizeof(mainStr), "%s2\tEdytuj wewnêtrzn¹ pozycjê\n", mainStr);
+			format(mainStr, sizeof(mainStr), "%s31\tEdytuj wymiary wnêtrza\n", mainStr);
+			format(mainStr, sizeof(mainStr), "%s20\tW(y)³¹cz przejazd pojazdami\n", mainStr);
+			format(mainStr, sizeof(mainStr), "%s24\tPrzepisz budynek pod grupê\n", mainStr);
+			format(mainStr, sizeof(mainStr), "%s16\tZmieñ wyœwietlan¹ nazwê\n", mainStr);
+			format(mainStr, sizeof(mainStr), "%s35\tPrze³¹cz pickup\n", mainStr);
+			format(mainStr, sizeof(mainStr), "%s15\tUstal op³atê za wejœcie\n", mainStr);
+			format(mainStr, sizeof(mainStr), "%s21\tZakup system HiFi ($2500)\n", mainStr);
+			format(mainStr, sizeof(mainStr), "%s22\tZakup szafê na szyfr ($2000)\n", mainStr);
+			format(mainStr, sizeof(mainStr), "%s34\tOchrona: %s", mainStr, "brak");
 			ShowPlayerDialog(playerid, DIALOG_DOOR_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Anuluj");
 		} else {
-			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tShow informations*\n27\tAssign objects (%d + %d assigned)\n29\tAssign inscriptions (%d + %d assigned)\n13\tLoad feature map\n30\tDelete last object (in case of crashes)\n40\tMake a backup\n4\tChange interior (visibility through windows)\n",
-			tDoor[srvdoorid][dMaxObjects], tDoor[srvdoorid][dObjects], tDoor[srvdoorid][dMaxTexts], tDoor[srvdoorid][dTexts]);
-			format(mainStr, sizeof(mainStr), "%s2\tEdit inside position\n31\tEdit interior dimensions\n20\tTurn on/off vehicle passage\n24\tTransfer building to group\n16\tChange display name\n35\tSwitch pickup\n15\tSet an entrance fee\n21\tPurchase a HiFi system ($2500)\n22\tPurchase a combination locker ($2000)\n34\tSecurity: %s", mainStr, "brak");
+			format(mainStr, sizeof(mainStr), "{FFFFFF}1\tShow informations*\n");
+			format(mainStr, sizeof(mainStr), "%s27\tAssign objects (%d + %d assigned)\n", tDoor[srvdoorid][dMaxObjects], tDoor[srvdoorid][dObjects]);
+			format(mainStr, sizeof(mainStr), "%s29\tAssign inscriptions (%d + %d assigned)\n", tDoor[srvdoorid][dMaxTexts], tDoor[srvdoorid][dTexts]);
+			format(mainStr, sizeof(mainStr), "%s13\tLoad feature map\n");
+			format(mainStr, sizeof(mainStr), "%s30\tDelete last object (in case of crashes)\n");
+			format(mainStr, sizeof(mainStr), "%s40\tMake a backup\n");
+			format(mainStr, sizeof(mainStr), "%s4\tChange interior (visibility through windows)\n");
+			format(mainStr, sizeof(mainStr), "%s2\tEdit inside position\n");
+			format(mainStr, sizeof(mainStr), "%s31\tEdit interior dimensions\n");
+			format(mainStr, sizeof(mainStr), "%s20\tTurn on/off vehicle passage\n");
+			format(mainStr, sizeof(mainStr), "%s24\tTransfer building to group\n");
+			format(mainStr, sizeof(mainStr), "%s16\tChange display name\n");
+			format(mainStr, sizeof(mainStr), "%s35\tSwitch pickup\n");
+			format(mainStr, sizeof(mainStr), "%s15\tSet an entrance fee\n");
+			format(mainStr, sizeof(mainStr), "%s21\tPurchase a HiFi system ($2500)\n");
+			format(mainStr, sizeof(mainStr), "%s22\tPurchase a combination locker ($2000)\n");
+			format(mainStr, sizeof(mainStr), "%s34\tSecurity: %s", mainStr, "none");
 			ShowPlayerDialog(playerid, DIALOG_DOOR_MENU, DIALOG_STYLE_LIST, str, mainStr, "OK", "Cancel");
 		}
 	} else if(tDoor[srvdoorid][dOUid] != tPlayer[playerid][pUid]) {
@@ -431,7 +459,7 @@ stock showDoorMenu(playerid) {
 	}
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		format(mainStr, sizeof(mainStr), "{FFFFFF}11\tStw rz nowy budynek ($%d/m2, min %dm2)", tArea[srvAreaId][aCost], tArea[srvAreaId][aDimension]);
+		format(mainStr, sizeof(mainStr), "{FFFFFF}11\tStwórz nowy budynek ($%d/m2, min %dm2)", tArea[srvAreaId][aCost], tArea[srvAreaId][aDimension]);
 		ShowPlayerDialog(playerid, DIALOG_DOOR_MENU4, DIALOG_STYLE_LIST, "Subserwer", mainStr, "OK", "Anuluj");
 	} else {
 		format(mainStr, sizeof(mainStr), "{FFFFFF}11\tCreate a new building ($%d/m2, min %dm2)", tArea[srvAreaId][aCost], tArea[srvAreaId][aDimension]);
@@ -463,6 +491,10 @@ Callback createAndAddDoor(playerid, meters, owner, ownertype, doortype, name[], 
 
 	tPlayer[playerid][pDoor] = addDoor(owner, ownertype, doortype, name, meters, px, py, pz, pa, doorExitX, doorExitY, doorExitZ, doorExitA, doorVw, doorInt);
 	new srvDoorId = getServerDoorId(tPlayer[playerid][pDoor]);
+
+	if(srvDoorId == INVALID_DOOR_ID) {
+		return 1;
+	}
 
 	OSRP_SetPlayerPos(playerid, tDoor[srvDoorId][dEnterX], tDoor[srvDoorId][dEnterY], tDoor[srvDoorId][dEnterZ]);
 	SetPlayerFacingAngle(playerid, tDoor[srvDoorId][dEnterA]);

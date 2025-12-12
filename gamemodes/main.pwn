@@ -16,6 +16,7 @@
 #include <YSI\y_timers>
 #include <mapandreas>
 #include <crashdetect>
+#include <geoip>
 
 #include "src\macros\defines"
 #include "src\macros\dialogs"

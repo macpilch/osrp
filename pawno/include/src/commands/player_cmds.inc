@@ -418,7 +418,7 @@ CMD:tog(playerid, params[]) {
 
 			chatMessages[playerid][TOG_W] = true;
 		}
-	} else if(!strcmp(opt, "g", true)) {
+	} else if(strfind(opt, "@", true) != -1) {
 		if(chatMessages[playerid][TOG_G]) {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
 				GameTextForPlayer(playerid, "~w~Kanaly grupowe ~r~~n~wylaczone", 5000, 6);
@@ -577,11 +577,11 @@ CMD:pokaz(playerid, params[]) {
 		}
 
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			SendClientMessage(pId, COLOR_YELLOW, "Obywatel %s, numer dowodu %d (rz¹d #%d), biometryka #%dD#."); // nr 6 cyfr, biome - 4
-			SendClientMessage(pId, COLOR_YELLOW, "Zarejestrowane pojazdy: NULL");
+			//SendClientMessage(pId, COLOR_YELLOW, "Obywatel %s, numer dowodu %d (rz¹d #%d), biometryka #%dD#."); // nr 6 cyfr, biome - 4
+			//SendClientMessage(pId, COLOR_YELLOW, "Zarejestrowane pojazdy: NULL");
 		} else {
-			SendClientMessage(pId, COLOR_YELLOW, "Citizen %s, ID number %d (gov #%d), biometrics #%dD#."); // nr 6 cyfr, biome - 4
-			SendClientMessage(pId, COLOR_YELLOW, "Registered vehicles: NULL");
+			//SendClientMessage(pId, COLOR_YELLOW, "Citizen %s, ID number %d (gov #%d), biometrics #%dD#."); // nr 6 cyfr, biome - 4
+			//SendClientMessage(pId, COLOR_YELLOW, "Registered vehicles: NULL");
 		}
 
 		mainStr[0] = EOS;
@@ -1325,19 +1325,62 @@ CMD:stats(playerid, params[]) {
 	mainStr[0] = EOS;
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		format(mainStr, sizeof(mainStr), "{FFFFFF}Czas gry:\t%dh %dm\nEnergy:\t\t%d%, %dmin BW\nDrzwi:\t\t%d\nGotówka:\t$%d, €%d\nBank:\t\t$%d\nSkill:\t\tPist. %d, Semi %d, Auto %d, Shotg. %d, Rifle %d\nRz¹d:\t\t\t%d\nPrawko:\t\t%s, %dkm wyje¿d¿one\nHotel:\t\t\t%d\nPrzetrzymanie:\t\t%dh %dm\nTelefon:\t\t%d (sieæ %d)\nNumer konta:\t%d\nUzale¿nienie:\t%0.1f\nSi³a:\t\t%d\nStrefa:\t\t%dx%d (max %dkm/h)\nGrupy:\t\t%s\nSkin:\t\t%d (ostatni %d)\nAJ:\t\t\t%d\nAL:\t\t\t%d, vg0\n",
-		tPlayer[playerid][pHours], tPlayer[playerid][pMinutes], floatToInt(tPlayer[playerid][pHp]), tPlayer[playerid][pBw], tPlayer[playerid][pDoor], tPlayer[playerid][pMoney], tPlayer[playerid][pEuro], tPlayer[playerid][pBank], tPlayer[playerid][pWeapSkill][0], tPlayer[playerid][pWeapSkill][1], tPlayer[playerid][pWeapSkill][2], tPlayer[playerid][pWeapSkill][3], tPlayer[playerid][pWeapSkill][4], (tPlayer[playerid][pDocuments] & DOC_ID) ? DOC_ID : 0,
-		(tPlayer[playerid][pDocuments] & DOC_L_DRIVING) ? ("T") : ("N"),
-		floatToInt(tPlayer[playerid][pTraveled]), tPlayer[playerid][pHotel], tPlayer[playerid][pDetention], 0, tPlayer[playerid][pTelNum], tPlayer[playerid][pTelNetwork], tPlayer[playerid][pBankAcc], tPlayer[playerid][pAddiction], tPlayer[playerid][pStrength], dim1, dim2, speed, tPlayer[playerid][pGroupDesc], tPlayer[playerid][pSkin], tPlayer[playerid][pLastSkin], tPlayer[playerid][pAj], tPlayer[playerid][pRank]);
-		format(mainStr, sizeof(mainStr), "%s------\n1\tStyl rozmowy:\t\t%d\n2\tSzybki komputer:\t%s\n3\tAnimacja chodzenia:\t%s\n5\tStyl walki aktywny:\t%s", mainStr, tPlayer[playerid][pChatStyle], tPlayer[playerid][pComputer] ? ("T") : ("N"), tPlayer[playerid][pWalkAnim] != INVALID_ANIM_ID ? getAnimationNameFromServerId(tPlayer[playerid][pWalkAnim]) : "Brak",
-		tPlayer[playerid][pStyleFight] ? ("T") : ("N"));
+		format(mainStr, sizeof(mainStr), "{FFFFFF}Reputacja:\t\t0 (przy logowaniu)\n");
+		format(mainStr, sizeof(mainStr), "%sCzas gry:\t\t%dh %dm\n", mainStr, tPlayer[playerid][pHours], tPlayer[playerid][pMinutes]);
+		format(mainStr, sizeof(mainStr), "%sEnergy:\t\t\t%d%%, %dmin BW\n", mainStr, floatToInt(tPlayer[playerid][pHp]), tPlayer[playerid][pBw]);
+		format(mainStr, sizeof(mainStr), "%sDrzwi:\t\t\t%d\n", mainStr, tPlayer[playerid][pDoor]);
+		format(mainStr, sizeof(mainStr), "%sGotówka:\t\t$%d, €%d\n", mainStr, tPlayer[playerid][pMoney], tPlayer[playerid][pEuro]);
+		format(mainStr, sizeof(mainStr), "%sBank:\t\t\t$%d\n", mainStr, tPlayer[playerid][pBank]);
+		format(mainStr, sizeof(mainStr), "%sSkill:\t\t\tPist. %d, Semi %d, Auto %d, Shotg. %d, Rifle %d\n", mainStr, tPlayer[playerid][pWeapSkill][0], tPlayer[playerid][pWeapSkill][1], tPlayer[playerid][pWeapSkill][2], tPlayer[playerid][pWeapSkill][3], tPlayer[playerid][pWeapSkill][4]);
+		format(mainStr, sizeof(mainStr), "%sRz¹d:\t\t\t%d\n", mainStr, (tPlayer[playerid][pDocuments] & DOC_ID) ? DOC_ID : 0);
+		format(mainStr, sizeof(mainStr), "%sPrawko:\t\t%s, %dkm wyje¿d¿one\n", mainStr, (tPlayer[playerid][pDocuments] & DOC_L_DRIVING) ? ("Y") : ("N"), floatToInt(tPlayer[playerid][pTraveled]));
+		format(mainStr, sizeof(mainStr), "%sHotel:\t\t\t%d\n", mainStr, tPlayer[playerid][pHotel]);
+		format(mainStr, sizeof(mainStr), "%sPrzetrzymanie:\t\t%dh 0m\n", mainStr, tPlayer[playerid][pDetention]);
+		format(mainStr, sizeof(mainStr), "%sTelefon:\t\t%d (sieæ %d)\n", mainStr, tPlayer[playerid][pTelNum], tPlayer[playerid][pTelNetwork]);
+		format(mainStr, sizeof(mainStr), "%sNumer konta:\t\t%d\n", mainStr, tPlayer[playerid][pBankAcc]);
+		format(mainStr, sizeof(mainStr), "%sUzale¿nienie:\t\t%0.1f\n", mainStr, tPlayer[playerid][pAddiction]);
+		format(mainStr, sizeof(mainStr), "%sSi³a:\t\t\t%d\n", mainStr, tPlayer[playerid][pStrength]);
+		format(mainStr, sizeof(mainStr), "%sStrefa:\t\t\t%dx%d (max %dkm/h)\n", mainStr, dim1, dim2, speed);
+		format(mainStr, sizeof(mainStr), "%sGrupy:\t\t\t%s\n", mainStr, tPlayer[playerid][pGroupDesc]);
+		format(mainStr, sizeof(mainStr), "%sSkin:\t\t\t%d (ostatni %d)\n", mainStr, tPlayer[playerid][pSkin], tPlayer[playerid][pLastSkin]);
+		format(mainStr, sizeof(mainStr), "%sAJ:\t\t\t%d\n", mainStr, tPlayer[playerid][pAj]);
+		format(mainStr, sizeof(mainStr), "%sAL:\t\t\t%d, vg0\n", mainStr, tPlayer[playerid][pRank]);
+		format(mainStr, sizeof(mainStr), "%s------\n1\t\t\tStyl rozmowy: %d\n", mainStr, tPlayer[playerid][pChatStyle]);
+		format(mainStr, sizeof(mainStr), "%s2\t\t\tFreeze w drzwiach: %s\n", mainStr, tPlayer[playerid][pComputer] ? ("Y") : ("N"));
+		format(mainStr, sizeof(mainStr), "%s3\t\t\tAnimacja chodzenia: %s\n", mainStr, tPlayer[playerid][pWalkAnim] != INVALID_ANIM_ID ? getAnimationNameFromServerId(tPlayer[playerid][pWalkAnim]) : "Brak");
+		format(mainStr, sizeof(mainStr), "%s5\t\t\tStyl walki aktywny: %s\n", mainStr, tPlayer[playerid][pStyleFight] ? ("Y") : ("N"));
+		format(mainStr, sizeof(mainStr), "%s8\t\t\tAkcesoria aktywne: Y\n", mainStr);
+		format(mainStr, sizeof(mainStr), "%s9\t\t\tToken przy PM: N\n", mainStr);
+		format(mainStr, sizeof(mainStr), "%s7\t\t\tPodwójne uwierzytelnienie...", mainStr);
 		ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, title, mainStr, "OK", "Zamknij");
 	} else {
-		format(mainStr, sizeof(mainStr), "{FFFFFF}Play time:\t\t\t%dh %dm\nAL:\t\t\t\t%d\nAJ:\t\t\t\t%d\nBW:\t\t\t\t%d\nHP:\t\t\t\t%0.1f\nStrength:\t\t\t%d\nDollars:\t\t\t\t$%d\nEuro:\t\t\t\t%d €\nBank:\t\t\t\t$%d\nDebt:\t\t\t\t$%d\nGov:\t\t\t\t%d\nDriving:\t\t\t%d\nHotel:\t\t\t\t%d\nDetention:\t\t\t%dh\nPDP:\t\t\t\t%d\nPhone:\t\t\t\t%d (%d)\nAccount number:\t\t%d\nAddiction:\t\t\t%0.1f\nDoor:\t\t\t\t%d\nZone:\t\t\t\t%dx%d (max %dkm/h)\nGroups:\t\t\t%s\nSkin:\t\t\t\t%d\n",
-		tPlayer[playerid][pHours], tPlayer[playerid][pMinutes], tPlayer[playerid][pRank], tPlayer[playerid][pAj], tPlayer[playerid][pBw], tPlayer[playerid][pHp], tPlayer[playerid][pStrength], tPlayer[playerid][pMoney], tPlayer[playerid][pEuro], tPlayer[playerid][pBank], tPlayer[playerid][pDebt], (tPlayer[playerid][pDocuments] & DOC_ID) ? DOC_ID : 0, (tPlayer[playerid][pDocuments] & DOC_L_DRIVING) ? DOC_L_DRIVING : 0, tPlayer[playerid][pHotel], tPlayer[playerid][pDetention],
-		tPlayer[playerid][pPdp], tPlayer[playerid][pTelNum], tPlayer[playerid][pTelNetwork], tPlayer[playerid][pBankAcc], tPlayer[playerid][pAddiction], tPlayer[playerid][pDoor], dim1, dim2, speed, tPlayer[playerid][pGroupDesc], tPlayer[playerid][pSkin]);
-		format(mainStr, sizeof(mainStr), "%sTraveled:\t\t\t%dkm\nLast skin:\t\t\t%d\n------\n1\tConversation style:\t%d\n2\tFast computer:\t\t%s\n3\tWalking animation:\t%s\n5\tActive fighting style:\t%s", mainStr, floatToInt(tPlayer[playerid][pTraveled]), tPlayer[playerid][pLastSkin], tPlayer[playerid][pChatStyle], tPlayer[playerid][pComputer] ? ("Y") : ("N"), tPlayer[playerid][pWalkAnim] != INVALID_ANIM_ID ? getAnimationNameFromServerId(tPlayer[playerid][pWalkAnim]) : "None",
-		tPlayer[playerid][pStyleFight] ? ("Y") : ("N"));
+		format(mainStr, sizeof(mainStr), "{FFFFFF}Reputation:\t\t0 (at login)\n");
+		format(mainStr, sizeof(mainStr), "%sPlay time:\t\t%dh %dm\n", mainStr, tPlayer[playerid][pHours], tPlayer[playerid][pMinutes]);
+		format(mainStr, sizeof(mainStr), "%sEnergy:\t\t\t%d%%, %dmin BW\n", mainStr, floatToInt(tPlayer[playerid][pHp]), tPlayer[playerid][pBw]);
+		format(mainStr, sizeof(mainStr), "%sDoor:\t\t\t%d\n", mainStr, tPlayer[playerid][pDoor]);
+		format(mainStr, sizeof(mainStr), "%sCash:\t\t\t$%d, €%d\n", mainStr, tPlayer[playerid][pMoney], tPlayer[playerid][pEuro]);
+		format(mainStr, sizeof(mainStr), "%sBank:\t\t\t$%d\n", mainStr, tPlayer[playerid][pBank]);
+		format(mainStr, sizeof(mainStr), "%sSkill:\t\t\tPist. %d, Semi %d, Auto %d, Shotg. %d, Rifle %d\n", mainStr, tPlayer[playerid][pWeapSkill][0], tPlayer[playerid][pWeapSkill][1], tPlayer[playerid][pWeapSkill][2], tPlayer[playerid][pWeapSkill][3], tPlayer[playerid][pWeapSkill][4]);
+		format(mainStr, sizeof(mainStr), "%sGov:\t\t\t%d\n", mainStr, (tPlayer[playerid][pDocuments] & DOC_ID) ? DOC_ID : 0);
+		format(mainStr, sizeof(mainStr), "%sLicense:\t\t%s, %dkm traveled\n", mainStr, (tPlayer[playerid][pDocuments] & DOC_L_DRIVING) ? ("Y") : ("N"), floatToInt(tPlayer[playerid][pTraveled]));
+		format(mainStr, sizeof(mainStr), "%sHotel:\t\t\t%d\n", mainStr, tPlayer[playerid][pHotel]);
+		format(mainStr, sizeof(mainStr), "%sDetention:\t\t%dh 0m\n", mainStr, tPlayer[playerid][pDetention]);
+		format(mainStr, sizeof(mainStr), "%sPhone:\t\t\t%d (network %d)\n", mainStr, tPlayer[playerid][pTelNum], tPlayer[playerid][pTelNetwork]);
+		format(mainStr, sizeof(mainStr), "%sAccount number:\t%d\n", mainStr, tPlayer[playerid][pBankAcc]);
+		format(mainStr, sizeof(mainStr), "%sAddiction:\t\t%0.1f\n", mainStr, tPlayer[playerid][pAddiction]);
+		format(mainStr, sizeof(mainStr), "%sStrength:\t\t%d\n", mainStr, tPlayer[playerid][pStrength]);
+		format(mainStr, sizeof(mainStr), "%sZone:\t\t\t%dx%d (max %dkm/h)\n", mainStr, dim1, dim2, speed);
+		format(mainStr, sizeof(mainStr), "%sGroups:\t\t%s\n", mainStr, tPlayer[playerid][pGroupDesc]);
+		format(mainStr, sizeof(mainStr), "%sSkin:\t\t\t%d (last %d)\n", mainStr, tPlayer[playerid][pSkin], tPlayer[playerid][pLastSkin]);
+		format(mainStr, sizeof(mainStr), "%sAJ:\t\t\t%d\n", mainStr, tPlayer[playerid][pAj]);
+		format(mainStr, sizeof(mainStr), "%sAL:\t\t\t%d, vg0\n", mainStr, tPlayer[playerid][pRank]);
+		format(mainStr, sizeof(mainStr), "%s------\n1\t\t\tConversation style: %d\n", mainStr, tPlayer[playerid][pChatStyle]);
+		format(mainStr, sizeof(mainStr), "%s2\t\t\tFreeze in the door: %s\n", mainStr, tPlayer[playerid][pComputer] ? ("Y") : ("N"));
+		format(mainStr, sizeof(mainStr), "%s3\t\t\tWalking animation: %s\n", mainStr, tPlayer[playerid][pWalkAnim] != INVALID_ANIM_ID ? getAnimationNameFromServerId(tPlayer[playerid][pWalkAnim]) : "Brak");
+		format(mainStr, sizeof(mainStr), "%s5\t\t\tActive fighting style: %s\n", mainStr, tPlayer[playerid][pStyleFight] ? ("Y") : ("N"));
+		format(mainStr, sizeof(mainStr), "%s8\t\t\tActive accessories: Y\n", mainStr);
+		format(mainStr, sizeof(mainStr), "%s9\t\t\tToken at PM: N\n", mainStr);
+		format(mainStr, sizeof(mainStr), "%s7\t\t\tDouble authentication...", mainStr);
 		ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_LIST, title, mainStr, "OK", "Close");
 	}
 	return 1;
@@ -3397,6 +3440,8 @@ CMD:sluzba(playerid, params[]) {
 					SendClientMessage(playerid, COLOR_INFO, "to the GOV office responsible for the company's HQ and provide its registered office address.");
 				}
 			}
+
+			updatePlayerGameStatus(playerid);
 		}
 	}
 	return 1;
@@ -3947,6 +3992,31 @@ CMD:race(playerid, params[]) {
 	return pc_cmd_wyscig(playerid, params);
 }
 
+CMD:radio(playerid, params[]) {
+	new playerCount;
+
+	mainStr[0] = EOS;
+
+	foreach(new i : groupItter) {
+		foreach(new j : Player) {
+			if(isGroupType(i, GROUP_SANNEWS)) {
+				if(isPlayerOnDuty(j) && tPlayer[j][pGroup][tPlayer[j][pSlot] - 1] == tGroup[i][gUid]) {
+					playerCount++;
+				}	
+			}
+
+			format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t(%d osób na s³u¿bie)\t%s", mainStr, tGroup[i][gUid], playerCount, tGroup[i][gName]);
+		}
+	}
+
+	if(!playerCount) {
+		return 1;
+	}
+
+	ShowPlayerDialog(playerid, DIALOG_RADIO_GROUPS, DIALOG_STYLE_LIST, "Dostêpne grupy", mainStr, "Wybierz", "Anuluj");
+	return 1;
+}
+
 CMD:news(playerid, params[]) {
 	new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][tPlayer[playerid][pSlot] - 1]);
 
@@ -3966,39 +4036,7 @@ CMD:news(playerid, params[]) {
 
 	if(doesGroupHasPermission(srvGrpId, G_GROUP_PERM_NEWS)) {
 		mainStr[0] = EOS;
-		format(mainStr, sizeof(mainStr), "~p~%s (News)~w~: %s", tPlayer[playerid][pCharName], newsStr);
-
-		TextDrawSetString(tdRadio, mainStr);
-		TextDrawShowForAll(tdRadio);
-	}
-	return 1;
-}
-
-CMD:live(playerid, params[]) {
-	new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][tPlayer[playerid][pSlot] - 1]);
-
-	if(srvGrpId == INVALID_GROUP_ID || isPlayerOnDuty(playerid)) {
-		return 1;
-	}
-
-	new liveStr[128];
-
-	if(sscanf(params, "s[128]", liveStr)) {
-		if(tPlayer[playerid][pLang] == LANG_PL) {
-			return OSRP_Tip(playerid, "/live [Tekst]");
-		} else {
-			return OSRP_Tip(playerid, "/live [Text]");
-		}
-	}
-
-	if(doesGroupHasPermission(srvGrpId, G_GROUP_PERM_NEWS)) {
-		mainStr[0] = EOS;
-
-		if(tPlayer[playerid][pLang] == LANG_PL) {
-			format(mainStr, sizeof(mainStr), "~p~%s (Na zywo)~w~: %s", tPlayer[playerid][pCharName], liveStr);
-		} else {
-			format(mainStr, sizeof(mainStr), "~p~%s (Live)~w~: %s", tPlayer[playerid][pCharName], liveStr);
-		}
+		format(mainStr, sizeof(mainStr), "%s ~>~ %s ~>~ %s ~w~(( Twoje /radio nie nadaje. ))", tGroup[srvGrpId][gName], tPlayer[playerid][pCharName], newsStr);
 
 		TextDrawSetString(tdRadio, mainStr);
 		TextDrawShowForAll(tdRadio);
@@ -4026,9 +4064,9 @@ CMD:reklama(playerid, params[]) {
 	if(doesGroupHasPermission(srvGrpId, G_GROUP_PERM_NEWS)) {
 		mainStr[0] = EOS;
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			format(mainStr, sizeof(mainStr), "~p~%s (Reklama)~w~: %s", tPlayer[playerid][pCharName], adStr);
+			format(mainStr, sizeof(mainStr), "%s ~>~ %s ~>~ %s ~w~(( Twoje /radio nie nadaje. ))", tGroup[srvGrpId][gName], tPlayer[playerid][pCharName], adStr);
 		} else {
-			format(mainStr, sizeof(mainStr), "~p~%s (Advertisement)~w~: %s", tPlayer[playerid][pCharName], adStr);
+			format(mainStr, sizeof(mainStr), "%s ~>~ %s ~>~ %s ~w~(( Twoje /radio nie nadaje. ))", tGroup[srvGrpId][gName], tPlayer[playerid][pCharName], adStr);
 		}
 
 		TextDrawSetString(tdRadio, mainStr);
@@ -4070,10 +4108,16 @@ CMD:wywiad(playerid, params[]) {
 
 	mainStr[0] = EOS;
 
+	new srvGrpId = getServerGroupId(tPlayer[playerid][pGroup][tPlayer[playerid][pSlot] - 1]);
+
+	if(srvGrpId == INVALID_GROUP_ID) {
+		return 1;
+	}
+
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		format(mainStr, sizeof(mainStr), "~p~Wywiad z %s~w~: %s", tPlayer[playerid][pCharName], str);
+		format(mainStr, sizeof(mainStr), "%s ~>~ %s ~>~ %s (( Twoje /radio nie nadaje. ))", tGroup[srvGrpId][gName], tPlayer[playerid][pCharName], str);
 	} else {
-		format(mainStr, sizeof(mainStr), "~p~Interview with %s~w~: %s", tPlayer[playerid][pCharName], str);
+		format(mainStr, sizeof(mainStr), "%s ~>~ %s ~>~ %s (( Twoje /radio nie nadaje. ))", tGroup[srvGrpId][gName], tPlayer[playerid][pCharName], str);
 	}
 
 	TextDrawSetString(tdRadio, mainStr);

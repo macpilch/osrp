@@ -1016,7 +1016,6 @@ stock removeGameObjects(playerid) {
 	RemoveBuildingForPlayer(playerid, 1283, 1094.7109, -1038.6953, 34.0781, 0.25);
 	RemoveBuildingForPlayer(playerid, 1283, 1084.1250, -1029.2813, 34.2813, 0.25);
 	RemoveBuildingForPlayer(playerid, 1283, 1085.1641, -969.2188, 44.4141, 0.25);
-	RemoveBuildingForPlayer(playerid, 5810, 1114.3125, -1348.1016, 17.9844, 0.25);
 	RemoveBuildingForPlayer(playerid, 5993, 1110.8984, -1328.8125, 13.8516, 0.25);
 	RemoveBuildingForPlayer(playerid, 1440, 1141.9844, -1346.1094, 13.2656, 0.25);
 	RemoveBuildingForPlayer(playerid, 1440, 1148.6797, -1385.1875, 13.2656, 0.25);

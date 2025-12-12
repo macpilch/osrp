@@ -276,7 +276,7 @@ CMD:mpick(playerid, params[]) {
 	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][2]) && (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_OBJECT)) ||
 	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][3]) && (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_OBJECT)) ||
 	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][4]) && (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_OBJECT))) &&
-	   tDoor[srvDoorId][dOType] == OWNER_GROUP)) {
+	   tDoor[srvDoorId][dOType] == OWNER_GROUP) || tPlayer[playerid][pRank] >= RANK_ADMIN1) {
 		SelectObject(playerid);
 	}
 	return 1;
@@ -359,7 +359,7 @@ CMD:msel(playerid, params[]) {
 	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][2]) && (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_OBJECT)) ||
 	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][3]) && (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_OBJECT)) ||
 	   (tDoor[srvDoorId][dOUid] == getServerGroupId(tPlayer[playerid][pGroup][4]) && (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_OBJECT))) &&
-	   tDoor[srvDoorId][dOType] == OWNER_GROUP)) {
+	   tDoor[srvDoorId][dOType] == OWNER_GROUP) || tPlayer[playerid][pRank] >= RANK_ADMIN1) {
 		if(getServerObjectId(tPlayer[playerid][pObject]) != OSRP_OBJECT_INVALID_ID) {
 			CancelEdit(playerid);
 			saveObjectValues(getServerObjectId(tPlayer[playerid][pObject]));

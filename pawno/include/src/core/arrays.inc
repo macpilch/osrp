@@ -30,7 +30,6 @@ new tGroup[MAX_GROUPS][GroupData];
 new tGroupSet[MAX_GROUP_SETS][GroupSetData];
 new tGroupTask[MAX_GROUP_TASKS][GroupTaskData];
 new tGroupOrder[MAX_GROUP_ORDERS][GroupOrderData];
-new tGroupVehicle[MAX_GROUP_VEHICLES][GroupVehicleData];
 new tDoor[MAX_DOORS][DoorData];
 new tCashPoint[MAX_CASHPOINTS][CashPointData];
 new tObject[MAX_OBJECTS][ObjectData];
@@ -108,7 +107,7 @@ new charSurnames[][] = {
 };
 
 new serviceTypes[] = {
-	GROUP_GOV, GROUP_RADIO, GROUP_BAR, GROUP_SALON, GROUP_MECHANIC, GROUP_GYM, GROUP_SECURITY,
+	GROUP_GOV, GROUP_SANNEWS, GROUP_BAR, GROUP_SALON, GROUP_MECHANIC, GROUP_GYM, GROUP_SECURITY,
 	GROUP_TAXI, GROUP_SHOP, GROUP_DRIVERLICENSE, GROUP_MOBILE, GROUP_AMMUNATION, GROUP_SHOOT
 };
 
@@ -122,14 +121,7 @@ new serviceNamesPl[][] = {
 	"Taxi", "", "24/7", "", "Nauka jazdy", "", "", "", "", "", "", "", "", "Operator komorkowy", "Ammu-nation", "Airsoft gun"
 };
 
-new weaponNamesEng[][] = {
-	"", "Brass Knuckles", "Kij golfowy", "Pa³ka", "Nó¿", "Baseball Bat", "£opata", "Pool Cue", "Katana", "Chainsaw", "Dildo",
-	"Dildo 2", "Wibrator", "Wibrator 2", "Kwiaty", "Laska", "Granat", "Gaz ³zawi¹cy", "Mo³otow", "Colt 45", "Pistolet z t³umikiem",
-	"Desert Eagle", "Shotgun", "Sawn OFF", "Combat Shotgun", "UZI", "MP5", "AK-47", "M4", "TEC9", "Karabin", "Snajperka", "RPG", "Wyrzutnia rakiet",
-	"Flamethrower", "Minigun", "Satchel charge", "Detonator", "Spray Can", "Gaœnica", "Aparat", "Gogle", "Gogle", "Spadochron"
-};
-
-new weaponNamesPl[][] = {
+new weaponNames[][] = {
 	"", "Brass Knuckles", "Kij golfowy", "Pa³ka", "Nó¿", "Baseball Bat", "£opata", "Pool Cue", "Katana", "Chainsaw", "Dildo",
 	"Dildo 2", "Wibrator", "Wibrator 2", "Kwiaty", "Laska", "Granat", "Gaz ³zawi¹cy", "Mo³otow", "Colt 45", "Pistolet z t³umikiem",
 	"Desert Eagle", "Shotgun", "Sawn OFF", "Combat Shotgun", "UZI", "MP5", "AK-47", "M4", "TEC9", "Karabin", "Snajperka", "RPG", "Wyrzutnia rakiet",

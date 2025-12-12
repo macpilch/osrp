@@ -63,7 +63,6 @@ sampCallback OnGameModeInit() {
 	initGroupSetValues();
 	initGroupTaskValues();
 	initGroupOrderValues();
-	initGroupVehicleValues();
 	initRaceValues();
 	initServerPenalties();
 	initAchievementValues();

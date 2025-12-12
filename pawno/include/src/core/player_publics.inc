@@ -143,6 +143,11 @@ sampCallback OnPlayerConnect(playerid) {
 	setPlayerDefaultValues(playerid);
 	removeGameObjects(playerid);
 
+	new test[32], kraj[32];
+	GetPlayerCountry(playerid, kraj);
+	format(test, sizeof(test), "%s",kraj);
+	SendClientMessage(playerid,-1,test);
+
 	printf("[LOG]: OnPlayerConnect -- Called! (%d ms).", gettime() - callSecs);
 	return 1;
 }
@@ -172,7 +177,6 @@ sampCallback OnPlayerDisconnect(playerid, reason) {
 	savePlayerValues(playerid, SAVE_ALL_VALUES);
 	resetPlayerValues(playerid); // dla dobra pamieci
 	resetPlayerPrivateMessages(playerid);
-	resetThingValues(playerid);
 
 	printf("[LOG]: OnPlayerDisconnect -- Called! (%d ms).", gettime() - callSecs);
 	return 1;
@@ -229,7 +233,10 @@ sampCallback OnPlayerSpawn(playerid) {
 	}
 
 	isSpawned[playerid] = true;
+
+	resetPlayerGameStatus(playerid);
 	updatePlayerGameStatus(playerid);
+	resetThingValues(playerid);
 
 	switch(random(4)) {
 		case 0: {
@@ -980,9 +987,9 @@ sampCallback OnPlayerText(playerid, text[]) {
 			textStr[0] = toupper(textStr[0]);
 
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				format(telStr, sizeof(telStr), "%d (telefon, %s): %s", tPlayer[playerid][pTelNum], (tPlayer[playerid][pSex] ? ("kobieta") : ("mê¿czyzna"), textStr));
+				format(telStr, sizeof(telStr), "%d (telefon, %s): %s", tPlayer[playerid][pTelNum], (tPlayer[playerid][pSex] ? ("kobieta") : ("mê¿czyzna")), textStr);
 			} else {
-				format(telStr, sizeof(telStr), "%d (phone, %s): %s", tPlayer[playerid][pTelNum], (tPlayer[playerid][pSex] ? ("woman") : ("man"), textStr));
+				format(telStr, sizeof(telStr), "%d (phone, %s): %s", tPlayer[playerid][pTelNum], (tPlayer[playerid][pSex] ? ("woman") : ("man")), textStr);
 			}
 
 			SendClientMessage(pId, COLOR_YELLOW, telStr);
@@ -1048,7 +1055,7 @@ sampCallback OnPlayerCommandReceived(playerid, cmd[], params[], flags) {
 	calledCmds[playerid]++;
 
 	if((calledSecsCmds[playerid] + 3) > gettime()) {
-		if(calledCmds[playerid] >= 8) {
+		if(calledCmds[playerid] >= 4) {
 			new reas[64];
 
 			if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -1271,6 +1278,8 @@ sampCallback OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 	foreach(new i : doorItter) {
 		if(pickupid == tDoor[i][dPickup]) {
 			tPlayer[playerid][pDoor] = tDoor[i][dUid];
+
+			PlayerPlaySound(playerid, 1150, 0.0, 0.0, 0.0);
 			resetPlayerBoxTextDraws(playerid);
 
 			if(!tDoor[i][dOpen]) {
@@ -1297,6 +1306,10 @@ sampCallback OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 						format(mainStr, sizeof(mainStr), "~n~%d people inside", tDoor[i][dPeople]);
 						TextDrawSetString(doorInfo[playerid][3], mainStr);
 					}
+
+					for(new j = 1; j < 4; j++) {
+						TextDrawShowForPlayer(playerid, doorInfo[playerid][j]);
+					}
 				} else {
 					mainStr[0] = EOS;
 
@@ -1309,11 +1322,11 @@ sampCallback OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 					}
 
 					TextDrawSetString(doorInfo[playerid][2], mainStr);
-				}
-			}
 
-			for(new j = 1; j < 4; j++) {
-				TextDrawShowForPlayer(playerid, doorInfo[playerid][j]);
+					for(new j = 1; j < 4; j++) {
+						TextDrawShowForPlayer(playerid, doorInfo[playerid][j]);
+					}
+				}
 			}
 
 			SetTimerEx("hideDoorInfo", 5000, false, "i", playerid);
@@ -1506,7 +1519,7 @@ sampCallback OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 				return 1;
 			}
 
-			if(isThingKind(srvThingId, TKIND_WEAPON)) {
+			if(isThingKind(srvThingId, TKIND_WEAPON) && tThing[srvThingId][tValue2]) {
 				if(tPlayer[playerid][pWeapSkill][0] <= 40 && (weaponid == WEAPON_COLT45 || weaponid == WEAPON_DEAGLE)) {
 					SetPlayerDrunkLevel(playerid, 3000);
 				} else if(tPlayer[playerid][pWeapSkill][1] <= 250 && (weaponid == WEAPON_MP5 || weaponid == WEAPON_TEC9 || weaponid == WEAPON_UZI)) {
@@ -1872,9 +1885,10 @@ sampCallback OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 								}
 							}
 
-							tDoor[srvDoorId][dPeople]++;
 							OSRP_GivePlayerMoney(playerid, -tDoor[srvDoorId][dCost]);
 						}
+
+						tDoor[srvDoorId][dPeople]++;
 
 						if(!tPlayer[playerid][pComputer]) {
 							OSRP_TogglePlayerControllable(playerid, 0);
@@ -1892,11 +1906,11 @@ sampCallback OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
 						if(doesDoorIsType(srvDoorId, DOOR_HOTEL)) {
 							if(tPlayer[playerid][pLang] == LANG_PL) {
-								TextDrawSetString(doorInfo[playerid][1], "Wpisz /pokoj, aby wynajac pokoj~n~lub do niego wejsc.~n~~n~~y~Dzienny koszt: 3 USD/3 EUR");
-								TextDrawSetString(doorInfo[playerid][2], "~n~~n~(pierwsze 10h gry darmowy)");
+								TextDrawSetString(doorInfo[playerid][2], "Wpisz /pokoj, aby wynajac pokoj~n~lub do niego wejsc.~n~~n~~y~Dzienny koszt: 3 USD/3 EUR");
+								TextDrawSetString(doorInfo[playerid][3], "~n~~n~(pierwsze 10h gry darmowy)");
 							} else {
-								TextDrawSetString(doorInfo[playerid][1], "Type /room, to rent a room~n~or move in.~n~~n~~y~Daily cost: 3 USD/3 EUR");
-								TextDrawSetString(doorInfo[playerid][2], "~n~~n~(first 10h of playtime free)");
+								TextDrawSetString(doorInfo[playerid][2], "Type /room, to rent a room~n~or move in.~n~~n~~y~Daily cost: 3 USD/3 EUR");
+								TextDrawSetString(doorInfo[playerid][3], "~n~~n~(first 10h of playtime free)");
 							}
 
 							for(new i = 1; i < 4; i++) {
@@ -1980,10 +1994,8 @@ sampCallback OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 							}
 						}
 
-						if(tDoor[srvDoorId][dCost] > 0) {
-							if(tDoor[srvDoorId][dPeople] > 0) {
-								tDoor[srvDoorId][dPeople]--;
-							}
+						if(tDoor[srvDoorId][dPeople] > 0) {
+							tDoor[srvDoorId][dPeople]--;
 						}
 
 						SetCameraBehindPlayer(playerid);
@@ -2021,29 +2033,29 @@ sampCallback OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		searchPlayerBooth(playerid);
 
 		if(tPlayer[playerid][pLang] == LANG_PL) {
-			GameTextForPlayer(playerid, "~r~Brak poruszalnych obiektow w~n~otoczeniu.", 5000, 3);
+			//GameTextForPlayer(playerid, "~r~Brak poruszalnych obiektow w~n~otoczeniu.", 5000, 3);
 		} else {
-			GameTextForPlayer(playerid, "~r~No moving objects in~n~the environment.", 5000, 3);
+			//GameTextForPlayer(playerid, "~r~No moving objects in~n~the environment.", 5000, 3);
 		}
 
 		if((tPlayer[playerid][pPerm][0] & P_GROUP_PERM_OBJECT) || (tPlayer[playerid][pPerm][1] & P_GROUP_PERM_OBJECT) || (tPlayer[playerid][pPerm][2] & P_GROUP_PERM_OBJECT) ||
 		   (tPlayer[playerid][pPerm][3] & P_GROUP_PERM_OBJECT) || (tPlayer[playerid][pPerm][4] & P_GROUP_PERM_OBJECT)) {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				GameTextForPlayer(playerid, "~g~Obiekt ~w~otworzony", 2000, 6);
-				GameTextForPlayer(playerid, "~r~Obiekt ~w~zamkniety", 2000, 6);
+				//GameTextForPlayer(playerid, "~g~Obiekt ~w~otworzony", 2000, 6);
+				//GameTextForPlayer(playerid, "~r~Obiekt ~w~zamkniety", 2000, 6);
 			} else {
-				GameTextForPlayer(playerid, "~g~Object ~w~opened", 2000, 6);
-				GameTextForPlayer(playerid, "~r~Object ~w~closed", 2000, 6);
+				//GameTextForPlayer(playerid, "~g~Object ~w~opened", 2000, 6);
+				//GameTextForPlayer(playerid, "~r~Object ~w~closed", 2000, 6);
 			}
 		} else {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
-				GameTextForPlayer(playerid, "~r~Brak uprawnien z podgrupy.", 5000, 3);
-				GameTextForPlayer(playerid, "~r~Brak uprawnien z grupy.", 5000, 3);
-				GameTextForPlayer(playerid, "~r~Brak uprawnien.~n~~h~~r~Obiekt jest nieotwieralny.~n~~w~/mowner", 5000, 3);
+				//GameTextForPlayer(playerid, "~r~Brak uprawnien z podgrupy.", 5000, 3);
+				//GameTextForPlayer(playerid, "~r~Brak uprawnien z grupy.", 5000, 3);
+				//GameTextForPlayer(playerid, "~r~Brak uprawnien.~n~~h~~r~Obiekt jest nieotwieralny.~n~~w~/mowner", 5000, 3);
 			} else {
-				GameTextForPlayer(playerid, "~r~No subgroup permissions.", 5000, 3);
-				GameTextForPlayer(playerid, "~r~No group permissions.", 5000, 3);
-				GameTextForPlayer(playerid, "~r~No permissions.~n~~h~~r~The object is unopenable.~n~~w~/mowner", 5000, 3);
+				//GameTextForPlayer(playerid, "~r~No subgroup permissions.", 5000, 3);
+				//GameTextForPlayer(playerid, "~r~No group permissions.", 5000, 3);
+				//GameTextForPlayer(playerid, "~r~No permissions.~n~~h~~r~The object is unopenable.~n~~w~/mowner", 5000, 3);
 			}
 		}
 	}
@@ -2163,62 +2175,64 @@ sampCallback OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bod
 
 		numberBlows[playerid]++;
 
-		if(attacker != INVALID_PLAYER_ID && attacker2 == INVALID_PLAYER_ID && numberBlows[attacker] == 1 && !isPlayerFight[playerid] && !isPlayerFight[attacker]) {
-			isPlayerFight[playerid] = true;
-			isPlayerFight[attacker] = true;
+		if(attacker != INVALID_PLAYER_ID && attacker2 == INVALID_PLAYER_ID && numberBlows[attacker] == 1) {
+			if(!isPlayerFight[playerid] && !isPlayerFight[attacker]) {
+				isPlayerFight[playerid] = true;
+				isPlayerFight[attacker] = true;
 
-			resetPlayerTextTextDraws(playerid);
-			resetPlayerTextTextDraws(attacker);
+				resetPlayerTextTextDraws(playerid);
+				resetPlayerTextTextDraws(attacker);
 
-			if(tPlayer[playerid][pLang] == LANG_PL) {
-				TextDrawSetString(scrimmageTips[playerid][2], "Wykonales(as) ~r~kontratak~w~. Od teraz trwa miedzy wami bojka.");
-				TextDrawSetString(scrimmageTips[playerid][3], "Gracz wykonal ~r~kontratak~w~. Od teraz trwa miedzy wami bojka.");
-			} else {
-				TextDrawSetString(scrimmageTips[playerid][2], "You performed ~r~counterattack~w~. From now on, there is a fight between you.");
-				TextDrawSetString(scrimmageTips[playerid][3], "Player performed ~r~counterattack~w~. From now on, there is a fight between you.");
+				if(tPlayer[playerid][pLang] == LANG_PL) {
+					TextDrawSetString(scrimmageTips[playerid][2], "Wykonales(as) ~r~kontratak~w~. Od teraz trwa miedzy wami bojka.");
+					TextDrawSetString(scrimmageTips[attacker][3], "Gracz wykonal ~r~kontratak~w~. Od teraz trwa miedzy wami bojka.");
+				} else {
+					TextDrawSetString(scrimmageTips[playerid][2], "You performed ~r~counterattack~w~. From now on, there is a fight between you.");
+					TextDrawSetString(scrimmageTips[attacker][3], "Player performed ~r~counterattack~w~. From now on, there is a fight between you.");
+				}
+
+				TextDrawShowForPlayer(playerid, scrimmageTips[playerid][2]);
+				TextDrawShowForPlayer(attacker, scrimmageTips[attacker][3]);
+
+				SetTimerEx("hideScrimmageTips", 5000, false, "ii", playerid, 2);
+				SetTimerEx("hideScrimmageTips", 5000, false, "ii", attacker, 3);
+				return 1;
 			}
-
-			TextDrawShowForPlayer(playerid, scrimmageTips[playerid][2]);
-			TextDrawShowForPlayer(attacker, scrimmageTips[playerid][3]);
-
-			SetTimerEx("hideScrimmageTips", 5000, false, "ii", playerid, 2);
-			SetTimerEx("hideScrimmageTips", 5000, false, "ii", attacker, 3);
-			return 1;
 		}
 
 		if(attacker == INVALID_PLAYER_ID) {
-			if(numberBlows[playerid] == 1) {
-				if(tPlayer[playerid][pLang] == LANG_PL) {
-					TextDrawSetString(scrimmageTips[playerid][4], "Nie jestes w stanie skrzywdzic gracza w tym miejscu,~n~dopoki nie odpowie on kontratakiem w celu rozpoczecia bojki.");
-				} else {
-					TextDrawSetString(scrimmageTips[playerid][4], "You are unable to harm the player at this point,~n~until they respond with a counterattack to start a fight.");
-				}
+				if(numberBlows[playerid] == 1) {
+					if(tPlayer[playerid][pLang] == LANG_PL) {
+						TextDrawSetString(scrimmageTips[playerid][4], "Nie jestes w stanie skrzywdzic gracza w tym miejscu,~n~dopoki nie odpowie on kontratakiem w celu rozpoczecia bojki.");
+					} else {
+						TextDrawSetString(scrimmageTips[playerid][4], "You are unable to harm the player at this point,~n~until they respond with a counterattack to start a fight.");
+					}
 
-				TextDrawShowForPlayer(playerid, scrimmageTips[playerid][4]);
-				SetTimerEx("hideScrimmageTips", 5000, false, "ii", playerid, 4);
-			} else if(numberBlows[playerid] > 1 && numberBlows[playerid] < 4) {
-				if(tPlayer[playerid][pLang] == LANG_PL) {
-					GameTextForPlayer(playerid, "~r~DM. Czekaj!", 1000, 3);
-				} else {
-					GameTextForPlayer(playerid, "~r~DM. Wait!", 1000, 3);
-				}
-			} else if(numberBlows[playerid] == 4) {
-				GameTextForPlayer(playerid, "~r~DM. Stop!!", 1000, 3);
-				OSRP_TogglePlayerControllable(playerid, 0);
+					TextDrawShowForPlayer(playerid, scrimmageTips[playerid][4]);
+					SetTimerEx("hideScrimmageTips", 5000, false, "ii", playerid, 4);
+				} else if(numberBlows[playerid] > 1 && numberBlows[playerid] < 4) {
+					if(tPlayer[playerid][pLang] == LANG_PL) {
+						GameTextForPlayer(playerid, "~r~DM. Czekaj!", 1000, 3);
+					} else {
+						GameTextForPlayer(playerid, "~r~DM. Wait!", 1000, 3);
+					}
+				} else if(numberBlows[playerid] == 4) {
+					GameTextForPlayer(playerid, "~r~DM. Stop!!", 1000, 3);
+					OSRP_TogglePlayerControllable(playerid, 0);
 
-				SetTimerEx("unFreezePlayer", 2000, false, "i", playerid);
-			} else if(numberBlows[playerid] == 5) {
-				if(tPlayer[playerid][pLang] == LANG_PL) {
-					GameTextForPlayer(playerid, "~r~Atak zabroniony", 5000, 3);
-				} else {
-					GameTextForPlayer(playerid, "~r~Attack prohibited", 5000, 3);
-				}
+					SetTimerEx("unFreezePlayer", 2000, false, "i", playerid);
+				} else if(numberBlows[playerid] == 5) {
+					if(tPlayer[playerid][pLang] == LANG_PL) {
+						GameTextForPlayer(playerid, "~r~Atak zabroniony", 5000, 3);
+					} else {
+						GameTextForPlayer(playerid, "~r~Attack prohibited", 5000, 3);
+					}
 
-				ClearAnimations(playerid);
-			} else if(numberBlows[playerid] >= 6) {
-				numberBlows[playerid] = 0;
-				return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, 30, (tPlayer[playerid][pLang] == LANG_PL ? ("DeathMatch bez kontrataku") : ("DeathMatch without counterattack")));
-			}
+					ClearAnimations(playerid);
+				} else if(numberBlows[playerid] == 6) {
+					numberBlows[playerid] = 0;
+					return givePlayerPenalty(INVALID_PLAYER_ID, playerid, PEN_ADMJAIL, 30, (tPlayer[playerid][pLang] == LANG_PL ? ("DeathMatch bez kontrataku") : ("DeathMatch without counterattack")));
+				}
 		}
 	}
 	return 1;
@@ -2230,28 +2244,27 @@ sampCallback OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, body
 
 		OSRP_SetPlayerHealth(playerid, tPlayer[playerid][pHp] - power);
 
-		if(numberBlows[issuerid] == 1 && !numberBlows[playerid] && !isPlayerFight[playerid] && !isPlayerFight[issuerid]) {
-			fightAttacker[playerid] = issuerid;
-			fightAttacker[issuerid] = INVALID_PLAYER_ID;
-			lastBlowTime[issuerid] = gettime();
+		if(numberBlows[issuerid] == 1 && !numberBlows[playerid]) {
+				fightAttacker[playerid] = issuerid;
+				lastBlowTime[issuerid] = gettime();
 
-			resetPlayerTextTextDraws(playerid);
+				resetPlayerTextTextDraws(playerid);
 
-			if(tPlayer[playerid][pLang] == LANG_PL) {
-				TextDrawSetString(scrimmageTips[playerid][0], "Dopoki nie odpowiesz kontratakiem, ten gracz nie moze Cie skrzywdzic.");
-				TextDrawSetString(scrimmageTips[playerid][1], "Zignoruj go, jezeli to zadymiarz - to zabezpieczenie przed DM-em.~n~Aby wdac sie w bojke, rozpocznij ~r~kontratak.");
-			} else {
-				TextDrawSetString(scrimmageTips[playerid][0], "Until you respond with a counterattack, this player cannot harm you.");
-				TextDrawSetString(scrimmageTips[playerid][1], "Ignore him if he is a brawler - it is protection against DM.~n~To engage in a fight, initiate a ~r~counterattack.");
+				if(tPlayer[playerid][pLang] == LANG_PL) {
+					TextDrawSetString(scrimmageTips[playerid][0], "Dopoki nie odpowiesz kontratakiem, ten gracz nie moze Cie skrzywdzic.");
+					TextDrawSetString(scrimmageTips[playerid][1], "Zignoruj go, jezeli to zadymiarz - to zabezpieczenie przed DM-em.~n~Aby wdac sie w bojke, rozpocznij ~r~kontratak.");
+				} else {
+					TextDrawSetString(scrimmageTips[playerid][0], "Until you respond with a counterattack, this player cannot harm you.");
+					TextDrawSetString(scrimmageTips[playerid][1], "Ignore him if he is a brawler - it is protection against DM.~n~To engage in a fight, initiate a ~r~counterattack.");
+				}
+
+				for(new i = 0; i < 2; i++) {
+					TextDrawShowForPlayer(playerid, scrimmageTips[playerid][i]);
+					SetTimerEx("hideScrimmageTips", 5000, false, "ii", playerid, i);
+				}
+
+				SetTimerEx("fightCheckTimer", 10000, false, "ii", playerid, issuerid);
 			}
-
-			for(new i = 0; i < 2; i++) {
-				TextDrawShowForPlayer(playerid, scrimmageTips[playerid][i]);
-				SetTimerEx("hideScrimmageTips", 5000, false, "ii", playerid, i);
-			}
-
-			SetTimerEx("fightCheckTimer", 5000, false, "ii", playerid, issuerid);
-		}
 	}
 
 	hpSeconds[playerid] = gettime();
@@ -2886,7 +2899,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 							strcat(mainStr, "\n\nTo top up someone's phone, use the top-up item\n,specifying the customer's phone number as a parameter.");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Help > Commands: Operator", mainStr, "OK", "Close");
 						}
-					} else if(isPlayerInGroupType(playerid, 1, GROUP_RADIO)) {
+					} else if(isPlayerInGroupType(playerid, 1, GROUP_SANNEWS)) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
 							strcat(mainStr, "{FFFFFF}/news [Tekst]\n/wywiad [Gracz]\n/reklama [Tekst]\n/o reklama [Gracz] [Cena] - reklamy widoczne dla kazdego gracza");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Pomoc > Komendy: Radio", mainStr, "OK", "Zamknij");
@@ -2894,7 +2907,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 							strcat(mainStr, "{FFFFFF}/news [Text]\n/interview [Gracz]\n/ad [Text]\n/o ad [Player] [Price] - ads visible to every player");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Help > Commands: Radio", mainStr, "OK", "Close");
 						}
-					} else if(isPlayerInGroupType(playerid, 1, GROUP_RADIO)) {
+					} else if(isPlayerInGroupType(playerid, 1, GROUP_SANNEWS)) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
 							strcat(mainStr, "{FFFFFF}/podaj [Gracz]\n/cennik [Gracz]\n/o autowypozycz [Gracz]");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Pomoc > Komendy: Salon pojazdów", mainStr, "OK", "Zamknij");
@@ -2915,7 +2928,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 							strcat(mainStr, "\n\nTo top up someone's phone, use the top-up item\n,specifying the customer's phone number as a parameter.");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Help > Commands: Operator", mainStr, "OK", "Close");
 						}
-					} else if(isPlayerInGroupType(playerid, 2, GROUP_RADIO)) {
+					} else if(isPlayerInGroupType(playerid, 2, GROUP_SANNEWS)) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
 							strcat(mainStr, "{FFFFFF}/news [Tekst]\n/wywiad [Gracz]\n/reklama [Tekst]\n/o reklama [Gracz] [Cena] - reklamy widoczne dla kazdego gracza");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Pomoc > Komendy: Radio", mainStr, "OK", "Zamknij");
@@ -2923,7 +2936,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 							strcat(mainStr, "{FFFFFF}/news [Text]\n/interview [Gracz]\n/ad [Text]\n/o ad [Player] [Price] - ads visible to every player");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Help > Commands: Radio", mainStr, "OK", "Close");
 						}
-					} else if(isPlayerInGroupType(playerid, 2, GROUP_RADIO)) {
+					} else if(isPlayerInGroupType(playerid, 2, GROUP_SANNEWS)) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
 							strcat(mainStr, "{FFFFFF}/podaj [Gracz]\n/cennik [Gracz]\n/o autowypozycz [Gracz]");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Pomoc > Komendy: Salon pojazdów", mainStr, "OK", "Zamknij");
@@ -2944,7 +2957,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 							strcat(mainStr, "\n\nTo top up someone's phone, use the top-up item\n,specifying the customer's phone number as a parameter.");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Help > Commands: Operator", mainStr, "OK", "Close");
 						}
-					} else if(isPlayerInGroupType(playerid, 3, GROUP_RADIO)) {
+					} else if(isPlayerInGroupType(playerid, 3, GROUP_SANNEWS)) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
 							strcat(mainStr, "{FFFFFF}/news [Tekst]\n/wywiad [Gracz]\n/reklama [Tekst]\n/o reklama [Gracz] [Cena] - reklamy widoczne dla kazdego gracza");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Pomoc > Komendy: Radio", mainStr, "OK", "Zamknij");
@@ -2952,7 +2965,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 							strcat(mainStr, "{FFFFFF}/news [Text]\n/interview [Gracz]\n/ad [Text]\n/o ad [Player] [Price] - ads visible to every player");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Help > Commands: Radio", mainStr, "OK", "Close");
 						}
-					} else if(isPlayerInGroupType(playerid, 3, GROUP_RADIO)) {
+					} else if(isPlayerInGroupType(playerid, 3, GROUP_SANNEWS)) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
 							strcat(mainStr, "{FFFFFF}/podaj [Gracz]\n/cennik [Gracz]\n/o autowypozycz [Gracz]");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Pomoc > Komendy: Salon pojazdów", mainStr, "OK", "Zamknij");
@@ -2973,7 +2986,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 							strcat(mainStr, "\n\nTo top up someone's phone, use the top-up item\n,specifying the customer's phone number as a parameter.");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Help > Commands: Operator", mainStr, "OK", "Close");
 						}
-					} else if(isPlayerInGroupType(playerid, 4, GROUP_RADIO)) {
+					} else if(isPlayerInGroupType(playerid, 4, GROUP_SANNEWS)) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
 							strcat(mainStr, "{FFFFFF}/news [Tekst]\n/wywiad [Gracz]\n/reklama [Tekst]\n/o reklama [Gracz] [Cena] - reklamy widoczne dla kazdego gracza");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Pomoc > Komendy: Radio", mainStr, "OK", "Zamknij");
@@ -2981,7 +2994,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 							strcat(mainStr, "{FFFFFF}/news [Text]\n/interview [Gracz]\n/ad [Text]\n/o ad [Player] [Price] - ads visible to every player");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Help > Commands: Radio", mainStr, "OK", "Close");
 						}
-					} else if(isPlayerInGroupType(playerid, 4, GROUP_RADIO)) {
+					} else if(isPlayerInGroupType(playerid, 4, GROUP_SANNEWS)) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
 							strcat(mainStr, "{FFFFFF}/podaj [Gracz]\n/cennik [Gracz]\n/o autowypozycz [Gracz]");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Pomoc > Komendy: Salon pojazdów", mainStr, "OK", "Zamknij");
@@ -3002,7 +3015,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 							strcat(mainStr, "\n\nTo top up someone's phone, use the top-up item\n,specifying the customer's phone number as a parameter.");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Help > Commands: Operator", mainStr, "OK", "Close");
 						}
-					} else if(isPlayerInGroupType(playerid, 5, GROUP_RADIO)) {
+					} else if(isPlayerInGroupType(playerid, 5, GROUP_SANNEWS)) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
 							strcat(mainStr, "{FFFFFF}/news [Tekst]\n/wywiad [Gracz]\n/reklama [Tekst]\n/o reklama [Gracz] [Cena] - reklamy widoczne dla kazdego gracza");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Pomoc > Komendy: Radio", mainStr, "OK", "Zamknij");
@@ -3010,7 +3023,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 							strcat(mainStr, "{FFFFFF}/news [Text]\n/interview [Gracz]\n/ad [Text]\n/o ad [Player] [Price] - ads visible to every player");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Help > Commands: Radio", mainStr, "OK", "Close");
 						}
-					} else if(isPlayerInGroupType(playerid, 5, GROUP_RADIO)) {
+					} else if(isPlayerInGroupType(playerid, 5, GROUP_SANNEWS)) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
 							strcat(mainStr, "{FFFFFF}/podaj [Gracz]\n/cennik [Gracz]\n/o autowypozycz [Gracz]");
 							ShowPlayerDialog(playerid, DIALOG_DEFAULT, DIALOG_STYLE_MSGBOX, "Pomoc > Komendy: Salon pojazdów", mainStr, "OK", "Zamknij");
@@ -3119,10 +3132,10 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			}
 
 			switch(listitem) {
-				case 0 .. 24: {
+				case 0 .. 20: {
 					return 1;
 				}
-				case 25: {
+				case 21: {
 					new Float:pX, Float:pY, Float:pZ;
 
 					GetPlayerPos(playerid, pX, pY, pZ);
@@ -3140,7 +3153,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 
 					selectedChatStyle[playerid] = true;
 				}
-				case 26: {
+				case 22: {
 					if(!tPlayer[playerid][pComputer]) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
 							GameTextForPlayer(playerid, "~b~~h~Zamrazanie przy przechodzeniu~n~przez drzwi wlaczone.", 5000, 3);
@@ -3161,7 +3174,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 
 					savePlayerValues(playerid, SAVE_STATS);
 				}
-				case 27: {
+				case 23: {
 					if(tPlayer[playerid][pWalkAnim] == INVALID_ANIM_ID) {
 						showPlayerAnimations(playerid, DIALOG_WALK_ANIMATIONS);
 					} else {
@@ -3175,7 +3188,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 						}
 					}
 				}
-				case 28: {
+				case 24: {
 					if(!tPlayer[playerid][pStyleFight]) {
 						tPlayer[playerid][pStyleFight] = true;
 					} else {
@@ -3183,6 +3196,15 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					}
 
 					savePlayerValues(playerid, SAVE_STATS);
+				}
+				case 25: {
+					
+				}
+				case 26: {
+					
+				}
+				case 27: {
+					
 				}
 			}
 		}
@@ -3328,6 +3350,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					saveVehicleValues(srvVehId);
 				}
 				case 4: {
+					
 				}
 				case 5: {
 					mainStr[0] = EOS;
@@ -3351,7 +3374,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				case 8: {
 				}
 				case 9: {
-					new countPlayers;
+					new playerCount;
 
 					mainStr[0] = EOS;
 
@@ -3363,17 +3386,15 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 						if(distanceBetweenPlayers(playerid, i, 10.0)) {
 							format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, i, tPlayer[i][pCharName]);
 
-							countPlayers++;
+							playerCount++;
 						}
 					}
 
-					if(!countPlayers) {
+					if(!playerCount) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
-							strcat(mainStr, "Podaj ID gracza, któremu chcesz sprzedaæ pojazd oraz kwotê.\nPrzyk³ad: (12 1600).\n");
-							return ShowPlayerDialog(playerid, DIALOG_VEHICLE_SELL_PLAYER, DIALOG_STYLE_INPUT, "Sprzeda¿ pojazdu", mainStr, "OK", "Anuluj");
+							return GameTextForPlayer(playerid, "~r~Brak osob w poblizu.", 5000, 3);
 						} else {
-							strcat(mainStr, "Enter the ID of player you want to sell the vehicle to and the amount.\nExample: (12 1600).\n");
-							return ShowPlayerDialog(playerid, DIALOG_VEHICLE_SELL_PLAYER, DIALOG_STYLE_INPUT, "Vehicle sale", mainStr, "OK", "Cancel");
+							return GameTextForPlayer(playerid, "~r~No people nearby.", 5000, 3);
 						}
 					}
 
@@ -3384,7 +3405,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					}
 				}
 				case 10: {
-					new countPlayers;
+					new playerCount;
 
 					mainStr[0] = EOS;
 
@@ -3396,11 +3417,11 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 						if(distanceBetweenPlayers(playerid, i, 10.0)) {
 							format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, i, tPlayer[i][pCharName]);
 
-							countPlayers++;
+							playerCount++;
 						}
 					}
 
-					if(!countPlayers) {
+					if(!playerCount) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
 							return GameTextForPlayer(playerid, "~r~Brak osob w poblizu.", 5000, 3);
 						} else {
@@ -3537,16 +3558,16 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return 1;
 			}
 
-			new uid, kind, srvThingId = INVALID_THING_ID, countThings;
+			new uid, kind, srvThingId = INVALID_THING_ID, thingCount;
 			new name[32];
 
 			foreach(new i : thingItter) {
 				if(tThing[i][tOUid] == tPlayer[playerid][pUid] && isThingPlace(i, THING_PLACE_PLAYER)) {
-					countThings++;
+					thingCount++;
 				}
 			}
 
-			if(countThings > listitem - 1) {
+			if(thingCount > listitem - 1) {
 				strreplace(inputtext, " ", "_", true, strlen(inputtext));
 				sscanf(inputtext, "s[32]ii", name, uid, kind);
 
@@ -3601,7 +3622,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					}
 				}
 				case 1: {
-					new countPlayers;
+					new playerCount;
 
 					mainStr[0] = EOS;
 
@@ -3613,11 +3634,11 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 						if(distanceBetweenPlayers(playerid, i, 10.0)) {
 							format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, i, tPlayer[i][pCharName]);
 
-							countPlayers++;
+							playerCount++;
 						}
 					}
 
-					if(!countPlayers) {
+					if(!playerCount) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
 							return GameTextForPlayer(playerid, "~r~Brak osob w poblizu.", 5000, 3);
 						} else {
@@ -3632,7 +3653,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					}
 				}
 				case 2: {
-					new countPlayers;
+					new playerCount;
 
 					mainStr[0] = EOS;
 
@@ -3644,11 +3665,11 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 						if(distanceBetweenPlayers(playerid, i, 10.0)) {
 							format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, i, tPlayer[i][pCharName]);
 
-							countPlayers++;
+							playerCount++;
 						}
 					}
 
-					if(!countPlayers) {
+					if(!playerCount) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
 							return GameTextForPlayer(playerid, "~r~Brak osob w poblizu.", 5000, 3);
 						} else {
@@ -3663,7 +3684,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					}
 				}
 				case 3: {
-					new countThings;
+					new thingCount;
 
 					mainStr[0] = EOS;
 
@@ -3671,11 +3692,11 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 						if(isThingKind(i, TKIND_BAG)) {
 							format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t\t%s", mainStr, tThing[i][tUid], tThing[i][tName]);
 
-							countThings++;
+							thingCount++;
 						}
 					}
 
-					if(!countThings) {
+					if(!thingCount) {
 						return 1;
 					}
 
@@ -4212,6 +4233,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					}
 
 					tPlayer[playerid][pGroup][freeSlot] = tGroup[srvGrpId][gUid];
+					tPlayer[playerid][pPerm][freeSlot] += P_GROUP_PERM_CHAT;
 					tGroup[srvGrpId][gMembers]++;
 
 					format(tPlayer[playerid][pGroupDesc], 128, "%s%s, ", tPlayer[playerid][pGroupDesc], tGroup[srvGrpId][gName]);
@@ -5042,7 +5064,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					}
 				}
 				case OFFER_VCARD: {
-					new countThings;
+					new thingCount;
 
 					mainStr[0] = EOS;
 
@@ -5050,15 +5072,11 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 						if(tThing[i][tOUid] == tPlayer[playerid][pUid] && !tThing[i][tUsed] && isThingKind(i, TKIND_TELEPHONE) && isThingPlace(i, THING_PLACE_PLAYER)) {
 							format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s\t%d\t%d", mainStr, tThing[i][tUid], tThing[i][tName], tThing[i][tValue1], tThing[i][tValue2]);
 
-							countThings++;
+							thingCount++;
 						}
 					}
 
-					if(countThings < 1) {
-						return 1;
-					}
-
-					if(countThings > 1) {
+					if(thingCount > 1) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
 							ShowPlayerDialog(playerid, DIALOG_TELEPHONE_VCARD_ADD, DIALOG_STYLE_LIST, "Dostêpne przedmioty", mainStr, "OK", "Zamknij");
 						} else {
@@ -5308,41 +5326,40 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					showDoorInfo(playerid, srvDoorId);
 				}
 				case 1: {
-					
-					
-					
-					
+					tDoor[srvDoorId][dObjects]++;
 				}
 				case 2: {
-					
-					
-					
-					
+					tDoor[srvDoorId][dTexts]++;
 				}
 				case 3: {
 					
-					
-					
-					
 				}
 				case 4: {
-					
-					
-					
-					
-					
+					if(!tDoor[srvDoorId][dObjects]) {
+						return DialogInfo(playerid, "Ten budynek nie posiada ¿adnych obiektów.");
+					}
+
+					new uid;
+
+					queryStr[0] = EOS;
+					format(queryStr, sizeof(queryStr), "SELECT `UID` FROM `osrp_Objects` WHERE `OUID` = '%d' ORDER BY `UID` DESC LIMIT 1", tDoor[srvDoorId][dOUid]);
+					mysql_query(queryStr);
+
+					mysql_store_result();
+					uid = mysql_fetch_int();
+					printf("%d", uid);
+
+					mysql_free_result();
+
+					removeObject(getServerObjectId(uid));
+					saveDoorValues(srvDoorId);
+
+					DialogInfo(playerid, "Pomyœlnie usuniêto ostatni obiekt.");
 				}
 				case 5: {
 					
-					
-					
-					
 				}
 				case 6: {
-					
-					
-					
-					
 					
 				}
 				case 7: {
@@ -5357,9 +5374,6 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					}
 				}
 				case 8: {
-					
-					
-					
 					
 				}
 				case 9: {
@@ -5544,8 +5558,6 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					strcat(name, "Brak");
 				}
 			}
-
-			printf("type: %c, meters: %d, owner: %d, otype: %d, dtype: %d, name: %s", type, meters, owner, ownerType, doorType, name);
 
 			GameTextForPlayer(playerid, "Tworzymy...", 3000, 3);
 			GameTextForPlayer(playerid, "We create...", 3000, 3);
@@ -6050,7 +6062,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					}
 				}
 				case 4: {
-					new countPlayers;
+					new playerCount;
 
 					foreach(new i : Player) {
 						if(i == playerid) {
@@ -6060,11 +6072,11 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 						if(distanceBetweenPlayers(playerid, i, 10.0)) {
 							format(mainStr, sizeof(mainStr), "%s\n{FFFFFF}%d\t%s", mainStr, i, tPlayer[i][pCharName]);
 
-							countPlayers++;
+							playerCount++;
 						}
 					}
 
-					if(!countPlayers) {
+					if(!playerCount) {
 						if(tPlayer[playerid][pLang] == LANG_PL) {
 							return GameTextForPlayer(playerid, "~r~Brak osob w poblizu.", 5000, 3);
 						} else {
@@ -6138,6 +6150,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					return 1;
 				}
 				default: {
+					printf("inputtext: %s", inputtext);
 					callToNumber(playerid, strval(inputtext));
 				}
 			}
@@ -6351,19 +6364,17 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				}
 			}
 
-			foreach(new i : Player) {
-				if(tPlayer[playerid][pLang] == LANG_PL) {
-					format(request, sizeof(request), "** ¯¹danie od numeru %d (( %s )): **", tPlayer[playerid][pTelNum], tPlayer[playerid][pCharName]);
-				} else {
-					format(request, sizeof(request), "** Request from number %d (( %s )): **", tPlayer[playerid][pTelNum], tPlayer[playerid][pCharName]);
-					//format(request, sizeof(request), "** Central: Report from number %d (( %s )) **", tPlayer[playerid][pTelNum], tPlayer[playerid][pCharName]);
-				}
-
-				sendGroupMessage(srvGrpId, COLOR_TURQUOISE, request);
-
-				format(desc, sizeof(desc), "** %s **", inputtext);
-				sendGroupMessage(srvGrpId, COLOR_TURQUOISE, desc);
+			if(tPlayer[playerid][pLang] == LANG_PL) {
+				format(request, sizeof(request), "** ¯¹danie od numeru %d (( %s )): **", tPlayer[playerid][pTelNum], tPlayer[playerid][pCharName]);
+			} else {
+				format(request, sizeof(request), "** Request from number %d (( %s )): **", tPlayer[playerid][pTelNum], tPlayer[playerid][pCharName]);
+				//format(request, sizeof(request), "** Central: Report from number %d (( %s )) **", tPlayer[playerid][pTelNum], tPlayer[playerid][pCharName]);
 			}
+
+			sendGroupMessage(srvGrpId, COLOR_TURQUOISE, request);
+
+			format(desc, sizeof(desc), "** %s **", inputtext);
+			sendGroupMessage(srvGrpId, COLOR_TURQUOISE, desc);
 
 			getdate(year, month, day);
 			gettime(hour, mins, secs);
@@ -6413,12 +6424,13 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 			for(new i = 0; i < sizeof(playerContacts); i++) {
 				if(playerContacts[playerid][i] == contact) {
 					playerContacts[playerid][i] = 0;
+					format(playerContactsName[playerid][i], 24, NULL);
 					break;
 				}
 			}
 
 			queryStr[0] = EOS;
-			format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Contacts` WHERE `Number` = '%d'", contact);
+			format(queryStr, sizeof(queryStr), "DELETE FROM `osrp_Contacts` WHERE `Number` = '%d' AND `OUID` = '%d'", contact, tPlayer[playerid][pUid]);
 			mysql_query(queryStr);
 
 			if(tPlayer[playerid][pLang] == LANG_PL) {
@@ -6532,7 +6544,7 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				return 1;
 			}
 
-			new contactName[64];
+			new contactName[24];
 
 			mysql_real_escape_string(inputtext, contactName);
 
@@ -6542,17 +6554,17 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 					playerContacts[playerid][i] = telEnterNumber[playerid];
 
 					queryStr[0] = EOS;
-					format(queryStr, sizeof(queryStr), "SELECT `Number` FROM `osrp_Contacts` WHERE `UID` = '%d'", tPlayer[playerid][pUid]);
+					format(queryStr, sizeof(queryStr), "SELECT `Number` FROM `osrp_Contacts` WHERE `OUID` = '%d'", tPlayer[playerid][pUid]);
 					mysql_query(queryStr);
 
 					mysql_store_result();
 					queryStr[0] = EOS;
 
 					if(!mysql_num_rows()) {
-						format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Contacts`(`UID`, `Name`, `Number`) VALUES ('%d', '%s', '%d')", tPlayer[playerid][pUid], contactName, playerContacts[playerid][i]);
+						format(queryStr, sizeof(queryStr), "INSERT INTO `osrp_Contacts`(`OUID`, `Name`, `Number`) VALUES ('%d', '%s', '%d')", tPlayer[playerid][pUid], contactName, playerContacts[playerid][i]);
 						mysql_query(queryStr);
 					} else {
-						format(queryStr, sizeof(queryStr), "UPDATE `osrp_Contacts` SET `Name` = '%s', `Number` = '%d' WHERE `UID` = '%d'", playerContacts[playerid][i], playerContactsName[playerid][i], tPlayer[playerid][pUid]);
+						format(queryStr, sizeof(queryStr), "UPDATE `osrp_Contacts` SET `Name` = '%s', `Number` = '%d' WHERE `OUID` = '%d'", playerContacts[playerid][i], playerContactsName[playerid][i], tPlayer[playerid][pUid]);
 						mysql_query(queryStr);						
 					}
 					break;
@@ -7248,13 +7260,19 @@ sampCallback OnDialogResponse(playerid, dialogid, response, listitem, inputtext[
 				ShowPlayerDialog(playerid, DIALOG_NOTES_DECISION, DIALOG_STYLE_MSGBOX, "Tear a page out of a notebook?", mainStr, "Tear out", "Leave");
 			}
 		}
-
 		case DIALOG_NOTES_DECISION: {
 			if(tPlayer[playerid][pLang] == LANG_PL) {
 				GameTextForPlayer(playerid, "~y~~h~Karteczka wyrwana.", 5000, 3);
 			} else {
 				GameTextForPlayer(playerid, "~y~~h~Note was torn out.", 5000, 3);
 			}
+		}
+		case DIALOG_RADIO_GROUPS: {
+			if(!response) {
+				return 1;
+			}
+
+			
 		}
 	}
 
@@ -7329,6 +7347,7 @@ sampCallback OnPlayerEnterDynamicArea(playerid, areaid) {
 						SetTimerEx("hidePhotoRadarScreen", 500, false, "i", playerid);
 
 						givePlayerBankMoney(playerid, -fine, 1);
+						PlayerPlaySound(playerid, 1132, 0.0, 0.0, 0.0);
 
 						if(tPlayer[playerid][pBank] > 0) {
 							if(tPlayer[playerid][pLang] == LANG_PL) {

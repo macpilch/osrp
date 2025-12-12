@@ -1,223 +1,198 @@
-// built-in include guard removal
-// just in case the user has a local dependency with the same file name
-#if defined _inc_geoip
-	#undef _inc_geoip
-#endif
-// custom include-guard to ensure we don't duplicate
-#if defined _geoip_included
-	#endinput
-#endif
-#define _geoip_included
+#include <a_http>
 
 
-#include <a_samp>
-#include <logger>
-#include <requests>
-#include <map>
-#include <YSI\y_hooks>
+#define MAX_COUNTRY_NAME    (40)
+#define MAX_ZIP_LENGTH (15) // I don't know how long zip codes are in other countries.
 
+forward HTTP_OnLookupResponse(index, response, data[]);
 
-#if !defined IPHUB_KEY
-    #error Must define `IPHUB_KEY` see iphub.info/api for details
-#endif
+enum e_LookupData
+{
+	e_LookupCountry[MAX_COUNTRY_NAME char],
+	e_LookupRegion[MAX_COUNTRY_NAME char],
+	e_LookupCity[MAX_COUNTRY_NAME char],
+	e_LookupISP[MAX_COUNTRY_NAME char],
+	e_LookupTimezone[MAX_COUNTRY_NAME char],
+	e_LookupZipcode[MAX_ZIP_LENGTH char]
+};
 
+new g_asLookupData[MAX_PLAYERS][e_LookupData];
 
-#if !defined MAX_GEOIP_COUNTRY_CODE
-    #define MAX_GEOIP_COUNTRY_CODE (4)
+#if defined OnLookupComplete
+	forward OnLookupComplete(playerid);
 #endif
 
-#if !defined MAX_GEOIP_COUNTRY_NAME
-    #define MAX_GEOIP_COUNTRY_NAME (128)
+public HTTP_OnLookupResponse(index, response, data[])
+{
+	new pos = -1;
+
+	if (!IsPlayerConnected(index)) return 0;
+	else if (response == 200)
+	{
+	    if (strfind(data, "Reserved", true) != -1 || strlen(data) < 15)
+		{
+	        return 0;
+		}
+		else
+		{
+			new country[MAX_COUNTRY_NAME],region[MAX_COUNTRY_NAME],city[MAX_COUNTRY_NAME],isp[MAX_COUNTRY_NAME], timezone[MAX_COUNTRY_NAME], zip[10];
+
+			if ((pos = strfind(data, "\"country\":")) != -1)
+			{
+			    pos = pos + 11;
+
+				strmid(country, data, pos, strfind(data, "\"", true, pos), MAX_COUNTRY_NAME);
+			}
+			if ((pos = strfind(data, "\"regionName\":")) != -1)
+			{
+			    pos = pos + 14;
+
+				strmid(region, data, pos, strfind(data, "\"", true, pos), MAX_COUNTRY_NAME);
+
+			}
+			if ((pos = strfind(data, "\"city\":")) != -1)
+			{
+			    pos = pos + 8;
+
+				strmid(city, data, pos, strfind(data, "\"", true, pos), MAX_COUNTRY_NAME);
+			}
+
+			if ((pos = strfind(data, "\"isp\":")) != -1)
+			{
+			    pos = pos + 7;
+
+				strmid(isp, data, pos, strfind(data, "\"", true, pos), MAX_COUNTRY_NAME);
+			}
+			
+			if ((pos = strfind(data, "\"timezone\":")) != -1)
+			{
+			    pos = pos + 12;
+
+				strmid(timezone, data, pos, strfind(data, "\"", true, pos), MAX_COUNTRY_NAME);
+			}
+			
+			if ((pos = strfind(data, "\"zip\":")) != -1)
+			{
+			    pos = pos + 7; 
+
+				strmid(zip, data, pos, strfind(data, "\"", true, pos), 10);
+			}
+
+			if (pos != -1)
+			{
+			    strpack(g_asLookupData[index][e_LookupCountry], country, MAX_COUNTRY_NAME char);
+			    strpack(g_asLookupData[index][e_LookupRegion], region, MAX_COUNTRY_NAME char);
+			    strpack(g_asLookupData[index][e_LookupCity], city, MAX_COUNTRY_NAME char);
+			    strpack(g_asLookupData[index][e_LookupISP], isp, MAX_COUNTRY_NAME char);
+				strpack(g_asLookupData[index][e_LookupTimezone], timezone, MAX_COUNTRY_NAME char);
+				strpack(g_asLookupData[index][e_LookupZipcode], zip, MAX_ZIP_LENGTH char);
+				
+				// Saving zip as a packed string because apparently strval wants to act funny.
+				// Could be because it's 5am as I'm adding this shit to this include, will check it out later.
+				
+				#if defined OnLookupComplete
+				CallLocalFunction("OnLookupComplete", "d", index);
+				#endif
+			}
+		}
+	}
+	return 0;
+}
+
+public OnPlayerConnect(playerid)
+{
+	new ipstr[64];
+	
+	GetPlayerIp(playerid, ipstr, 64);
+	
+	strpack(g_asLookupData[playerid][e_LookupCountry], "Unknown", MAX_COUNTRY_NAME char);
+    strpack(g_asLookupData[playerid][e_LookupRegion], "Unknown", MAX_COUNTRY_NAME char);
+    strpack(g_asLookupData[playerid][e_LookupCity], "Unknown", MAX_COUNTRY_NAME char);
+    strpack(g_asLookupData[playerid][e_LookupISP], "Unknown", MAX_COUNTRY_NAME char);
+	strpack(g_asLookupData[playerid][e_LookupTimezone], "Unknown", MAX_COUNTRY_NAME char);
+	strpack(g_asLookupData[playerid][e_LookupZipcode], "Unknown", MAX_COUNTRY_NAME char);
+	
+	strins(ipstr, "ip-api.com/json/", 0);
+	HTTP(playerid, HTTP_GET, ipstr, "", "HTTP_OnLookupResponse");
+	
+	#if defined IPL_OnPlayerConnect
+        IPL_OnPlayerConnect(playerid);
+    #endif
+    return 1;
+}
+#if defined _ALS_OnPlayerConnect
+    #undef OnPlayerConnect
+#else
+    #define _ALS_OnPlayerConnect
+#endif
+#define OnPlayerConnect IPL_OnPlayerConnect
+#if defined IPL_OnPlayerConnect
+    forward IPL_OnPlayerConnect(playerid);
 #endif
 
-#if !defined MAX_GEOIP_ISP_NAME
-    #define MAX_GEOIP_ISP_NAME (128)
-#endif
 
+stock GetPlayerCountry(playerid, country[], size = sizeof(country))
+{
+	if (IsPlayerConnected(playerid))
+		return strunpack(country, g_asLookupData[playerid][e_LookupCountry], size);
 
-// E_GEO_DATA matches the iphub response object, minus the IP address itself
-enum E_GEO_DATA {
-    bool:E_GEO_READY,                   // false if response hasn't arrived yet
-    E_GEO_CODE[MAX_GEOIP_COUNTRY_CODE], // "countryCode": "US",
-    E_GEO_NAME[MAX_GEOIP_COUNTRY_NAME], // "countryName": "United States",
-    E_GEO_ASN,                          // "asn": 15169,
-    E_GEO_ISP[MAX_GEOIP_ISP_NAME],      // "isp": "GOOGLE - Google Inc.",
-    E_GEO_BLOCK,                        // "block": 1
+	else
+	    strunpack(country, !"Unknown", size);
+
+	return 0;
 }
 
-static GeoData[MAX_PLAYERS][E_GEO_DATA];
-static RequestsClient:Client;
-static Map:RequestToPlayer;
+stock GetPlayerRegion(playerid, region[], size = sizeof(region))
+{
+	if (IsPlayerConnected(playerid))
+		return strunpack(region, g_asLookupData[playerid][e_LookupRegion], size);
 
-forward OnGeoResponse(Request:id, E_HTTP_STATUS:status, Node:node);
-forward OnGeoDataReady(playerid);
+	else
+	    strunpack(region, !"Unknown", size);
 
-
-// -
-// API
-// -
-
-
-// IsGeoDataReady checks if geo IP data for a player is ready to read yet.
-stock bool:IsGeoDataReady(playerid) {
-    if(!IsPlayerConnected(playerid)) {
-        return false;
-    }
-    return GeoData[playerid][E_GEO_READY];
+	return 0;
 }
 
-stock GetPlayerCountryCode(playerid, output[], len = sizeof output) {
-    if(!IsPlayerConnected(playerid)) {
-        return 1;
-    }
+stock GetPlayerCity(playerid, city[], size = sizeof(city))
+{
+	if (IsPlayerConnected(playerid))
+		return strunpack(city, g_asLookupData[playerid][e_LookupCity], size);
 
-    if(!GeoData[playerid][E_GEO_READY]) {
-        return 2;
-    }
+	else
+	    strunpack(city, !"Unknown", size);
 
-    strcat(output, GeoData[playerid][E_GEO_CODE], len);
-    return 0;
+	return 0;
 }
 
-stock GetPlayerCountryName(playerid, output[], len = sizeof output) {
-    if(!IsPlayerConnected(playerid)) {
-        return 1;
-    }
+stock GetPlayerISP(playerid, isp[], size = sizeof(isp))
+{
+	if (IsPlayerConnected(playerid))
+		return strunpack(isp, g_asLookupData[playerid][e_LookupISP], size);
 
-    if(!GeoData[playerid][E_GEO_READY]) {
-        return 2;
-    }
+	else
+	    strunpack(isp, !"Unknown", size);
 
-    strcat(output, GeoData[playerid][E_GEO_NAME], len);
-    return 0;
+	return 0;
 }
 
-stock GetPlayerASN(playerid, &asn) {
-    if(!IsPlayerConnected(playerid)) {
-        return 1;
-    }
+stock GetPlayerTimezone(playerid, timezone[], size = sizeof(timezone))
+{
+	if (IsPlayerConnected(playerid))
+		return strunpack(timezone, g_asLookupData[playerid][e_LookupTimezone], size);
 
-    if(!GeoData[playerid][E_GEO_READY]) {
-        return 2;
-    }
+	else
+	    strunpack(timezone, !"Unknown", size);
 
-    asn = GeoData[playerid][E_GEO_ASN];
-    return 0;
+	return 0;
 }
 
-stock GetPlayerISP(playerid, output[], len = sizeof output) {
-    if(!IsPlayerConnected(playerid)) {
-        return 1;
-    }
+stock GetPlayerZipcode(playerid, zipcode[], size = sizeof(zipcode)) // Returns as a string for now, read note in the callback above.
+{
+	if (IsPlayerConnected(playerid))
+		return strunpack(zipcode, g_asLookupData[playerid][e_LookupZipcode], size);
 
-    if(!GeoData[playerid][E_GEO_READY]) {
-        return 2;
-    }
+	else
+	    strunpack(zipcode, !"Unknown", size);
 
-    strcat(output, GeoData[playerid][E_GEO_ISP], len);
-    return 0;
-}
-
-stock GetPlayerIPBlock(playerid, &block) {
-    if(!IsPlayerConnected(playerid)) {
-        return 1;
-    }
-
-    if(!GeoData[playerid][E_GEO_READY]) {
-        return 2;
-    }
-
-    block = GeoData[playerid][E_GEO_BLOCK];
-    return 0;
-}
-
-
-// -
-// Internal
-// -
-
-
-hook OnScriptInit() {
-    new key[] = IPHUB_KEY;
-    if(strlen(key) == 0) {
-        fatal("IPHUB_KEY must be set for geoip library");
-    }
-
-    Client = RequestsClient("http://v2.api.iphub.info/ip/", RequestHeaders("X-Key", key));
-}
-
-hook OnPlayerConnect(playerid) {
-    new addr[16];
-    GetPlayerIp(playerid, addr, sizeof addr);
-    _geoip_doRequest(addr, playerid);
-}
-
-hook OnPlayerDisconnect(playerid, reason) {
-    GeoData[playerid][E_GEO_READY] = false;
-    GeoData[playerid][E_GEO_CODE][0] = EOS;
-    GeoData[playerid][E_GEO_NAME][0] = EOS;
-    GeoData[playerid][E_GEO_ASN] = 0;
-    GeoData[playerid][E_GEO_ISP][0] = EOS;
-    GeoData[playerid][E_GEO_BLOCK] = 0;
-}
-
-_geoip_doRequest(addr[16], playerid) {
-    dbg("geoip", "requesting ip data",
-        _s("addr", addr),
-        _i("playerid", playerid));
-
-    new Request:r = RequestJSON(
-        Client,
-        addr,
-        HTTP_METHOD_GET,
-        "OnGeoResponse"
-    );
-
-    MAP_insert_val_val(RequestToPlayer, _:r, playerid);
-}
-
-public OnGeoResponse(Request:id, E_HTTP_STATUS:status, Node:node) {
-    dbg("geoip", "received ip data",
-        _i("request", _:id),
-        _i("status", _:status));
-
-    if(status != HTTP_STATUS_OK) {
-        err("iphub response status code was not OK",
-            _i("status", _:status));
-        return;
-    }
-
-    new playerid = MAP_get_val_val(RequestToPlayer, _:id);
-    if(!IsPlayerConnected(playerid)) {
-        return;
-    }
-
-    dbg("geoip", "determined target player for ip data",
-        _i("playerid", playerid));
-
-    // {
-    //     "ip": "8.8.8.8",
-    //     "countryCode": "US",
-    //     "countryName": "United States",
-    //     "asn": 15169,
-    //     "isp": "GOOGLE - Google Inc.",
-    //     "block": 1
-    // }
-
-    GeoData[playerid][E_GEO_READY] = true;
-    JsonGetString(node, "countryCode", GeoData[playerid][E_GEO_CODE], 4);
-    JsonGetString(node, "countryName", GeoData[playerid][E_GEO_NAME], 128);
-    JsonGetInt(node, "asn", GeoData[playerid][E_GEO_ASN]);
-    JsonGetString(node, "isp", GeoData[playerid][E_GEO_ISP], 128);
-    JsonGetInt(node, "block", GeoData[playerid][E_GEO_BLOCK]);
-
-    dbg("geoip", "extracted ip data for player",
-        _s("code", GeoData[playerid][E_GEO_CODE]),
-        _s("name", GeoData[playerid][E_GEO_NAME]),
-        _i("asn", GeoData[playerid][E_GEO_ASN]),
-        _s("isp", GeoData[playerid][E_GEO_ISP]),
-        _i("block", GeoData[playerid][E_GEO_BLOCK])
-    );
-    
-    CallLocalFunction("OnGeoDataReady", "%d", playerid);
+	return 0;
 }

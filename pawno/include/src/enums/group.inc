@@ -60,10 +60,3 @@ enum GroupOrderData {
 	goAmount,
 	bool:goIsDelivering
 };
-
-enum GroupVehicleData {
-	gvUid,
-	gvGUid,
-	gvOUid,
-	gvVehs[10]
-};

@@ -384,7 +384,6 @@ CMD:v(playerid, params[]) {
 			saveVehicleValues(srvVehId);
 
 			UpdateDynamic3DTextLabelText(tVehicle[srvVehId][v3dDesc], COLOR_DESC, tVehicle[srvVehId][vDesc]);
-			Attach3DTextLabelToVehicle(tVehicle[srvVehId][v3dDesc], tVehicle[srvVehId][vId], 0.0, 0.0, 0.1);
 
 			if(tPlayer[playerid][pLang] == LANG_PL) {
 				SendClientMessage(playerid, COLOR_GRAY, "Opis pojazdu ustawiony (aby go usun¹æ, wpisz /opis usun):");

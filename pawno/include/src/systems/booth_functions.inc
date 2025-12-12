@@ -114,11 +114,7 @@ stock addBooth(const name[], Float:posx, Float:posy, Float:posz, Float:posa) {
 
 	mysql_query(queryStr);
 
-<<<<<<< HEAD
 	printf("[LOG]: [BOOTH] Dodano nowa budke o Uid %d.", tBooth[freeId][boUid]);
-=======
-	printf("[LOG]: [BOOTH] Dodano now  budk  o Uid %d.", tBooth[freeId][boUid]);
->>>>>>> e7fd5934fbd73a2c350dbf7cd0c156994657b9ed
 	return tBooth[freeId][boUid];
 }
 

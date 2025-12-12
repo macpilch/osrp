@@ -18,11 +18,11 @@ stock initVehicleValues() {
 	new id;
 	new tmpFlags[5];
 
-	mysql_query("SELECT `UID`, `OUID`, `OType`, `HostUID`, `SubOUID`, `ModelID`, `Color1`, `Color2`, `PosX`, `PosY`, `PosZ`, `Angle`, `Fuel`, `Lock`, `Engine`, `EngineHealth`, `Spawned`, `LightsOn`, `Window`, `Alarm`, `Immo`, `CBRadio`, `Audio`, `Limiter`, `Panels`, `Doors`, `Lights`, `Tires`, `VW`, `INT`, `Paintjob`, `Nitro`, `Repair`, `Mileage`, `Block`, `Premium`, `Plate`, `Desc` FROM `osrp_Vehicles`");
+	mysql_query("SELECT `UID`, `OUID`, `OType`, `HostUID`, `SubOUID`, `ModelID`, `Color1`, `Color2`, `PosX`, `PosY`, `PosZ`, `Angle`, `Fuel`, `Lock`, `Engine`, `EngineHealth`, `Spawned`, `LightsOn`, `Window`, `Alarm`, `Immo`, `CBRadio`, `Audio`, `Limiter`, `Panels`, `Doors`, `Lights`, `Tires`, `VW`, `INT`, `Paintjob`, `Nitro`, `Repair`, `Launched`, `Armor`, `Mileage`, `Block`, `Premium`, `Plate`, `Desc` FROM `osrp_Vehicles`");
 	mysql_store_result();
 
 	while(mysql_fetch_row(queryStr, "|")) {
-		sscanf(queryStr, "p<|>iiiiiiiifffffiifiiiiiiiiiiiiiiiiffiis[32]s[64]",
+		sscanf(queryStr, "p<|>iiiiiiiifffffiifiiiiiiiiiiiiiiiifiifiis[32]s[64]",
 			tVehicle[id][vUid],
 			tVehicle[id][vOUid],
 			tVehicle[id][vOType],
@@ -56,6 +56,8 @@ stock initVehicleValues() {
 			tVehicle[id][vPaintjob],
 			tVehicle[id][vNitro],
 			tVehicle[id][vRepair],
+			tVehicle[id][vLaunched],
+			tVehicle[id][vArmor],
 			tVehicle[id][vMileage],
 			tVehicle[id][vBlock],
 			tVehicle[id][vPremium],
@@ -87,6 +89,10 @@ stock initVehicleValues() {
 			tVehicle[id][vId] = CreateVehicle(tVehicle[id][vModelId], tVehicle[id][vPosX], tVehicle[id][vPosY], tVehicle[id][vPosZ], tVehicle[id][vAngle], tVehicle[id][vColor1], tVehicle[id][vColor2], 0);
 			tVehicle[id][v3dDesc] = CreateDynamic3DTextLabel(tVehicle[id][vDesc], COLOR_DO1, 0.0, 0.0, 0.1, 20.0, INVALID_PLAYER_ID, tVehicle[id][vId], 0, 0, 0, -1, 20.0, -1, 0);
 
+			if(tVehicle[id][vArmor]) {
+				SetVehicleHealth(tVehicle[id][vId], 4000);
+			}
+
 			SetVehicleNumberPlate(tVehicle[id][vId], tVehicle[id][vPlate]);
 			UpdateVehicleDamageStatus(tVehicle[id][vId], tVehicle[id][vPanels], tVehicle[id][vDoors], tVehicle[id][vLights], tVehicle[id][vTires]);
 		}
@@ -100,7 +106,7 @@ stock initVehicleValues() {
 
 		Iter_Add(vehItter, id);
 
-		printf("[LOG]: [VEHICLE] Uid: %d, OUid: %d, OType: %d, HostUid: %d, SubOUid: %d, ModelId: %d, Color1: %d, Color2: %d, PosX: %f, PosY: %f, PosZ: %f, Angle: %f, Fuel: %f, Lock: %d, Engine: %d, EngineHp: %f, Spawned: %d, LightsOn: %d, Window: %d, Alarm: %d, Immo: %d, CBRadio: %d, Audio: %d, Limiter: %d, Panels: %d, Doors: %d, Lights: %d, Tires: %d, VW: %d, Int: %d, Paintjob: %d, Nitro: %d, Repair: %f, Mileage: %f, Block: %d, Premium: %d, Plate: %s, Desc: %s",
+		printf("[LOG]: [VEHICLE] Uid: %d, OUid: %d, OType: %d, HostUid: %d, SubOUid: %d, ModelId: %d, Color1: %d, Color2: %d, PosX: %f, PosY: %f, PosZ: %f, Angle: %f, Fuel: %f, Lock: %d, Engine: %d, EngineHp: %f, Spawned: %d, LightsOn: %d, Window: %d, Alarm: %d, Immo: %d, CBRadio: %d, Audio: %d, Limiter: %d, Panels: %d, Doors: %d, Lights: %d, Tires: %d, VW: %d, Int: %d, Paintjob: %d, Nitro: %d, Repair: %f, Launched: %d, Armor: %d, Mileage: %f, Block: %d, Premium: %d, Plate: %s, Desc: %s",
 			tVehicle[id][vUid],
 			tVehicle[id][vOUid],
 			tVehicle[id][vOType],
@@ -134,6 +140,8 @@ stock initVehicleValues() {
 			tVehicle[id][vPaintjob],
 			tVehicle[id][vNitro],
 			tVehicle[id][vRepair],
+			tVehicle[id][vLaunched],
+			tVehicle[id][vArmor],
 			tVehicle[id][vMileage],
 			tVehicle[id][vBlock],
 			tVehicle[id][vPremium],
@@ -221,6 +229,8 @@ stock addVehicle(owner, ownertype, modelid, color1, color2, Float:parkingx, Floa
 	tVehicle[freeId][vPaintjob] = -1;
 	tVehicle[freeId][vNitro] = 0;
 	tVehicle[freeId][vRepair] = 0.0;
+	tVehicle[freeId][vLaunched] = false;
+	tVehicle[freeId][vArmor] = false;
 	tVehicle[freeId][vMileage] = 0.0;
 	tVehicle[freeId][vBlock] = 0;
 	tVehicle[freeId][vPremium] = false;
@@ -314,6 +324,8 @@ stock removeVehicle(srvvehid) {
 	tVehicle[srvvehid][vPaintjob] = -1;
 	tVehicle[srvvehid][vNitro] = 0;
 	tVehicle[srvvehid][vRepair] = 0.0;
+	tVehicle[srvvehid][vLaunched] = false;
+	tVehicle[srvvehid][vArmor] = false;
 	tVehicle[srvvehid][vMileage] = 0.0;
 	tVehicle[srvvehid][vBlock] = 0;
 	tVehicle[srvvehid][vPremium] = false;
@@ -361,12 +373,14 @@ stock saveVehicleValues(srvvehid) {
 		tVehicle[srvvehid][vTires]
 	);
 
-	format(queryStr, sizeof(queryStr), "%s `VW` = '%d', `INT` = '%d', `Paintjob` = '%d', `Nitro` = '%d', `Repair` = '%f', `Mileage` = '%f', `Block` = '%d', `Premium` = '%d', `Plate` = '%s', `Desc` = '%s'", queryStr,
+	format(queryStr, sizeof(queryStr), "%s `VW` = '%d', `INT` = '%d', `Paintjob` = '%d', `Nitro` = '%d', `Repair` = '%f', `Launched` = '%d', `Armor` = '%d', `Mileage` = '%f', `Block` = '%d', `Premium` = '%d', `Plate` = '%s', `Desc` = '%s'", queryStr,
 		tVehicle[srvvehid][vVw],
 		tVehicle[srvvehid][vInt],
 		tVehicle[srvvehid][vPaintjob],
 		tVehicle[srvvehid][vNitro],
 		tVehicle[srvvehid][vRepair],
+		tVehicle[srvvehid][vLaunched],
+		tVehicle[srvvehid][vArmor],
 		tVehicle[srvvehid][vMileage],
 		tVehicle[srvvehid][vBlock],
 		tVehicle[srvvehid][vPremium],
@@ -578,7 +592,7 @@ stock showVehicleInfo(playerid, srvvehid) {
 		TextDrawSetString(vehicleStats[playerid][1], str);
 
 		format(str2, sizeof(str2), "Alarm: %s   Immobiliser: %s   CB: %s~n~Audio: %s Limiter: %s  Napraw: %0.1fhp  Wodowany: %s  Pancerz: %s", (tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_ALARM) ? ("T") : ("N"), (tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_IMMOBILISER) ? ("T") : ("N"), (tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_CBRADIO) ? ("T") : ("N"), (tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_AUDIO) ? ("T") : ("N"),
-		(tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_LIMITER) ? ("T") : ("N"), tVehicle[srvvehid][vRepair]);
+		(tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_LIMITER) ? ("T") : ("N"), tVehicle[srvvehid][vRepair], (tVehicle[srvvehid][vLaunched] ? ("T") : ("N")), (tVehicle[srvvehid][vArmor] ? ("T") : ("N")));
 		TextDrawSetString(vehicleStats[playerid][2], str2);
 	} else {
 		format(mainStr, sizeof(mainStr), "~p~UID~w~: %d   ~p~Owner: ~w~%d:%d  (%d) ~p~Model~w~: %d~n~~p~SAMP ID~w~: %d   ~p~Color~w~: %d:%d  ~p~HP~w~: %0.1f", tVehicle[srvvehid][vUid], tVehicle[srvvehid][vOType], tVehicle[srvvehid][vOUid], tVehicle[srvvehid][vSubOUid], tVehicle[srvvehid][vModelId], tVehicle[srvvehid][vId], tVehicle[srvvehid][vColor1], tVehicle[srvvehid][vColor2], tVehicle[srvvehid][vEngineHp]);
@@ -587,8 +601,8 @@ stock showVehicleInfo(playerid, srvvehid) {
 		format(str, sizeof(str), "~b~Mileage~w~: %dkm ~b~Fuel~w~: %0.1f", floatToInt(tVehicle[srvvehid][vMileage]), tVehicle[srvvehid][vFuel]);
 		TextDrawSetString(vehicleStats[playerid][1], str);
 
-		format(str2, sizeof(str2), "Alarm: %s   Immobiliser: %s   CB: %s~n~Audio: %s Limiter: %s  Repairs: %0.1fhp", (tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_ALARM) ? ("Y") : ("N"), (tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_IMMOBILISER) ? ("Y") : ("N"), (tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_CBRADIO) ? ("Y") : ("N"), (tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_AUDIO) ? ("Y") : ("N"), (tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_LIMITER) ? ("Y") : ("N"),
-		tVehicle[srvvehid][vRepair]);
+		format(str2, sizeof(str2), "Alarm: %s   Immobiliser: %s   CB: %s~n~Audio: %s Limiter: %s  Repairs: %0.1fhp  Launched: %s  Armor: %s", (tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_ALARM) ? ("Y") : ("N"), (tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_IMMOBILISER) ? ("Y") : ("N"), (tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_CBRADIO) ? ("Y") : ("N"), (tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_AUDIO) ? ("Y") : ("N"),
+		(tVehicle[srvvehid][vAccessories] & VEH_ACCESSORIES_LIMITER) ? ("Y") : ("N"), tVehicle[srvvehid][vRepair], (tVehicle[srvvehid][vLaunched] ? ("Y") : ("N")), (tVehicle[srvvehid][vArmor] ? ("Y") : ("N")));
 		TextDrawSetString(vehicleStats[playerid][2], str2);
 	}
 
@@ -770,9 +784,9 @@ Callback addFuelToVehicle(playerid) {
 	mainStr[0] = EOS;
 
 	if(tPlayer[playerid][pLang] == LANG_PL) {
-		format(mainStr, sizeof(mainStr), "** Pojazd %s zosta  zatankowany. **", vehicleNames[tVehicle[srvVehId][vModelId] - 400]);
+		format(mainStr, sizeof(mainStr), "* Pojazd %s zosta  zatankowany. *", vehicleNames[tVehicle[srvVehId][vModelId] - 400]);
 	} else {
-		format(mainStr, sizeof(mainStr), "** Vehicle %s has been refueled. **", vehicleNames[tVehicle[srvVehId][vModelId] - 400]);
+		format(mainStr, sizeof(mainStr), "* Vehicle %s has been refueled. *", vehicleNames[tVehicle[srvVehId][vModelId] - 400]);
 	}
 
 	sendRegularMessage(playerid, 30.0, mainStr, COLOR_DO1);

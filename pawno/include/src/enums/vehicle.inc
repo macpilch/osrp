@@ -44,6 +44,8 @@ enum VehicleData {
 	vPaintjob,
 	vNitro,
 	Float:vRepair,
+	bool:vLaunched,
+	bool:vArmor,
 	Float:vMileage, // Przebieg
 	vBlock,
 	vExitTime,
